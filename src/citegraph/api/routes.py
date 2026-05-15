@@ -32,7 +32,11 @@ class RunStatus(BaseModel):
 
 @router.on_event("startup")
 async def startup_event():
-    await store._init_db()
+    await store.connect()
+
+@router.on_event("shutdown")
+async def shutdown_event():
+    await store.close()
 
 @router.post("/runs", response_model=Dict[str, str])
 async def start_run(request: RunRequest, background_tasks: BackgroundTasks):
@@ -42,7 +46,11 @@ async def start_run(request: RunRequest, background_tasks: BackgroundTasks):
     request.max_total_papers = min(max(request.max_total_papers, 1), 200)
 
     run_id = str(uuid.uuid4())
-    await store.create_run(run_id)
+    try:
+        await store.create_run(run_id)
+    except Exception as e:
+        logger.error(f"Failed to create run in DB: {e}")
+        raise HTTPException(status_code=500, detail="Failed to initialize analysis run")
     
     background_tasks.add_task(execute_run, run_id, request)
     

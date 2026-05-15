@@ -5,6 +5,7 @@ from citegraph.models.paper import Paper, PaperQuery
 from citegraph.providers.base import MetadataProvider, ProviderResult
 from citegraph.providers.openalex import OpenAlexProvider
 from citegraph.providers.crossref import CrossrefProvider
+from citegraph.providers.europe_pmc import EuropePMCProvider
 from citegraph.metadata.merger import MetadataMerger
 from citegraph.config import settings
 
@@ -17,6 +18,8 @@ class MetadataResolver:
             self.providers.append(OpenAlexProvider())
         if settings.enable_crossref:
             self.providers.append(CrossrefProvider())
+        if settings.enable_europe_pmc:
+            self.providers.append(EuropePMCProvider())
         
         self.merger = MetadataMerger()
 
