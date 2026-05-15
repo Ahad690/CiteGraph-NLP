@@ -3,7 +3,8 @@ import logging
 from datetime import datetime
 from typing import Optional
 
-from citegraph.models.paper import PaperQuery
+from citegraph.models.paper import PaperQuery, Paper
+from citegraph.models.study import Study
 from citegraph.models.run import RunResult
 from citegraph.input.normalizer import InputNormalizer
 from citegraph.metadata.resolver import MetadataResolver
@@ -28,8 +29,8 @@ class PipelineOrchestrator:
         self.weight_calc = WeightCalculator()
         self.graph_builder = GraphBuilder()
 
-    async def run(self, query: PaperQuery, backward_depth: int = 2, forward_depth: int = 1, max_papers: int = 100) -> RunResult:
-        run_id = str(uuid.uuid4())
+    async def run(self, query: PaperQuery, backward_depth: int = 2, forward_depth: int = 1, max_papers: int = 100, run_id: str = None) -> RunResult:
+        run_id = run_id or str(uuid.uuid4())
         logger.info(f"Starting run {run_id} for {query.value}")
 
         # 1. Normalize input

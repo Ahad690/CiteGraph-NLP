@@ -11,6 +11,7 @@ class Paper(BaseModel):
     doi: str | None = None
     pmid: str | None = None
     pmcid: str | None = None
+    openalex_id: str | None = None
     title: str
     authors: list[str] = []
     year: int | None = None

@@ -14,8 +14,8 @@ app = FastAPI(
 # Enable CORS for frontend integration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=["*"], # In production, this should be specific origins
+    allow_credentials=False, # Changed to False for wildcard compatibility, or use specific origins
     allow_methods=["*"],
     allow_headers=["*"],
 )

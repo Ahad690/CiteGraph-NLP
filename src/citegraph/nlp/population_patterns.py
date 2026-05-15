@@ -1,7 +1,7 @@
 import re
 
 # Basic numeric patterns
-NUMERIC_PATTERN = r'\d{1,3}(?:,\d{3})*(?:\.\d+)?'
+NUMERIC_PATTERN = r'\d+(?:,\d{3})*(?:\.\d+)?'
 
 # Patterns for population sizes
 POPULATION_PATTERNS = [
@@ -28,6 +28,12 @@ POPULATION_PATTERNS = [
         "pattern": rf'\b(?:randomized|assigned)\s+({NUMERIC_PATTERN})\b',
         "type": "TOTAL_RANDOMIZED",
         "weight": 0.9
+    },
+    {
+        "name": "NUMBER_RANDOMIZED",
+        "pattern": rf'\b({NUMERIC_PATTERN})\s+(?:patients|participants|individuals|subjects)\s+(?:were\s+)?(?:randomized|assigned|enrolled)\b',
+        "type": "TOTAL_RANDOMIZED",
+        "weight": 0.95
     },
     {
         "name": "ENROLLED_COUNT",

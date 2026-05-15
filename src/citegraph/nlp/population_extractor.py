@@ -34,12 +34,14 @@ class PopulationExtractor:
 
         for sentence in sentences:
             # Check for ignore patterns first
-            should_ignore = False
+            should_skip_sentence = False
             for ignore_p in IGNORE_PATTERNS:
                 if re.search(ignore_p, sentence):
-                    # We don't necessarily ignore the whole sentence, 
-                    # but it's a hint. For now, let's just proceed carefully.
-                    pass
+                    should_skip_sentence = True
+                    break
+            
+            if should_skip_sentence:
+                continue
 
             for pattern_info in POPULATION_PATTERNS:
                 matches = re.finditer(pattern_info["pattern"], sentence, re.IGNORECASE)

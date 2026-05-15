@@ -37,6 +37,9 @@ class OpenAlexProvider:
                 if not results.get("results"):
                     return ProviderResult(error="No results found for title")
                 data = results["results"][0]
+            elif query.value.startswith("W") and query.value[1:].isdigit():
+                # Direct OpenAlex ID support
+                data = await self._get(f"/works/{query.value}", {})
             else:
                 return ProviderResult(error=f"Unsupported query type for OpenAlex: {query.query_type}")
 
@@ -57,7 +60,7 @@ class OpenAlexProvider:
         if pmid:
             pmid = pmid.replace("https://pubmed.ncbi.nlm.nih.gov/", "")
 
-        authors = [auth.get("author", {}).get("display_name") for auth in data.get("memberships", [])]
+        authors = [auth.get("author", {}).get("display_name") for auth in data.get("authorships", [])]
         authors = [a for a in authors if a]
 
         return Paper(
@@ -65,6 +68,7 @@ class OpenAlexProvider:
             doi=doi,
             pmid=pmid,
             pmcid=data.get("ids", {}).get("pmcid"),
+            openalex_id=paper_id,
             title=data.get("display_name", "Unknown Title"),
             authors=authors,
             year=data.get("publication_year"),
@@ -89,12 +93,19 @@ class OpenAlexProvider:
         return " ".join([word for pos, word in word_positions])
 
     async def get_references(self, paper_id: str) -> list[CitationEdge]:
-        # In OpenAlex, references are listed in the work object, but we need to fetch them
-        # or use the referenced_works list if it's already there.
-        # For a full implementation, we might need to fetch the works in bulk.
-        # Here we'll just return the IDs.
         try:
-            data = await self._get(f"/works/W{paper_id}", {})
+            # Determine correct ID for OpenAlex API
+            oa_id = paper_id
+            if paper_id.startswith("10."):
+                oa_id = f"doi:{paper_id}"
+            elif not paper_id.startswith("W"):
+                # If it's not a DOI and doesn't start with W, we might be in trouble
+                # but let's try searching by ID if it's already a full URL or something
+                oa_id = paper_id.split("/")[-1]
+                if not oa_id.startswith("W"):
+                    oa_id = f"doi:{oa_id}" # Fallback guess
+
+            data = await self._get(f"/works/{oa_id}", {})
             ref_ids = data.get("referenced_works", [])
             edges = []
             for ref_id in ref_ids:
@@ -114,8 +125,14 @@ class OpenAlexProvider:
 
     async def get_citations(self, paper_id: str) -> list[CitationEdge]:
         try:
+            oa_id = paper_id
+            if paper_id.startswith("10."):
+                oa_id = f"doi:{paper_id}"
+            elif not paper_id.startswith("W"):
+                oa_id = f"doi:{paper_id}"
+
             # Query works that cite this work
-            data = await self._get("/works", {"filter": f"cites:W{paper_id}", "per_page": 50})
+            data = await self._get("/works", {"filter": f"cites:{oa_id}", "per_page": 50})
             edges = []
             for work in data.get("results", []):
                 work_id = work.get("id", "").split("/")[-1]

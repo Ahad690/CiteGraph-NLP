@@ -19,22 +19,21 @@ class MetadataMerger:
         # Select a primary ID (prefer DOI, then PMID, then any ID)
         all_dois = [p.doi for p in papers.values() if p.doi]
         all_pmids = [p.pmid for p in papers.values() if p.pmid]
+        all_oa_ids = [p.openalex_id for p in papers.values() if p.openalex_id]
         
         primary_doi = all_dois[0] if all_dois else None
         primary_pmid = all_pmids[0] if all_pmids else None
+        primary_oa_id = all_oa_ids[0] if all_oa_ids else None
         
         # Paper ID should be consistent. We'll use DOI as ID if available.
-        paper_id = primary_doi or primary_pmid or list(papers.values())[0].paper_id
+        paper_id = primary_doi or primary_pmid or primary_oa_id or list(papers.values())[0].paper_id
 
         # Merge fields based on precedence
-        # Precedence: Crossref > OpenAlex for DOI, Title, Authors, Year, Journal
-        # Precedence: OpenAlex for Abstract (Crossref usually doesn't have it)
-        
         def get_field(field_name: str, sources: List[str]):
             for source in sources:
                 if source in papers:
                     val = getattr(papers[source], field_name)
-                    if val:
+                    if val is not None:
                         return val, source
             return None, None
 
@@ -59,6 +58,7 @@ class MetadataMerger:
             doi=primary_doi,
             pmid=primary_pmid,
             pmcid=next((p.pmcid for p in papers.values() if p.pmcid), None),
+            openalex_id=primary_oa_id,
             title=title or "Unknown Title",
             authors=authors or [],
             year=year,

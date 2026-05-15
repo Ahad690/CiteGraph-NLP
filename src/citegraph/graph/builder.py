@@ -5,17 +5,15 @@ from citegraph.models.citation import CitationEdge
 from citegraph.models.population import PopulationResolution
 
 class GraphBuilder:
-    def __init__(self):
-        self.graph = nx.DiGraph()
-
-    def build(self, papers: List[Paper], edges: List[CitationEdge], resolutions: List[PopulationResolution]):
+    def build(self, papers: List[Paper], edges: List[CitationEdge], resolutions: List[PopulationResolution]) -> nx.DiGraph:
         """Build a NetworkX graph from papers, edges, and population resolutions."""
+        graph = nx.DiGraph()
         res_map = {r.paper_id: r for r in resolutions}
         
         # Add nodes
         for paper in papers:
             res = res_map.get(paper.paper_id)
-            self.graph.add_node(
+            graph.add_node(
                 paper.paper_id,
                 title=paper.title,
                 year=paper.year,
@@ -28,7 +26,7 @@ class GraphBuilder:
 
         # Add edges
         for edge in edges:
-            self.graph.add_edge(
+            graph.add_edge(
                 edge.source_paper_id,
                 edge.target_paper_id,
                 relation=edge.relation,
@@ -37,4 +35,4 @@ class GraphBuilder:
                 providers=",".join(edge.providers)
             )
 
-        return self.graph
+        return graph
