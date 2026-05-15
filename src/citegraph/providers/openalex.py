@@ -8,6 +8,7 @@ from citegraph.providers.base import MetadataProvider, ProviderResult
 from citegraph.models.paper import Paper, PaperQuery
 from citegraph.models.citation import CitationEdge
 from citegraph.config import settings
+from citegraph.utils.ids import IdCanonicalizer
 
 logger = logging.getLogger(__name__)
 
@@ -28,20 +29,11 @@ class OpenAlexProvider:
 
     async def resolve(self, query: PaperQuery) -> ProviderResult:
         try:
-            if query.query_type == "doi":
-                data = await self._get(f"/works/doi:{query.value}", {})
-            elif query.query_type == "pmid":
-                data = await self._get(f"/works/pmid:{query.value}", {})
-            elif query.query_type == "title":
-                results = await self._get("/works", {"filter": f"title.search:{query.value}", "per_page": 1})
-                if not results.get("results"):
-                    return ProviderResult(error="No results found for title")
-                data = results["results"][0]
-            elif query.value.startswith("W") and query.value[1:].isdigit():
-                # Direct OpenAlex ID support
-                data = await self._get(f"/works/{query.value}", {})
+            oa_id = IdCanonicalizer.to_openalex_id(query.value)
+            if oa_id:
+                data = await self._get(f"/works/{oa_id}", {})
             else:
-                return ProviderResult(error=f"Unsupported query type for OpenAlex: {query.query_type}")
+                return ProviderResult(error=f"Unsupported or malformed ID for OpenAlex: {query.value}")
 
             paper = self._map_to_paper(data)
             return ProviderResult(paper=paper, raw_data=data)
@@ -51,14 +43,10 @@ class OpenAlexProvider:
 
     def _map_to_paper(self, data: dict[str, Any]) -> Paper:
         # Extract basic info
-        paper_id = data.get("id", "").split("/")[-1]
-        doi = data.get("doi")
-        if doi:
-            doi = doi.replace("https://doi.org/", "")
-            
-        pmid = data.get("ids", {}).get("pmid")
-        if pmid:
-            pmid = pmid.replace("https://pubmed.ncbi.nlm.nih.gov/", "")
+        paper_id = IdCanonicalizer.canonicalize(data.get("id", "").split("/")[-1])
+        doi = IdCanonicalizer.canonicalize(data.get("doi"))
+        pmid = IdCanonicalizer.canonicalize(data.get("ids", {}).get("pmid"))
+        pmcid = IdCanonicalizer.canonicalize(data.get("ids", {}).get("pmcid"))
 
         authors = [auth.get("author", {}).get("display_name") for auth in data.get("authorships", [])]
         authors = [a for a in authors if a]
@@ -93,25 +81,10 @@ class OpenAlexProvider:
         return " ".join([word for pos, word in word_positions])
 
     async def get_references(self, paper_id: str) -> list[CitationEdge]:
+    async def get_references(self, paper_id: str) -> list[CitationEdge]:
         try:
-            # Determine correct ID for OpenAlex API
-            oa_id = paper_id
-            if paper_id.startswith("10."):
-                oa_id = f"doi:{paper_id}"
-            elif paper_id.startswith("doi:") or paper_id.startswith("pmid:") or paper_id.startswith("W"):
-                oa_id = paper_id
-            else:
-                # Handle cases where it might be a full URL
-                if "doi.org/" in paper_id:
-                    oa_id = "doi:" + paper_id.split("doi.org/")[-1]
-                elif "pubmed.ncbi.nlm.nih.gov/" in paper_id:
-                    oa_id = "pmid:" + paper_id.split("/")[-2]
-                else:
-                    # Fallback to OpenAlex ID if it looks like one (no prefix)
-                    if paper_id[1:].isdigit() and paper_id.startswith("W"):
-                        oa_id = paper_id
-                    else:
-                        oa_id = f"doi:{paper_id}"
+            oa_id = IdCanonicalizer.to_openalex_id(paper_id)
+            data = await self._get(f"/works/{oa_id}", {})
 
             data = await self._get(f"/works/{oa_id}", {})
             ref_ids = data.get("referenced_works", [])
@@ -132,14 +105,9 @@ class OpenAlexProvider:
             return []
 
     async def get_citations(self, paper_id: str) -> list[CitationEdge]:
+    async def get_citations(self, paper_id: str) -> list[CitationEdge]:
         try:
-            oa_id = paper_id
-            if paper_id.startswith("10."):
-                oa_id = f"doi:{paper_id}"
-            elif paper_id.startswith("doi:") or paper_id.startswith("pmid:") or paper_id.startswith("W"):
-                oa_id = paper_id
-            else:
-                oa_id = f"doi:{paper_id}"
+            oa_id = IdCanonicalizer.to_openalex_id(paper_id)
 
             # Query works that cite this work
             data = await self._get("/works", {"filter": f"cites:{oa_id}", "per_page": 50})
