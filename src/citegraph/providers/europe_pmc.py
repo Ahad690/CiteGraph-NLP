@@ -18,15 +18,22 @@ class EuropePMCProvider:
     async def resolve(self, query: PaperQuery) -> ProviderResult:
         try:
             cid = IdCanonicalizer.canonicalize(query.value)
-            
+            if not cid:
+                return ProviderResult(error="Invalid or empty ID")
+
             # Format query for Europe PMC
-            search_query = cid
+            search_query = None
             if query.query_type == "doi":
                 search_query = f'DOI:"{cid}"'
             elif query.query_type == "pmid":
                 search_query = f'EXT_ID:{cid}'
+            elif query.query_type == "title":
+                search_query = f'TITLE:"{cid}"'
+            
+            if not search_query:
+                return ProviderResult(error=f"Unsupported Europe PMC query type: {query.query_type}")
                 
-            async with httpx.AsyncClient() as client:
+            async with httpx.AsyncClient(timeout=15.0) as client:
                 response = await client.get(
                     f"{self.base_url}/search", 
                     params={"query": search_query, "format": "json", "resultType": "core"}

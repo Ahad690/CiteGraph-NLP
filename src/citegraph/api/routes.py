@@ -5,14 +5,21 @@ from datetime import datetime
 import uuid
 import logging
 import json
+import asyncio
 
 from citegraph.models.paper import PaperQuery
 from citegraph.models.run import RunResult
 from citegraph.pipeline.orchestrator import PipelineOrchestrator
 
+import anyio
+from _weakrefset import WeakSet
+
 router = APIRouter()
 orchestrator = PipelineOrchestrator()
 logger = logging.getLogger(__name__)
+
+# Track active background tasks for graceful shutdown
+active_tasks = WeakSet()
 
 # Persistent storage
 from citegraph.storage.sqlite import SQLiteStore
@@ -52,7 +59,9 @@ async def start_run(request: RunRequest, background_tasks: BackgroundTasks):
         logger.error(f"Failed to create run in DB: {e}")
         raise HTTPException(status_code=500, detail="Failed to initialize analysis run")
     
-    background_tasks.add_task(execute_run, run_id, request)
+    task = asyncio.create_task(execute_run(run_id, request))
+    active_tasks.add(task)
+    # background_tasks.add_task(execute_run, run_id, request) # We'll use create_task for easier tracking
     
     return {"run_id": run_id, "status": "started"}
 
@@ -72,9 +81,15 @@ async def execute_run(run_id: str, request: RunRequest):
             run_id=run_id # Passing run_id for consistency
         )
         await store.save_result(run_id, result)
+    except RuntimeError as re:
+        # DB likely closed during shutdown
+        logger.warning(f"Run {run_id} aborted during shutdown: {re}")
     except Exception as e:
         logger.error(f"Run {run_id} failed: {e}")
-        await store.update_status(run_id, "failed", str(e))
+        try:
+            await store.update_status(run_id, "failed", str(e))
+        except Exception:
+            pass
 
 @router.get("/runs/{run_id}", response_model=RunResult | RunStatus)
 async def get_run(run_id: str):
