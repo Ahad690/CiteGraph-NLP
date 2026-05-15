@@ -1,5 +1,6 @@
 import httpx
 import logging
+import re
 from typing import Any, Optional
 from datetime import datetime
 from citegraph.providers.base import MetadataProvider, ProviderResult
@@ -32,12 +33,29 @@ class EuropePMCProvider:
             elif query.query_type == "title":
                 search_query = f'TITLE:"{cid}"'
             elif query.query_type == "url":
-                # For URLs, we assume they might contain a DOI or PMID
-                if "doi.org/" in cid:
-                    doi = cid.split("doi.org/")[-1]
-                    search_query = f'DOI:"{doi}"'
-                else:
-                    return ProviderResult(error=f"Cannot extract ID from URL for Europe PMC: {cid}")
+                # Robust URL parsing to extract DOI or PMID
+                from urllib.parse import urlparse
+                path = urlparse(cid).path
+                
+                # Check for DOI patterns
+                if "10." in path:
+                    doi_match = re.search(r'10\.\d{4,9}/[-._;()/:A-Z0-9]+', path, re.I)
+                    if doi_match:
+                        search_query = f'DOI:"{doi_match.group(0)}"'
+                
+                # Check for PMID in URL (common patterns like /pmc/articles/PMC... or /pubmed/...)
+                if not search_query:
+                    if "/pmc/" in path:
+                        pmcid_match = re.search(r'PMC\d+', path, re.I)
+                        if pmcid_match:
+                            search_query = f'PMCID:{pmcid_match.group(0).upper()}'
+                    elif "/pubmed/" in path or "/pubmed.ncbi.nlm.nih.gov/" in cid:
+                        pmid_match = re.search(r'/(\d+)/?$', path)
+                        if pmid_match:
+                            search_query = f'EXT_ID:{pmid_match.group(1)}'
+                
+                if not search_query:
+                    return ProviderResult(error=f"Could not extract a valid DOI, PMID, or PMCID from URL: {cid}")
             
             if not search_query:
                 return ProviderResult(error=f"Unsupported Europe PMC query type: {query.query_type}")

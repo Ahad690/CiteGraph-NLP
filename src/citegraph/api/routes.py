@@ -10,15 +10,11 @@ import asyncio
 from citegraph.models.paper import PaperQuery
 from citegraph.models.run import RunResult
 from citegraph.pipeline.orchestrator import PipelineOrchestrator
-
-import anyio
+from citegraph.utils.tasks import task_manager
 
 router = APIRouter()
 orchestrator = PipelineOrchestrator()
 logger = logging.getLogger(__name__)
-
-# Track active background tasks for graceful shutdown
-active_tasks = set()
 
 # Persistent storage
 from citegraph.storage.sqlite import SQLiteStore
@@ -42,16 +38,7 @@ async def startup_event():
 
 @router.on_event("shutdown")
 async def shutdown_event():
-    # Wait for active tasks to finish (or timeout after 10s)
-    if active_tasks:
-        logger.info(f"Waiting for {len(active_tasks)} background tasks to complete...")
-        # Cancel tasks to signal shutdown if they support it
-        for task in active_tasks:
-            task.cancel()
-        
-        async with anyio.move_on_after(10):
-            await asyncio.gather(*active_tasks, return_exceptions=True)
-            
+    await task_manager.shutdown(timeout=15.0)
     await store.close()
 
 @router.post("/runs", response_model=Dict[str, str])
@@ -69,11 +56,10 @@ async def start_run(request: RunRequest, background_tasks: BackgroundTasks):
         await store.create_run(run_id)
     except Exception as e:
         logger.error(f"Failed to create run in DB: {e}")
-        raise HTTPException(status_code=500, detail="Failed to initialize analysis run")
+        raise HTTPException(status_code=500, detail="Database error during run initialization")
     
     task = asyncio.create_task(execute_run(run_id, request))
-    active_tasks.add(task)
-    task.add_done_callback(active_tasks.discard)
+    task_manager.register(task)
     
     return {"run_id": run_id, "status": "started"}
 
