@@ -27,8 +27,17 @@ class EuropePMCProvider:
                 search_query = f'DOI:"{cid}"'
             elif query.query_type == "pmid":
                 search_query = f'EXT_ID:{cid}'
+            elif query.query_type == "pmcid":
+                search_query = f'PMCID:{cid}'
             elif query.query_type == "title":
                 search_query = f'TITLE:"{cid}"'
+            elif query.query_type == "url":
+                # For URLs, we assume they might contain a DOI or PMID
+                if "doi.org/" in cid:
+                    doi = cid.split("doi.org/")[-1]
+                    search_query = f'DOI:"{doi}"'
+                else:
+                    return ProviderResult(error=f"Cannot extract ID from URL for Europe PMC: {cid}")
             
             if not search_query:
                 return ProviderResult(error=f"Unsupported Europe PMC query type: {query.query_type}")

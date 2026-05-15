@@ -12,14 +12,13 @@ from citegraph.models.run import RunResult
 from citegraph.pipeline.orchestrator import PipelineOrchestrator
 
 import anyio
-from _weakrefset import WeakSet
 
 router = APIRouter()
 orchestrator = PipelineOrchestrator()
 logger = logging.getLogger(__name__)
 
 # Track active background tasks for graceful shutdown
-active_tasks = WeakSet()
+active_tasks = set()
 
 # Persistent storage
 from citegraph.storage.sqlite import SQLiteStore
@@ -43,6 +42,16 @@ async def startup_event():
 
 @router.on_event("shutdown")
 async def shutdown_event():
+    # Wait for active tasks to finish (or timeout after 10s)
+    if active_tasks:
+        logger.info(f"Waiting for {len(active_tasks)} background tasks to complete...")
+        # Cancel tasks to signal shutdown if they support it
+        for task in active_tasks:
+            task.cancel()
+        
+        async with anyio.move_on_after(10):
+            await asyncio.gather(*active_tasks, return_exceptions=True)
+            
     await store.close()
 
 @router.post("/runs", response_model=Dict[str, str])
@@ -51,6 +60,9 @@ async def start_run(request: RunRequest, background_tasks: BackgroundTasks):
     request.backward_depth = min(max(request.backward_depth, 0), 3)
     request.forward_depth = min(max(request.forward_depth, 0), 2)
     request.max_total_papers = min(max(request.max_total_papers, 1), 200)
+
+    # Ensure DB is ready (failsafe)
+    await store.connect()
 
     run_id = str(uuid.uuid4())
     try:
@@ -61,7 +73,7 @@ async def start_run(request: RunRequest, background_tasks: BackgroundTasks):
     
     task = asyncio.create_task(execute_run(run_id, request))
     active_tasks.add(task)
-    # background_tasks.add_task(execute_run, run_id, request) # We'll use create_task for easier tracking
+    task.add_done_callback(active_tasks.discard)
     
     return {"run_id": run_id, "status": "started"}
 
@@ -81,15 +93,18 @@ async def execute_run(run_id: str, request: RunRequest):
             run_id=run_id # Passing run_id for consistency
         )
         await store.save_result(run_id, result)
-    except RuntimeError as re:
-        # DB likely closed during shutdown
+    except (RuntimeError, asyncio.CancelledError) as re:
+        # DB closed or server shutting down
         logger.warning(f"Run {run_id} aborted during shutdown: {re}")
+        # Try one last-ditch status update if connection still valid
+        try:
+            await store.update_status(run_id, "failed", "Aborted due to server shutdown")
+        except:
+            pass 
     except Exception as e:
         logger.error(f"Run {run_id} failed: {e}")
-        try:
-            await store.update_status(run_id, "failed", str(e))
-        except Exception:
-            pass
+        # Mark as failed in DB
+        await store.update_status(run_id, "failed", str(e))
 
 @router.get("/runs/{run_id}", response_model=RunResult | RunStatus)
 async def get_run(run_id: str):
