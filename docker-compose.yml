@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  grobid:
+    image: lfoppiano/grobid:0.8.0
+    container_name: citegraph-grobid
+    ports:
+      - "8070:8070"
+
+  neo4j:
+    image: neo4j:5-community
+    container_name: citegraph-neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      - NEO4J_AUTH=neo4j/password
+    volumes:
+      - neo4j_data:/data
+    profiles:
+      - neo4j
+
+volumes:
+  neo4j_data:

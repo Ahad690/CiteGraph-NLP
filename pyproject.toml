@@ -1,0 +1,41 @@
+[project]
+name = "citegraph-nlp"
+version = "0.1.0"
+description = "Confidence-Aware Citation Lineage and Study-Scale Knowledge Graph System"
+authors = [
+    { name = "CiteGraph Team", email = "info@example.com" }
+]
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "pydantic>=2.0.0",
+    "pydantic-settings",
+    "httpx",
+    "tenacity",
+    "python-dotenv",
+    "sqlalchemy",
+    "sqlmodel",
+    "networkx",
+    "pandas",
+    "numpy",
+    "streamlit",
+    "pyvis",
+    "pymupdf",
+    "spacy",
+    "rapidfuzz",
+    "python-multipart",
+    "lxml",
+    "beautifulsoup4",
+    "pytest",
+    "pytest-asyncio",
+    "respx",
+    "rich",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
