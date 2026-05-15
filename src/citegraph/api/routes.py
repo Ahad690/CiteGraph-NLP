@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, BackgroundTasks
 from pydantic import BaseModel
 from typing import Dict, Literal, Optional
+from datetime import datetime
 import uuid
 import logging
 
@@ -12,8 +13,9 @@ router = APIRouter()
 orchestrator = PipelineOrchestrator()
 logger = logging.getLogger(__name__)
 
-# Store results in memory for MVP (could be SQLite/Redis later)
-results_cache: Dict[str, RunResult] = {}
+# Persistent storage
+from citegraph.storage.sqlite import SQLiteStore
+store = SQLiteStore()
 
 class RunRequest(PaperQuery):
     backward_depth: int = 2
@@ -25,15 +27,17 @@ class RunStatus(BaseModel):
     run_id: str
     status: Literal["started", "running", "completed", "failed"]
     error: Optional[str] = None
-
-# Store results and status
-results_cache: Dict[str, RunResult] = {}
-status_cache: Dict[str, RunStatus] = {}
+    created_at: datetime = datetime.utcnow()
 
 @router.post("/runs", response_model=Dict[str, str])
 async def start_run(request: RunRequest, background_tasks: BackgroundTasks):
+    # Enforce limits
+    request.backward_depth = min(max(request.backward_depth, 0), 3)
+    request.forward_depth = min(max(request.forward_depth, 0), 2)
+    request.max_total_papers = min(max(request.max_total_papers, 1), 200)
+
     run_id = str(uuid.uuid4())
-    status_cache[run_id] = RunStatus(run_id=run_id, status="started")
+    store.create_run(run_id)
     
     background_tasks.add_task(execute_run, run_id, request)
     
@@ -41,7 +45,7 @@ async def start_run(request: RunRequest, background_tasks: BackgroundTasks):
 
 async def execute_run(run_id: str, request: RunRequest):
     try:
-        status_cache[run_id].status = "running"
+        store.update_status(run_id, "running")
         query = PaperQuery(
             query_type=request.query_type,
             value=request.value,
@@ -52,29 +56,36 @@ async def execute_run(run_id: str, request: RunRequest):
             backward_depth=request.backward_depth,
             forward_depth=request.forward_depth,
             max_papers=request.max_total_papers,
-            run_id=run_id
+            run_id=run_id # Passing run_id for consistency
         )
-        results_cache[run_id] = result
-        status_cache[run_id].status = "completed"
+        store.save_result(run_id, result)
     except Exception as e:
         logger.error(f"Run {run_id} failed: {e}")
-        status_cache[run_id].status = "failed"
-        status_cache[run_id].error = str(e)
+        store.update_status(run_id, "failed", error=str(e))
 
 @router.get("/runs/{run_id}", response_model=RunResult | RunStatus)
 async def get_run(run_id: str):
-    if run_id in results_cache:
-        return results_cache[run_id]
-    if run_id in status_cache:
-        return status_cache[run_id]
-    raise HTTPException(status_code=404, detail="Run not found")
+    data = store.get_run(run_id)
+    if not data:
+        raise HTTPException(status_code=404, detail="Run not found")
+    
+    if data["status"] == "completed" and data["result_json"]:
+        return RunResult.model_validate_json(data["result_json"])
+    
+    return RunStatus(
+        run_id=data["run_id"],
+        status=data["status"],
+        error=data["error"],
+        created_at=datetime.fromisoformat(data["created_at"]) if isinstance(data["created_at"], str) else data["created_at"]
+    )
 
 @router.get("/runs/{run_id}/graph")
 async def get_graph(run_id: str):
-    if run_id not in results_cache:
-        raise HTTPException(status_code=404, detail="Run not found")
+    data = store.get_run(run_id)
+    if not data or not data.get("result"):
+        raise HTTPException(status_code=404, detail="Run not found or not completed")
     
-    result = results_cache[run_id]
+    result = RunResult(**data["result"])
     nodes = []
     for paper in result.papers:
         nodes.append({
@@ -96,29 +107,51 @@ async def get_graph(run_id: str):
 
 @router.get("/runs/{run_id}/export/json")
 async def export_json(run_id: str):
-    if run_id not in results_cache:
-        raise HTTPException(status_code=404, detail="Run not found")
-    return results_cache[run_id]
+    data = store.get_run(run_id)
+    if not data or not data.get("result"):
+        raise HTTPException(status_code=404, detail="Run not found or not completed")
+    return data["result"]
 
 @router.get("/runs/{run_id}/export/csv")
 async def export_csv(run_id: str):
-    if run_id not in results_cache:
-        raise HTTPException(status_code=404, detail="Run not found")
-    # For MVP, we'll just return a simplified JSON for now or a CSV string
-    # In a real app, use pandas.to_csv
-    return {"message": "CSV export not fully implemented for streaming, but data available in JSON"}
+    data = store.get_run(run_id)
+    if not data or not data.get("result"):
+        raise HTTPException(status_code=404, detail="Run not found or not completed")
+    
+    result = RunResult(**data["result"])
+    # Simplified CSV for papers
+    csv_lines = ["paper_id,title,year,journal,n_eff"]
+    for paper in result.papers:
+        n_eff = next((r.n_eff for r in result.population_resolutions if r.paper_id == paper.paper_id), "")
+        title = paper.title.replace('"', '""')
+        csv_lines.append(f'"{paper.paper_id}","{title}",{paper.year or ""},"{paper.journal or ""}",{n_eff}')
+    
+    return {"csv": "\n".join(csv_lines)}
 
 @router.get("/runs/{run_id}/export/markdown")
 async def export_markdown(run_id: str):
-    if run_id not in results_cache:
-        raise HTTPException(status_code=404, detail="Run not found")
+    data = store.get_run(run_id)
+    if not data or not data.get("result"):
+        raise HTTPException(status_code=404, detail="Run not found or not completed")
     
-    result = results_cache[run_id]
-    lines = [f"# CiteGraph-NLP Report: {run_id}", ""]
-    lines.append(f"## Seed Paper: {result.seed_paper_id}")
+    result = RunResult(**data["result"])
+    lines = [f"# CiteGraph-NLP Analysis Report", ""]
+    lines.append(f"**Run ID**: `{run_id}`")
+    lines.append(f"**Seed Paper ID**: `{result.seed_paper_id}`")
+    lines.append(f"**Generated At**: {data['updated_at']}")
     lines.append("")
-    lines.append("### Foundational Papers")
-    for i, p in enumerate(result.ranked_foundational_papers):
-        lines.append(f"{i+1}. **{p['title']}** ({p['year']}) - Score: {p['score']:.2f}")
     
+    lines.append("## Probable Foundational Papers")
+    lines.append("| Rank | Title | Year | Score | Explanation |")
+    lines.append("| --- | --- | --- | --- | --- |")
+    for i, p in enumerate(result.ranked_foundational_papers):
+        lines.append(f"| {i+1} | {p['title']} | {p['year']} | {p['score']:.2f} | {p['explanation']} |")
+    
+    lines.append("")
+    lines.append("## Population Evidence")
+    lines.append("| Paper ID | N_eff | Status | Confidence |")
+    lines.append("| --- | --- | --- | --- |")
+    for res in result.population_resolutions:
+        lines.append(f"| {res.paper_id} | {res.n_eff} | {res.status} | {res.confidence:.2f} |")
+        
     return {"report": "\n".join(lines)}

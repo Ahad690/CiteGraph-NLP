@@ -98,12 +98,20 @@ class OpenAlexProvider:
             oa_id = paper_id
             if paper_id.startswith("10."):
                 oa_id = f"doi:{paper_id}"
-            elif not paper_id.startswith("W"):
-                # If it's not a DOI and doesn't start with W, we might be in trouble
-                # but let's try searching by ID if it's already a full URL or something
-                oa_id = paper_id.split("/")[-1]
-                if not oa_id.startswith("W"):
-                    oa_id = f"doi:{oa_id}" # Fallback guess
+            elif paper_id.startswith("doi:") or paper_id.startswith("pmid:") or paper_id.startswith("W"):
+                oa_id = paper_id
+            else:
+                # Handle cases where it might be a full URL
+                if "doi.org/" in paper_id:
+                    oa_id = "doi:" + paper_id.split("doi.org/")[-1]
+                elif "pubmed.ncbi.nlm.nih.gov/" in paper_id:
+                    oa_id = "pmid:" + paper_id.split("/")[-2]
+                else:
+                    # Fallback to OpenAlex ID if it looks like one (no prefix)
+                    if paper_id[1:].isdigit() and paper_id.startswith("W"):
+                        oa_id = paper_id
+                    else:
+                        oa_id = f"doi:{paper_id}"
 
             data = await self._get(f"/works/{oa_id}", {})
             ref_ids = data.get("referenced_works", [])
@@ -128,7 +136,9 @@ class OpenAlexProvider:
             oa_id = paper_id
             if paper_id.startswith("10."):
                 oa_id = f"doi:{paper_id}"
-            elif not paper_id.startswith("W"):
+            elif paper_id.startswith("doi:") or paper_id.startswith("pmid:") or paper_id.startswith("W"):
+                oa_id = paper_id
+            else:
                 oa_id = f"doi:{paper_id}"
 
             # Query works that cite this work
