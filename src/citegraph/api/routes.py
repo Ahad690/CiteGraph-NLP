@@ -4,7 +4,7 @@ from typing import Dict, Literal, Optional
 from datetime import datetime
 import uuid
 import logging
-import anyio
+import json
 
 from citegraph.models.paper import PaperQuery
 from citegraph.models.run import RunResult
@@ -30,6 +30,10 @@ class RunStatus(BaseModel):
     error: Optional[str] = None
     created_at: datetime = datetime.utcnow()
 
+@router.on_event("startup")
+async def startup_event():
+    await store._init_db()
+
 @router.post("/runs", response_model=Dict[str, str])
 async def start_run(request: RunRequest, background_tasks: BackgroundTasks):
     # Enforce limits
@@ -38,7 +42,7 @@ async def start_run(request: RunRequest, background_tasks: BackgroundTasks):
     request.max_total_papers = min(max(request.max_total_papers, 1), 200)
 
     run_id = str(uuid.uuid4())
-    await anyio.to_thread.run_sync(store.create_run, run_id)
+    await store.create_run(run_id)
     
     background_tasks.add_task(execute_run, run_id, request)
     
@@ -46,7 +50,7 @@ async def start_run(request: RunRequest, background_tasks: BackgroundTasks):
 
 async def execute_run(run_id: str, request: RunRequest):
     try:
-        await anyio.to_thread.run_sync(store.update_status, run_id, "running")
+        await store.update_status(run_id, "running")
         query = PaperQuery(
             query_type=request.query_type,
             value=request.value,
@@ -59,14 +63,14 @@ async def execute_run(run_id: str, request: RunRequest):
             max_papers=request.max_total_papers,
             run_id=run_id # Passing run_id for consistency
         )
-        await anyio.to_thread.run_sync(store.save_result, run_id, result)
+        await store.save_result(run_id, result)
     except Exception as e:
         logger.error(f"Run {run_id} failed: {e}")
-        await anyio.to_thread.run_sync(store.update_status, run_id, "failed", str(e))
+        await store.update_status(run_id, "failed", str(e))
 
 @router.get("/runs/{run_id}", response_model=RunResult | RunStatus)
 async def get_run(run_id: str):
-    data = await anyio.to_thread.run_sync(store.get_run, run_id)
+    data = await store.get_run(run_id)
     if not data:
         raise HTTPException(status_code=404, detail="Run not found")
     
@@ -82,11 +86,11 @@ async def get_run(run_id: str):
 
 @router.get("/runs/{run_id}/graph")
 async def get_graph(run_id: str):
-    data = await anyio.to_thread.run_sync(store.get_run, run_id)
-    if not data or not data.get("result"):
+    data = await store.get_run(run_id)
+    if not data or not data.get("result_json"):
         raise HTTPException(status_code=404, detail="Run not found or not completed")
     
-    result = RunResult(**data["result"])
+    result = RunResult.model_validate_json(data["result_json"])
     nodes = []
     for paper in result.papers:
         nodes.append({
@@ -108,18 +112,18 @@ async def get_graph(run_id: str):
 
 @router.get("/runs/{run_id}/export/json")
 async def export_json(run_id: str):
-    data = await anyio.to_thread.run_sync(store.get_run, run_id)
-    if not data or not data.get("result"):
+    data = await store.get_run(run_id)
+    if not data or not data.get("result_json"):
         raise HTTPException(status_code=404, detail="Run not found or not completed")
-    return data["result"]
+    return json.loads(data["result_json"])
 
 @router.get("/runs/{run_id}/export/csv")
 async def export_csv(run_id: str):
-    data = await anyio.to_thread.run_sync(store.get_run, run_id)
-    if not data or not data.get("result"):
+    data = await store.get_run(run_id)
+    if not data or not data.get("result_json"):
         raise HTTPException(status_code=404, detail="Run not found or not completed")
     
-    result = RunResult(**data["result"])
+    result = RunResult.model_validate_json(data["result_json"])
     # Simplified CSV for papers
     csv_lines = ["paper_id,title,year,journal,n_eff"]
     for paper in result.papers:
@@ -131,11 +135,11 @@ async def export_csv(run_id: str):
 
 @router.get("/runs/{run_id}/export/markdown")
 async def export_markdown(run_id: str):
-    data = await anyio.to_thread.run_sync(store.get_run, run_id)
-    if not data or not data.get("result"):
+    data = await store.get_run(run_id)
+    if not data or not data.get("result_json"):
         raise HTTPException(status_code=404, detail="Run not found or not completed")
     
-    result = RunResult(**data["result"])
+    result = RunResult.model_validate_json(data["result_json"])
     generated_at_raw = data.get("updated_at")
     try:
         dt = datetime.fromisoformat(generated_at_raw.replace('Z', '+00:00'))
