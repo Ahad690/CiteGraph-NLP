@@ -1,0 +1,63 @@
+import type { RunResult } from "@/types/api";
+
+export const mockRun: RunResult = {
+  run_id: "demo_run_001",
+  status: "completed",
+  seed_paper_id: "paper_1",
+  created_at: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
+  warnings: [
+    "Population extraction for 2 papers was ambiguous.",
+    "Metadata coverage may be incomplete for 1 cited paper.",
+  ],
+  papers: [
+    { paper_id: "paper_1", title: "Sustained virologic response in chronic hepatitis C: a multicenter randomized trial", doi: "10.1056/NEJMoa1402869", pmid: "24725239", pmcid: "PMC4123456", authors: ["Chen L.", "Patel R.", "Kowalski M.", "Almeida F."], year: 2018, journal: "New England Journal of Medicine", abstract: "We conducted a multicenter randomized trial to evaluate sustained virologic response across 8,500 patients with chronic hepatitis C infection.", metadata_confidence: 0.96, citation_count: 412, source_ids: { openalex: "W2104812345", crossref: "10.1056/NEJMoa1402869" } },
+    { paper_id: "paper_2", title: "Direct-acting antivirals: long-term outcomes in hepatitis C cohort", doi: "10.1016/S0140-6736(15)00349-9", pmid: "26423181", authors: ["Singh A.", "Yamamoto K.", "Romero D."], year: 2015, journal: "The Lancet", abstract: "Long-term follow-up of 5,200 patients receiving direct-acting antivirals.", metadata_confidence: 0.92, citation_count: 1180, source_ids: { openalex: "W2189912331" } },
+    { paper_id: "paper_3", title: "Foundational mechanisms of NS5A inhibition in HCV replication", doi: "10.1038/nature09956", pmid: "21532583", authors: ["Lemon S.", "Walker T."], year: 2010, journal: "Nature", abstract: "Mechanistic study describing the role of NS5A inhibition in HCV replication.", metadata_confidence: 0.88, citation_count: 2430, source_ids: { openalex: "W2002111234" } },
+    { paper_id: "paper_4", title: "Pegylated interferon alfa-2a plus ribavirin for chronic hepatitis C", doi: "10.1056/NEJMoa020047", pmid: "12324553", authors: ["Fried M.", "Shiffman M.", "Reddy K."], year: 2002, journal: "New England Journal of Medicine", abstract: "Randomized trial enrolling 1,121 patients.", metadata_confidence: 0.97, citation_count: 5120, source_ids: { openalex: "W2102554443" } },
+    { paper_id: "paper_5", title: "Resistance-associated substitutions in NS3 protease across populations", authors: ["Garcia E.", "Liu H."], year: 2019, journal: "Hepatology", abstract: "Resistance survey across regional cohorts.", metadata_confidence: 0.74, citation_count: 96 },
+    { paper_id: "paper_6", title: "Global burden of hepatitis C: a systematic analysis", doi: "10.1016/S0140-6736(16)31594-1", authors: ["WHO Collaborative Group"], year: 2016, journal: "The Lancet", abstract: "Systematic analysis estimating global HCV prevalence.", metadata_confidence: 0.81, citation_count: 2210 },
+    { paper_id: "paper_7", title: "Ribavirin pharmacokinetics in cirrhotic patients (small cohort)", authors: ["Okafor N."], year: 2008, journal: "Journal of Hepatology", metadata_confidence: 0.55, citation_count: 38 },
+    { paper_id: "paper_8", title: "Early interferon trials for non-A, non-B hepatitis", doi: "10.1056/NEJM198911303212201", authors: ["Hoofnagle J.", "Mullen K."], year: 1989, journal: "New England Journal of Medicine", abstract: "One of the earliest randomized trials of interferon for non-A, non-B hepatitis.", metadata_confidence: 0.89, citation_count: 1830 },
+  ],
+  population_resolutions: [
+    { paper_id: "paper_1", study_id: "study_1", n_eff: 8500, semantic_type: "TOTAL_RANDOMIZED", confidence: 0.92, status: "resolved", evidence: "A total of 8,500 patients were randomized to receive treatment across 42 sites.", section: "Methods", explanation: "Selected because it is a randomized total in the Methods section." },
+    { paper_id: "paper_2", n_eff: 5200, semantic_type: "TOTAL_ANALYZED", confidence: 0.81, status: "resolved", evidence: "Analyses included 5,200 patients with at least 12 weeks of follow-up.", section: "Results", explanation: "Total analyzed value with consistent reporting in abstract and results." },
+    { paper_id: "paper_3", n_eff: 240, semantic_type: "ARM_SIZE", confidence: 0.58, status: "ambiguous", evidence: "Approximately 240 specimens were used for in-vitro assays, supplemented by smaller validation sets.", section: "Methods", explanation: "Multiple candidate values; selected lower bound with medium confidence." },
+    { paper_id: "paper_4", n_eff: 1121, semantic_type: "TOTAL_RANDOMIZED", confidence: 0.95, status: "resolved", evidence: "1,121 patients were randomly assigned in a 1:1:1 ratio.", section: "Methods", explanation: "Clear randomized total." },
+    { paper_id: "paper_5", n_eff: undefined, status: "missing", explanation: "No reliable population value could be extracted; metadata coverage may be incomplete." },
+    { paper_id: "paper_6", n_eff: 195000000, semantic_type: "SAMPLE_SIZE_GENERIC", confidence: 0.42, status: "low_confidence", evidence: "An estimated 195 million people were considered in the global modeling.", section: "Abstract", explanation: "Population-level estimate, not a study-scale value." },
+    { paper_id: "paper_7", n_eff: 24, semantic_type: "TOTAL_ENROLLED", confidence: 0.69, status: "resolved", evidence: "24 cirrhotic patients were enrolled.", section: "Methods" },
+    { paper_id: "paper_8", n_eff: 166, semantic_type: "TOTAL_RANDOMIZED", confidence: 0.83, status: "resolved", evidence: "166 patients were randomly assigned to interferon or placebo.", section: "Methods" },
+  ],
+  population_candidates: [
+    { candidate_id: "c1", paper_id: "paper_1", value: 8500, raw_text: "8,500 patients", sentence: "A total of 8,500 patients were randomized to receive treatment across 42 sites.", section: "Methods", semantic_type: "TOTAL_RANDOMIZED", confidence: 0.92, extraction_method: "regex_context" },
+    { candidate_id: "c2", paper_id: "paper_1", value: 7984, raw_text: "7,984 completers", sentence: "Of these, 7,984 patients completed the full 12-week regimen.", section: "Results", semantic_type: "COMPLETERS", confidence: 0.74, extraction_method: "regex_context" },
+    { candidate_id: "c3", paper_id: "paper_3", value: 240, raw_text: "240 specimens", sentence: "Approximately 240 specimens were used for in-vitro assays.", section: "Methods", semantic_type: "ARM_SIZE", confidence: 0.58, extraction_method: "ml_classifier" },
+    { candidate_id: "c4", paper_id: "paper_3", value: 96, raw_text: "n=96", sentence: "A validation set (n=96) was profiled separately.", section: "Methods", semantic_type: "ARM_SIZE", confidence: 0.51, extraction_method: "regex_context" },
+    { candidate_id: "c5", paper_id: "paper_4", value: 1121, raw_text: "1,121 patients", sentence: "1,121 patients were randomly assigned in a 1:1:1 ratio.", section: "Methods", semantic_type: "TOTAL_RANDOMIZED", confidence: 0.95, extraction_method: "regex_context" },
+  ],
+  citation_edges: [
+    { edge_id: "e1", source_paper_id: "paper_1", target_paper_id: "paper_2", confidence: 0.95, base_weight: 0.82, final_weight: 0.78, n_score: 0.84, journal_score: 0.5, providers: ["openalex", "crossref"] },
+    { edge_id: "e2", source_paper_id: "paper_1", target_paper_id: "paper_3", confidence: 0.92, base_weight: 0.78, final_weight: 0.74, n_score: 0.62, journal_score: 0.6, providers: ["openalex"] },
+    { edge_id: "e3", source_paper_id: "paper_2", target_paper_id: "paper_3", confidence: 0.88, base_weight: 0.71, final_weight: 0.69, n_score: 0.58, journal_score: 0.55, providers: ["openalex"] },
+    { edge_id: "e4", source_paper_id: "paper_2", target_paper_id: "paper_4", confidence: 0.93, base_weight: 0.86, final_weight: 0.83, n_score: 0.91, journal_score: 0.62, providers: ["openalex", "crossref"] },
+    { edge_id: "e5", source_paper_id: "paper_3", target_paper_id: "paper_8", confidence: 0.81, base_weight: 0.68, final_weight: 0.62, n_score: 0.55, journal_score: 0.58, providers: ["openalex"] },
+    { edge_id: "e6", source_paper_id: "paper_4", target_paper_id: "paper_8", confidence: 0.9, base_weight: 0.79, final_weight: 0.76, n_score: 0.71, journal_score: 0.6, providers: ["openalex", "crossref"] },
+    { edge_id: "e7", source_paper_id: "paper_1", target_paper_id: "paper_5", confidence: 0.62, base_weight: 0.5, final_weight: 0.42, n_score: 0.3, journal_score: 0.4, providers: ["crossref"] },
+    { edge_id: "e8", source_paper_id: "paper_1", target_paper_id: "paper_6", confidence: 0.7, base_weight: 0.6, final_weight: 0.55, n_score: 0.45, journal_score: 0.55, providers: ["openalex"] },
+    { edge_id: "e9", source_paper_id: "paper_4", target_paper_id: "paper_7", confidence: 0.55, base_weight: 0.4, final_weight: 0.34, n_score: 0.25, journal_score: 0.3, providers: ["crossref"] },
+  ],
+  ranked_foundational_papers: [
+    { paper_id: "paper_8", rank: 1, score: 0.93, explanation: "Older paper with strong citation connectivity and consistent appearance across high-confidence paths.", evidence_summary: "High weighted connectivity, multiple downstream citations from foundational candidates." },
+    { paper_id: "paper_4", rank: 2, score: 0.88, explanation: "Frequently cited methodological reference with strong randomized population evidence.", evidence_summary: "Resolved n=1,121, journal weight high, central to multiple paths." },
+    { paper_id: "paper_3", rank: 3, score: 0.79, explanation: "Mechanistic foundation cited by multiple downstream therapeutic studies.", evidence_summary: "Strong journal weight; ambiguous population evidence reduces confidence slightly." },
+    { paper_id: "paper_2", rank: 4, score: 0.71, explanation: "Pivotal therapeutic study connecting modern and earlier evidence.", evidence_summary: "Resolved n=5,200; bridges seed paper and older foundational candidates." },
+    { paper_id: "paper_6", rank: 5, score: 0.54, explanation: "Population-level reference, contributes context but limited methodological lineage.", evidence_summary: "Low-confidence extraction; weighted connectivity moderate." },
+  ],
+  ranked_paths: [
+    { rank: 1, path_score: 0.86, paper_ids: ["paper_1", "paper_2", "paper_4", "paper_8"], edge_weights: [0.78, 0.83, 0.76], average_confidence: 0.92, path_length: 3, explanation: "High-confidence path through evidence-rich randomized studies toward an early foundational trial." },
+    { rank: 2, path_score: 0.79, paper_ids: ["paper_1", "paper_3", "paper_8"], edge_weights: [0.74, 0.62], average_confidence: 0.86, path_length: 2, explanation: "Mechanistic lineage from seed paper through NS5A foundation to early interferon trials." },
+    { rank: 3, path_score: 0.68, paper_ids: ["paper_1", "paper_2", "paper_3"], edge_weights: [0.78, 0.69], average_confidence: 0.91, path_length: 2, explanation: "Therapeutic-to-mechanistic citation lineage with strong edge confidence." },
+    { rank: 4, path_score: 0.49, paper_ids: ["paper_1", "paper_5"], edge_weights: [0.42], average_confidence: 0.62, path_length: 1, explanation: "Lower-weight path; supporting evidence is limited." },
+  ],
+};

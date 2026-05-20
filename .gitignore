@@ -99,6 +99,7 @@ data/samples/private/*
 !data/parsed/.gitkeep
 !data/exports/.gitkeep
 !data/samples/.gitkeep
+/perplexity_reviews/*
 
 # SQLite databases / local storage
 *.sqlite
@@ -159,3 +160,18 @@ playwright-report/
 # -----------------------------
 .local/
 .localhost/
+
+# Frontend & Landing Page subproject ignores
+frontend/.output/
+frontend/.vinxi/
+frontend/.tanstack/
+frontend/.nitro/
+frontend/.wrangler/
+frontend/.dev.vars
+landing-page/dist/
+landing-page/.output/
+landing-page/.vinxi/
+landing-page/.tanstack/
+landing-page/.nitro/
+landing-page/.wrangler/
+landing-page/.dev.vars

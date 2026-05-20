@@ -4,6 +4,9 @@ install:
 run-api:
 	uvicorn src.citegraph.api.main:app --reload
 
+run-frontend:
+	npm --prefix frontend run dev
+
 run-dashboard:
 	streamlit run dashboard/app.py
 
