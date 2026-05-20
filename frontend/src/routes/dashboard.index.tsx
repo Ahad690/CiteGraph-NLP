@@ -26,7 +26,7 @@ function DashboardIndex() {
         icon={<Sparkles className="h-6 w-6 text-cyan" />}
         title="No analysis run selected"
         description="Start an analysis first to view citation lineage results."
-        action={{ label: "Start New Analysis", to: "/" }}
+        action={{ label: "Start New Analysis", to: "/start" }}
       />
     </div>
   );

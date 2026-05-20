@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "citegraph-nlp1"
+  },
+  "targets": {
+    "citegraph-nlp1": {
+      "hosting": {
+        "frontend": [
+          "citegraph-nlp1"
+        ]
+      }
+    }
+  }
+}

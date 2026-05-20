@@ -1,0 +1,57 @@
+name: Deploy Backend to Hetzner
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'requirements.txt'
+      - 'Dockerfile'
+      - '.dockerignore'
+      - 'scripts/deploy_to_hetzner.ps1'
+      - '.github/workflows/deploy-backend.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Hetzner
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 46.225.8.77
+          username: root
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          script: |
+            export DEBIAN_FRONTEND=noninteractive
+            cd /opt/citegraph-nlp/backend || mkdir -p /opt/citegraph-nlp/backend && cd /opt/citegraph-nlp/backend
+            
+            # Since github actions runner cannot easily run the powershell script on the remote without cloning the repo there,
+            # We will clone the repo directly on the remote server and deploy.
+            
+            # Ensure git is installed
+            apt-get update && apt-get install -y git
+            
+            # Check if repo exists, pull if it does, clone if it doesn't
+            if [ -d ".git" ]; then
+              git fetch origin main
+              git reset --hard origin/main
+            else
+              git clone https://github.com/Ahad690/CiteGraph-NLP.git .
+            fi
+            
+            # Build and Run
+            docker build -t citegraph_backend .
+            docker stop citegraph-api 2>/dev/null || true
+            docker rm citegraph-api 2>/dev/null || true
+            
+            docker run -d \
+              --name citegraph-api \
+              --restart unless-stopped \
+              -p 8002:8000 \
+              --env-file /opt/citegraph-nlp/.env \
+              -v /opt/citegraph-nlp/data:/app/data \
+              citegraph_backend

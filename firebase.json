@@ -1,0 +1,19 @@
+{
+  "hosting": [
+    {
+      "target": "frontend",
+      "public": "frontend/dist/client",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  ]
+}
