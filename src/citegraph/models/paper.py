@@ -14,12 +14,18 @@ class PaperQuery(BaseModel):
     @model_validator(mode='after')
     def validate_query(self) -> 'PaperQuery':
         v = self.value.strip()
-        self.value = v
         q_type = self.query_type
         
         if not v:
             raise ValueError("Query value cannot be empty")
             
+        # Canonicalize DOI, PMID, and PMCID before regex matching
+        if q_type in ("doi", "pmid", "pmcid"):
+            from citegraph.utils.ids import IdCanonicalizer
+            v = IdCanonicalizer.canonicalize(v)
+            
+        self.value = v
+        
         if q_type == "doi":
             if not re.match(DOI_REGEX, v, re.I):
                 raise ValueError(f"Invalid DOI format (must be 10.xxxx/yyyy): {v}")
@@ -30,8 +36,13 @@ class PaperQuery(BaseModel):
             if not re.match(PMCID_REGEX, v, re.I):
                 raise ValueError(f"Invalid PMCID format (PMC prefix + digits): {v}")
         elif q_type == "url":
-            if not (v.startswith("http://") or v.startswith("https://")):
-                raise ValueError(f"Invalid URL format: {v}")
+            from urllib.parse import urlparse
+            try:
+                parsed = urlparse(v)
+                if not parsed.scheme or not parsed.netloc:
+                    raise ValueError("URL must contain a scheme and a domain (netloc)")
+            except Exception as e:
+                raise ValueError(f"Invalid URL: {v}")
         elif q_type == "title":
             if len(v) < 5:
                 raise ValueError("Title is too short for a reliable search")

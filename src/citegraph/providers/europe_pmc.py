@@ -33,27 +33,61 @@ class EuropePMCProvider:
             elif query.query_type == "title":
                 search_query = f'TITLE:"{cid}"'
             elif query.query_type == "url":
-                # Robust URL parsing to extract DOI or PMID
-                from urllib.parse import urlparse
-                path = urlparse(cid).path
+                # Robust URL parsing to extract DOI, PMID, or PMCID
+                from urllib.parse import urlparse, parse_qsl
+                parsed = urlparse(cid)
                 
-                # Check for DOI patterns
-                if "10." in path:
-                    doi_match = re.search(r'10\.\d{4,9}/[-._;()/:A-Z0-9]+', path, re.I)
-                    if doi_match:
-                        search_query = f'DOI:"{doi_match.group(0)}"'
+                # Check path, query, and even fragment
+                search_targets = [parsed.path, parsed.query, parsed.fragment]
+                # Also check any query parameter values specifically
+                for key, val in parse_qsl(parsed.query):
+                    search_targets.append(val)
                 
-                # Check for PMID in URL (common patterns like /pmc/articles/PMC... or /pubmed/...)
+                # Regex patterns
+                # DOIs always start with 10. and have prefix/suffix separated by a slash.
+                doi_pat = re.compile(r'10\.\d{4,9}/[-._;()/:A-Za-z0-9]+')
+                # PMCIDs start with PMC followed by digits
+                pmcid_pat = re.compile(r'PMC\d+', re.I)
+                # PMIDs are generally digits, but inside a URL they are often segment/parameter values
+                pmid_pat = re.compile(r'\b\d{1,9}\b')
+                
+                # Search targets in order of priority: DOI, PMCID, then PMID
+                # First check for DOI in all targets
+                for target in search_targets:
+                    if target:
+                        doi_match = doi_pat.search(target)
+                        if doi_match:
+                            search_query = f'DOI:"{doi_match.group(0)}"'
+                            break
+                            
+                # If no DOI, look for PMCID
                 if not search_query:
-                    if "/pmc/" in path:
-                        pmcid_match = re.search(r'PMC\d+', path, re.I)
-                        if pmcid_match:
-                            search_query = f'PMCID:{pmcid_match.group(0).upper()}'
-                    elif "/pubmed/" in path or "/pubmed.ncbi.nlm.nih.gov/" in cid:
-                        pmid_match = re.search(r'/(\d+)/?$', path)
+                    for target in search_targets:
+                        if target:
+                            pmcid_match = pmcid_pat.search(target)
+                            if pmcid_match:
+                                search_query = f'PMCID:{pmcid_match.group(0).upper()}'
+                                break
+                                
+                # If no DOI or PMCID, check specific URL paths or query params for PMID
+                if not search_query:
+                    # Common pubmed path pattern: /pubmed/123456
+                    if "/pubmed/" in parsed.path:
+                        pmid_match = re.search(r'/pubmed/(\d+)', parsed.path, re.I)
                         if pmid_match:
                             search_query = f'EXT_ID:{pmid_match.group(1)}'
-                
+                    # Or check query params if they look like pmid/id
+                    if not search_query:
+                        for key, val in parse_qsl(parsed.query):
+                            if key.lower() in ("pmid", "id", "ext_id") and pmid_pat.match(val):
+                                search_query = f'EXT_ID:{val}'
+                                break
+                    # Or generic digits at the end of pubmed domain path
+                    if not search_query and "pubmed.ncbi.nlm.nih.gov" in parsed.netloc:
+                        pmid_match = re.search(r'/(\d+)/?$', parsed.path)
+                        if pmid_match:
+                            search_query = f'EXT_ID:{pmid_match.group(1)}'
+                            
                 if not search_query:
                     return ProviderResult(error=f"Could not extract a valid DOI, PMID, or PMCID from URL: {cid}")
             

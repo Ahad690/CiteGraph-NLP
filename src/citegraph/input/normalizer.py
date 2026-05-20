@@ -2,6 +2,14 @@ from citegraph.models.paper import PaperQuery
 from citegraph.utils.ids import IdCanonicalizer
 
 class InputNormalizer:
+    def normalize_doi(self, doi: str) -> str:
+        """Helper to canonicalize DOI strings."""
+        return IdCanonicalizer.canonicalize(doi)
+
+    def normalize_pmid(self, pmid: str) -> str:
+        """Helper to canonicalize PMID strings."""
+        return IdCanonicalizer.canonicalize(pmid)
+
     def normalize_query(self, query: PaperQuery) -> PaperQuery:
         """
         Normalize the value in a PaperQuery based on its type using IdCanonicalizer.

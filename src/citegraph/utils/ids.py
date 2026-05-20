@@ -18,7 +18,7 @@ class IdCanonicalizer:
             return paper_id.split("doi.org/")[-1].lower()
         if paper_id.startswith("10."):
             return paper_id.lower()
-        if paper_id.startswith("doi:"):
+        if paper_id.lower().startswith("doi:"):
             return paper_id[4:].lower()
             
         # 2. PMCID check (starts with PMC)

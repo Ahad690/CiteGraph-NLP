@@ -35,7 +35,8 @@ class TaskManager:
         else:
             logger.info("All background tasks shut down successfully")
             
-        self._tasks.clear()
+        # Only keep tasks that are not done yet in case shutdown didn't exit the process
+        self._tasks = {t for t in self._tasks if not t.done()}
 
 # Global task manager instance
 task_manager = TaskManager()

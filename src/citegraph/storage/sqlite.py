@@ -47,49 +47,49 @@ class SQLiteStore:
         """)
         await self._db.commit()
 
-    async def _execute_with_retry(self, query: str, params: tuple = ()):
-        """Helper to ensure connection and execute query safely."""
+    async def _execute(self, query: str, params: tuple = (), commit: bool = False) -> Any:
+        """Helper to ensure connection and execute query safely under lock."""
         await self.connect()
         async with self._lock:
             if not self._db:
                 raise RuntimeError("Database connection closed unexpectedly")
-            return await self._db.execute(query, params)
+            cursor = await self._db.execute(query, params)
+            if commit:
+                await self._db.commit()
+            return cursor
 
     async def create_run(self, run_id: str):
         now = datetime.now(timezone.utc).isoformat()
-        await self.connect()
-        async with self._lock:
-            await self._db.execute(
-                "INSERT INTO runs (run_id, status, created_at, updated_at) VALUES (?, ?, ?, ?)",
-                (run_id, "started", now, now)
-            )
-            await self._db.commit()
+        await self._execute(
+            "INSERT INTO runs (run_id, status, created_at, updated_at) VALUES (?, ?, ?, ?)",
+            (run_id, "started", now, now),
+            commit=True
+        )
 
     async def update_status(self, run_id: str, status: str, error: Optional[str] = None):
         now = datetime.now(timezone.utc).isoformat()
-        await self.connect()
-        async with self._lock:
-            await self._db.execute(
-                "UPDATE runs SET status = ?, error = ?, updated_at = ? WHERE run_id = ?",
-                (status, error, now, run_id)
-            )
-            await self._db.commit()
+        await self._execute(
+            "UPDATE runs SET status = ?, error = ?, updated_at = ? WHERE run_id = ?",
+            (status, error, now, run_id),
+            commit=True
+        )
 
     async def save_result(self, run_id: str, result: RunResult):
         now = datetime.now(timezone.utc).isoformat()
-        await self.connect()
-        async with self._lock:
-            await self._db.execute(
-                "UPDATE runs SET status = ?, result_json = ?, updated_at = ? WHERE run_id = ?",
-                ("completed", result.model_dump_json(), now, run_id)
-            )
-            await self._db.commit()
+        await self._execute(
+            "UPDATE runs SET status = ?, result_json = ?, updated_at = ? WHERE run_id = ?",
+            ("completed", result.model_dump_json(), now, run_id),
+            commit=True
+        )
 
     async def get_run(self, run_id: str) -> Optional[Dict[str, Any]]:
         await self.connect()
         async with self._lock:
+            if not self._db:
+                raise RuntimeError("Database connection closed unexpectedly")
             async with self._db.execute("SELECT * FROM runs WHERE run_id = ?", (run_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row:
                     return dict(row)
         return None
+
