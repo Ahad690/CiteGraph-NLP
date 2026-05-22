@@ -56,17 +56,44 @@ Create `firebase.json` at the repository root:
 
 For a static Firebase deploy, the build output must contain `frontend/dist/client/index.html`.
 
-If your framework does not emit an `index.html`, add a postbuild script that creates one from the built assets. In this project, TanStack Start emits a client bundle but no static HTML file, so `frontend/scripts/generate-firebase-index.mjs` finds the client entry bundle and writes `dist/client/index.html`.
+For TanStack Start apps, generate the HTML shell with built-in SPA prerender settings instead of a custom postbuild script.
 
-Update `frontend/package.json`:
+Set `frontend/vite.config.ts`:
+
+```ts
+import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+
+export default defineConfig({
+  tanstackStart: {
+    server: { entry: "index" },
+    spa: {
+      enabled: true,
+      maskPath: "/",
+      prerender: {
+        outputPath: "/index",
+      },
+    },
+  },
+});
+```
+
+Add `frontend/src/index.ts`:
+
+```ts
+export { default } from "./server";
+```
+
+Set `frontend/package.json`:
 
 ```json
 {
   "scripts": {
-    "build": "vite build && node scripts/generate-firebase-index.mjs"
+    "build": "node scripts/build.mjs"
   }
 }
 ```
+
+Use Node 22 in CI for consistent TanStack/Vite prerender behavior.
 
 ### 3. Add Firebase GitHub secret
 

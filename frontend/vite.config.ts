@@ -10,6 +10,17 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 // @cloudflare/vite-plugin builds from this — wrangler.jsonc main alone is insufficient.
 export default defineConfig({
   tanstackStart: {
-    server: { entry: "server" },
+    // Use src/index.ts as Start's server entry so prerender preview resolves
+    // dist/server/index.js (TanStack preview plugin currently imports this name).
+    server: { entry: "index" },
+    // Generate a first-class SPA shell for static hosting (Firebase Hosting).
+    // This avoids runtime hydration invariants from hand-written HTML fallbacks.
+    spa: {
+      enabled: true,
+      maskPath: "/",
+      prerender: {
+        outputPath: "/index",
+      },
+    },
   },
 });
