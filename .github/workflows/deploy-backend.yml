@@ -12,7 +12,6 @@ on:
       - '.dockerignore'
       - 'scripts/deploy_to_hetzner.ps1'
       - '.github/workflows/deploy-backend.yml'
-      - 'Caddyfile'
 
 jobs:
   deploy:
@@ -50,7 +49,7 @@ jobs:
       - name: Package Backend
         run: |
           set -euo pipefail
-          tar -czf /tmp/citegraph-backend.tar.gz src requirements.txt Dockerfile .dockerignore .env.example Caddyfile
+          tar -czf /tmp/citegraph-backend.tar.gz src requirements.txt Dockerfile .dockerignore .env.example
 
       - name: Upload Backend Bundle
         run: |
@@ -59,12 +58,10 @@ jobs:
           scp -i "$RUNNER_TEMP/hetzner_deploy_key" /tmp/citegraph-backend.tar.gz "$HETZNER_USER@$HETZNER_HOST:/tmp/citegraph-backend.tar.gz"
 
       - name: Deploy Backend
-        env:
-          BACKEND_DOMAIN: ${{ secrets.BACKEND_DOMAIN }}
         run: |
           set -euo pipefail
           ssh -i "$RUNNER_TEMP/hetzner_deploy_key" "$HETZNER_USER@$HETZNER_HOST" \
-            "REMOTE_DIR='$REMOTE_DIR' DATA_DIR='$DATA_DIR' ENV_FILE='$ENV_FILE' CONTAINER_NAME='$CONTAINER_NAME' IMAGE_NAME='$IMAGE_NAME' PORT='$PORT' BACKEND_DOMAIN='$BACKEND_DOMAIN' bash -s" <<'EOF'
+            "REMOTE_DIR='$REMOTE_DIR' DATA_DIR='$DATA_DIR' ENV_FILE='$ENV_FILE' CONTAINER_NAME='$CONTAINER_NAME' IMAGE_NAME='$IMAGE_NAME' PORT='$PORT' bash -s" <<'EOF'
           set -euo pipefail
           export DEBIAN_FRONTEND=noninteractive
 
@@ -107,30 +104,21 @@ jobs:
           docker ps --filter "name=$CONTAINER_NAME" --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
           docker logs "$CONTAINER_NAME" --tail 20 2>&1
 
-          # --- Caddy HTTPS reverse proxy ---
-          if [ -n "$BACKEND_DOMAIN" ] && [ -f "$REMOTE_DIR/Caddyfile" ]; then
-            if ! command -v caddy >/dev/null 2>&1; then
-              apt-get update
-              apt-get install -y debian-keyring debian-archive-keyring apt-transport-https curl
-              curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-              curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
-              apt-get update
-              apt-get install -y caddy
-            fi
-            cp "$REMOTE_DIR/Caddyfile" /etc/caddy/Caddyfile
-            # Set the domain env var so Caddy's {$BACKEND_DOMAIN} resolves
-            mkdir -p /etc/systemd/system/caddy.service.d
-            cat > /etc/systemd/system/caddy.service.d/domain.conf <<UNIT
-          [Service]
-          Environment=BACKEND_DOMAIN=$BACKEND_DOMAIN
-          UNIT
-            systemctl daemon-reload
-            systemctl enable caddy
-            systemctl restart caddy
-            sleep 2
-            echo "Caddy HTTPS proxy configured for $BACKEND_DOMAIN"
+          # --- Add /citegraph route to existing Caddy config ---
+          if [ -f /etc/caddy/Caddyfile ] && ! grep -q 'handle_path /citegraph' /etc/caddy/Caddyfile; then
+            # Insert citegraph reverse proxy into the existing site block
+            sed -i '/hetzner-api\.duckdns\.org/,/^}/ {
+              /^}/i\
+\    handle_path /citegraph/* {\
+\        reverse_proxy localhost:8002\
+\    }
+            }' /etc/caddy/Caddyfile
+            systemctl reload caddy || systemctl restart caddy
+            echo "Added /citegraph route to Caddy"
+          elif grep -q 'handle_path /citegraph' /etc/caddy/Caddyfile 2>/dev/null; then
+            echo "Caddy /citegraph route already exists"
           else
-            echo "BACKEND_DOMAIN secret not set — skipping Caddy HTTPS setup"
+            echo "No Caddyfile found — skipping"
           fi
           EOF
 
