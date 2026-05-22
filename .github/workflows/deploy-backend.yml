@@ -1,6 +1,7 @@
 name: Deploy Backend to Hetzner
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -15,43 +16,83 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      HETZNER_HOST: 46.225.8.77
+      HETZNER_USER: root
+      REMOTE_DIR: /opt/citegraph-nlp/backend
+      DATA_DIR: /opt/citegraph-nlp/data
+      ENV_FILE: /opt/citegraph-nlp/.env
+      CONTAINER_NAME: citegraph-api
+      IMAGE_NAME: citegraph_backend
+      PORT: 8002
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Deploy to Hetzner
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: 46.225.8.77
-          username: root
-          key: ${{ secrets.HETZNER_SSH_KEY }}
-          script: |
-            export DEBIAN_FRONTEND=noninteractive
-            cd /opt/citegraph-nlp/backend || mkdir -p /opt/citegraph-nlp/backend && cd /opt/citegraph-nlp/backend
-            
-            # Since github actions runner cannot easily run the powershell script on the remote without cloning the repo there,
-            # We will clone the repo directly on the remote server and deploy.
-            
-            # Ensure git is installed
-            apt-get update && apt-get install -y git
-            
-            # Check if repo exists, pull if it does, clone if it doesn't
-            if [ -d ".git" ]; then
-              git fetch origin main
-              git reset --hard origin/main
-            else
-              git clone https://github.com/Ahad690/CiteGraph-NLP.git .
-            fi
-            
-            # Build and Run
-            docker build -t citegraph_backend .
-            docker stop citegraph-api 2>/dev/null || true
-            docker rm citegraph-api 2>/dev/null || true
-            
-            docker run -d \
-              --name citegraph-api \
-              --restart unless-stopped \
-              -p 8002:8000 \
-              --env-file /opt/citegraph-nlp/.env \
-              -v /opt/citegraph-nlp/data:/app/data \
-              citegraph_backend
+      - name: Configure SSH
+        env:
+          HETZNER_SSH_KEY: ${{ secrets.HETZNER_SSH_KEY }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${HETZNER_SSH_KEY:-}" ]; then
+            echo "HETZNER_SSH_KEY is not configured."
+            exit 1
+          fi
+
+          mkdir -p ~/.ssh
+          printf '%s\n' "$HETZNER_SSH_KEY" | tr -d '\r' > ~/.ssh/hetzner_deploy_key
+          chmod 600 ~/.ssh/hetzner_deploy_key
+          ssh-keyscan -H "$HETZNER_HOST" >> ~/.ssh/known_hosts
+          ssh -i ~/.ssh/hetzner_deploy_key -o BatchMode=yes "$HETZNER_USER@$HETZNER_HOST" "echo SSH connection ok"
+
+      - name: Package Backend
+        run: |
+          set -euo pipefail
+          tar -czf /tmp/citegraph-backend.tar.gz src requirements.txt Dockerfile .dockerignore .env.example
+
+      - name: Upload Backend Bundle
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/hetzner_deploy_key "$HETZNER_USER@$HETZNER_HOST" "mkdir -p '$REMOTE_DIR' '$DATA_DIR'"
+          scp -i ~/.ssh/hetzner_deploy_key /tmp/citegraph-backend.tar.gz "$HETZNER_USER@$HETZNER_HOST:/tmp/citegraph-backend.tar.gz"
+
+      - name: Deploy Backend
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/hetzner_deploy_key "$HETZNER_USER@$HETZNER_HOST" \
+            "REMOTE_DIR='$REMOTE_DIR' DATA_DIR='$DATA_DIR' ENV_FILE='$ENV_FILE' CONTAINER_NAME='$CONTAINER_NAME' IMAGE_NAME='$IMAGE_NAME' PORT='$PORT' bash -s" <<'EOF'
+          set -euo pipefail
+          export DEBIAN_FRONTEND=noninteractive
+
+          mkdir -p "$REMOTE_DIR" "$DATA_DIR"
+          tar -xzf /tmp/citegraph-backend.tar.gz -C "$REMOTE_DIR"
+          rm -f /tmp/citegraph-backend.tar.gz
+
+          if [ ! -f "$ENV_FILE" ]; then
+            cp "$REMOTE_DIR/.env.example" "$ENV_FILE"
+          fi
+
+          if ! command -v docker >/dev/null 2>&1; then
+            apt-get update
+            apt-get install -y docker.io
+            systemctl enable --now docker || true
+          fi
+
+          cd "$REMOTE_DIR"
+          docker build -t "$IMAGE_NAME" .
+          docker stop "$CONTAINER_NAME" 2>/dev/null || true
+          docker rm "$CONTAINER_NAME" 2>/dev/null || true
+
+          docker run -d \
+            --name "$CONTAINER_NAME" \
+            --restart unless-stopped \
+            -p "${PORT}:8000" \
+            --env-file "$ENV_FILE" \
+            -v "${DATA_DIR}:/app/data" \
+            "$IMAGE_NAME"
+
+          sleep 2
+          docker ps --filter "name=$CONTAINER_NAME" --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+          docker logs "$CONTAINER_NAME" --tail 20 2>&1
+          EOF

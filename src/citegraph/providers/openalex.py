@@ -81,12 +81,10 @@ class OpenAlexProvider:
         return " ".join([word for pos, word in word_positions])
 
     async def get_references(self, paper_id: str) -> list[CitationEdge]:
-    async def get_references(self, paper_id: str) -> list[CitationEdge]:
         try:
             oa_id = IdCanonicalizer.to_openalex_id(paper_id)
             data = await self._get(f"/works/{oa_id}", {})
 
-            data = await self._get(f"/works/{oa_id}", {})
             ref_ids = data.get("referenced_works", [])
             edges = []
             for ref_id in ref_ids:
@@ -104,7 +102,6 @@ class OpenAlexProvider:
             logger.error(f"OpenAlex references retrieval failed: {e}")
             return []
 
-    async def get_citations(self, paper_id: str) -> list[CitationEdge]:
     async def get_citations(self, paper_id: str) -> list[CitationEdge]:
         try:
             oa_id = IdCanonicalizer.to_openalex_id(paper_id)

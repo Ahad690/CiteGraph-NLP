@@ -2,6 +2,7 @@ import aiosqlite
 import json
 import logging
 import asyncio
+from pathlib import Path
 from typing import Optional, Dict, Any
 from datetime import datetime, timezone
 
@@ -21,6 +22,8 @@ class SQLiteStore:
         async with self._lock:
             if not self._db:
                 logger.info(f"Connecting to SQLite: {self.db_path}")
+                if self.db_path != ":memory:":
+                    Path(self.db_path).parent.mkdir(parents=True, exist_ok=True)
                 self._db = await aiosqlite.connect(self.db_path)
                 self._db.row_factory = aiosqlite.Row
                 await self._init_db_locked()
@@ -92,4 +95,3 @@ class SQLiteStore:
                 if row:
                     return dict(row)
         return None
-
