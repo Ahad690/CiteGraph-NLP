@@ -104,14 +104,18 @@ jobs:
           docker ps --filter "name=$CONTAINER_NAME" --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
           docker logs "$CONTAINER_NAME" --tail 20 2>&1
 
-          # --- Add /citegraph route to existing Caddy config ---
-          if [ -f /etc/caddy/Caddyfile ] && ! grep -q citegraph /etc/caddy/Caddyfile; then
-            awk -v blk='    handle_path /citegraph/* {\n        reverse_proxy localhost:8002\n    }' '/^[}]/{print blk} {print}' /etc/caddy/Caddyfile > /tmp/Caddyfile.new
-            mv /tmp/Caddyfile.new /etc/caddy/Caddyfile
-            systemctl reload caddy || systemctl restart caddy
-            echo "Added /citegraph route to Caddy"
+          # --- Add /citegraph route to Nginx ---
+          NGINX_CONF=$(grep -rl 'hetzner-api.duckdns.org' /etc/nginx/sites-enabled/ /etc/nginx/conf.d/ 2>/dev/null | head -1)
+          if [ -n "$NGINX_CONF" ] && ! grep -q citegraph "$NGINX_CONF"; then
+            # Insert /citegraph location block before the last closing brace
+            awk '/location.*citegraph/{found=1} !found && /^[[:space:]]*\}[[:space:]]*$/{print "    location /citegraph/ {"; print "        proxy_pass http://127.0.0.1:8002/;"; print "        proxy_set_header Host $host;"; print "        proxy_set_header X-Real-IP $remote_addr;"; print "        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;"; print "        proxy_set_header X-Forwarded-Proto $scheme;"; print "    }"; found=1} {print}' "$NGINX_CONF" > /tmp/nginx_citegraph.conf
+            mv /tmp/nginx_citegraph.conf "$NGINX_CONF"
+            nginx -t && systemctl reload nginx
+            echo "Added /citegraph route to Nginx ($NGINX_CONF)"
+          elif [ -n "$NGINX_CONF" ]; then
+            echo "Nginx /citegraph route already exists in $NGINX_CONF"
           else
-            echo "Caddy /citegraph route already present or no Caddyfile"
+            echo "No Nginx config found for hetzner-api.duckdns.org"
           fi
           EOF
 
