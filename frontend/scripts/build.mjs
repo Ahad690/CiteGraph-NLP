@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { spawn } from "node:child_process";
 import { access } from "node:fs/promises";
 import path from "node:path";
 
@@ -11,72 +11,36 @@ async function hasFirebaseIndex() {
   }
 }
 
-async function maybeIgnoreViteStdinTeardown(error) {
-  if (
-    error instanceof TypeError &&
-    error.message === "process.stdin.off is not a function" &&
-    (await hasFirebaseIndex())
-  ) {
-    return;
-  }
-
-  throw error;
-}
-
-process.on("uncaughtException", (error) => {
-  maybeIgnoreViteStdinTeardown(error)
-    .then(() => {
-      process.exitCode = 0;
-    })
-    .catch((cause) => {
-      throw cause;
-    });
+const viteBin = path.resolve("node_modules/vite/bin/vite.js");
+const child = spawn(process.execPath, [viteBin, "build", ...process.argv.slice(2)], {
+  stdio: ["inherit", "pipe", "pipe"],
 });
 
-process.on("unhandledRejection", (error) => {
-  maybeIgnoreViteStdinTeardown(error)
-    .then(() => {
-      process.exitCode = 0;
-    })
-    .catch((cause) => {
-      throw cause;
-    });
+let output = "";
+child.stdout.on("data", (chunk) => {
+  const text = chunk.toString();
+  output += text;
+  process.stdout.write(chunk);
+});
+child.stderr.on("data", (chunk) => {
+  const text = chunk.toString();
+  output += text;
 });
 
-function ensureStdinOff(stdin = process.stdin) {
-  if (typeof stdin.off !== "function") {
-    stdin.off =
-      typeof stdin.removeListener === "function" ? stdin.removeListener.bind(stdin) : () => stdin;
-  }
-
-  return stdin;
+const exitCode = await new Promise((resolve) => child.on("close", resolve));
+if (exitCode === 0) {
+  process.exit(0);
 }
 
-const stdinDescriptor = Object.getOwnPropertyDescriptor(process, "stdin");
-if (stdinDescriptor?.get && stdinDescriptor.configurable) {
-  Object.defineProperty(process, "stdin", {
-    ...stdinDescriptor,
-    get() {
-      return ensureStdinOff(stdinDescriptor.get.call(process));
-    },
-  });
+const handledViteTeardown =
+  output.includes("process.stdin.off is not a function") &&
+  output.includes("[prerender] Prerendered") &&
+  (await hasFirebaseIndex());
+
+if (!handledViteTeardown) {
+  process.stderr.write(output);
+  process.exit(exitCode ?? 1);
 }
 
-ensureStdinOff();
-
-const originalExit = process.exit.bind(process);
-process.exit = ((code) => {
-  if (code && existsSync(path.resolve("dist/client/index.html"))) {
-    return originalExit(0);
-  }
-
-  return originalExit(code);
-});
-
-process.argv = [process.argv[0], "vite", "build", ...process.argv.slice(2)];
-
-await import("../node_modules/vite/bin/vite.js");
-
-if (process.exitCode && (await hasFirebaseIndex())) {
-  process.exitCode = 0;
-}
+process.stderr.write("Ignored Vite stdin teardown after successful prerender artifact generation.\n");
+process.exit(0);

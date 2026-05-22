@@ -57,7 +57,8 @@ class EuropePMCProvider:
                     if target:
                         doi_match = doi_pat.search(target)
                         if doi_match:
-                            search_query = f'DOI:"{doi_match.group(0)}"'
+                            doi = IdCanonicalizer.canonicalize(doi_match.group(0))
+                            search_query = f'DOI:"{doi}"'
                             break
                             
                 # If no DOI, look for PMCID
@@ -66,7 +67,8 @@ class EuropePMCProvider:
                         if target:
                             pmcid_match = pmcid_pat.search(target)
                             if pmcid_match:
-                                search_query = f'PMCID:{pmcid_match.group(0).upper()}'
+                                pmcid = IdCanonicalizer.canonicalize(pmcid_match.group(0))
+                                search_query = f'PMCID:{pmcid}'
                                 break
                                 
                 # If no DOI or PMCID, check specific URL paths or query params for PMID
@@ -75,18 +77,21 @@ class EuropePMCProvider:
                     if "/pubmed/" in parsed.path:
                         pmid_match = re.search(r'/pubmed/(\d+)', parsed.path, re.I)
                         if pmid_match:
-                            search_query = f'EXT_ID:{pmid_match.group(1)}'
+                            pmid = IdCanonicalizer.canonicalize(pmid_match.group(1))
+                            search_query = f'EXT_ID:{pmid}'
                     # Or check query params if they look like pmid/id
                     if not search_query:
                         for key, val in parse_qsl(parsed.query):
                             if key.lower() in ("pmid", "id", "ext_id") and pmid_pat.match(val):
-                                search_query = f'EXT_ID:{val}'
+                                pmid = IdCanonicalizer.canonicalize(val)
+                                search_query = f'EXT_ID:{pmid}'
                                 break
                     # Or generic digits at the end of pubmed domain path
                     if not search_query and "pubmed.ncbi.nlm.nih.gov" in parsed.netloc:
                         pmid_match = re.search(r'/(\d+)/?$', parsed.path)
                         if pmid_match:
-                            search_query = f'EXT_ID:{pmid_match.group(1)}'
+                            pmid = IdCanonicalizer.canonicalize(pmid_match.group(1))
+                            search_query = f'EXT_ID:{pmid}'
                             
                 if not search_query:
                     return ProviderResult(error=f"Could not extract a valid DOI, PMID, or PMCID from URL: {cid}")

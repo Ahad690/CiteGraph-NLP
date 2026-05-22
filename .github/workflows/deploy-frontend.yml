@@ -30,6 +30,14 @@ jobs:
         working-directory: ./frontend
         run: npm run build
 
+      - name: Verify Frontend Build Artifacts
+        working-directory: ./frontend
+        run: |
+          set -euo pipefail
+          test -f dist/client/index.html
+          test -d dist/client/assets
+          grep -q '\$_TSR' dist/client/index.html
+
       - name: Deploy to Firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:

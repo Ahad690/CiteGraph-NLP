@@ -56,10 +56,10 @@ class Paper(BaseModel):
     pmcid: str | None = None
     openalex_id: str | None = None
     title: str
-    authors: list[str] = []
+    authors: list[str] = Field(default_factory=list)
     year: int | None = None
     journal: str | None = None
     abstract: str | None = None
-    source_ids: dict[str, str] = {}
+    source_ids: dict[str, str] = Field(default_factory=dict)
     metadata_confidence: float = 0.0
-    provenance: dict[str, Any] = {}
+    provenance: dict[str, Any] = Field(default_factory=dict)

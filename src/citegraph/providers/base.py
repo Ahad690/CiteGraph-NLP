@@ -1,11 +1,11 @@
 from typing import Protocol, Any, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from citegraph.models.paper import Paper, PaperQuery
 from citegraph.models.citation import CitationEdge
 
 class ProviderResult(BaseModel):
     paper: Optional[Paper] = None
-    raw_data: dict[str, Any] = {}
+    raw_data: dict[str, Any] = Field(default_factory=dict)
     error: Optional[str] = None
 
 class MetadataProvider(Protocol):

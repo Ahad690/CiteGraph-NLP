@@ -150,6 +150,14 @@ jobs:
         working-directory: ./frontend
         run: npm run build
 
+      - name: Verify Frontend Build Artifacts
+        working-directory: ./frontend
+        run: |
+          set -euo pipefail
+          test -f dist/client/index.html
+          test -d dist/client/assets
+          grep -q '\$_TSR' dist/client/index.html
+
       - name: Deploy to Firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
@@ -291,10 +299,10 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p ~/.ssh
-          printf '%s\n' "$HETZNER_SSH_KEY" | tr -d '\r' > ~/.ssh/hetzner_deploy_key
-          chmod 600 ~/.ssh/hetzner_deploy_key
+          printf '%s\n' "$HETZNER_SSH_KEY" | tr -d '\r' > "$RUNNER_TEMP/hetzner_deploy_key"
+          chmod 600 "$RUNNER_TEMP/hetzner_deploy_key"
           ssh-keyscan -H "$HETZNER_HOST" >> ~/.ssh/known_hosts
-          ssh -i ~/.ssh/hetzner_deploy_key -o BatchMode=yes "$HETZNER_USER@$HETZNER_HOST" "echo SSH connection ok"
+          ssh -i "$RUNNER_TEMP/hetzner_deploy_key" -o BatchMode=yes "$HETZNER_USER@$HETZNER_HOST" "echo SSH connection ok"
 
       - name: Package Backend
         run: |
@@ -304,13 +312,13 @@ jobs:
       - name: Upload Backend Bundle
         run: |
           set -euo pipefail
-          ssh -i ~/.ssh/hetzner_deploy_key "$HETZNER_USER@$HETZNER_HOST" "mkdir -p '$REMOTE_DIR' '$DATA_DIR'"
-          scp -i ~/.ssh/hetzner_deploy_key /tmp/backend.tar.gz "$HETZNER_USER@$HETZNER_HOST:/tmp/backend.tar.gz"
+          ssh -i "$RUNNER_TEMP/hetzner_deploy_key" "$HETZNER_USER@$HETZNER_HOST" "mkdir -p '$REMOTE_DIR' '$DATA_DIR'"
+          scp -i "$RUNNER_TEMP/hetzner_deploy_key" /tmp/backend.tar.gz "$HETZNER_USER@$HETZNER_HOST:/tmp/backend.tar.gz"
 
       - name: Deploy Backend
         run: |
           set -euo pipefail
-          ssh -i ~/.ssh/hetzner_deploy_key "$HETZNER_USER@$HETZNER_HOST" \
+          ssh -i "$RUNNER_TEMP/hetzner_deploy_key" "$HETZNER_USER@$HETZNER_HOST" \
             "REMOTE_DIR='$REMOTE_DIR' DATA_DIR='$DATA_DIR' ENV_FILE='$ENV_FILE' CONTAINER_NAME='$CONTAINER_NAME' IMAGE_NAME='$IMAGE_NAME' PORT='$PORT' bash -s" <<'EOF'
           set -euo pipefail
 
@@ -320,6 +328,18 @@ jobs:
 
           if [ ! -f "$ENV_FILE" ]; then
             cp "$REMOTE_DIR/.env.example" "$ENV_FILE"
+          fi
+
+          if ! command -v docker >/dev/null 2>&1; then
+            apt-get update
+            apt-get install -y docker.io curl
+            systemctl enable --now docker || true
+          fi
+          docker info >/dev/null
+
+          if ! command -v curl >/dev/null 2>&1; then
+            apt-get update
+            apt-get install -y curl
           fi
 
           cd "$REMOTE_DIR"
@@ -333,7 +353,15 @@ jobs:
             --env-file "$ENV_FILE" \
             -v "${DATA_DIR}:/app/data" \
             "$IMAGE_NAME"
+
+          sleep 2
+          test "$(docker inspect -f '{{.State.Running}}' "$CONTAINER_NAME")" = "true"
+          curl -fsS "http://127.0.0.1:${PORT}/health" >/dev/null
           EOF
+
+      - name: Cleanup SSH Key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/hetzner_deploy_key" /tmp/backend.tar.gz
 ```
 
 ### 6. Verify

@@ -53,13 +53,23 @@ class SQLiteStore:
     async def _execute(self, query: str, params: tuple = (), commit: bool = False) -> Any:
         """Helper to ensure connection and execute query safely under lock."""
         await self.connect()
-        async with self._lock:
-            if not self._db:
-                raise RuntimeError("Database connection closed unexpectedly")
-            cursor = await self._db.execute(query, params)
-            if commit:
-                await self._db.commit()
-            return cursor
+        max_attempts = 3
+        for attempt in range(max_attempts):
+            try:
+                async with self._lock:
+                    if not self._db:
+                        raise RuntimeError("Database connection closed unexpectedly")
+                    cursor = await self._db.execute(query, params)
+                    if commit:
+                        await self._db.commit()
+                    return cursor
+            except aiosqlite.OperationalError as exc:
+                if "database is locked" not in str(exc).lower() or attempt == max_attempts - 1:
+                    raise
+                logger.warning("SQLite database is locked; retrying write (%s/%s)", attempt + 1, max_attempts)
+                await asyncio.sleep(0.1 * (attempt + 1))
+
+        raise RuntimeError("SQLite operation failed after retries")
 
     async def create_run(self, run_id: str):
         now = datetime.now(timezone.utc).isoformat()

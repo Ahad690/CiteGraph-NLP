@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, BackgroundTasks
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Dict, Literal, Optional
 from datetime import datetime
 import uuid
@@ -30,7 +30,7 @@ class RunStatus(BaseModel):
     run_id: str
     status: Literal["started", "running", "completed", "failed"]
     error: Optional[str] = None
-    created_at: datetime = datetime.utcnow()
+    created_at: datetime = Field(default_factory=datetime.utcnow)
 
 @router.on_event("startup")
 async def startup_event():
