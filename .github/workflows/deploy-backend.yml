@@ -105,20 +105,19 @@ jobs:
           docker logs "$CONTAINER_NAME" --tail 20 2>&1
 
           # --- Add /citegraph route to existing Caddy config ---
-          if [ -f /etc/caddy/Caddyfile ] && ! grep -q 'handle_path /citegraph' /etc/caddy/Caddyfile; then
-            # Insert citegraph reverse proxy into the existing site block
-            sed -i '/hetzner-api\.duckdns\.org/,/^}/ {
-              /^}/i\
-\    handle_path /citegraph/* {\
-\        reverse_proxy localhost:8002\
-\    }
-            }' /etc/caddy/Caddyfile
+          if [ -f /etc/caddy/Caddyfile ]; then
+            python3 -c "
+f='/etc/caddy/Caddyfile'
+c=open(f).read()
+if 'citegraph' not in c:
+    b=chr(10)+'    handle_path /citegraph/* {'+chr(10)+'        reverse_proxy localhost:8002'+chr(10)+'    }'+chr(10)
+    i=c.rindex(chr(125))
+    open(f,'w').write(c[:i]+b+c[i:])
+    print('Added /citegraph route to Caddy')
+else:
+    print('Caddy /citegraph route already exists')
+"
             systemctl reload caddy || systemctl restart caddy
-            echo "Added /citegraph route to Caddy"
-          elif grep -q 'handle_path /citegraph' /etc/caddy/Caddyfile 2>/dev/null; then
-            echo "Caddy /citegraph route already exists"
-          else
-            echo "No Caddyfile found — skipping"
           fi
           EOF
 
