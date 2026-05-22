@@ -19,7 +19,9 @@ export function PaperDetailDrawer({ paper, run, onClose }: Props) {
   const edges = getEdgesForPaper(run, paper.paper_id);
 
   const copy = (text: string, label: string) => {
-    navigator.clipboard?.writeText(text).then(() => toast.success(`${label} copied`));
+    navigator.clipboard?.writeText(text)
+      .then(() => toast.success(`${label} copied`))
+      .catch(() => toast.error(`Failed to copy ${label}`));
   };
 
   return (

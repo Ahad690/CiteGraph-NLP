@@ -18,8 +18,8 @@ export function Footer() {
               CiteGraph-NLP is a confidence-aware citation lineage and research knowledge graph platform for exploring probable foundational papers and study-scale evidence.
             </p>
             <div className="mt-5 flex gap-3">
-              {[Github, Twitter, Linkedin, Mail].map((Icon, i) => (
-                <a key={i} href="#" className="w-9 h-9 rounded-lg border border-slate-700 grid place-items-center text-slate-300 hover:border-cyan-400/40 hover:text-cyan-300 transition" aria-label="social">
+              {([["Github", Github], ["Twitter", Twitter], ["LinkedIn", Linkedin], ["Email", Mail]] as const).map(([label, Icon]) => (
+                <a key={label} href="#" className="w-9 h-9 rounded-lg border border-slate-700 grid place-items-center text-slate-300 hover:border-cyan-400/40 hover:text-cyan-300 transition" aria-label={label}>
                   <Icon className="w-4 h-4" />
                 </a>
               ))}

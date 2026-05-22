@@ -87,12 +87,14 @@ export function PopulationPage({ run }: { run: RunResult }) {
                   <div className="min-w-0">
                     <div className="text-sm font-medium text-text-primary">{truncateTitle(paper?.title || "Unknown paper", 90)}</div>
                     {r.evidence && (
-                      <div
-                        onClick={(e) => { e.stopPropagation(); setExpandedRow(expanded ? null : r.paper_id); }}
-                        className="text-xs text-text-muted italic mt-1 cursor-pointer hover:text-text-secondary"
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        onPointerDown={(e) => { e.stopPropagation(); setExpandedRow(expanded ? null : r.paper_id); }}
+                        className="block text-xs text-text-muted italic mt-1 cursor-pointer hover:text-text-secondary"
                       >
                         "{expanded || r.evidence.length <= 180 ? r.evidence : r.evidence.slice(0, 180) + "…"}"
-                      </div>
+                      </span>
                     )}
                     {r.explanation && expanded && (
                       <div className="text-[11px] text-text-secondary mt-2 px-3 py-2 rounded-lg bg-surface-strong/40 border border-border">{r.explanation}</div>

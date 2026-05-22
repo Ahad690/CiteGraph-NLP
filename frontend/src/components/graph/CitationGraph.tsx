@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useMemo, useRef, useState, useEffect, useLayoutEffect } from "react";
 import type { RunResult, CitationEdge, Paper } from "@/types/api";
 import { getPopulationForPaper, getConfidenceColor, truncateTitle } from "@/lib/formatters";
 
@@ -34,18 +34,28 @@ export interface GraphFilters {
 
 export function CitationGraph({ run, filters, onSelectPaper, onSelectEdge }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
   const [size, setSize] = useState({ w: 800, h: 560 });
   const [transform, setTransform] = useState({ x: 0, y: 0, k: 1 });
+  const transformRef = useRef(transform);
+  transformRef.current = transform;
   const [hoverNode, setHoverNode] = useState<string | null>(null);
   const [hoverEdge, setHoverEdge] = useState<string | null>(null);
   const [dragging, setDragging] = useState<{ id: string; offX: number; offY: number } | null>(null);
   const [panning, setPanning] = useState<{ sx: number; sy: number } | null>(null);
 
+  // Read the true content-box size synchronously before first paint
+  useLayoutEffect(() => {
+    if (containerRef.current) {
+      setSize({ w: containerRef.current.clientWidth, h: containerRef.current.clientHeight });
+    }
+  }, []);
+
   useEffect(() => {
     if (!containerRef.current) return;
     const ro = new ResizeObserver(() => {
-      const r = containerRef.current!.getBoundingClientRect();
-      setSize({ w: r.width, h: r.height });
+      // clientWidth/clientHeight exclude borders — matches the area the SVG actually fills
+      setSize({ w: containerRef.current!.clientWidth, h: containerRef.current!.clientHeight });
     });
     ro.observe(containerRef.current);
     return () => ro.disconnect();
@@ -147,17 +157,25 @@ export function CitationGraph({ run, filters, onSelectPaper, onSelectEdge }: Pro
 
   const onPointerUp = () => { setDragging(null); setPanning(null); };
 
-  const onWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
-    const delta = -e.deltaY * 0.0015;
-    const newK = Math.max(0.3, Math.min(3, transform.k * (1 + delta)));
-    const rect = containerRef.current!.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
-    const wx = (mx - transform.x) / transform.k;
-    const wy = (my - transform.y) / transform.k;
-    setTransform({ k: newK, x: mx - wx * newK, y: my - wy * newK });
-  };
+  // Attach wheel listener with { passive: false } so preventDefault works
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const handler = (e: WheelEvent) => {
+      e.preventDefault();
+      const t = transformRef.current;
+      const delta = -e.deltaY * 0.0015;
+      const newK = Math.max(0.3, Math.min(3, t.k * (1 + delta)));
+      const rect = containerRef.current!.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      const wx = (mx - t.x) / t.k;
+      const wy = (my - t.y) / t.k;
+      setTransform({ k: newK, x: mx - wx * newK, y: my - wy * newK });
+    };
+    svg.addEventListener("wheel", handler, { passive: false });
+    return () => svg.removeEventListener("wheel", handler);
+  }, []);
 
   const fit = () => setTransform({ x: 0, y: 0, k: 1 });
   const reset = () => {
@@ -170,14 +188,14 @@ export function CitationGraph({ run, filters, onSelectPaper, onSelectEdge }: Pro
   return (
     <div ref={containerRef} className="relative w-full h-full rounded-2xl overflow-hidden bg-[radial-gradient(circle_at_30%_20%,rgba(79,70,229,0.08),transparent_60%),radial-gradient(circle_at_80%_80%,rgba(6,182,212,0.08),transparent_60%)] border border-border">
       <svg
+        ref={svgRef}
         width={size.w}
         height={size.h}
         onPointerDown={(e) => setPanning({ sx: e.clientX, sy: e.clientY })}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerLeave={onPointerUp}
-        onWheel={onWheel}
-        style={{ cursor: panning ? "grabbing" : "grab", touchAction: "none" }}
+        style={{ display: "block", cursor: panning ? "grabbing" : "grab", touchAction: "none" }}
       >
         <defs>
           <radialGradient id="seedGradient" cx="50%" cy="50%" r="50%">

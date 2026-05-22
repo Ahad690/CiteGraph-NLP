@@ -17,7 +17,7 @@ export function MetadataPage({ run }: { run: RunResult }) {
   const [hasDoiOnly, setHasDoiOnly] = useState(false);
   const [selected, setSelected] = useState<Paper | null>(null);
 
-  const foundationalSet = new Set(run.ranked_foundational_papers.map((r) => r.paper_id));
+  const foundationalSet = useMemo(() => new Set(run.ranked_foundational_papers.map((r) => r.paper_id)), [run.ranked_foundational_papers]);
 
   const rows = useMemo(() => {
     const ql = q.toLowerCase().trim();

@@ -1,7 +1,7 @@
 import type { ExportFormat, RunResult } from "@/types/api";
 import { mockRun } from "./mock";
 
-export const API_BASE = "http://localhost:8000";
+export const API_BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:8000";
 const ACTIVE_RUN_KEY = "active_run_id";
 
 export class ApiError extends Error {
@@ -38,20 +38,17 @@ export async function startRun(params: StartRunParams): Promise<{ run_id: string
 }
 
 export async function getRun(runId: string): Promise<RunResult> {
-  try {
-    const res = await fetch(`${API_BASE}/api/runs/${encodeURIComponent(runId)}`, {
-      headers: { Accept: "application/json" },
-    });
-    if (!res.ok) {
-      if (res.status === 404) throw new ApiError("Run not found", 404);
-      throw new ApiError(`Request failed (${res.status})`, res.status);
-    }
-    return (await res.json()) as RunResult;
-  } catch (err) {
-    if (err instanceof ApiError) throw err;
-    // Network / backend unavailable — fall back to demo data so the dashboard remains usable
-    return { ...mockRun, run_id: runId };
+  // Allow demo run to work without a backend
+  if (runId === mockRun.run_id) return { ...mockRun };
+
+  const res = await fetch(`${API_BASE}/api/runs/${encodeURIComponent(runId)}`, {
+    headers: { Accept: "application/json" },
+  });
+  if (!res.ok) {
+    if (res.status === 404) throw new ApiError("Run not found", 404);
+    throw new ApiError(`Request failed (${res.status})`, res.status);
   }
+  return (await res.json()) as RunResult;
 }
 
 export async function downloadExport(runId: string, format: ExportFormat): Promise<void> {

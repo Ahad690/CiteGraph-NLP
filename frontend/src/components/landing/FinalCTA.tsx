@@ -34,7 +34,8 @@ export function FinalCTA() {
               <Search className="w-5 h-5" /> Start Analysis
             </Link>
             <Link
-              to="/dashboard/demo"
+              to="/dashboard/$runId"
+              params={{ runId: "demo_run_001" }}
               onClick={() => trackEvent("final_cta_click", { which: "secondary" })}
               className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-slate-100 border border-slate-700 hover:border-cyan-400/40 hover:bg-slate-900/60 transition"
             >

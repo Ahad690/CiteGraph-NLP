@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import type { Paper, RunResult } from "@/types/api";
 import { ChevronRight } from "lucide-react";
 import { ConfidenceBadge } from "@/components/ui-kit/ConfidenceBadge";
@@ -70,9 +70,8 @@ export function CitationPathsPage({ run }: { run: RunResult }) {
                   if (!paperItem) return null;
                   const pop = getPopulationForPaper(run, pid);
                   return (
-                    <>
+                    <Fragment key={pid}>
                       <button
-                        key={pid}
                         onClick={() => setPaper(paperItem)}
                         className="flex-1 min-w-0 text-left rounded-2xl bg-surface-strong/40 border border-border hover:border-border-strong p-3 transition-colors"
                       >
@@ -94,7 +93,7 @@ export function CitationPathsPage({ run }: { run: RunResult }) {
                           )}
                         </div>
                       )}
-                    </>
+                    </Fragment>
                   );
                 })}
               </div>
