@@ -36,7 +36,7 @@ export function HowItWorks() {
 
         <div className="mt-14 text-center">
           <p className="text-slate-300">Start with a DOI and get a citation lineage map in minutes.</p>
-          <Link to="/dashboard" className="mt-4 inline-flex bg-gradient-to-r from-indigo to-cyan text-white px-6 py-3 rounded-xl font-semibold shadow-lg shadow-cyan-500/25">
+          <Link to="/start" className="mt-4 inline-flex bg-gradient-to-r from-indigo to-cyan text-white px-6 py-3 rounded-xl font-semibold shadow-lg shadow-cyan-500/25">
             Start Analysis
           </Link>
         </div>

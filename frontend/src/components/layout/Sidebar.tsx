@@ -63,7 +63,7 @@ export function Sidebar({ runId, run, loading }: SidebarProps) {
 
       <div className="px-4 py-4 border-t border-border/60 space-y-3">
         <Link
-          to="/"
+          to="/start"
           className="flex items-center justify-between px-3 py-2.5 rounded-xl gradient-brand text-white text-sm font-semibold hover:opacity-95 transition-opacity"
         >
           <span>Start New Analysis</span>

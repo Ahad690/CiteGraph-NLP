@@ -65,7 +65,7 @@ export function Navbar() {
             Sign In
           </Link>
           <Link
-            to="/dashboard"
+            to="/start"
             onClick={() => trackEvent("nav_cta_click")}
             className="bg-gradient-to-r from-indigo to-cyan text-white px-5 py-2.5 rounded-xl font-semibold shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 transition-shadow"
           >
@@ -100,7 +100,7 @@ export function Navbar() {
                 Sign In
               </Link>
               <Link
-                to="/dashboard"
+                to="/start"
                 className="px-3 py-2.5 rounded-lg text-center bg-gradient-to-r from-indigo to-cyan text-white font-semibold"
               >
                 Start Analysis

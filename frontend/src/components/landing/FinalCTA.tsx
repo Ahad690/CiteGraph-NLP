@@ -27,7 +27,7 @@ export function FinalCTA() {
           </div>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
-              to="/dashboard"
+              to="/start"
               onClick={() => trackEvent("final_cta_click", { which: "primary" })}
               className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo to-cyan text-white px-7 py-3.5 rounded-xl font-semibold shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 transition"
             >

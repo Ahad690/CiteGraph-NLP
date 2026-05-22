@@ -34,7 +34,7 @@ export function Hero() {
 
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
-            to="/dashboard"
+            to="/start"
             onClick={() => trackEvent("hero_cta_click")}
             className="group inline-flex items-center gap-2 bg-gradient-to-r from-indigo to-cyan text-white px-7 py-3.5 rounded-xl font-semibold shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all hover:-translate-y-0.5"
           >
