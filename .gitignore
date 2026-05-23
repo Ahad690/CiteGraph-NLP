@@ -2,6 +2,12 @@
 # Python / FastAPI / Streamlit / React / Vite / Node project ignores
 
 # -----------------------------
+# Local review artifacts
+# -----------------------------
+perplexity-reviews/
+perplexity_reviews/
+
+# -----------------------------
 # OS / Editor
 # -----------------------------
 .DS_Store
