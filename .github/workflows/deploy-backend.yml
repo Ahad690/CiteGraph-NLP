@@ -105,25 +105,33 @@ jobs:
           docker logs "$CONTAINER_NAME" --tail 20 2>&1
 
           # --- Add /citegraph route to Nginx ---
-          # Write the citegraph snippet
-          cat > /etc/nginx/citegraph-proxy.conf <<'NGINX'
-          location /citegraph/ {
-              proxy_pass http://127.0.0.1:8002/;
-              proxy_set_header Host $host;
-              proxy_set_header X-Real-IP $remote_addr;
-              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-              proxy_set_header X-Forwarded-Proto $scheme;
-          }
-          NGINX
+          echo "=== DEBUG: Finding nginx config ==="
+          grep -rl 'hetzner-api' /etc/nginx/ 2>/dev/null || echo "No hetzner-api found in /etc/nginx/"
+          echo "=== DEBUG: All nginx configs ==="
+          ls -la /etc/nginx/sites-enabled/ 2>/dev/null
+          ls -la /etc/nginx/conf.d/ 2>/dev/null
 
-          # Add include to the server block if not already there
-          NGINX_CONF=$(grep -rl 'hetzner-api.duckdns.org' /etc/nginx/sites-enabled/ /etc/nginx/conf.d/ 2>/dev/null | head -1)
-          if [ -n "$NGINX_CONF" ] && ! grep -q 'citegraph-proxy' "$NGINX_CONF"; then
-            sed -i '/server_name.*hetzner-api/a\    include /etc/nginx/citegraph-proxy.conf;' "$NGINX_CONF"
-            echo "Added include to $NGINX_CONF"
+          # Find the config file containing the server block
+          NGINX_CONF=$(grep -rl 'hetzner-api' /etc/nginx/sites-enabled/ /etc/nginx/conf.d/ /etc/nginx/nginx.conf 2>/dev/null | head -1)
+          echo "=== Found config: $NGINX_CONF ==="
+
+          if [ -n "$NGINX_CONF" ]; then
+            echo "=== Current config ==="
+            cat "$NGINX_CONF"
+
+            if ! grep -q '/citegraph/' "$NGINX_CONF"; then
+              # Directly add the location block after server_name line
+              sed -i '/server_name.*hetzner-api/a\\n    location /citegraph/ {\n        proxy_pass http://127.0.0.1:8002/;\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n        proxy_set_header X-Forwarded-Proto $scheme;\n    }' "$NGINX_CONF"
+              echo "=== Updated config ==="
+              cat "$NGINX_CONF"
+            else
+              echo "/citegraph/ route already exists"
+            fi
+
+            nginx -t && systemctl reload nginx && echo "Nginx reloaded OK"
+          else
+            echo "ERROR: No nginx config found for hetzner-api"
           fi
-          nginx -t && systemctl reload nginx
-          echo "Nginx citegraph route configured"
           EOF
 
       - name: Cleanup SSH Key
