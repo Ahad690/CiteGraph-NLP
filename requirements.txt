@@ -11,6 +11,7 @@ sqlmodel
 networkx
 pandas
 numpy
+scipy
 streamlit
 pyvis
 pymupdf
