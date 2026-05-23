@@ -19,7 +19,10 @@ export function RunStatusCard({ runId, run, loading }: Props) {
     );
   }
 
-  const seedPaper = run?.papers.find((p) => p.paper_id === run.seed_paper_id);
+  // While a run is still processing/failed the API returns a RunStatus shape
+  // with no `papers` array — guard against both run being missing and papers
+  // being undefined.
+  const seedPaper = run?.papers?.find((p) => p.paper_id === run.seed_paper_id);
   const isProcessing = run && ["pending", "running", "processing", "started"].includes(run.status);
 
   return (
