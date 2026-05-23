@@ -109,8 +109,11 @@ jobs:
           echo "=== Found config: $NGINX_CONF ==="
 
           if [ -n "$NGINX_CONF" ]; then
-            # Backup
-            cp "$NGINX_CONF" "${NGINX_CONF}.bak.$(date +%s)"
+            # Clean up any prior backups left in sites-enabled (nginx loads them too)
+            rm -f /etc/nginx/sites-enabled/*.bak.* /etc/nginx/sites-enabled/leadgen.bak.disabled
+            # Backup to a safe location outside sites-enabled
+            mkdir -p /etc/nginx/backups
+            cp "$NGINX_CONF" "/etc/nginx/backups/$(basename "$NGINX_CONF").bak.$(date +%s)"
 
             # Write Python fix script
             cat > /tmp/fix_nginx.py <<'PYEOF'
