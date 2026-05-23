@@ -104,33 +104,79 @@ jobs:
           docker ps --filter "name=$CONTAINER_NAME" --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
           docker logs "$CONTAINER_NAME" --tail 20 2>&1
 
-          # --- Add /citegraph route to Nginx ---
-          echo "=== DEBUG: Finding nginx config ==="
-          grep -rl 'hetzner-api' /etc/nginx/ 2>/dev/null || echo "No hetzner-api found in /etc/nginx/"
-          echo "=== DEBUG: All nginx configs ==="
-          ls -la /etc/nginx/sites-enabled/ 2>/dev/null
-          ls -la /etc/nginx/conf.d/ 2>/dev/null
-
-          # Find the config file containing the server block
-          NGINX_CONF=$(grep -rl 'hetzner-api' /etc/nginx/sites-enabled/ /etc/nginx/conf.d/ /etc/nginx/nginx.conf 2>/dev/null | head -1)
+          # --- Add /citegraph route to Nginx (clean any previous broken state) ---
+          NGINX_CONF=$(grep -rl 'hetzner-api' /etc/nginx/sites-enabled/ 2>/dev/null | head -1)
           echo "=== Found config: $NGINX_CONF ==="
 
           if [ -n "$NGINX_CONF" ]; then
-            echo "=== Current config ==="
+            # Backup
+            cp "$NGINX_CONF" "${NGINX_CONF}.bak.$(date +%s)"
+
+            # Write Python fix script
+            cat > /tmp/fix_nginx.py <<'PYEOF'
+          import sys
+          CONF = sys.argv[1]
+          with open(CONF) as f:
+              content = f.read()
+          lines = content.split('\n')
+          # Step 1: remove all include lines for citegraph-proxy.conf
+          lines = [l for l in lines if 'citegraph-proxy.conf' not in l]
+          # Step 2: remove existing /citegraph/ location blocks with brace matching
+          result = []
+          i = 0
+          while i < len(lines):
+              if 'location /citegraph/' in lines[i] and '{' in lines[i]:
+                  depth = lines[i].count('{') - lines[i].count('}')
+                  i += 1
+                  while i < len(lines) and depth > 0:
+                      depth += lines[i].count('{') - lines[i].count('}')
+                      i += 1
+                  continue
+              result.append(lines[i])
+              i += 1
+          # Step 3: insert clean /citegraph/ block after /penora/ block
+          final = []
+          in_penora = False
+          depth = 0
+          inserted = False
+          new_block = [
+              '',
+              '    # === CiteGraph backend (port 8002) ===',
+              '    location /citegraph/ {',
+              '        proxy_pass http://127.0.0.1:8002/;',
+              '        proxy_set_header Host $host;',
+              '        proxy_set_header X-Real-IP $remote_addr;',
+              '        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;',
+              '        proxy_set_header X-Forwarded-Proto $scheme;',
+              '    }',
+          ]
+          for line in result:
+              final.append(line)
+              if inserted:
+                  continue
+              if 'location /penora/' in line and '{' in line:
+                  in_penora = True
+                  depth = line.count('{') - line.count('}')
+              elif in_penora:
+                  depth += line.count('{') - line.count('}')
+                  if depth == 0:
+                      in_penora = False
+                      final.extend(new_block)
+                      inserted = True
+          with open(CONF, 'w') as f:
+              f.write('\n'.join(final))
+          print('OK: inserted /citegraph/ block' if inserted else 'WARN: /penora/ block not found')
+          PYEOF
+
+            python3 /tmp/fix_nginx.py "$NGINX_CONF"
+            # Remove leftover include file from previous failed attempts
+            rm -f /etc/nginx/citegraph-proxy.conf
+            echo "=== Updated config ==="
             cat "$NGINX_CONF"
-
-            if ! grep -q '/citegraph/' "$NGINX_CONF"; then
-              # Directly add the location block after server_name line
-              sed -i '/server_name.*hetzner-api/a\\n    location /citegraph/ {\n        proxy_pass http://127.0.0.1:8002/;\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n        proxy_set_header X-Forwarded-Proto $scheme;\n    }' "$NGINX_CONF"
-              echo "=== Updated config ==="
-              cat "$NGINX_CONF"
-            else
-              echo "/citegraph/ route already exists"
-            fi
-
             nginx -t && systemctl reload nginx && echo "Nginx reloaded OK"
           else
             echo "ERROR: No nginx config found for hetzner-api"
+            exit 1
           fi
           EOF
 
