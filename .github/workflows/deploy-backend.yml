@@ -75,6 +75,13 @@ jobs:
             cp "$REMOTE_DIR/.env.example" "$ENV_FILE"
           fi
 
+          # Replace the OpenAlex placeholder email with the real one if it's
+          # still set to the example value. Preserves any other manual edits.
+          if grep -q '^OPENALEX_EMAIL=your_email@example.com' "$ENV_FILE"; then
+            sed -i 's|^OPENALEX_EMAIL=your_email@example.com|OPENALEX_EMAIL=muhammadahadf23@nutech.edu.pk|' "$ENV_FILE"
+            echo "Updated OPENALEX_EMAIL in $ENV_FILE"
+          fi
+
           if ! command -v docker >/dev/null 2>&1; then
             apt-get update
             apt-get install -y docker.io curl
