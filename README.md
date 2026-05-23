@@ -2,132 +2,144 @@
 
 **Confidence-Aware Citation Lineage and Study-Scale Knowledge Graph System**
 
-CiteGraph-NLP is an NLP + Knowledge Graph prototype for analyzing scientific papers, tracing citation lineage, extracting study population evidence, and ranking **probable foundational papers** using confidence-aware graph analytics.
+CiteGraph-NLP is an NLP + Knowledge Graph system for analyzing scientific papers, tracing citation lineages, extracting study population evidence, and ranking **probable foundational papers** using confidence-aware graph analytics.
 
-The project is designed as a realistic research prototype. It does **not** claim to find the absolute original paper or perfectly extract every sample size. Instead, it makes uncertainty visible using confidence scores, provenance, and ambiguity labels.
+The project is a research prototype that makes uncertainty visible using confidence scores, provenance tracking, and ambiguity labels.
 
 ---
 
 ## What It Does
 
-CiteGraph-NLP starts from a research paper identifier or file and builds a structured citation analysis workflow.
+CiteGraph-NLP starts from a research paper identifier and builds a structured citation analysis pipeline:
 
-Supported inputs:
+### Supported Inputs
+- **DOI** (e.g. `10.1001/jama.2023.1234`)
+- **PMID** (e.g. `12345678`)
+- **PMCID** (e.g. `PMC87654321`)
+- **Paper title** (free-text search via Crossref)
+- **URL** (auto-extracts DOI/PMID/PMCID from PubMed or doi.org links)
+- **PDF path** (for optional PDF text extraction via GROBID)
 
-- DOI
-- PMID
-- PMCID
-- Paper title
-- User-provided PDF
+### Pipeline Stages
+1. **Input Normalization** — Canonicalize identifiers (DOI/PMID/PMCID/OpenAlex ID)
+2. **Metadata Resolution** — Query OpenAlex, Crossref, and EuropePMC in parallel, merge results
+3. **Citation Traversal** — BFS-based backward (references) and forward (citations) traversal with configurable depth limits
+4. **Population Extraction** — Regex-based extraction of sample sizes from abstracts/text with semantic classification
+5. **Population Resolution** — Select best N_eff candidate per paper using confidence and type priority scoring
+6. **Edge Weighting** — Weight citation edges by normalized population evidence + journal score + confidence
+7. **Graph Analytics** — PageRank-based foundational paper ranking and citation path ranking
+8. **Export** — Results available as JSON, CSV, Markdown report, and graph visualization data
 
-Core capabilities:
-
-- Resolve paper metadata using scholarly APIs
-- Retrieve backward references and forward citations where available
-- Parse full text or abstracts when accessible
-- Extract population-size candidates such as `N = 10,000`, `8,500 randomized patients`, or `25,000 participants`
-- Classify population evidence into semantic types such as `TOTAL_RANDOMIZED`, `TOTAL_ANALYZED`, `TOTAL_ENROLLED`, and `ARM_SIZE`
-- Assign confidence scores to extracted evidence
-- Build a study-aware citation Knowledge Graph
-- Calculate evidence-weighted citation edges
-- Rank probable foundational papers
-- Export results as JSON, CSV, GraphML, and Markdown
-
----
-
-## Important Scientific Positioning
-
-CiteGraph-NLP is confidence-aware by design.
-
-It should say:
-
-- **Probable foundational papers**
-- **Confidence-aware extraction**
-- **Citation lineage estimate**
-- **Evidence-weighted ranking**
-- **Metadata coverage may be incomplete**
-
-It should not say:
-
-- Absolute original paper
-- Guaranteed parent paper
-- Perfect extraction
-- Definitive evidence ranking
+### Population Semantic Types
+| Type | Description |
+|------|-------------|
+| `TOTAL_RANDOMIZED` | Patients randomized/assigned |
+| `TOTAL_ANALYZED` | Patients analyzed |
+| `TOTAL_ENROLLED` | Patients enrolled/eligible |
+| `SAMPLE_SIZE_GENERIC` | Generic N = value |
+| `ARM_SIZE` | Individual arm/group size |
+| `SCREENED` | Patients screened |
+| `COMPLETERS` | Patients who completed |
+| `EVENT_COUNT` | Event/outcome counts |
+| `FOLLOWUP_COUNT` | Follow-up counts |
+| `UNKNOWN_NUMERIC` | Unclassified numbers |
 
 ---
 
 ## Tech Stack
 
 ### Backend
-
 - Python 3.11+
-- FastAPI
-- Pydantic v2
-- HTTPX
-- NetworkX
-- Pandas / NumPy
-- SQLite for local cache
-- Optional Neo4j
-- Optional GROBID for PDF parsing
+- FastAPI (async REST API)
+- Pydantic v2 (models & validation)
+- httpx (async HTTP client for API calls)
+- NetworkX (graph construction & PageRank)
+- SQLite + aiosqlite (run persistence)
+- spaCy (NLP sentence splitting, optional fallback)
+- Tenacity (retry logic for external APIs)
+- pytest / pytest-asyncio / respx (testing)
 
-### Dashboard
+### Data Providers
+- **OpenAlex** — metadata resolution, backward references, forward citations
+- **Crossref** — metadata resolution, title search, backward references
+- **EuropePMC** — metadata resolution, URL-based ID extraction
 
-- React
-- TypeScript
-- Vite
-- Tailwind CSS
-- shadcn/ui
-- React Router
-- TanStack Query
-- Lucide React
-- Cytoscape.js or React Force Graph
+### Dashboard / Frontend
+- React + TypeScript + Vite
+- Tailwind CSS + shadcn/ui
+- TanStack Query, React Router
+- Cytoscape.js graph visualization
 
 ---
 
-## Recommended Project Structure
+## Project Structure
 
 ```text
 citegraph-nlp/
 ├── README.md
-├── PRD.md
-├── .gitignore
 ├── .env.example
 ├── requirements.txt
 ├── pyproject.toml
+├── Dockerfile
 ├── docker-compose.yml
 ├── Makefile
 │
 ├── src/
 │   └── citegraph/
 │       ├── api/
+│       │   ├── main.py           # FastAPI app, CORS, router registration
+│       │   └── routes.py         # All API endpoints
 │       ├── models/
+│       │   ├── paper.py          # Paper, PaperQuery
+│       │   ├── study.py          # Study
+│       │   ├── population.py     # PopulationCandidate, PopulationResolution
+│       │   ├── citation.py       # CitationEdge
+│       │   └── run.py            # RunResult
 │       ├── input/
+│       │   └── normalizer.py     # InputNormalizer
 │       ├── providers/
+│       │   ├── base.py           # MetadataProvider protocol, ProviderResult
+│       │   ├── openalex.py       # OpenAlex API client
+│       │   ├── crossref.py       # Crossref API client
+│       │   └── europe_pmc.py     # Europe PMC API client
 │       ├── metadata/
-│       ├── parsing/
+│       │   ├── resolver.py       # MetadataResolver (parallel provider queries)
+│       │   └── merger.py         # MetadataMerger (field-level merge)
 │       ├── nlp/
+│       │   ├── population_patterns.py   # Regex patterns & ignore rules
+│       │   ├── population_extractor.py  # PopulationExtractor
+│       │   └── population_resolver.py   # PopulationResolver
 │       ├── citations/
+│       │   ├── retriever.py      # CitationRetriever (aggregate from providers)
+│       │   └── traversal.py      # CitationTraversal (BFS traversal)
 │       ├── graph/
-│       ├── storage/
+│       │   ├── builder.py        # GraphBuilder (NetworkX)
+│       │   ├── weighting.py      # WeightCalculator (evidence-weighted edges)
+│       │   ├── analytics.py      # GraphAnalytics (PageRank, path ranking)
+│       │   └── exporters.py      # GraphExporter (JSON, GraphML)
 │       ├── pipeline/
-│       ├── evaluation/
-│       └── utils/
+│       │   └── orchestrator.py   # PipelineOrchestrator (full workflow)
+│       ├── storage/
+│       │   └── sqlite.py         # SQLiteStore (run persistence)
+│       ├── utils/
+│       │   ├── ids.py            # IdCanonicalizer (DOI/PMID/PMCID normalization)
+│       │   └── tasks.py          # TaskManager (background task lifecycle)
+│       ├── config.py             # Settings (pydantic-settings)
+│       └── logging_config.py     # Logging setup
 │
-├── dashboard/
-│   ├── app.py
-│   └── pages/
-│
-├── frontend/
-│   └── citegraph-dashboard/
+├── frontend/                     # React dashboard
+├── tests/
+│   ├── conftest.py
+│   ├── test_input_normalizer.py
+│   ├── test_population_patterns.py
+│   └── test_api_comprehensive.py
 │
 ├── scripts/
-├── tests/
 ├── data/
-│   ├── uploads/
 │   ├── cache/
+│   ├── uploads/
 │   ├── parsed/
-│   ├── exports/
-│   └── samples/
+│   └── exports/
 │
 └── docs/
 ```
@@ -136,150 +148,74 @@ citegraph-nlp/
 
 ## Setup
 
-### 1. Clone the Repository
+### 1. Clone & Virtual Environment
 
 ```bash
 git clone https://github.com/your-username/citegraph-nlp.git
 cd citegraph-nlp
-```
-
-### 2. Create a Python Virtual Environment
-
-```bash
 python -m venv .venv
+# Activate:
+# macOS/Linux: source .venv/bin/activate
+# Windows: .venv\Scripts\Activate.ps1
 ```
 
-Activate it:
-
-```bash
-# macOS / Linux
-source .venv/bin/activate
-
-# Windows PowerShell
-.venv\Scripts\Activate.ps1
-```
-
-### 3. Install Backend Dependencies
+### 2. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Create Environment File
+### 3. Environment Configuration
 
 ```bash
 cp .env.example .env
 ```
 
-Example `.env` values:
+Key environment variables:
 
-```env
-APP_ENV=development
-LOG_LEVEL=INFO
-
-OPENALEX_EMAIL=your_email@example.com
-SEMANTIC_SCHOLAR_API_KEY=
-NCBI_API_KEY=
-
-ENABLE_OPENALEX=true
-ENABLE_CROSSREF=true
-ENABLE_EUROPE_PMC=true
-ENABLE_PUBMED=false
-ENABLE_SEMANTIC_SCHOLAR=false
-ENABLE_GROBID=false
-ENABLE_NEO4J=false
-
-DATA_DIR=./data
-SQLITE_PATH=./data/cache/citegraph.sqlite
-
-DEFAULT_BACKWARD_DEPTH=2
-DEFAULT_FORWARD_DEPTH=1
-DEFAULT_MAX_TOTAL_PAPERS=100
-
-WEIGHT_ALPHA=0.75
-WEIGHT_BETA=0.25
-N_REFERENCE=100000
-```
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `APP_ENV` | `development` | Environment name |
+| `LOG_LEVEL` | `INFO` | Logging level |
+| `OPENALEX_EMAIL` | — | Email for OpenAlex API (polite pool) |
+| `ENABLE_OPENALEX` | `true` | Toggle OpenAlex provider |
+| `ENABLE_CROSSREF` | `true` | Toggle Crossref provider |
+| `ENABLE_EUROPE_PMC` | `true` | Toggle Europe PMC provider |
+| `DATA_DIR` | `./data` | Data directory |
+| `SQLITE_PATH` | `./data/cache/citegraph.sqlite` | SQLite database path |
+| `GROBID_URL` | `http://localhost:8070` | GROBID server URL |
+| `DEFAULT_BACKWARD_DEPTH` | `2` | Default backward traversal depth |
+| `DEFAULT_FORWARD_DEPTH` | `1` | Default forward traversal depth |
+| `DEFAULT_MAX_TOTAL_PAPERS` | `100` | Max papers per run |
+| `WEIGHT_ALPHA` | `0.75` | Population evidence weight |
+| `WEIGHT_BETA` | `0.25` | Journal score weight |
+| `N_REFERENCE` | `100000` | Reference population for N-score normalization |
 
 ---
 
-## Optional Services
+## Running the API
 
-### Run GROBID
-
-GROBID is used for scholarly PDF parsing.
-
-```bash
-docker compose up -d grobid
-```
-
-GROBID should be available at:
-
-```text
-http://localhost:8070
-```
-
-### Run Neo4j
-
-Neo4j is optional. NetworkX is the default graph engine for the MVP.
-
-```bash
-docker compose --profile neo4j up -d neo4j
-```
-
-Neo4j browser:
-
-```text
-http://localhost:7474
-```
-
----
-
-## Run the Backend API
+### Start the server
 
 ```bash
 uvicorn citegraph.api.main:app --reload
 ```
 
-Backend URL:
+The API is available at `http://localhost:8000`. Interactive docs at `http://localhost:8000/docs`.
 
-```text
-http://localhost:8000
-```
-
-Health check:
+### Optional Services
 
 ```bash
-curl http://localhost:8000/health
+# GROBID for PDF parsing
+docker compose up -d grobid
+
+# Neo4j graph database (optional, NetworkX is default)
+docker compose --profile neo4j up -d neo4j
 ```
 
 ---
 
-## Run the Dashboard
-
-If using the Streamlit MVP dashboard:
-
-```bash
-streamlit run dashboard/app.py
-```
-
-If using the React/Vite frontend:
-
-```bash
-cd frontend/citegraph-dashboard
-npm install
-npm run dev
-```
-
-Default Vite URL:
-
-```text
-http://localhost:5173
-```
-
----
-
-## API Overview
+## API Endpoints
 
 ### Health Check
 
@@ -287,224 +223,318 @@ http://localhost:5173
 GET /health
 ```
 
-### Start a New Analysis Run
+Response:
+```json
+{"status": "ok"}
+```
+
+---
+
+### Start an Analysis Run
 
 ```http
 POST /api/runs
 ```
 
-Example request:
+Initiates a background analysis pipeline. Returns immediately with a `run_id`.
 
+**Request Body:**
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `query_type` | `string` | required | One of: `doi`, `pmid`, `pmcid`, `title`, `url` |
+| `value` | `string` | required | The identifier value |
+| `pdf_path` | `string` | `null` | Optional path to a PDF file |
+| `backward_depth` | `int` | `2` | Depth for backward reference traversal (clamped 0–3) |
+| `forward_depth` | `int` | `1` | Depth for forward citation traversal (clamped 0–2) |
+| `max_total_papers` | `int` | `100` | Maximum papers to collect (clamped 1–200) |
+
+**Input validation rules per query_type:**
+- `doi`: Must match pattern `10.xxxx/yyyy` (case-insensitive)
+- `pmid`: 1–9 digit numeric string
+- `pmcid`: `PMC` prefix followed by digits
+- `title`: Minimum 5 characters
+- `url`: Must contain scheme and netloc; auto-extracts DOI/PMID/PMCID
+
+Example:
 ```json
 {
   "query_type": "doi",
-  "value": "10.xxxx/example",
+  "value": "10.1001/jama.2023.1234",
   "backward_depth": 2,
   "forward_depth": 1,
-  "max_total_papers": 100,
-  "use_pdf_parsing": false,
-  "use_semantic_scholar": false
+  "max_total_papers": 100
 }
 ```
 
-### Get Run Result
+Response (202):
+```json
+{
+  "run_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "status": "started"
+}
+```
+
+---
+
+### Get Run Status or Result
 
 ```http
 GET /api/runs/{run_id}
 ```
 
-### Export Results
+Returns the run status while in progress, or the full `RunResult` when completed.
 
-```http
-GET /api/runs/{run_id}/export/json
-GET /api/runs/{run_id}/export/csv
-GET /api/runs/{run_id}/export/graphml
-GET /api/runs/{run_id}/export/markdown
-```
-
----
-
-## Data Model Summary
-
-Main entities:
-
-- `Paper`
-- `Study`
-- `PopulationCandidate`
-- `PopulationResolution`
-- `CitationEdge`
-- `RunResult`
-
-Main graph relationships:
-
-- `PAPER_CITES_PAPER`
-- `PAPER_REPORTS_STUDY`
-- `STUDY_HAS_POPULATION_OBSERVATION`
-- `PAPER_PUBLISHED_IN_JOURNAL`
-
----
-
-## Population Extraction
-
-The system extracts candidate sample-size mentions and assigns semantic labels.
-
-Example text:
-
-```text
-A total of 8,500 patients were randomized, with 4,250 assigned to treatment and 4,250 assigned to control.
-```
-
-Expected result:
-
+**While running:**
 ```json
 {
-  "n_eff": 8500,
-  "semantic_type": "TOTAL_RANDOMIZED",
-  "confidence": 0.86,
-  "status": "resolved",
-  "evidence": "A total of 8,500 patients were randomized...",
-  "section": "Methods"
+  "run_id": "a1b2c3d4-...",
+  "status": "running",
+  "error": null,
+  "created_at": "2024-01-01T00:00:00"
 }
 ```
 
-Supported semantic types:
+**When completed** — returns full `RunResult` object:
 
-```text
-TOTAL_RANDOMIZED
-TOTAL_ANALYZED
-TOTAL_ENROLLED
-ARM_SIZE
-SCREENED
-COMPLETERS
-EVENT_COUNT
-FOLLOWUP_COUNT
-SAMPLE_SIZE_GENERIC
-UNKNOWN_NUMERIC
+| Field | Type | Description |
+|-------|------|-------------|
+| `run_id` | `string` | Run identifier |
+| `seed_paper_id` | `string` | ID of the seed paper |
+| `papers` | `array` | All collected `Paper` objects |
+| `studies` | `array` | Study nodes derived from papers |
+| `population_candidates` | `array` | All extracted population candidates |
+| `population_resolutions` | `array` | Resolved N_eff per paper |
+| `citation_edges` | `array` | Weighted citation edges |
+| `ranked_foundational_papers` | `array` | Papers ranked by combined PageRank + year + evidence score |
+| `ranked_paths` | `array` | Citation paths from seed to foundational papers |
+| `warnings` | `array` | Any warnings generated during the run |
+| `created_at` | `datetime` | Run creation timestamp |
+
+**Paper model:**
+| Field | Type | Description |
+|-------|------|-------------|
+| `paper_id` | `string` | Canonical identifier (prefers DOI) |
+| `doi` | `string` | Digital Object Identifier |
+| `pmid` | `string` | PubMed ID |
+| `pmcid` | `string` | PubMed Central ID |
+| `openalex_id` | `string` | OpenAlex ID (W...) |
+| `title` | `string` | Paper title |
+| `authors` | `array` | Author names |
+| `year` | `int` | Publication year |
+| `journal` | `string` | Journal name |
+| `abstract` | `string` | Abstract text |
+| `source_ids` | `object` | Provider-specific source IDs |
+| `metadata_confidence` | `float` | 0–1 confidence in metadata |
+| `provenance` | `object` | Per-provider retrieval metadata |
+
+---
+
+### Get Graph Visualization Data
+
+```http
+GET /api/runs/{run_id}/graph
+```
+
+Returns nodes and links for graph visualization.
+
+Response:
+```json
+{
+  "nodes": [
+    {
+      "id": "10.1001/jama.2023.1234",
+      "label": "A randomized trial...",
+      "year": 2023,
+      "n_eff": 8500
+    }
+  ],
+  "links": [
+    {
+      "source": "10.1001/jama.2023.1234",
+      "target": "10.1016/j.card.2020.01.001",
+      "weight": 0.85
+    }
+  ]
+}
 ```
 
 ---
 
-## Edge Weighting
+### Export Results
 
-Citation edges are weighted using normalized population evidence, journal/source metrics, and confidence.
+All export endpoints are available once a run reaches `completed` status.
 
-```text
-base_weight = alpha * N_score + beta * journal_score
-final_weight = base_weight * confidence_score
+#### JSON Export
+```http
+GET /api/runs/{run_id}/export/json
+```
+Returns the full `RunResult` as raw JSON.
+
+#### CSV Export
+```http
+GET /api/runs/{run_id}/export/csv
+```
+Returns a CSV string with paper metadata and N_eff:
+```json
+{
+  "csv": "paper_id,title,year,journal,n_eff\n..."
+}
 ```
 
-Defaults:
-
-```text
-alpha = 0.75
-beta = 0.25
-N_reference = 100000
+#### Markdown Report
+```http
+GET /api/runs/{run_id}/export/markdown
+```
+Returns a formatted markdown analysis report:
+```json
+{
+  "report": "# CiteGraph-NLP Analysis Report\n..."
+}
 ```
 
-Population score:
+---
 
-```text
+## Edge Weighting Formula
+
+Citation edges are weighted using population evidence and confidence:
+
+```
 N_score = log1p(N_eff) / log1p(N_reference)
+base_weight = alpha * N_score + beta * journal_score
+final_weight = base_weight * pop_confidence * edge_confidence
+```
+
+Defaults: `alpha = 0.75`, `beta = 0.25`, `N_reference = 100000`
+
+---
+
+## Foundational Paper Ranking
+
+Papers are ranked using a combined score:
+
+```
+score = 0.5 * PageRank + 0.3 * year_score + 0.2 * evidence_score
+```
+
+Where:
+- **PageRank** — Citation influence from NetworkX PageRank on weighted edges
+- **Year score** — Older papers get higher scores (max bonus at 20+ years old)
+- **Evidence score** — `log1p(N_eff) / log1p(100000) * population_confidence`
+
+---
+
+## Running the Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The Vite dev server runs at `http://localhost:5173` by default.
+
+---
+
+## Makefile Commands
+
+```bash
+make install         # Install Python dependencies
+make run-api         # Start uvicorn dev server
+make run-frontend    # Start frontend dev server
+make run-dashboard   # Start Streamlit dashboard
+make run-grobid      # Start GROBID via Docker
+make run-neo4j       # Start Neo4j via Docker
+make test            # Run all pytest tests
+make format          # Format with black
+make lint            # Lint with flake8
+make demo            # Run demo script
 ```
 
 ---
 
 ## Testing
 
-Run all tests:
-
 ```bash
-pytest -q
+pytest
 ```
 
-Recommended tests:
+Run comprehensive API integration tests (requires mocked HTTP via respx):
+```bash
+pytest tests/test_api_comprehensive.py -v
+```
 
-- DOI normalization
-- Metadata merging
-- Population regex extraction
-- False positive filtering
-- Semantic type classification
-- Population resolver
-- Citation traversal limits
-- Graph construction
-- Edge weighting
-- Export generation
+Test coverage includes:
+- Health endpoint
+- Run creation with all query types (DOI, PMID, PMCID, title, URL)
+- Input validation (invalid IDs, empty values, type checking)
+- Parameter clamping (depth and max papers bounds)
+- Run status polling
+- Graph data export
+- JSON / CSV / Markdown export
+- Full pipeline end-to-end with mocked providers
+- Forward citation traversal
 
 ---
 
-## Example Demo Flow
+## Configuration Reference
 
-1. Enter a DOI.
-2. Resolve metadata from OpenAlex and Crossref.
-3. Retrieve references.
-4. Extract population evidence from abstract or parsed text.
-5. Build a citation graph.
-6. Rank probable foundational papers.
-7. Export the analysis report.
+All configuration is in `src/citegraph/config.py` via `pydantic-settings`. Override via `.env` file or environment variables.
+
+| Setting | Env Variable | Default | Description |
+|---------|-------------|---------|-------------|
+| `app_env` | `APP_ENV` | `development` | Runtime environment |
+| `log_level` | `LOG_LEVEL` | `INFO` | Logging verbosity |
+| `openalex_email` | `OPENALEX_EMAIL` | `None` | Email for OpenAlex polite pool |
+| `enable_openalex` | `ENABLE_OPENALEX` | `True` | Enable OpenAlex provider |
+| `enable_crossref` | `ENABLE_CROSSREF` | `True` | Enable Crossref provider |
+| `enable_europe_pmc` | `ENABLE_EUROPE_PMC` | `True` | Enable Europe PMC provider |
+| `enable_grobid` | `ENABLE_GROBID` | `True` | Enable GROBID PDF parsing |
+| `grobid_url` | `GROBID_URL` | `http://localhost:8070` | GROBID server URL |
+| `data_dir` | `DATA_DIR` | `./data` | Data storage directory |
+| `sqlite_path` | `SQLITE_PATH` | `./data/cache/citegraph.sqlite` | SQLite database file |
+| `enable_neo4j` | `ENABLE_NEO4J` | `False` | Enable Neo4j graph DB |
+| `default_backward_depth` | `DEFAULT_BACKWARD_DEPTH` | `2` | Default backward traversal depth |
+| `default_forward_depth` | `DEFAULT_FORWARD_DEPTH` | `1` | Default forward traversal depth |
+| `default_max_total_papers` | `DEFAULT_MAX_TOTAL_PAPERS` | `100` | Max papers per run |
+| `weight_alpha` | `WEIGHT_ALPHA` | `0.75` | Population evidence weight |
+| `weight_beta` | `WEIGHT_BETA` | `0.25` | Journal score weight |
+| `n_reference` | `N_REFERENCE` | `100000` | N-score normalization reference |
+
+---
+
+## Docker
+
+```bash
+# Build and run the API
+docker build -t citegraph-api .
+docker run -p 8000:8000 citegraph-api
+
+# Or use docker-compose for the full stack
+docker compose up
+```
 
 ---
 
 ## Limitations
 
-CiteGraph-NLP is a prototype and has important limitations:
-
-- Citation coverage depends on public metadata APIs.
-- Some papers may not have complete references available.
-- Population extraction may be ambiguous.
-- PDF parsing can fail for scanned or poorly structured PDFs.
-- Journal metrics may be missing or incomplete.
-- Foundational paper detection is probabilistic, not definitive.
-- The prototype works best for biomedical and clinical papers.
+- Citation coverage depends on public metadata APIs (OpenAlex, Crossref, Europe PMC)
+- Some papers may have incomplete references
+- Population extraction is regex-based and may miss complex formulations
+- PDF parsing requires GROBID and works best with well-structured PDFs
+- Foundational paper detection is probabilistic (PageRank + heuristics), not definitive
+- Best suited for biomedical and clinical research papers
 
 ---
 
-## Ethical and Legal Notes
+## Ethical & Legal Notes
 
-- Do not scrape paywalled full text without permission.
-- Do not upload or process documents you are not allowed to use.
-- Treat rankings as exploratory research aids, not final academic judgments.
-- Always review extracted evidence manually before using it in serious research.
-
----
-
-## Development Commands
-
-```bash
-# Install dependencies
-make install
-
-# Run backend API
-make run-api
-
-# Run Streamlit dashboard
-make run-dashboard
-
-# Run GROBID
-make run-grobid
-
-# Run tests
-make test
-```
+- Do not scrape or process paywalled content without permission
+- Treat rankings as exploratory research aids, not final academic judgments
+- Review extracted evidence manually before use in serious research
 
 ---
 
-## Roadmap
-
-Planned improvements:
-
-- PubMed and Europe PMC provider integration
-- Semantic Scholar enrichment
-- ClinicalTrials.gov validation
-- Neo4j persistence
-- Better table extraction
-- Manual review interface for ambiguous population values
-- Batch seed paper ingestion
-- Community detection and centrality analytics
-- Cypher export
-- Full React dashboard
-
----
-
-## Academic Disclaimer
+## License & Disclaimer
 
 CiteGraph-NLP provides exploratory research analysis. Results depend on metadata availability, extraction quality, and citation database coverage. The system identifies **probable foundational papers**, not guaranteed original sources. All results should be reviewed by domain experts.
