@@ -1,11 +1,14 @@
-import { Activity } from "lucide-react";
-import type { RunResult } from "@/types/api";
+import { Activity, AlertTriangle } from "lucide-react";
+import type { RunPayload } from "@/types/api";
 import { formatRelativeTime, truncateTitle } from "@/lib/formatters";
+import { deriveStatus, isCompletedRunResult, userFacingError } from "@/lib/runNormalization";
 import { StatusBadge } from "../ui-kit/StatusBadge";
 
 interface Props {
   runId: string | null;
-  run?: RunResult;
+  /** Raw query payload — may be either a completed RunResult or a
+   *  RunStatusPayload (in-progress / failed). Either is handled here. */
+  run?: RunPayload;
   loading?: boolean;
 }
 
@@ -19,20 +22,34 @@ export function RunStatusCard({ runId, run, loading }: Props) {
     );
   }
 
-  // While a run is still processing/failed the API returns a RunStatus shape
-  // with no `papers` array — guard against both run being missing and papers
-  // being undefined.
-  const seedPaper = run?.papers?.find((p) => p.paper_id === run.seed_paper_id);
-  const isProcessing = run && ["pending", "running", "processing", "started"].includes(run.status);
+  const status = run ? deriveStatus(run) : undefined;
+  const isProcessing = !!status && ["pending", "running", "processing", "started"].includes(status);
+  const isFailed = status === "failed";
+  const isCompleted = !!run && isCompletedRunResult(run);
+  // Only completed runs carry papers/seed_paper_id.
+  const seedPaper = isCompleted
+    ? run.papers.find((p) => p.paper_id === run.seed_paper_id)
+    : undefined;
+  const rawError = !isCompleted ? (run as { error?: string | null } | undefined)?.error ?? null : null;
 
   return (
     <div className="rounded-2xl bg-surface-strong/70 border border-border p-3.5 space-y-2.5">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
-          <div className={`h-2 w-2 rounded-full ${isProcessing ? "bg-amber animate-pulse" : run?.status === "completed" ? "bg-emerald" : run?.status === "failed" ? "bg-rose" : "bg-text-muted"}`} />
+          <div
+            className={`h-2 w-2 rounded-full ${
+              isProcessing
+                ? "bg-amber animate-pulse"
+                : status === "completed"
+                ? "bg-emerald"
+                : isFailed
+                ? "bg-rose"
+                : "bg-text-muted"
+            }`}
+          />
           <code className="text-[11px] text-text-secondary truncate font-mono">{runId}</code>
         </div>
-        {run && <StatusBadge status={run.status} small />}
+        {status && <StatusBadge status={status} small />}
       </div>
 
       {loading && !run ? (
@@ -47,6 +64,24 @@ export function RunStatusCard({ runId, run, loading }: Props) {
           </div>
           <div className="text-[12.5px] text-text-primary leading-snug font-medium">
             {truncateTitle(seedPaper.title, 78)}
+          </div>
+        </div>
+      ) : isFailed ? (
+        <div>
+          <div className="text-[11px] uppercase tracking-wider text-rose font-semibold mb-1 flex items-center gap-1">
+            <AlertTriangle className="h-3 w-3" /> Analysis failed
+          </div>
+          <div className="text-[12px] text-text-secondary leading-snug">
+            {userFacingError(rawError, runId).message}
+          </div>
+        </div>
+      ) : isProcessing ? (
+        <div>
+          <div className="text-[11px] uppercase tracking-wider text-text-muted font-semibold mb-1 flex items-center gap-1">
+            <Activity className="h-3 w-3" /> In progress
+          </div>
+          <div className="text-[12px] text-text-secondary leading-snug">
+            Fetching metadata, traversing citations, and extracting evidence…
           </div>
         </div>
       ) : null}

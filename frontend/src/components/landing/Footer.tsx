@@ -18,10 +18,22 @@ export function Footer() {
               CiteGraph-NLP is a confidence-aware citation lineage and research knowledge graph platform for exploring probable foundational papers and study-scale evidence.
             </p>
             <div className="mt-5 flex gap-3">
+              {/* Social links are placeholder for the prototype — render as
+                  disabled (non-link) buttons so they neither trap focus on
+                  href="#" nor scroll the page back to the top.
+                  Replace with real URLs and switch back to <a href=...> when
+                  production accounts are available. */}
               {([["Github", Github], ["Twitter", Twitter], ["LinkedIn", Linkedin], ["Email", Mail]] as const).map(([label, Icon]) => (
-                <a key={label} href="#" className="w-9 h-9 rounded-lg border border-slate-700 grid place-items-center text-slate-300 hover:border-cyan-400/40 hover:text-cyan-300 transition" aria-label={label}>
+                <button
+                  key={label}
+                  type="button"
+                  disabled
+                  aria-label={`${label} (coming soon)`}
+                  title={`${label} link not yet available`}
+                  className="w-9 h-9 rounded-lg border border-slate-800 grid place-items-center text-slate-500 cursor-not-allowed"
+                >
                   <Icon className="w-4 h-4" />
-                </a>
+                </button>
               ))}
             </div>
           </div>

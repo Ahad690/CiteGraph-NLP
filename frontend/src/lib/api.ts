@@ -1,7 +1,40 @@
 import type { ExportFormat, RunResult } from "@/types/api";
 import { mockRun } from "./mock";
 
-export const API_BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:8000";
+/** Resolve the API base URL with environment-aware validation.
+ *  In production we require a non-empty HTTPS URL — silently falling back to
+ *  http://localhost would result in mixed-content failures and confusing
+ *  "Failed to fetch" errors for end users. */
+function resolveApiBase(): string {
+  const fromEnv = import.meta.env.VITE_API_BASE as string | undefined;
+  const isProd = import.meta.env.PROD === true;
+
+  if (fromEnv && fromEnv.trim()) {
+    const trimmed = fromEnv.trim().replace(/\/+$/, "");
+    if (isProd && !trimmed.startsWith("https://")) {
+      // Browsers block http→from https pages anyway; warn loudly so this isn't
+      // a silent prod misconfiguration. We don't throw because some self-hosted
+      // deployments intentionally use http on a private network.
+      // eslint-disable-next-line no-console
+      console.error(
+        `[api] VITE_API_BASE=${trimmed} is not HTTPS in a production build; ` +
+        `requests will be blocked by Mixed Content in browsers served over HTTPS.`,
+      );
+    }
+    return trimmed;
+  }
+
+  if (isProd) {
+    // eslint-disable-next-line no-console
+    console.error(
+      "[api] VITE_API_BASE is not set in this production build. " +
+      "API calls will fall back to http://localhost:8000 and fail in browsers.",
+    );
+  }
+  return "http://localhost:8000";
+}
+
+export const API_BASE = resolveApiBase();
 const ACTIVE_RUN_KEY = "active_run_id";
 
 export class ApiError extends Error {

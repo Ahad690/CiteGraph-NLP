@@ -90,8 +90,17 @@ export function PopulationPage({ run }: { run: RunResult }) {
                       <span
                         role="button"
                         tabIndex={0}
+                        aria-expanded={expanded}
+                        aria-label={expanded ? "Collapse evidence" : "Expand evidence"}
                         onPointerDown={(e) => { e.stopPropagation(); setExpandedRow(expanded ? null : r.paper_id); }}
-                        className="block text-xs text-text-muted italic mt-1 cursor-pointer hover:text-text-secondary"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setExpandedRow(expanded ? null : r.paper_id);
+                          }
+                        }}
+                        className="block text-xs text-text-muted italic mt-1 cursor-pointer hover:text-text-secondary focus:outline-none focus:ring-2 focus:ring-indigo/40 rounded"
                       >
                         "{expanded || r.evidence.length <= 180 ? r.evidence : r.evidence.slice(0, 180) + "…"}"
                       </span>

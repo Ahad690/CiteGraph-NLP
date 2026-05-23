@@ -101,3 +101,18 @@ export interface RunResult {
   warnings: string[];
   created_at: string;
 }
+
+/** Minimal payload returned by GET /api/runs/{id} while a run is still
+ *  in-progress or has failed — the backend omits papers/edges/etc. */
+export interface RunStatusPayload {
+  run_id: string;
+  status: RunStatus;
+  error?: string | null;
+  created_at: string;
+}
+
+/** Raw payload returned by the backend for a run. The completed shape
+ *  carries the full RunResult; the in-progress/failed shape only carries
+ *  the RunStatusPayload fields. Components should normalize via
+ *  `normalizeRun()` before consuming. */
+export type RunPayload = RunResult | RunStatusPayload;

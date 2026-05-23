@@ -49,7 +49,9 @@ jobs:
       - name: Package Backend
         run: |
           set -euo pipefail
-          tar -czf /tmp/citegraph-backend.tar.gz src requirements.txt Dockerfile .dockerignore .env.example
+          tar -czf /tmp/citegraph-backend.tar.gz \
+            src requirements.txt Dockerfile .dockerignore .env.example \
+            scripts/add_citegraph_route.py
 
       - name: Upload Backend Bundle
         run: |
@@ -104,85 +106,76 @@ jobs:
           docker ps --filter "name=$CONTAINER_NAME" --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
           docker logs "$CONTAINER_NAME" --tail 20 2>&1
 
-          # --- Add /citegraph route to Nginx (clean any previous broken state) ---
-          # Clean stray backups first (nginx loads everything in sites-enabled)
-          rm -f /etc/nginx/sites-enabled/*.bak.* /etc/nginx/sites-enabled/*.bak.disabled
+          # --- Add /citegraph route to Nginx (idempotent, with rollback) ---
+          # Clean stray backups in sites-enabled (Nginx loads them too).
+          # Log each deleted file for observability.
+          find /etc/nginx/sites-enabled/ -maxdepth 1 \
+               \( -name '*.bak.*' -o -name '*.bak.disabled' \) \
+               -print -delete 2>/dev/null || true
 
-          # Find the actual config (exclude any .bak just in case)
-          NGINX_CONF=$(grep -rl 'hetzner-api' /etc/nginx/sites-enabled/ 2>/dev/null | grep -v '\.bak' | head -1)
-          echo "=== Found config: $NGINX_CONF ==="
-
-          if [ -n "$NGINX_CONF" ] && [ -f "$NGINX_CONF" ]; then
-            # Backup to a safe location outside sites-enabled
-            mkdir -p /etc/nginx/backups
-            cp "$NGINX_CONF" "/etc/nginx/backups/$(basename "$NGINX_CONF").bak.$(date +%s)"
-
-            # Write Python fix script
-            cat > /tmp/fix_nginx.py <<'PYEOF'
-          import sys
-          CONF = sys.argv[1]
-          with open(CONF) as f:
-              content = f.read()
-          lines = content.split('\n')
-          # Step 1: remove all include lines for citegraph-proxy.conf
-          lines = [l for l in lines if 'citegraph-proxy.conf' not in l]
-          # Step 2: remove existing /citegraph/ location blocks with brace matching
-          result = []
-          i = 0
-          while i < len(lines):
-              if 'location /citegraph/' in lines[i] and '{' in lines[i]:
-                  depth = lines[i].count('{') - lines[i].count('}')
-                  i += 1
-                  while i < len(lines) and depth > 0:
-                      depth += lines[i].count('{') - lines[i].count('}')
-                      i += 1
-                  continue
-              result.append(lines[i])
-              i += 1
-          # Step 3: insert clean /citegraph/ block after /penora/ block
-          final = []
-          in_penora = False
-          depth = 0
-          inserted = False
-          new_block = [
-              '',
-              '    # === CiteGraph backend (port 8002) ===',
-              '    location /citegraph/ {',
-              '        proxy_pass http://127.0.0.1:8002/;',
-              '        proxy_set_header Host $host;',
-              '        proxy_set_header X-Real-IP $remote_addr;',
-              '        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;',
-              '        proxy_set_header X-Forwarded-Proto $scheme;',
-              '    }',
-          ]
-          for line in result:
-              final.append(line)
-              if inserted:
-                  continue
-              if 'location /penora/' in line and '{' in line:
-                  in_penora = True
-                  depth = line.count('{') - line.count('}')
-              elif in_penora:
-                  depth += line.count('{') - line.count('}')
-                  if depth == 0:
-                      in_penora = False
-                      final.extend(new_block)
-                      inserted = True
-          with open(CONF, 'w') as f:
-              f.write('\n'.join(final))
-          print('OK: inserted /citegraph/ block' if inserted else 'WARN: /penora/ block not found')
-          PYEOF
-
-            python3 /tmp/fix_nginx.py "$NGINX_CONF"
-            # Remove leftover include file from previous failed attempts
-            rm -f /etc/nginx/citegraph-proxy.conf
-            echo "=== Updated config ==="
-            cat "$NGINX_CONF"
-            nginx -t && systemctl reload nginx && echo "Nginx reloaded OK"
-          else
-            echo "ERROR: No nginx config found for hetzner-api"
+          # Find the active config in either sites-enabled/ or conf.d/.
+          NGINX_CONF=$(grep -rl 'hetzner-api' \
+                          /etc/nginx/sites-enabled/ \
+                          /etc/nginx/conf.d/ \
+                          2>/dev/null | grep -v '\.bak' | head -1 || true)
+          if [ -z "$NGINX_CONF" ] || [ ! -f "$NGINX_CONF" ]; then
+            echo "ERROR: No Nginx config containing 'hetzner-api' found in sites-enabled/ or conf.d/" >&2
             exit 1
           fi
+          echo "Found active config: $NGINX_CONF"
+
+          # Bounded backup retention: timestamped backups in /etc/nginx/backups,
+          # keep at most the 10 most recent.
+          mkdir -p /etc/nginx/backups
+          BACKUP_PATH="/etc/nginx/backups/$(basename "$NGINX_CONF").bak.$(date +%s)"
+          cp "$NGINX_CONF" "$BACKUP_PATH"
+          echo "Backed up to $BACKUP_PATH"
+          ls -1t /etc/nginx/backups/*.bak.* 2>/dev/null \
+            | tail -n +11 \
+            | xargs -r rm -v
+
+          # Remove leftover legacy include file from earlier failed attempts.
+          rm -f /etc/nginx/citegraph-proxy.conf
+
+          # Edit a temp copy so an aborted script never leaves a broken active config.
+          TMP_CONF="$(mktemp)"
+          cp "$NGINX_CONF" "$TMP_CONF"
+
+          # Run the route-insertion helper against the temp copy.
+          if ! python3 "$REMOTE_DIR/scripts/add_citegraph_route.py" "$TMP_CONF"; then
+            rc=$?
+            echo "ERROR: add_citegraph_route.py failed (exit=$rc); active config left untouched." >&2
+            rm -f "$TMP_CONF"
+            exit "$rc"
+          fi
+
+          # Print just the citegraph block we added — not the whole file — for safe CI logs.
+          echo "--- inserted /citegraph/ block ---"
+          grep -n -A 7 'location /citegraph/' "$TMP_CONF" || true
+          echo "----------------------------------"
+
+          # Swap atomically: replace the live config, run nginx -t, restore on failure.
+          cp "$TMP_CONF" "$NGINX_CONF"
+          rm -f "$TMP_CONF"
+          if ! nginx -t; then
+            echo "ERROR: nginx -t rejected the new config; restoring backup $BACKUP_PATH" >&2
+            cp "$BACKUP_PATH" "$NGINX_CONF"
+            nginx -t  # confirm the restore parses
+            exit 1
+          fi
+          systemctl reload nginx
+          echo "Nginx reloaded with /citegraph/ route"
+
+          # Live smoke test: the proxy must terminate TLS and forward /citegraph/health
+          # to the backend (which returns 200).
+          if ! curl -fsS --max-time 10 \
+                "https://hetzner-api.duckdns.org/citegraph/health" >/dev/null; then
+            echo "ERROR: post-deploy health check via HTTPS proxy failed; restoring backup" >&2
+            cp "$BACKUP_PATH" "$NGINX_CONF"
+            systemctl reload nginx || true
+            exit 1
+          fi
+          echo "Live HTTPS /citegraph/health check OK"
           EOF
 
       - name: Cleanup SSH Key

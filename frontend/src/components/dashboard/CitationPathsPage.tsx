@@ -69,8 +69,12 @@ export function CitationPathsPage({ run }: { run: RunResult }) {
                   const paperItem = getPaperById(run.papers, pid);
                   if (!paperItem) return null;
                   const pop = getPopulationForPaper(run, pid);
+                  // Composite key: a paper can appear in multiple ranked paths
+                  // (and theoretically at multiple positions in one path), so
+                  // bare `pid` is not unique.
+                  const itemKey = `${p.rank}-${idx}-${pid}`;
                   return (
-                    <Fragment key={pid}>
+                    <Fragment key={itemKey}>
                       <button
                         onClick={() => setPaper(paperItem)}
                         className="flex-1 min-w-0 text-left rounded-2xl bg-surface-strong/40 border border-border hover:border-border-strong p-3 transition-colors"
@@ -86,7 +90,7 @@ export function CitationPathsPage({ run }: { run: RunResult }) {
                         </div>
                       </button>
                       {idx < p.paper_ids.length - 1 && (
-                        <div key={`arr-${pid}`} className="flex lg:flex-col items-center justify-center px-2 lg:px-3 gap-1">
+                        <div className="flex lg:flex-col items-center justify-center px-2 lg:px-3 gap-1">
                           <ChevronRight className="h-4 w-4 text-cyan rotate-90 lg:rotate-0" />
                           {p.edge_weights[idx] != null && (
                             <span className="text-[10px] font-mono text-text-muted">{p.edge_weights[idx].toFixed(2)}</span>

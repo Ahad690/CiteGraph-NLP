@@ -119,7 +119,20 @@ export function RankingsPage({ run }: { run: RunResult }) {
                         <Network className="h-3.5 w-3.5" /> View in graph
                       </Link>
                       <button
-                        onClick={() => { navigator.clipboard?.writeText(r.explanation || "").catch(() => {}); toast.success("Explanation copied"); }}
+                        onClick={async () => {
+                          const text = r.explanation || "";
+                          try {
+                            if (!navigator.clipboard) throw new Error("Clipboard API unavailable");
+                            await navigator.clipboard.writeText(text);
+                            toast.success("Explanation copied");
+                          } catch (err) {
+                            toast.error("Couldn't copy to clipboard", {
+                              description: "Clipboard access was denied or unavailable.",
+                            });
+                            // eslint-disable-next-line no-console
+                            console.warn("Clipboard copy failed:", err);
+                          }
+                        }}
                         className="inline-flex items-center gap-2 h-9 px-3 rounded-lg bg-surface-strong/60 border border-border hover:bg-surface-hover text-xs font-semibold text-text-secondary"
                       >
                         <Copy className="h-3.5 w-3.5" /> Copy explanation

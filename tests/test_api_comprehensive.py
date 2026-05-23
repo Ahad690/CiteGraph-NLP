@@ -20,27 +20,39 @@ from citegraph.utils.ids import IdCanonicalizer
 pytestmark = pytest.mark.asyncio
 
 
-async def wait_for_status(client, run_id: str, expected: set[str], timeout: float = 5.0) -> dict:
-    """Poll /api/runs/{run_id} until status is in `expected` or timeout.
+def _observed_status(payload: dict) -> str | None:
+    """Derive a run status from either RunStatus (has `status`) or RunResult
+    (has `papers` + `seed_paper_id` + `citation_edges`). Requires the full
+    set of RunResult markers so a malformed partial response isn't mistaken
+    for a completed run."""
+    if (
+        isinstance(payload.get("papers"), list)
+        and isinstance(payload.get("seed_paper_id"), str)
+        and isinstance(payload.get("citation_edges"), list)
+    ):
+        return payload.get("status") or "completed"
+    return payload.get("status")
 
-    The API returns two different shapes:
-      - RunStatus (has top-level `status`) while running/failed/started
-      - RunResult (has `papers` list, no top-level `status`) when completed
-    We synthesize a `status` for the caller in both cases.
-    """
+
+async def wait_for_status(client, run_id: str, expected: set[str], timeout: float = 5.0) -> dict:
+    """Poll /api/runs/{run_id} until the observed status is in `expected` or
+    timeout. Returns ``{"status": <observed>, "payload": <raw JSON>}`` so
+    callers get the observed-status helper without us mutating the wire
+    payload itself."""
     deadline = asyncio.get_event_loop().time() + timeout
-    last = None
+    last_payload: dict | None = None
+    last_status: str | None = None
     while asyncio.get_event_loop().time() < deadline:
         resp = await client.get(f"/api/runs/{run_id}")
         assert resp.status_code == 200, f"Run GET returned {resp.status_code}"
-        last = resp.json()
-        # A RunResult response (completed run) has `papers` but no `status`
-        if "papers" in last and "status" not in last:
-            last["status"] = "completed"
-        if last.get("status") in expected:
-            return last
+        last_payload = resp.json()
+        last_status = _observed_status(last_payload)
+        if last_status in expected:
+            return {"status": last_status, "payload": last_payload}
         await asyncio.sleep(0.1)
-    raise AssertionError(f"Run {run_id} never reached {expected}; last status={last.get('status') if last else None}")
+    raise AssertionError(
+        f"Run {run_id} never reached {expected}; last observed status={last_status}"
+    )
 
 
 SAMPLE_DOI = "10.1001/jama.2023.1234"
@@ -203,9 +215,12 @@ def _build_completed_result(run_id: str = "deterministic-test-run") -> RunResult
 
 
 @pytest.fixture
-async def completed_run_id() -> str:
-    """Pre-populate the store with a known-good completed run. Returns its ID."""
-    run_id = "deterministic-test-run"
+async def completed_run_id(request) -> str:
+    """Pre-populate the store with a known-good completed run. The run_id is
+    derived from the requesting test's name so parallel runs or scope changes
+    can't collide on a shared fixed ID."""
+    safe_name = "".join(c if c.isalnum() else "_" for c in request.node.name)[:48]
+    run_id = f"deterministic-{safe_name}"
     result = _build_completed_result(run_id)
     await store.create_run(run_id)
     await store.save_result(run_id, result)
@@ -236,13 +251,18 @@ def setup_openalex_mocks(respx_mock):
     mock_openalex_citations(respx_mock, SAMPLE_OPENALEX_ID)
 
 
-def mock_crossref_404(respx_mock):
-    """Stub every Crossref call with a 404. Crossref's tenacity-retry would
-    otherwise take ~14s before giving up against unmocked requests."""
-    import re as _re
+def mock_crossref_not_found(respx_mock):
+    """Stub every Crossref call with a 404 + a realistic Crossref error body.
+    Crossref's tenacity-retry would otherwise take ~14s before giving up
+    against unmocked requests; with a mocked 404 the provider fails fast."""
     respx_mock.route(url__regex=r"^https://api\.crossref\.org/.*").respond(
-        status_code=404, json={"status": "ok", "message": {"items": []}}
+        status_code=404,
+        json={"status": "error", "message-type": "route", "message": "Resource not found."},
     )
+
+
+# Backwards-compatible alias (older callers still import this name).
+mock_crossref_404 = mock_crossref_not_found
 
 
 def mock_europe_pmc_empty(respx_mock):
@@ -504,12 +524,16 @@ class TestGetRun:
             "forward_depth": 0,
         })
         run_id = resp.json()["run_id"]
-        # Poll until the background task transitions out of "started"
+        # Poll until the background task transitions out of "started" — the
+        # status endpoint must surface a meaningful pending/running/terminal
+        # state, not just echo back the initial "started".
         final = await wait_for_status(
             client, run_id, {"running", "completed", "failed"}, timeout=10.0,
         )
         assert final["status"] in {"running", "completed", "failed"}
-        assert final["run_id"] == run_id
+        assert final["payload"]["run_id"] == run_id
+        # The status must not still be "started" — the worker has begun.
+        assert final["status"] != "started"
 
     @respx.mock
     async def test_get_run_with_background_traversal(self, client):
@@ -809,9 +833,10 @@ class TestDatasetExport:
         assert final["status"] in {"completed", "failed"}
         # If completed, the response must include the full RunResult shape
         if final["status"] == "completed":
-            assert "papers" in final
-            assert isinstance(final["papers"], list)
-            assert final["seed_paper_id"]
+            payload = final["payload"]
+            assert "papers" in payload
+            assert isinstance(payload["papers"], list)
+            assert payload["seed_paper_id"]
             # Exports must succeed too
             for fmt in ("json", "csv", "markdown"):
                 r = await client.get(f"/api/runs/{run_id}/export/{fmt}")
