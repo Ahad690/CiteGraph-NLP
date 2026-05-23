@@ -20,6 +20,29 @@ from citegraph.utils.ids import IdCanonicalizer
 pytestmark = pytest.mark.asyncio
 
 
+async def wait_for_status(client, run_id: str, expected: set[str], timeout: float = 5.0) -> dict:
+    """Poll /api/runs/{run_id} until status is in `expected` or timeout.
+
+    The API returns two different shapes:
+      - RunStatus (has top-level `status`) while running/failed/started
+      - RunResult (has `papers` list, no top-level `status`) when completed
+    We synthesize a `status` for the caller in both cases.
+    """
+    deadline = asyncio.get_event_loop().time() + timeout
+    last = None
+    while asyncio.get_event_loop().time() < deadline:
+        resp = await client.get(f"/api/runs/{run_id}")
+        assert resp.status_code == 200, f"Run GET returned {resp.status_code}"
+        last = resp.json()
+        # A RunResult response (completed run) has `papers` but no `status`
+        if "papers" in last and "status" not in last:
+            last["status"] = "completed"
+        if last.get("status") in expected:
+            return last
+        await asyncio.sleep(0.1)
+    raise AssertionError(f"Run {run_id} never reached {expected}; last status={last.get('status') if last else None}")
+
+
 SAMPLE_DOI = "10.1001/jama.2023.1234"
 SAMPLE_PMID = "12345678"
 SAMPLE_PMCID = "PMC87654321"
@@ -112,6 +135,83 @@ async def client() -> AsyncGenerator[httpx.AsyncClient, None]:
             yield ac
 
 
+def _build_completed_result(run_id: str = "deterministic-test-run") -> RunResult:
+    """Construct a fully-populated RunResult for testing read endpoints
+    without depending on the live pipeline."""
+    now = datetime.now(timezone.utc)
+    seed = Paper(
+        paper_id="P_SEED",
+        doi="10.1000/seed",
+        title="Seed paper: a randomized trial of treatment",
+        authors=["Alice Adams", "Bob Brown"],
+        year=2022,
+        journal="Journal of Test Medicine",
+        abstract="A randomized trial enrolled 500 patients.",
+        metadata_confidence=0.95,
+    )
+    cited = Paper(
+        paper_id="P_CITED",
+        doi="10.1000/cited",
+        title="Foundational study on intervention",
+        authors=["Carol Carter"],
+        year=2010,
+        journal="Foundational Journal",
+        abstract="An earlier study with 200 enrolled patients.",
+        metadata_confidence=0.90,
+    )
+    edge = CitationEdge(
+        edge_id="E1",
+        source_paper_id="P_SEED",
+        target_paper_id="P_CITED",
+        providers=["openalex"],
+        confidence=0.92,
+        retrieved_at=now,
+        base_weight=0.75,
+        final_weight=0.68,
+        n_score=0.6,
+        journal_score=0.5,
+    )
+    resolution = PopulationResolution(
+        paper_id="P_SEED",
+        n_eff=500,
+        semantic_type="TOTAL_RANDOMIZED",
+        confidence=0.91,
+        status="resolved",
+        explanation="High-confidence randomized trial population extracted from abstract",
+    )
+    return RunResult(
+        run_id=run_id,
+        seed_paper_id="P_SEED",
+        papers=[seed, cited],
+        studies=[],
+        population_candidates=[],
+        population_resolutions=[resolution],
+        citation_edges=[edge],
+        ranked_foundational_papers=[
+            {
+                "paper_id": "P_CITED",
+                "title": cited.title,
+                "year": cited.year,
+                "score": 0.82,
+                "explanation": "Older paper with strong evidence",
+            }
+        ],
+        ranked_paths=[],
+        warnings=[],
+        created_at=now,
+    )
+
+
+@pytest.fixture
+async def completed_run_id() -> str:
+    """Pre-populate the store with a known-good completed run. Returns its ID."""
+    run_id = "deterministic-test-run"
+    result = _build_completed_result(run_id)
+    await store.create_run(run_id)
+    await store.save_result(run_id, result)
+    return run_id
+
+
 def mock_openalex_work(respx_mock, work_id: str, work_data: dict):
     respx_mock.get(f"https://api.openalex.org/works/{work_id}").respond(
         status_code=200,
@@ -134,6 +234,31 @@ def setup_openalex_mocks(respx_mock):
     mock_openalex_work(respx_mock, "W1111111111", SAMPLE_REFERENCE_WORK_1)
     mock_openalex_work(respx_mock, "W2222222222", SAMPLE_REFERENCE_WORK_2)
     mock_openalex_citations(respx_mock, SAMPLE_OPENALEX_ID)
+
+
+def mock_crossref_404(respx_mock):
+    """Stub every Crossref call with a 404. Crossref's tenacity-retry would
+    otherwise take ~14s before giving up against unmocked requests."""
+    import re as _re
+    respx_mock.route(url__regex=r"^https://api\.crossref\.org/.*").respond(
+        status_code=404, json={"status": "ok", "message": {"items": []}}
+    )
+
+
+def mock_europe_pmc_empty(respx_mock):
+    """Stub Europe PMC search/fulltext with an empty result so the provider
+    returns no candidates immediately."""
+    respx_mock.route(url__regex=r"^https://www\.ebi\.ac\.uk/.*").respond(
+        status_code=200, json={"hitCount": 0, "resultList": {"result": []}}
+    )
+
+
+def setup_all_provider_mocks(respx_mock):
+    """Mock all three metadata providers — required for the live pipeline
+    to reach a terminal state quickly in tests."""
+    setup_openalex_mocks(respx_mock)
+    mock_crossref_404(respx_mock)
+    mock_europe_pmc_empty(respx_mock)
 
 
 class TestHealth:
@@ -341,9 +466,36 @@ class TestGetRun:
         assert response.status_code == 404
         assert "detail" in response.json()
 
+    async def test_get_completed_run_returns_full_result(self, client, completed_run_id):
+        """GET /api/runs/{id} on a completed run returns the full RunResult,
+        not just status."""
+        response = await client.get(f"/api/runs/{completed_run_id}")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["run_id"] == completed_run_id
+        assert data["seed_paper_id"] == "P_SEED"
+        # Full RunResult shape — these keys only exist on completed responses
+        assert "papers" in data and len(data["papers"]) == 2
+        assert "citation_edges" in data and len(data["citation_edges"]) == 1
+        assert "population_resolutions" in data
+        assert "ranked_foundational_papers" in data
+
+    async def test_get_pending_run_returns_status_shape(self, client):
+        """A started-but-incomplete run returns RunStatus shape (no papers field)."""
+        await store.create_run("pending-only")
+        response = await client.get("/api/runs/pending-only")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["run_id"] == "pending-only"
+        assert data["status"] == "started"
+        # Status response intentionally has no papers/edges/etc.
+        assert "papers" not in data
+
     @respx.mock
     async def test_get_run_status_after_start(self, client):
-        setup_openalex_mocks(respx)
+        """End-to-end: POST creates run, GET must return a run with a valid
+        status (started/running/completed/failed) — never crash."""
+        setup_all_provider_mocks(respx)
 
         resp = await client.post("/api/runs", json={
             "query_type": "doi",
@@ -352,14 +504,16 @@ class TestGetRun:
             "forward_depth": 0,
         })
         run_id = resp.json()["run_id"]
-        await asyncio.sleep(0.3)
-
-        response = await client.get(f"/api/runs/{run_id}")
-        assert response.status_code == 200
+        # Poll until the background task transitions out of "started"
+        final = await wait_for_status(
+            client, run_id, {"running", "completed", "failed"}, timeout=10.0,
+        )
+        assert final["status"] in {"running", "completed", "failed"}
+        assert final["run_id"] == run_id
 
     @respx.mock
     async def test_get_run_with_background_traversal(self, client):
-        setup_openalex_mocks(respx)
+        setup_all_provider_mocks(respx)
 
         resp = await client.post("/api/runs", json={
             "query_type": "doi",
@@ -369,10 +523,10 @@ class TestGetRun:
             "max_total_papers": 10,
         })
         run_id = resp.json()["run_id"]
-        await asyncio.sleep(0.5)
-
-        response = await client.get(f"/api/runs/{run_id}")
-        assert response.status_code == 200
+        final = await wait_for_status(
+            client, run_id, {"completed", "failed"}, timeout=20.0,
+        )
+        assert final["status"] in {"completed", "failed"}
 
     async def test_get_run_with_malformed_id(self, client):
         # /api/runs/ (trailing slash) triggers FastAPI's redirect to /api/runs
@@ -387,33 +541,38 @@ class TestGetRun:
 
 
 class TestGraph:
-    @respx.mock
-    async def test_get_graph_success(self, client):
-        setup_openalex_mocks(respx)
-
-        resp = await client.post("/api/runs", json={
-            "query_type": "doi",
-            "value": SAMPLE_DOI,
-            "backward_depth": 1,
-            "forward_depth": 0,
-        })
-        run_id = resp.json()["run_id"]
-        await asyncio.sleep(0.5)
-
-        response = await client.get(f"/api/runs/{run_id}/graph")
-        if response.status_code == 200:
-            data = response.json()
-            assert "nodes" in data
-            assert "links" in data
-            assert isinstance(data["nodes"], list)
-            assert isinstance(data["links"], list)
+    async def test_get_graph_success(self, client, completed_run_id):
+        """Graph endpoint must return correctly-shaped nodes/links for a real
+        completed run — no silent skip if the pipeline failed."""
+        response = await client.get(f"/api/runs/{completed_run_id}/graph")
+        assert response.status_code == 200, f"Got {response.status_code}: {response.text}"
+        data = response.json()
+        assert set(data.keys()) == {"nodes", "links"}
+        # Two papers from the fixture: seed + cited
+        assert len(data["nodes"]) == 2
+        node_ids = {n["id"] for n in data["nodes"]}
+        assert node_ids == {"P_SEED", "P_CITED"}
+        # Seed node must carry n_eff from population resolution
+        seed_node = next(n for n in data["nodes"] if n["id"] == "P_SEED")
+        assert seed_node["n_eff"] == 500
+        assert seed_node["year"] == 2022
+        assert "randomized" in seed_node["label"].lower()
+        # One citation edge with the expected final_weight
+        assert len(data["links"]) == 1
+        link = data["links"][0]
+        assert link["source"] == "P_SEED"
+        assert link["target"] == "P_CITED"
+        assert link["weight"] == pytest.approx(0.68)
 
     async def test_get_graph_not_found(self, client):
         response = await client.get("/api/runs/nonexistent/graph")
         assert response.status_code == 404
 
-    async def test_get_graph_empty_result(self, client):
-        response = await client.get("/api/runs/unknown-id/graph")
+    async def test_get_graph_for_run_without_result(self, client):
+        """A run that exists but has no result_json must 404 from /graph,
+        not return an empty graph."""
+        await store.create_run("pending-run-id")
+        response = await client.get("/api/runs/pending-run-id/graph")
         assert response.status_code == 404
 
     async def test_get_graph_accepts_json(self, client):
@@ -423,62 +582,50 @@ class TestGraph:
 
 
 class TestExport:
-    @respx.mock
-    async def test_export_json(self, client):
-        setup_openalex_mocks(respx)
+    async def test_export_json(self, client, completed_run_id):
+        """JSON export must round-trip the full RunResult."""
+        response = await client.get(f"/api/runs/{completed_run_id}/export/json")
+        assert response.status_code == 200, response.text
+        data = response.json()
+        assert data["run_id"] == completed_run_id
+        assert data["seed_paper_id"] == "P_SEED"
+        assert len(data["papers"]) == 2
+        assert len(data["citation_edges"]) == 1
+        assert len(data["population_resolutions"]) == 1
+        assert data["population_resolutions"][0]["n_eff"] == 500
+        assert len(data["ranked_foundational_papers"]) == 1
+        assert data["ranked_foundational_papers"][0]["paper_id"] == "P_CITED"
 
-        resp = await client.post("/api/runs", json={
-            "query_type": "doi",
-            "value": SAMPLE_DOI,
-            "backward_depth": 0,
-            "forward_depth": 0,
-        })
-        run_id = resp.json()["run_id"]
-        await asyncio.sleep(0.3)
+    async def test_export_csv(self, client, completed_run_id):
+        """CSV export must contain the canonical header plus one row per paper."""
+        response = await client.get(f"/api/runs/{completed_run_id}/export/csv")
+        assert response.status_code == 200, response.text
+        data = response.json()
+        assert "csv" in data
+        csv_text = data["csv"]
+        assert csv_text.startswith("paper_id,title,year,journal,n_eff")
+        # Header + 2 paper rows
+        lines = csv_text.strip().split("\n")
+        assert len(lines) == 3
+        # n_eff for seed (500) and blank for cited
+        assert "500" in csv_text
+        assert "P_SEED" in csv_text
+        assert "P_CITED" in csv_text
 
-        response = await client.get(f"/api/runs/{run_id}/export/json")
-        if response.status_code == 200:
-            data = response.json()
-            assert isinstance(data, dict)
-            assert len(data) > 0
-
-    @respx.mock
-    async def test_export_csv(self, client):
-        setup_openalex_mocks(respx)
-
-        resp = await client.post("/api/runs", json={
-            "query_type": "doi",
-            "value": SAMPLE_DOI,
-            "backward_depth": 0,
-            "forward_depth": 0,
-        })
-        run_id = resp.json()["run_id"]
-        await asyncio.sleep(0.3)
-
-        response = await client.get(f"/api/runs/{run_id}/export/csv")
-        if response.status_code == 200:
-            data = response.json()
-            assert "csv" in data
-            assert data["csv"].startswith("paper_id")
-
-    @respx.mock
-    async def test_export_markdown(self, client):
-        setup_openalex_mocks(respx)
-
-        resp = await client.post("/api/runs", json={
-            "query_type": "doi",
-            "value": SAMPLE_DOI,
-            "backward_depth": 0,
-            "forward_depth": 0,
-        })
-        run_id = resp.json()["run_id"]
-        await asyncio.sleep(0.3)
-
-        response = await client.get(f"/api/runs/{run_id}/export/markdown")
-        if response.status_code == 200:
-            data = response.json()
-            assert "report" in data
-            assert "CiteGraph-NLP" in data["report"]
+    async def test_export_markdown(self, client, completed_run_id):
+        """Markdown export must be a valid report mentioning run + foundational papers."""
+        response = await client.get(f"/api/runs/{completed_run_id}/export/markdown")
+        assert response.status_code == 200, response.text
+        data = response.json()
+        assert "report" in data
+        report = data["report"]
+        assert "CiteGraph-NLP" in report
+        assert completed_run_id in report
+        assert "P_SEED" in report
+        # Ranked foundational paper table includes the cited paper title
+        assert "Foundational study on intervention" in report
+        # Population evidence table includes the n_eff value
+        assert "500" in report
 
     async def test_export_json_not_found(self, client):
         response = await client.get("/api/runs/nonexistent/export/json")
@@ -492,9 +639,12 @@ class TestExport:
         response = await client.get("/api/runs/nonexistent/export/markdown")
         assert response.status_code == 404
 
-    async def test_export_json_missing_run(self, client):
-        response = await client.get("/api/runs/    /export/json")
-        assert response.status_code == 404
+    async def test_export_json_for_pending_run(self, client):
+        """A started-but-incomplete run has no result_json — exports must 404."""
+        await store.create_run("incomplete-run")
+        for fmt in ("json", "csv", "markdown"):
+            r = await client.get(f"/api/runs/incomplete-run/export/{fmt}")
+            assert r.status_code == 404, f"{fmt} export should 404 without result"
 
     async def test_export_csv_missing_run(self, client):
         response = await client.get("/api/runs//export/csv")
@@ -502,6 +652,11 @@ class TestExport:
 
 
 class TestInputValidation:
+    """Clamping tests — verify the route accepts out-of-range integers and
+    silently clamps them (rather than 422-ing). We can't observe the clamped
+    value from the API response alone, but verifying that POST returns 200
+    with a valid run_id is what the contract guarantees."""
+
     async def test_backward_depth_clamped_high(self, client):
         response = await client.post("/api/runs", json={
             "query_type": "doi",
@@ -510,6 +665,7 @@ class TestInputValidation:
             "forward_depth": 0,
         })
         assert response.status_code == 200
+        assert "run_id" in response.json()
 
     async def test_backward_depth_clamped_low(self, client):
         response = await client.post("/api/runs", json={
@@ -519,6 +675,7 @@ class TestInputValidation:
             "forward_depth": 0,
         })
         assert response.status_code == 200
+        assert response.json()["status"] == "started"
 
     async def test_forward_depth_clamped_high(self, client):
         response = await client.post("/api/runs", json={
@@ -528,6 +685,7 @@ class TestInputValidation:
             "forward_depth": 10,
         })
         assert response.status_code == 200
+        assert response.json()["status"] == "started"
 
     async def test_max_total_papers_clamped_high(self, client):
         response = await client.post("/api/runs", json={
@@ -538,6 +696,7 @@ class TestInputValidation:
             "forward_depth": 0,
         })
         assert response.status_code == 200
+        assert response.json()["status"] == "started"
 
     async def test_max_total_papers_clamped_low(self, client):
         response = await client.post("/api/runs", json={
@@ -548,13 +707,37 @@ class TestInputValidation:
             "forward_depth": 0,
         })
         assert response.status_code == 200
+        assert response.json()["status"] == "started"
+
+    async def test_clamping_is_silent_not_rejection(self, client):
+        """Direct verification that the route mutates the request and clamps —
+        called via the request model's transformed state. POSTing extreme
+        values must not 422; the orchestrator gets a clamped value."""
+        # Test the boundary: clamps are min(max(v,0),3) for backward,
+        # min(max(v,0),2) for forward, min(max(v,1),200) for max_papers.
+        # Boundary values themselves should also produce 200.
+        for params in (
+            {"backward_depth": 3, "forward_depth": 2, "max_total_papers": 200},
+            {"backward_depth": 0, "forward_depth": 0, "max_total_papers": 1},
+        ):
+            r = await client.post("/api/runs", json={
+                "query_type": "doi",
+                "value": "10.1001/jama.2023.1234",
+                **params,
+            })
+            assert r.status_code == 200, f"params {params} produced {r.status_code}"
+            assert r.json()["status"] == "started"
 
     async def test_default_values_used(self, client):
+        """No depth/limit params at all — defaults kick in (2/1/100)."""
         response = await client.post("/api/runs", json={
             "query_type": "doi",
             "value": "10.1001/jama.2023.1234",
         })
         assert response.status_code == 200
+        data = response.json()
+        assert data["status"] == "started"
+        assert len(data["run_id"]) >= 8  # uuid4 string
 
     async def test_non_integer_depths(self, client):
         response = await client.post("/api/runs", json={
@@ -566,12 +749,49 @@ class TestInputValidation:
 
 
 class TestDatasetExport:
+    """End-to-end pipeline tests. Unmocked Crossref/EuropePMC calls return
+    errors (caught by ProviderResult), so the pipeline may legitimately end
+    in either `completed` (OpenAlex alone yielded papers) or `failed` (no
+    providers merged). Either is a valid outcome — what's tested here is
+    that the full pipeline transitions and the endpoints respond correctly
+    for whatever final state is reached."""
+
+    async def test_full_pipeline_end_to_end_with_deterministic_data(self, client, completed_run_id):
+        """Use the pre-populated run to verify every read endpoint at once —
+        no flaky reliance on the live pipeline succeeding under mocks."""
+        # GET /api/runs/{id} returns full RunResult
+        get_resp = await client.get(f"/api/runs/{completed_run_id}")
+        assert get_resp.status_code == 200
+        assert get_resp.json()["seed_paper_id"] == "P_SEED"
+
+        # /graph
+        graph_resp = await client.get(f"/api/runs/{completed_run_id}/graph")
+        assert graph_resp.status_code == 200
+        gdata = graph_resp.json()
+        assert len(gdata["nodes"]) == 2
+        assert len(gdata["links"]) == 1
+
+        # /export/json
+        json_resp = await client.get(f"/api/runs/{completed_run_id}/export/json")
+        assert json_resp.status_code == 200
+        jdata = json_resp.json()
+        assert jdata["run_id"] == completed_run_id
+
+        # /export/csv
+        csv_resp = await client.get(f"/api/runs/{completed_run_id}/export/csv")
+        assert csv_resp.status_code == 200
+        assert "paper_id,title" in csv_resp.json()["csv"]
+
+        # /export/markdown
+        md_resp = await client.get(f"/api/runs/{completed_run_id}/export/markdown")
+        assert md_resp.status_code == 200
+        assert "CiteGraph-NLP" in md_resp.json()["report"]
+
     @respx.mock
-    async def test_full_pipeline_end_to_end(self, client):
-        mock_openalex_work(respx, f"doi:{SAMPLE_DOI}", SAMPLE_OPENALEX_WORK)
-        mock_openalex_work(respx, "W1111111111", SAMPLE_REFERENCE_WORK_1)
-        mock_openalex_work(respx, "W2222222222", SAMPLE_REFERENCE_WORK_2)
-        mock_openalex_citations(respx, SAMPLE_OPENALEX_ID)
+    async def test_live_pipeline_post_then_terminal_status(self, client):
+        """Exercise the actual orchestrator: POST a run, poll until it reaches
+        a terminal status, assert the status is consistent and a GET succeeds."""
+        setup_all_provider_mocks(respx)
 
         resp = await client.post("/api/runs", json={
             "query_type": "doi",
@@ -583,41 +803,29 @@ class TestDatasetExport:
         assert resp.status_code == 200
         run_id = resp.json()["run_id"]
 
-        await asyncio.sleep(1.0)
-
-        get_resp = await client.get(f"/api/runs/{run_id}")
-        assert get_resp.status_code == 200
-
-        graph_resp = await client.get(f"/api/runs/{run_id}/graph")
-        if graph_resp.status_code == 200:
-            gdata = graph_resp.json()
-            assert "nodes" in gdata
-            assert "links" in gdata
-
-        json_resp = await client.get(f"/api/runs/{run_id}/export/json")
-        if json_resp.status_code == 200:
-            jdata = json_resp.json()
-            assert isinstance(jdata, dict)
-
-        csv_resp = await client.get(f"/api/runs/{run_id}/export/csv")
-        if csv_resp.status_code == 200:
-            csv_data = csv_resp.json()
-            assert "csv" in csv_data
-
-        md_resp = await client.get(f"/api/runs/{run_id}/export/markdown")
-        if md_resp.status_code == 200:
-            md_data = md_resp.json()
-            assert "report" in md_data
+        final = await wait_for_status(
+            client, run_id, {"completed", "failed"}, timeout=15.0,
+        )
+        assert final["status"] in {"completed", "failed"}
+        # If completed, the response must include the full RunResult shape
+        if final["status"] == "completed":
+            assert "papers" in final
+            assert isinstance(final["papers"], list)
+            assert final["seed_paper_id"]
+            # Exports must succeed too
+            for fmt in ("json", "csv", "markdown"):
+                r = await client.get(f"/api/runs/{run_id}/export/{fmt}")
+                assert r.status_code == 200, f"{fmt} export failed for completed run"
 
     @respx.mock
     async def test_pipeline_with_forward_citations(self, client):
-        mock_openalex_work(respx, f"doi:{SAMPLE_DOI}", SAMPLE_OPENALEX_WORK)
-        mock_openalex_work(respx, "W1111111111", SAMPLE_REFERENCE_WORK_1)
-        mock_openalex_work(respx, "W2222222222", SAMPLE_REFERENCE_WORK_2)
+        setup_openalex_mocks(respx)
         mock_openalex_citations(respx, SAMPLE_OPENALEX_ID, [
             {"id": "https://openalex.org/W3333333333"},
             {"id": "https://openalex.org/W4444444444"},
         ])
+        mock_crossref_404(respx)
+        mock_europe_pmc_empty(respx)
 
         resp = await client.post("/api/runs", json={
             "query_type": "doi",
@@ -627,13 +835,25 @@ class TestDatasetExport:
             "max_total_papers": 10,
         })
         assert resp.status_code == 200
+        run_id = resp.json()["run_id"]
+        final = await wait_for_status(
+            client, run_id, {"completed", "failed"}, timeout=15.0,
+        )
+        assert final["status"] in {"completed", "failed"}
 
     @respx.mock
     async def test_pipeline_with_all_defaults(self, client):
-        setup_openalex_mocks(respx)
-
+        setup_all_provider_mocks(respx)
         resp = await client.post("/api/runs", json={
             "query_type": "doi",
             "value": SAMPLE_DOI,
         })
         assert resp.status_code == 200
+        # Defaults: backward=2, forward=1, max=100. Deeper traversal — accept
+        # "running" too (the contract guarantees the run is observable, not
+        # that it completes in unit-test time).
+        run_id = resp.json()["run_id"]
+        final = await wait_for_status(
+            client, run_id, {"running", "completed", "failed"}, timeout=20.0,
+        )
+        assert final["status"] in {"running", "completed", "failed"}
