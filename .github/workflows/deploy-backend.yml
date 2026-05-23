@@ -105,12 +105,14 @@ jobs:
           docker logs "$CONTAINER_NAME" --tail 20 2>&1
 
           # --- Add /citegraph route to Nginx (clean any previous broken state) ---
-          NGINX_CONF=$(grep -rl 'hetzner-api' /etc/nginx/sites-enabled/ 2>/dev/null | head -1)
+          # Clean stray backups first (nginx loads everything in sites-enabled)
+          rm -f /etc/nginx/sites-enabled/*.bak.* /etc/nginx/sites-enabled/*.bak.disabled
+
+          # Find the actual config (exclude any .bak just in case)
+          NGINX_CONF=$(grep -rl 'hetzner-api' /etc/nginx/sites-enabled/ 2>/dev/null | grep -v '\.bak' | head -1)
           echo "=== Found config: $NGINX_CONF ==="
 
-          if [ -n "$NGINX_CONF" ]; then
-            # Clean up any prior backups left in sites-enabled (nginx loads them too)
-            rm -f /etc/nginx/sites-enabled/*.bak.* /etc/nginx/sites-enabled/leadgen.bak.disabled
+          if [ -n "$NGINX_CONF" ] && [ -f "$NGINX_CONF" ]; then
             # Backup to a safe location outside sites-enabled
             mkdir -p /etc/nginx/backups
             cp "$NGINX_CONF" "/etc/nginx/backups/$(basename "$NGINX_CONF").bak.$(date +%s)"
