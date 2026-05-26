@@ -44,10 +44,31 @@ export function normalizeRun(payload: RunPayload): RunResult {
     ranked_foundational_papers: completed
       ? (payload as RunResult).ranked_foundational_papers ?? []
       : [],
-    ranked_paths: completed ? (payload as RunResult).ranked_paths ?? [] : [],
+    ranked_paths: completed ? normalizeRankedPaths((payload as RunResult).ranked_paths ?? []) : [],
     warnings: completed ? (payload as RunResult).warnings ?? [] : [],
     created_at: base.created_at ?? new Date().toISOString(),
   };
+}
+
+function normalizeRankedPaths(paths: RunResult["ranked_paths"]): RunResult["ranked_paths"] {
+  return paths.map((path, index) => {
+    const legacyPathIds = Array.isArray(path.path) ? path.path : [];
+    const paperIds = Array.isArray(path.paper_ids) ? path.paper_ids : legacyPathIds;
+    const pathScore = typeof path.path_score === "number" ? path.path_score : path.score ?? 0;
+    const pathLength =
+      typeof path.path_length === "number" ? path.path_length : Math.max(paperIds.length - 1, 0);
+
+    return {
+      ...path,
+      rank: typeof path.rank === "number" && path.rank > 0 ? path.rank : index + 1,
+      path_score: pathScore,
+      paper_ids: paperIds,
+      edge_weights: Array.isArray(path.edge_weights) ? path.edge_weights : [],
+      average_confidence:
+        typeof path.average_confidence === "number" ? path.average_confidence : pathScore,
+      path_length: pathLength,
+    };
+  });
 }
 
 /** Backend error strings can contain stack traces, file paths, or provider

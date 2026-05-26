@@ -94,9 +94,19 @@ class GraphAnalytics:
             path_score = avg_weight * path_confidence * depth_bonus
             
             ranked_paths.append({
+                "rank": 0,
                 "path": path,
                 "score": path_score,
-                "titles": [self.graph.nodes[node].get('title', node) for node in path]
+                "titles": [self.graph.nodes[node].get('title', node) for node in path],
+                "paper_ids": path,
+                "path_score": path_score,
+                "edge_weights": edge_weights,
+                "average_confidence": sum(edge_confidences) / len(edge_confidences),
+                "path_length": len(path) - 1,
+                "explanation": "Citation path ranked by edge weight, edge confidence, and path depth."
             })
 
-        return sorted(ranked_paths, key=lambda x: x["score"], reverse=True)[:top_n]
+        ranked_paths = sorted(ranked_paths, key=lambda x: x["score"], reverse=True)[:top_n]
+        for idx, path in enumerate(ranked_paths, start=1):
+            path["rank"] = idx
+        return ranked_paths

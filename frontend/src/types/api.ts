@@ -86,6 +86,9 @@ export interface RankedPath {
   average_confidence: number;
   path_length: number;
   explanation?: string;
+  path?: string[];
+  score?: number;
+  titles?: string[];
 }
 
 export interface RunResult {

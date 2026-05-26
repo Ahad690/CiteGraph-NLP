@@ -69,3 +69,23 @@ def test_rank_foundational_papers_empty_graph_returns_empty():
     early-return guard in rank_foundational_papers."""
     analytics = GraphAnalytics(nx.DiGraph())
     assert analytics.rank_foundational_papers() == []
+
+
+def test_rank_paths_returns_frontend_compatible_shape():
+    g = nx.DiGraph()
+    g.add_node("seed", title="Seed Paper")
+    g.add_node("middle", title="Middle Paper")
+    g.add_node("old", title="Old Paper")
+    g.add_edge("seed", "middle", weight=0.8, confidence=0.9)
+    g.add_edge("middle", "old", weight=0.7, confidence=0.8)
+
+    ranked = GraphAnalytics(g).rank_paths("seed", top_n=10)
+
+    assert ranked
+    first = ranked[0]
+    assert first["rank"] == 1
+    assert first["paper_ids"] == first["path"]
+    assert first["path_score"] == first["score"]
+    assert first["path_length"] == len(first["paper_ids"]) - 1
+    assert isinstance(first["edge_weights"], list)
+    assert 0.0 <= first["average_confidence"] <= 1.0
