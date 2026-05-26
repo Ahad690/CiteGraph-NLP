@@ -29,6 +29,39 @@ function Require-Command {
     }
 }
 
+function Start-DevPowerShell {
+    param(
+        [string]$Command
+    )
+
+    $EncodedCommand = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($Command))
+    Start-Process powershell -ArgumentList @(
+        "-NoExit",
+        "-ExecutionPolicy", "Bypass",
+        "-EncodedCommand", $EncodedCommand
+    )
+}
+
+function Wait-HttpEndpoint {
+    param(
+        [string]$Url,
+        [int]$TimeoutSeconds = 60
+    )
+
+    $Deadline = (Get-Date).AddSeconds($TimeoutSeconds)
+    while ((Get-Date) -lt $Deadline) {
+        try {
+            Invoke-WebRequest -Uri $Url -UseBasicParsing -TimeoutSec 2 | Out-Null
+            return $true
+        }
+        catch {
+            Start-Sleep -Seconds 2
+        }
+    }
+
+    return $false
+}
+
 if ($BackendOnly -and $FrontendOnly) {
     throw "Use either -BackendOnly or -FrontendOnly, not both."
 }
@@ -83,13 +116,12 @@ Set-Location -LiteralPath "$Root"
 & "$VenvPython" -m uvicorn citegraph.api.main:app --reload --host 127.0.0.1 --port $BackendPort
 "@
 
-    Start-Process powershell -ArgumentList @(
-        "-NoExit",
-        "-ExecutionPolicy", "Bypass",
-        "-Command", $BackendCommand
-    )
-
     Write-Host "Backend starting at http://localhost:$BackendPort"
+    Start-DevPowerShell -Command $BackendCommand
+
+    if (-not (Wait-HttpEndpoint -Url "http://localhost:$BackendPort/health" -TimeoutSeconds 75)) {
+        Write-Warning "Backend did not answer /health within 75 seconds. Check the backend PowerShell window for the traceback."
+    }
 }
 
 if (-not $BackendOnly) {
@@ -99,13 +131,8 @@ Set-Location -LiteralPath "$FrontendDir"
 npm run dev -- --host 127.0.0.1 --port $FrontendPort
 "@
 
-    Start-Process powershell -ArgumentList @(
-        "-NoExit",
-        "-ExecutionPolicy", "Bypass",
-        "-Command", $FrontendCommand
-    )
-
     Write-Host "Frontend starting at http://localhost:$FrontendPort"
+    Start-DevPowerShell -Command $FrontendCommand
 }
 
 Write-Host ""
@@ -114,6 +141,6 @@ Write-Host "Backend health: http://localhost:$BackendPort/health"
 Write-Host "Frontend:       http://localhost:$FrontendPort"
 
 if (-not $NoBrowser -and -not $BackendOnly) {
-    Start-Sleep -Seconds 3
+    Wait-HttpEndpoint -Url "http://localhost:$FrontendPort" -TimeoutSeconds 45 | Out-Null
     Start-Process "http://localhost:$FrontendPort"
 }
