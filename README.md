@@ -514,7 +514,17 @@ All configuration is in `src/citegraph/config.py` via `pydantic-settings`. Overr
 
 ### One-command full project run
 
-For a local demo, the full app can be started with Docker Compose:
+Optional but recommended: set an OpenAlex polite-pool email before starting the stack.
+
+```bash
+# macOS/Linux
+export OPENALEX_EMAIL=your_email@example.com
+
+# Windows PowerShell
+$env:OPENALEX_EMAIL="your_email@example.com"
+```
+
+For a local demo/development run, the full app can then be started with one Docker Compose command:
 
 ```bash
 docker compose up --build
@@ -527,6 +537,10 @@ This starts:
 - Backend health check: `http://localhost:8000/health`
 - API docs: `http://localhost:8000/docs`
 - GROBID service: `http://localhost:8070`
+
+This Compose setup runs the frontend Vite dev server and the FastAPI development service. It is intended for local demos, not production hosting.
+
+Application data is stored in a Docker named volume (`citegraph_data`) so the demo does not create root-owned files in the local `data/` directory on Linux.
 
 To stop everything:
 
