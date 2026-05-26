@@ -173,10 +173,14 @@ jobs:
           systemctl reload nginx
           echo "Nginx reloaded with /citegraph/ route"
 
-          # Live smoke test: the proxy must terminate TLS and forward /citegraph/health
-          # to the backend (which returns 200).
-          if ! curl -fsS --max-time 10 \
-                "https://hetzner-api.duckdns.org/citegraph/health" >/dev/null; then
+          # Live smoke test: verify TLS termination + /citegraph proxying.
+          # Use --resolve so transient public DNS issues on the host do not
+          # cause false deploy failures.
+          PROXY_DOMAIN="hetzner-api.duckdns.org"
+          PROXY_HEALTH_URL="https://${PROXY_DOMAIN}/citegraph/health"
+          if ! curl -fsS --max-time 15 --retry 3 --retry-delay 2 \
+                --resolve "${PROXY_DOMAIN}:443:127.0.0.1" \
+                "$PROXY_HEALTH_URL" >/dev/null; then
             echo "ERROR: post-deploy health check via HTTPS proxy failed; restoring backup" >&2
             cp "$BACKUP_PATH" "$NGINX_CONF"
             systemctl reload nginx || true
