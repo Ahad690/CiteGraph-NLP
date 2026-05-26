@@ -166,6 +166,7 @@ playwright-report/
 # -----------------------------
 .local/
 .localhost/
+.firebase/
 
 # Frontend & Landing Page subproject ignores
 frontend/.output/

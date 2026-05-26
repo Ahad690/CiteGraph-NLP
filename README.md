@@ -6,6 +6,13 @@ CiteGraph-NLP is an NLP + Knowledge Graph system for analyzing scientific papers
 
 The project is a research prototype that makes uncertainty visible using confidence scores, provenance tracking, and ambiguity labels.
 
+## Group Members
+
+- M. Ahad Imran (F23607034)
+- Syed Zain-ul-Abidin (F23607031)
+- Hamza Abdul Karim (F23607046)
+- M. Usman Nasir (F23607004)
+
 ---
 
 ## What It Does
@@ -505,13 +512,39 @@ All configuration is in `src/citegraph/config.py` via `pydantic-settings`. Overr
 
 ## Docker
 
+### One-command full project run
+
+For a local demo, the full app can be started with Docker Compose:
+
 ```bash
-# Build and run the API
+docker compose up --build
+```
+
+This starts:
+
+- Frontend: `http://localhost:5173`
+- Backend API: `http://localhost:8000`
+- Backend health check: `http://localhost:8000/health`
+- API docs: `http://localhost:8000/docs`
+- GROBID service: `http://localhost:8070`
+
+To stop everything:
+
+```bash
+docker compose down
+```
+
+### Backend-only Docker run
+
+```bash
 docker build -t citegraph-api .
 docker run -p 8000:8000 citegraph-api
+```
 
-# Or use docker-compose for the full stack
-docker compose up
+### Optional Neo4j profile
+
+```bash
+docker compose --profile neo4j up --build
 ```
 
 ---

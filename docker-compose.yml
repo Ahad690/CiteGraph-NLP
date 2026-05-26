@@ -1,6 +1,47 @@
 version: "3.9"
 
 services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: citegraph-api
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: development
+      LOG_LEVEL: INFO
+      OPENALEX_EMAIL: ${OPENALEX_EMAIL:-muhammadahadf23@nutech.edu.pk}
+      ENABLE_OPENALEX: "true"
+      ENABLE_CROSSREF: "true"
+      ENABLE_EUROPE_PMC: "true"
+      DATA_DIR: /app/data
+      SQLITE_PATH: /app/data/cache/citegraph.sqlite
+      GROBID_URL: http://grobid:8070
+      ENABLE_GROBID: "true"
+      DEFAULT_BACKWARD_DEPTH: "2"
+      DEFAULT_FORWARD_DEPTH: "1"
+      DEFAULT_MAX_TOTAL_PAPERS: "100"
+      WEIGHT_ALPHA: "0.75"
+      WEIGHT_BETA: "0.25"
+      N_REFERENCE: "100000"
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - grobid
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: citegraph-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_BASE: http://localhost:8000
+    depends_on:
+      - backend
+
   grobid:
     image: lfoppiano/grobid:0.8.0
     container_name: citegraph-grobid
