@@ -40,7 +40,7 @@ export function Footer() {
 
           <FooterCol title="Product" items={[
             ["Features", "#features"], ["How It Works", "#how-it-works"],
-            ["Citation Graph", "#showcase"], ["Pricing", "#pricing"], ["Demo", "/dashboard/demo"],
+            ["Citation Graph", "#showcase"], /* ["Pricing", "#pricing"], */ ["Demo", "/dashboard/demo"],
           ]} />
           <FooterCol title="Resources" items={[
             ["Documentation", "#"], ["API Reference", "#"], ["Research Notes", "#"],

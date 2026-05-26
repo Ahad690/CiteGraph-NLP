@@ -9,7 +9,7 @@ import { HowItWorks } from "@/components/landing/HowItWorks";
 import { ConfidenceSection } from "@/components/landing/ConfidenceSection";
 import { KnowledgeGraphSection } from "@/components/landing/KnowledgeGraphSection";
 import { UseCases } from "@/components/landing/UseCases";
-import { Pricing } from "@/components/landing/Pricing";
+// import { Pricing } from "@/components/landing/Pricing";
 import { Testimonials } from "@/components/landing/Testimonials";
 import { FAQ } from "@/components/landing/FAQ";
 import { FinalCTA } from "@/components/landing/FinalCTA";
@@ -49,7 +49,7 @@ function Landing() {
         <ConfidenceSection />
         <KnowledgeGraphSection />
         <UseCases />
-        <Pricing />
+        {/* <Pricing /> */}
         <Testimonials />
         <FAQ />
         <FinalCTA />
