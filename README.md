@@ -582,6 +582,9 @@ docker compose --profile neo4j up --build
 ### Result Snapshot
 - [https://citegraph-nlp1.web.app/export/2c9e2880-64c2-4511-906d-aa48a6cb40ff](https://citegraph-nlp1.web.app/export/2c9e2880-64c2-4511-906d-aa48a6cb40ff)
 
+### Demo Video
+https://github.com/Ahad690/CiteGraph-NLP/blob/main/docs/submission/NLP_Project_Demo.mp4
+
 
 ## Limitations
 
