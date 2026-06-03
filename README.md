@@ -565,13 +565,13 @@ docker compose --profile neo4j up --build
 
 ### Demo URL + Sample Input Frontend
 - **Local:** `http://localhost:`
-- **Live:** [https://citegraphnlp.web.app/](https://citegraphnlp.web.app/)
+- **Live:** [https://citegraph-nlp1.web.app/](https://citegraph-nlp1.web.app/)
 
 ### API
 - **Local docs:** `http://localhost:/docs`
 
 ### Health Check
-- [https://hetznerapi.duckdns.org/citegraph/health](https://hetznerapi.duckdns.org/citegraph/health)
+- [https://hetzner-api.duckdns.org/citegraph/health](https://hetzner-api.duckdns.org/citegraph/health)
 
 ### Sample DOI
 - `10.1038/s41467-021-23458-5`
