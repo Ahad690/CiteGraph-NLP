@@ -563,6 +563,26 @@ docker compose --profile neo4j up --build
 
 ---
 
+### Demo URL + Sample Input Frontend
+- **Local:** `http://localhost:`
+- **Live:** [https://citegraphnlp.web.app/](https://citegraphnlp.web.app/)
+
+### API
+- **Local docs:** `http://localhost:/docs`
+
+### Health Check
+- [https://hetznerapi.duckdns.org/citegraph/health](https://hetznerapi.duckdns.org/citegraph/health)
+
+### Sample DOI
+- `10.1038/s41467-021-23458-5`
+
+### Paper Used in Demo
+- **Title:** [Nature Communications](https://www.nature.com/articles/s41467-021-23458-5)
+
+### Result Snapshot
+- [https://citegraph-nlp1.web.app/export/2c9e2880-64c2-4511-906d-aa48a6cb40ff](https://citegraph-nlp1.web.app/export/2c9e2880-64c2-4511-906d-aa48a6cb40ff)
+
+
 ## Limitations
 
 - Citation coverage depends on public metadata APIs (OpenAlex, Crossref, Europe PMC)
