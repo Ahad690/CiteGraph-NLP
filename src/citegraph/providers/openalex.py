@@ -4,7 +4,12 @@ from typing import Any, Optional
 from datetime import datetime
 from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
 
-from citegraph.providers.base import MetadataProvider, ProviderResult, is_transient_error
+from citegraph.providers.base import (
+    MetadataProvider,
+    ProviderResult,
+    get_shared_client,
+    is_transient_error,
+)
 from citegraph.models.paper import Paper, PaperQuery
 from citegraph.models.citation import CitationEdge
 from citegraph.config import settings
@@ -37,10 +42,12 @@ class OpenAlexProvider:
         reraise=True,
     )
     async def _get(self, endpoint: str, params: dict[str, Any]) -> dict[str, Any]:
-        async with httpx.AsyncClient(headers=self.headers, timeout=20.0) as client:
-            response = await client.get(f"{self.base_url}{endpoint}", params=params)
-            response.raise_for_status()
-            return response.json()
+        client = await get_shared_client()
+        response = await client.get(
+            f"{self.base_url}{endpoint}", params=params, headers=self.headers
+        )
+        response.raise_for_status()
+        return response.json()
 
     async def resolve(self, query: PaperQuery) -> ProviderResult:
         try:

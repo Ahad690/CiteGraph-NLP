@@ -3,7 +3,7 @@ import logging
 import re
 from typing import Any, Optional
 from datetime import datetime
-from citegraph.providers.base import MetadataProvider, ProviderResult
+from citegraph.providers.base import MetadataProvider, ProviderResult, get_shared_client
 from citegraph.models.paper import Paper, PaperQuery
 from citegraph.models.citation import CitationEdge
 from citegraph.utils.ids import IdCanonicalizer
@@ -113,21 +113,24 @@ class EuropePMCProvider:
             if not search_query:
                 return ProviderResult(error=f"Unsupported Europe PMC query type: {query.query_type}")
                 
-            async with httpx.AsyncClient(timeout=15.0) as client:
-                response = await client.get(
-                    f"{self.base_url}/search", 
-                    params={"query": search_query, "format": "json", "resultType": "core"}
-                )
-                response.raise_for_status()
-                data = response.json()
-                
-                results = data.get("resultList", {}).get("result", [])
-                if not results:
-                    return ProviderResult(error=f"No results found in Europe PMC for {search_query}")
-                
-                paper_data = results[0]
-                paper = self._map_to_paper(paper_data)
-                return ProviderResult(paper=paper, raw_data=paper_data)
+            client = await get_shared_client()
+            response = await client.get(
+                f"{self.base_url}/search",
+                params={"query": search_query, "format": "json", "resultType": "core"}
+            )
+            response.raise_for_status()
+            data = response.json()
+
+            # An explicit null here would otherwise raise, the same way a null
+            # primary_location did in the OpenAlex mapper.
+            result_list = data.get("resultList")
+            results = (result_list or {}).get("result") or []
+            if not results:
+                return ProviderResult(error=f"No results found in Europe PMC for {search_query}")
+
+            paper_data = results[0]
+            paper = self._map_to_paper(paper_data)
+            return ProviderResult(paper=paper, raw_data=paper_data)
         except Exception as e:
             logger.error(f"Europe PMC resolution failed: {e}")
             return ProviderResult(error=str(e))
@@ -140,9 +143,9 @@ class EuropePMCProvider:
             pmid=IdCanonicalizer.canonicalize(data.get("pmid")),
             pmcid=IdCanonicalizer.canonicalize(data.get("pmcid")),
             title=data.get("title", "Unknown Title"),
-            authors=[a.get("fullName") for a in data.get("authorList", {}).get("author", []) if a.get("fullName")],
+            authors=[a.get("fullName") for a in ((data.get("authorList") or {}).get("author") or []) if a.get("fullName")],
             year=int(data.get("pubYear")) if data.get("pubYear") else None,
-            journal=data.get("journalInfo", {}).get("journal", {}).get("title"),
+            journal=((data.get("journalInfo") or {}).get("journal") or {}).get("title"),
             abstract=data.get("abstractText"),
             source_ids={"europe_pmc": paper_id},
             metadata_confidence=0.85,

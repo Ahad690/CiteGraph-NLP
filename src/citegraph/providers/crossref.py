@@ -4,7 +4,12 @@ from typing import Any
 from datetime import datetime
 from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
 
-from citegraph.providers.base import MetadataProvider, ProviderResult, is_transient_error
+from citegraph.providers.base import (
+    MetadataProvider,
+    ProviderResult,
+    get_shared_client,
+    is_transient_error,
+)
 from citegraph.models.paper import Paper, PaperQuery
 from citegraph.models.citation import CitationEdge
 from citegraph.utils.ids import IdCanonicalizer
@@ -25,10 +30,10 @@ class CrossrefProvider:
         reraise=True,
     )
     async def _get(self, endpoint: str, params: dict[str, Any]) -> dict[str, Any]:
-        async with httpx.AsyncClient(timeout=20.0) as client:
-            response = await client.get(f"{self.base_url}{endpoint}", params=params)
-            response.raise_for_status()
-            return response.json()
+        client = await get_shared_client()
+        response = await client.get(f"{self.base_url}{endpoint}", params=params)
+        response.raise_for_status()
+        return response.json()
 
     async def resolve(self, query: PaperQuery) -> ProviderResult:
         try:
@@ -37,7 +42,7 @@ class CrossrefProvider:
                 work_data = data.get("message", {})
             elif query.query_type == "title":
                 results = await self._get("/works", {"query.title": query.value, "rows": 1})
-                items = results.get("message", {}).get("items", [])
+                items = (results.get("message") or {}).get("items") or []
                 if not items:
                     return ProviderResult(error="No results found for title")
                 work_data = items[0]
@@ -64,7 +69,7 @@ class CrossrefProvider:
         
         # Parse year
         year = None
-        issued = data.get("issued", {}).get("date-parts", [[]])[0]
+        issued = ((data.get("issued") or {}).get("date-parts") or [[]])[0]
         if issued:
             year = issued[0]
 
@@ -85,7 +90,7 @@ class CrossrefProvider:
         # but sometimes they are in the 'reference' field.
         try:
             data = await self._get(f"/works/{paper_id}", {})
-            references = data.get("message", {}).get("reference", [])
+            references = (data.get("message") or {}).get("reference") or []
             edges = []
             for ref in references:
                 # Crossref returns DOIs in mixed case; canonicalize so a reference

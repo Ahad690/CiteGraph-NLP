@@ -15,6 +15,7 @@ from citegraph.models.paper import PaperQuery
 from citegraph.models.run import RunResult
 from citegraph.pipeline.orchestrator import PipelineOrchestrator
 from citegraph.graph.builder import GraphBuilder
+from citegraph.providers.base import close_shared_client
 from citegraph.utils.tasks import task_manager
 
 router = APIRouter()
@@ -57,6 +58,7 @@ async def startup_event():
 async def shutdown_event():
     await task_manager.shutdown(timeout=15.0)
     await store.close()
+    await close_shared_client()
 
 @router.post("/runs", response_model=Dict[str, str])
 async def start_run(request: RunRequest, background_tasks: BackgroundTasks):
