@@ -16,6 +16,36 @@ from citegraph.utils.tasks import TaskManager
 pytestmark = pytest.mark.asyncio
 
 
+def make_uncooperative_task():
+    """Create a task that suppresses CancelledError, plus a way to stop it.
+
+    The task refuses to die while ``stop`` is unset, which is what the shutdown
+    invariant needs. Cleanup must not use ``asyncio.wait_for``: on timeout it
+    cancels the task and awaits the cancellation, which never completes for a
+    task that swallows CancelledError, hanging the whole test session. Setting
+    ``stop`` lets the next cancellation break the loop for real.
+    """
+    stop = asyncio.Event()
+
+    async def uncooperative():
+        while not stop.is_set():
+            try:
+                await asyncio.sleep(5)
+            except asyncio.CancelledError:
+                # Refuse to die — this used to hang shutdown forever.
+                continue
+
+    return asyncio.create_task(uncooperative()), stop
+
+
+async def stop_task(task, stop, timeout: float = 0.5):
+    """Let an uncooperative task exit, then wait without ever re-awaiting it."""
+    stop.set()
+    task.cancel()
+    # asyncio.wait always returns after the timeout, unlike wait_for.
+    await asyncio.wait({task}, timeout=timeout)
+
+
 async def test_empty_shutdown_is_noop():
     tm = TaskManager()
     # Should not raise or hang
@@ -64,15 +94,7 @@ async def test_uncooperative_task_does_not_hang_past_timeout():
     from asyncio.wait_for(gather(...)) to asyncio.wait(pending, timeout=)."""
     tm = TaskManager()
 
-    async def uncooperative():
-        while True:
-            try:
-                await asyncio.sleep(5)
-            except asyncio.CancelledError:
-                # Refuse to die — this used to hang shutdown forever.
-                continue
-
-    t = asyncio.create_task(uncooperative())
+    t, stop = make_uncooperative_task()
     tm.register(t)
     await asyncio.sleep(0.01)
 
@@ -88,12 +110,8 @@ async def test_uncooperative_task_does_not_hang_past_timeout():
     # The straggler is preserved (not cleared by default)
     assert any(not t.done() for t in tm._tasks)
 
-    # Clean up — actually cancel for real to avoid leaking into other tests
-    t.cancel()
-    try:
-        await asyncio.wait_for(t, timeout=0.5)
-    except (asyncio.CancelledError, asyncio.TimeoutError, BaseException):
-        pass
+    # Clean up — actually stop it so it can't leak into other tests
+    await stop_task(t, stop)
 
 
 async def test_force_clear_drops_stragglers():
@@ -102,23 +120,11 @@ async def test_force_clear_drops_stragglers():
     cycles or test invocations."""
     tm = TaskManager()
 
-    async def uncooperative():
-        while True:
-            try:
-                await asyncio.sleep(5)
-            except asyncio.CancelledError:
-                continue
-
-    t = asyncio.create_task(uncooperative())
+    t, stop = make_uncooperative_task()
     tm.register(t)
     await asyncio.sleep(0.01)
 
     await tm.shutdown(timeout=0.2, force_clear=True)
     assert tm._tasks == set(), "force_clear=True must empty _tasks"
 
-    # Cleanup
-    t.cancel()
-    try:
-        await asyncio.wait_for(t, timeout=0.5)
-    except (asyncio.CancelledError, asyncio.TimeoutError, BaseException):
-        pass
+    await stop_task(t, stop)

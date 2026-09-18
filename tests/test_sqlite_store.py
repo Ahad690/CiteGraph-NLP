@@ -14,10 +14,27 @@ from unittest.mock import patch
 
 import aiosqlite
 import pytest
+from aiosqlite.context import Result
 
 from citegraph.storage.sqlite import SQLiteStore, SQLiteStoreError
 
 pytestmark = pytest.mark.asyncio
+
+
+def execute_double(handler):
+    """Wrap an async handler so it stands in for aiosqlite's Connection.execute.
+
+    The real method is decorated with aiosqlite's own ``contextmanager``, so its
+    return value can either be awaited or used as an async context manager. A
+    bare ``async def`` double only supports ``await``, which makes any caller
+    using ``async with db.execute(...)`` fail with a confusing TypeError about
+    the coroutine protocol rather than exercising the behaviour under test.
+    """
+
+    def wrapper(query, params=()):
+        return Result(handler(query, params))
+
+    return wrapper
 
 
 @pytest.fixture
@@ -48,7 +65,7 @@ async def test_non_lock_operational_error_is_not_retried(store):
         call_count["n"] += 1
         raise aiosqlite.OperationalError("disk I/O error")
 
-    with patch.object(store._db, "execute", side_effect=boom):
+    with patch.object(store._db, "execute", side_effect=execute_double(boom)):
         with pytest.raises(SQLiteStoreError) as exc_info:
             await store.create_run("r-fail")
 
@@ -64,7 +81,7 @@ async def test_programming_error_surfaces(store):
     async def boom(query, params=()):
         raise aiosqlite.ProgrammingError("Wrong number of bindings")
 
-    with patch.object(store._db, "execute", side_effect=boom):
+    with patch.object(store._db, "execute", side_effect=execute_double(boom)):
         with pytest.raises(SQLiteStoreError) as exc_info:
             await store.create_run("r-bad")
 
@@ -83,7 +100,7 @@ async def test_lock_error_is_retried_then_succeeds(store):
             raise aiosqlite.OperationalError("database is locked")
         return await real_execute(query, params)
 
-    with patch.object(store._db, "execute", side_effect=flaky):
+    with patch.object(store._db, "execute", side_effect=execute_double(flaky)):
         await store.create_run("r-lock")
 
     assert attempts["n"] == 3, "Should have retried twice then succeeded"
@@ -100,7 +117,7 @@ async def test_lock_error_retry_budget_is_bounded(store):
         attempts["n"] += 1
         raise aiosqlite.OperationalError("database is locked")
 
-    with patch.object(store._db, "execute", side_effect=always_locked):
+    with patch.object(store._db, "execute", side_effect=execute_double(always_locked)):
         with pytest.raises(SQLiteStoreError) as exc_info:
             await store.create_run("r-stuck")
 
@@ -121,7 +138,7 @@ async def test_get_run_also_retries_under_lock(store):
             raise aiosqlite.OperationalError("database is locked")
         return await real_execute(query, params)
 
-    with patch.object(store._db, "execute", side_effect=flaky):
+    with patch.object(store._db, "execute", side_effect=execute_double(flaky)):
         row = await store.get_run("r-read")
 
     assert row is not None
@@ -145,7 +162,7 @@ async def test_backoff_uses_jitter(store):
         sleeps.append(delay)
         await real_sleep(0)  # don't actually wait
 
-    with patch.object(store._db, "execute", side_effect=boom), \
+    with patch.object(store._db, "execute", side_effect=execute_double(boom)), \
          patch("citegraph.storage.sqlite.asyncio.sleep", side_effect=record_sleep):
         with pytest.raises(SQLiteStoreError):
             await store.create_run("r-jitter")
