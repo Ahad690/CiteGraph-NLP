@@ -2,11 +2,12 @@ import httpx
 import logging
 from typing import Any
 from datetime import datetime
-from tenacity import retry, stop_after_attempt, wait_exponential
+from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
 
-from citegraph.providers.base import MetadataProvider, ProviderResult
+from citegraph.providers.base import MetadataProvider, ProviderResult, is_transient_error
 from citegraph.models.paper import Paper, PaperQuery
 from citegraph.models.citation import CitationEdge
+from citegraph.utils.ids import IdCanonicalizer
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +17,13 @@ class CrossrefProvider:
     def __init__(self):
         self.base_url = "https://api.crossref.org"
 
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        # Do not burn the backoff budget on a definitive 404.
+        retry=retry_if_exception(is_transient_error),
+        reraise=True,
+    )
     async def _get(self, endpoint: str, params: dict[str, Any]) -> dict[str, Any]:
         async with httpx.AsyncClient(timeout=20.0) as client:
             response = await client.get(f"{self.base_url}{endpoint}", params=params)
@@ -81,7 +88,9 @@ class CrossrefProvider:
             references = data.get("message", {}).get("reference", [])
             edges = []
             for ref in references:
-                ref_doi = ref.get("DOI")
+                # Crossref returns DOIs in mixed case; canonicalize so a reference
+                # also seen via OpenAlex collapses onto the same graph node.
+                ref_doi = IdCanonicalizer.canonicalize(ref.get("DOI") or "")
                 if ref_doi:
                     edges.append(CitationEdge(
                         edge_id=f"{paper_id}_cites_{ref_doi}",

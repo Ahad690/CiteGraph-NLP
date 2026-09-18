@@ -16,6 +16,7 @@ from citegraph.models.citation import CitationEdge
 from citegraph.models.population import PopulationResolution
 from citegraph.models.run import RunResult
 from citegraph.utils.ids import IdCanonicalizer
+from citegraph.config import settings
 
 pytestmark = pytest.mark.asyncio
 
@@ -234,14 +235,51 @@ def mock_openalex_work(respx_mock, work_id: str, work_data: dict):
     )
 
 
+BATCH_WORKS = {
+    "W1111111111": SAMPLE_REFERENCE_WORK_1,
+    "W2222222222": SAMPLE_REFERENCE_WORK_2,
+    SAMPLE_OPENALEX_ID: SAMPLE_OPENALEX_WORK,
+}
+
+
 def mock_openalex_citations(respx_mock, citing_work_id: str, results: list | None = None):
-    respx_mock.get(
-        "https://api.openalex.org/works",
-        params={"filter": f"cites:{citing_work_id}", "per_page": 50},
-    ).respond(
-        status_code=200,
-        json={"results": results or []},
-    )
+    """Stub the /works collection endpoint.
+
+    The provider queries this one path three ways — ``cites:`` for forward
+    citations and ``openalex_id:`` / ``doi:`` for batched metadata — so the
+    route dispatches on the filter rather than pinning an exact query string.
+    """
+    citing_results = results or []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        filter_value = request.url.params.get("filter", "")
+        empty = {"results": [], "meta": {"next_cursor": None}}
+
+        if filter_value.startswith("cites:"):
+            return httpx.Response(
+                200, json={"results": citing_results, "meta": {"next_cursor": None}}
+            )
+
+        if filter_value.startswith("openalex_id:"):
+            wanted = filter_value.split(":", 1)[1].split("|")
+            return httpx.Response(200, json={
+                "results": [BATCH_WORKS[w] for w in wanted if w in BATCH_WORKS],
+                "meta": {"next_cursor": None},
+            })
+
+        if filter_value.startswith("doi:"):
+            wanted = {d.lower() for d in filter_value.split(":", 1)[1].split("|")}
+            return httpx.Response(200, json={
+                "results": [
+                    w for w in BATCH_WORKS.values()
+                    if IdCanonicalizer.canonicalize(w.get("doi", "")) in wanted
+                ],
+                "meta": {"next_cursor": None},
+            })
+
+        return httpx.Response(200, json=empty)
+
+    respx_mock.get("https://api.openalex.org/works").mock(side_effect=handler)
 
 
 def setup_openalex_mocks(respx_mock):
@@ -279,6 +317,59 @@ def setup_all_provider_mocks(respx_mock):
     setup_openalex_mocks(respx_mock)
     mock_crossref_404(respx_mock)
     mock_europe_pmc_empty(respx_mock)
+
+
+class TestApiKeyAuth:
+    """API-key gating is opt-in: unset means open (local demo), set means enforced."""
+
+    async def test_open_when_api_key_unset(self, client):
+        assert settings.api_key is None
+        resp = await client.get("/api/runs/does-not-exist")
+        # Reaches the handler (404 from the store), not the auth layer.
+        assert resp.status_code == 404
+
+    async def test_rejects_missing_key_when_configured(self, client, monkeypatch):
+        monkeypatch.setattr(settings, "api_key", "s3cret-key")
+        resp = await client.get("/api/runs/does-not-exist")
+        assert resp.status_code == 401
+
+    async def test_rejects_wrong_key(self, client, monkeypatch):
+        monkeypatch.setattr(settings, "api_key", "s3cret-key")
+        resp = await client.get(
+            "/api/runs/does-not-exist", headers={"X-API-Key": "wrong"}
+        )
+        assert resp.status_code == 401
+
+    async def test_accepts_correct_key(self, client, monkeypatch):
+        monkeypatch.setattr(settings, "api_key", "s3cret-key")
+        resp = await client.get(
+            "/api/runs/does-not-exist", headers={"X-API-Key": "s3cret-key"}
+        )
+        assert resp.status_code == 404, "valid key should reach the handler"
+
+    async def test_health_is_not_gated(self, client, monkeypatch):
+        """/health sits outside the router, so probes keep working."""
+        monkeypatch.setattr(settings, "api_key", "s3cret-key")
+        resp = await client.get("/health")
+        assert resp.status_code == 200
+
+
+class TestCors:
+    async def test_configured_origin_is_allowed(self, client):
+        resp = await client.get(
+            "/health", headers={"Origin": "http://localhost:5173"}
+        )
+        assert resp.headers.get("access-control-allow-origin") == "http://localhost:5173"
+
+    async def test_unknown_origin_gets_no_cors_header(self, client):
+        resp = await client.get("/health", headers={"Origin": "https://evil.test"})
+        assert "access-control-allow-origin" not in resp.headers
+
+    async def test_no_wildcard_origin(self, client):
+        resp = await client.get(
+            "/health", headers={"Origin": "http://localhost:5173"}
+        )
+        assert resp.headers.get("access-control-allow-origin") != "*"
 
 
 class TestHealth:
@@ -393,16 +484,38 @@ class TestStartRun:
 
     @respx.mock
     async def test_start_run_with_pdf_path(self, client):
+        """A pdf_path inside the uploads directory is accepted."""
         setup_openalex_mocks(respx)
 
         response = await client.post("/api/runs", json={
             "query_type": "doi",
             "value": SAMPLE_DOI,
-            "pdf_path": "/path/to/paper.pdf",
+            "pdf_path": "paper.pdf",
             "backward_depth": 0,
             "forward_depth": 0,
         })
         assert response.status_code == 200
+
+    @respx.mock
+    async def test_start_run_rejects_pdf_path_outside_uploads(self, client):
+        """pdf_path must not escape the uploads directory, so that wiring up
+        PDF parsing later cannot become an arbitrary-file-read."""
+        setup_openalex_mocks(respx)
+
+        for bad_path in (
+            "/etc/passwd.pdf",
+            "../../../../etc/shadow.pdf",
+            "uploads/../../secrets.pdf",
+            "notapdf.txt",
+        ):
+            response = await client.post("/api/runs", json={
+                "query_type": "doi",
+                "value": SAMPLE_DOI,
+                "pdf_path": bad_path,
+                "backward_depth": 0,
+                "forward_depth": 0,
+            })
+            assert response.status_code == 422, f"{bad_path} should be rejected"
 
     @respx.mock
     async def test_start_run_with_custom_limits(self, client):

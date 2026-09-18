@@ -1,8 +1,19 @@
+import heapq
+import logging
 import networkx as nx
+from datetime import datetime, timezone
 from typing import List, Dict, Any
 import math
 
+logger = logging.getLogger(__name__)
+
+
 class GraphAnalytics:
+    # Safety valve: a densely interlinked citation graph can contain an
+    # astronomical number of simple paths. Stop enumerating well before that
+    # rather than letting a single run stall the whole analysis.
+    MAX_PATHS_EXAMINED = 50_000
+
     def __init__(self, graph: nx.DiGraph):
         self.graph = graph
 
@@ -20,7 +31,9 @@ class GraphAnalytics:
         # 2. Older (Year bonus)
         # 3. High evidence quality (N_eff and confidence)
         
-        current_year = 2026 # For demo purposes
+        # Derived, not hardcoded: a pinned year silently skews the age bonus
+        # for every paper once the calendar moves past it.
+        current_year = datetime.now(timezone.utc).year
         
         results = []
         for paper_id, influence_score in pagerank.items():
@@ -55,58 +68,94 @@ class GraphAnalytics:
             
         return sorted(results, key=lambda x: x["score"], reverse=True)[:top_n]
 
+    def _iter_paths(self, seed_id: str, cutoff: int = 4):
+        """Yield every simple path leaving the seed, in a single traversal.
+
+        Calling ``nx.all_simple_paths(seed, target)`` once per target re-walks
+        the entire reachable subgraph for every node in the graph, so the cost
+        is multiplied by the node count while producing the same set of paths.
+        One depth-limited DFS yields each path exactly once.
+        """
+        stack = [[seed_id]]
+        while stack:
+            path = stack.pop()
+            if len(path) > 1:
+                yield path
+            if len(path) - 1 >= cutoff:
+                continue
+            for successor in self.graph.successors(path[-1]):
+                # Paths are at most cutoff+1 long, so a scan beats a set here.
+                if successor not in path:
+                    stack.append(path + [successor])
+
+    def _score_path(self, path: List[str]) -> tuple:
+        """Return (score, edge_weights, edge_confidences) for one citation path."""
+        edge_weights = []
+        edge_confidences = []
+        for i in range(len(path) - 1):
+            edge_data = self.graph.get_edge_data(path[i], path[i + 1]) or {}
+            edge_weights.append(edge_data.get('weight', 1.0))
+            edge_confidences.append(edge_data.get('confidence', 1.0))
+
+        avg_weight = sum(edge_weights) / len(edge_weights)
+        path_confidence = 1.0
+        for c in edge_confidences:
+            path_confidence *= c
+
+        depth_bonus = 1.0 / (len(path) ** 0.5)
+        return avg_weight * path_confidence * depth_bonus, edge_weights, edge_confidences
+
     def rank_paths(self, seed_id: str, top_n: int = 10) -> List[Dict[str, Any]]:
-        """Rank citation paths from seed paper to older papers."""
+        """Rank citation paths from the seed paper toward older papers.
+
+        Only the best ``top_n`` paths are returned, so candidates are streamed
+        through a bounded heap instead of being materialised. A densely
+        interlinked topic can contain tens of thousands of simple paths, and
+        building a result dict for every one of them (only to discard all but
+        ten) dominated the runtime of a whole analysis.
+        """
         if seed_id not in self.graph:
             return []
 
-        # Find all paths from seed to nodes with no outgoing edges (leaf nodes/foundational)
-        # Or just all paths of length > 1
-        all_paths = []
-        for node in self.graph.nodes:
-            if node == seed_id:
-                continue
-            
-            # Find all simple paths
-            try:
-                paths = list(nx.all_simple_paths(self.graph, seed_id, node, cutoff=4))
-                all_paths.extend(paths)
-            except nx.NetworkXNoPath:
-                continue
+        best: List[tuple] = []  # min-heap of (score, tiebreak, path, weights, confs)
+        tiebreak = 0
+        examined = 0
+        truncated = False
+
+        for path in self._iter_paths(seed_id):
+            examined += 1
+            if examined > self.MAX_PATHS_EXAMINED:
+                truncated = True
+                break
+
+            score, weights, confs = self._score_path(path)
+            entry = (score, tiebreak, path, weights, confs)
+            tiebreak += 1
+            if len(best) < top_n:
+                heapq.heappush(best, entry)
+            elif score > best[0][0]:
+                heapq.heapreplace(best, entry)
+
+        if truncated:
+            logger.warning(
+                "Path search hit the %d-path cap; ranking the best of those examined.",
+                self.MAX_PATHS_EXAMINED,
+            )
 
         ranked_paths = []
-        for path in all_paths:
-            # path_score = average(final_edge_weight) * path_confidence * depth_bonus
-            edge_weights = []
-            edge_confidences = []
-            
-            for i in range(len(path) - 1):
-                edge_data = self.graph.get_edge_data(path[i], path[i+1])
-                edge_weights.append(edge_data.get('weight', 1.0))
-                edge_confidences.append(edge_data.get('confidence', 1.0))
-
-            avg_weight = sum(edge_weights) / len(edge_weights)
-            path_confidence = 1.0
-            for c in edge_confidences:
-                path_confidence *= c
-                
-            depth_bonus = 1.0 / (len(path) ** 0.5)
-            path_score = avg_weight * path_confidence * depth_bonus
-            
+        for rank, (score, _, path, weights, confs) in enumerate(
+            sorted(best, key=lambda e: e[0], reverse=True), start=1
+        ):
             ranked_paths.append({
-                "rank": 0,
+                "rank": rank,
                 "path": path,
-                "score": path_score,
-                "titles": [self.graph.nodes[node].get('title', node) for node in path],
+                "score": score,
+                "titles": [self.graph.nodes[n].get('title', n) for n in path],
                 "paper_ids": path,
-                "path_score": path_score,
-                "edge_weights": edge_weights,
-                "average_confidence": sum(edge_confidences) / len(edge_confidences),
+                "path_score": score,
+                "edge_weights": weights,
+                "average_confidence": sum(confs) / len(confs),
                 "path_length": len(path) - 1,
                 "explanation": "Citation path ranked by edge weight, edge confidence, and path depth."
             })
-
-        ranked_paths = sorted(ranked_paths, key=lambda x: x["score"], reverse=True)[:top_n]
-        for idx, path in enumerate(ranked_paths, start=1):
-            path["rank"] = idx
         return ranked_paths
