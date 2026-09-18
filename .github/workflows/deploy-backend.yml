@@ -1,35 +1,38 @@
 name: Deploy Backend to Hetzner
 
 on:
-  # Manual only. The hardcoded HETZNER_HOST below (46.225.8.77) was deleted on
-  # 2026-05-31 and CiteGraph is not currently deployed anywhere, so an
-  # automatic push trigger would fail on every commit that touches src/.
-  # Restore the push block once a live target host exists (and set the host
-  # from a secret rather than hardcoding it).
   workflow_dispatch:
-  # push:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - 'src/**'
-  #     - 'requirements.txt'
-  #     - 'Dockerfile'
-  #     - '.dockerignore'
-  #     - 'scripts/deploy_to_hetzner.ps1'
-  #     - '.github/workflows/deploy-backend.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'requirements.txt'
+      - 'Dockerfile'
+      - '.dockerignore'
+      - 'scripts/deploy_to_hetzner.ps1'
+      - '.github/workflows/deploy-backend.yml'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      HETZNER_HOST: 46.225.8.77
+      # Prefer the secret so the host can be repointed without a code change.
+      # The fallback is penora-prod-2; the previous box (46.225.8.77) was
+      # deleted on 2026-05-31.
+      HETZNER_HOST: ${{ secrets.HETZNER_HOST || '167.233.240.132' }}
       HETZNER_USER: root
       REMOTE_DIR: /opt/citegraph-nlp/backend
       DATA_DIR: /opt/citegraph-nlp/data
       ENV_FILE: /opt/citegraph-nlp/.env
       CONTAINER_NAME: citegraph-api
-      IMAGE_NAME: citegraph_backend
-      PORT: 8002
+      IMAGE_NAME: citegraph-api
+      # Loopback-only. The box is shared with four other projects and every
+      # app port is bound to 127.0.0.1 behind nginx; 18020 is already taken by
+      # terminux, so CiteGraph uses 18030.
+      BIND_ADDR: 127.0.0.1
+      PORT: 18030
+      PUBLIC_ORIGIN: https://citegraph-nlp.pages.dev
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -68,7 +71,7 @@ jobs:
         run: |
           set -euo pipefail
           ssh -i "$RUNNER_TEMP/hetzner_deploy_key" "$HETZNER_USER@$HETZNER_HOST" \
-            "REMOTE_DIR='$REMOTE_DIR' DATA_DIR='$DATA_DIR' ENV_FILE='$ENV_FILE' CONTAINER_NAME='$CONTAINER_NAME' IMAGE_NAME='$IMAGE_NAME' PORT='$PORT' bash -s" <<'EOF'
+            "REMOTE_DIR='$REMOTE_DIR' DATA_DIR='$DATA_DIR' ENV_FILE='$ENV_FILE' CONTAINER_NAME='$CONTAINER_NAME' IMAGE_NAME='$IMAGE_NAME' BIND_ADDR='$BIND_ADDR' PORT='$PORT' PUBLIC_ORIGIN='$PUBLIC_ORIGIN' bash -s" <<'EOF'
           set -euo pipefail
           export DEBIAN_FRONTEND=noninteractive
 
@@ -87,6 +90,24 @@ jobs:
             echo "Updated OPENALEX_EMAIL in $ENV_FILE"
           fi
 
+          # Pin the production-only settings, replacing any earlier value so a
+          # stale .env from the previous box cannot silently win. CORS_ORIGINS
+          # must list the Pages origin or the browser blocks every API call.
+          set_env_key() {
+            local key="$1" value="$2"
+            if grep -q "^${key}=" "$ENV_FILE"; then
+              sed -i "s|^${key}=.*|${key}=${value}|" "$ENV_FILE"
+            else
+              printf '%s=%s\n' "$key" "$value" >> "$ENV_FILE"
+            fi
+          }
+          set_env_key APP_ENV production
+          set_env_key CORS_ORIGINS "$PUBLIC_ORIGIN"
+          set_env_key DATA_DIR /app/data
+          set_env_key SQLITE_PATH /app/data/cache/citegraph.sqlite
+          # No GROBID service runs on this box; PDF parsing is not wired up.
+          set_env_key ENABLE_GROBID false
+
           if ! command -v docker >/dev/null 2>&1; then
             apt-get update
             apt-get install -y docker.io curl
@@ -104,17 +125,26 @@ jobs:
           docker stop "$CONTAINER_NAME" 2>/dev/null || true
           docker rm "$CONTAINER_NAME" 2>/dev/null || true
 
+          # Bind to the loopback address explicitly. "-p 18030:8000" would
+          # publish on 0.0.0.0 and expose the API to the internet, bypassing
+          # nginx and TLS on a box that is shared with four other projects.
           docker run -d \
             --name "$CONTAINER_NAME" \
             --restart unless-stopped \
-            -p "${PORT}:8000" \
+            -p "${BIND_ADDR}:${PORT}:8000" \
             --env-file "$ENV_FILE" \
             -v "${DATA_DIR}:/app/data" \
             "$IMAGE_NAME"
 
-          sleep 2
+          sleep 3
           test "$(docker inspect -f '{{.State.Running}}' "$CONTAINER_NAME")" = "true"
           curl -fsS "http://127.0.0.1:${PORT}/health" >/dev/null
+
+          # Fail the deploy if the port ended up reachable on a public address.
+          if ss -ltn "sport = :${PORT}" | grep -qE '0\.0\.0\.0:|\[::\]:'; then
+            echo "ERROR: ${PORT} is published on a public interface, not loopback."
+            exit 1
+          fi
           docker ps --filter "name=$CONTAINER_NAME" --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
           docker logs "$CONTAINER_NAME" --tail 20 2>&1
 

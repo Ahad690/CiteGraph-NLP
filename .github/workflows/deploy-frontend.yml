@@ -1,13 +1,12 @@
-name: Deploy Frontend and Landing Page to Firebase
+name: Deploy Frontend to Cloudflare Pages
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
     paths:
       - 'frontend/**'
-      - 'firebase.json'
-      - '.firebaserc'
       - '.github/workflows/deploy-frontend.yml'
 
 jobs:
@@ -29,7 +28,9 @@ jobs:
       - name: Build Frontend
         working-directory: ./frontend
         env:
-          VITE_API_BASE: https://hetzner-api.duckdns.org/citegraph
+          # Baked into the bundle at build time, so this must be the live API
+          # host. The old hetzner-api.duckdns.org pointed at a deleted box.
+          VITE_API_BASE: ${{ vars.VITE_API_BASE || 'https://citegraph-api.penora.us' }}
         run: npm run build
 
       - name: Verify Frontend Build Artifacts
@@ -40,10 +41,32 @@ jobs:
           test -d dist/client/assets
           grep -q '\$_TSR' dist/client/index.html
 
-      - name: Deploy to Firebase
-        uses: FirebaseExtended/action-hosting-deploy@v0
+          # The API base is inlined by Vite; if it is missing, the deployed site
+          # would silently fall back to http://localhost:8000 in every browser.
+          api_base="${VITE_API_BASE:-https://citegraph-api.penora.us}"
+          if ! grep -rqF "$api_base" dist/client/assets; then
+            echo "ERROR: $api_base was not baked into the bundle."
+            exit 1
+          fi
+        env:
+          VITE_API_BASE: ${{ vars.VITE_API_BASE || 'https://citegraph-api.penora.us' }}
+
+      - name: Add SPA fallback for client-side routes
+        working-directory: ./frontend
+        run: |
+          set -euo pipefail
+          # Without this, a deep link such as /dashboard/<run-id> 404s on Pages
+          # because no file exists at that path.
+          printf '/*    /index.html   200\n' > dist/client/_redirects
+          cat dist/client/_redirects
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
         with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CITEGRAPH_NLP1 }}
-          channelId: live
-          projectId: citegraph-nlp1
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: ./frontend
+          command: >-
+            pages deploy dist/client
+            --project-name citegraph-nlp
+            --branch main
