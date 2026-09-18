@@ -10,6 +10,16 @@ from citegraph.utils.ids import IdCanonicalizer
 
 logger = logging.getLogger(__name__)
 
+def _escape_query_value(value: str) -> str:
+    """Escape a value going inside an already-quoted Europe PMC term."""
+    return value.replace("\\", "\\\\").replace('"', '\\"')
+
+
+def _strip_markup(text: str) -> str:
+    """Europe PMC abstracts may carry JATS/HTML tags; the extractor wants prose."""
+    return " ".join(re.sub(r"<[^>]+>", " ", text).split())
+
+
 def _quote_term(value: str) -> str:
     """Escape a value for interpolation into a Europe PMC field expression.
 
@@ -151,6 +161,52 @@ class EuropePMCProvider:
             metadata_confidence=0.85,
             provenance={"europe_pmc": {"retrieved_at": datetime.utcnow().isoformat()}}
         )
+
+    # DOIs per search request. Europe PMC accepts an OR-joined query; keeping
+    # the batch modest keeps the URL well inside server limits.
+    ABSTRACT_BATCH_SIZE = 25
+
+    async def get_abstracts_by_doi(self, dois: list[str]) -> dict[str, str]:
+        """Fetch abstracts for many DOIs at once.
+
+        OpenAlex has no abstract for a sizeable share of works (28% of a typical
+        graph), and population evidence can only be extracted from text. Europe
+        PMC carries most of those abstracts, and an OR-joined search returns a
+        whole batch in one request.
+        """
+        wanted: list[str] = []
+        for raw in dois:
+            doi = IdCanonicalizer.canonicalize(raw)
+            if doi.startswith("10.") and doi not in wanted:
+                wanted.append(doi)
+
+        abstracts: dict[str, str] = {}
+        client = await get_shared_client()
+        for i in range(0, len(wanted), self.ABSTRACT_BATCH_SIZE):
+            chunk = wanted[i:i + self.ABSTRACT_BATCH_SIZE]
+            query = " OR ".join(f'DOI:"{_escape_query_value(d)}"' for d in chunk)
+            try:
+                response = await client.get(
+                    f"{self.base_url}/search",
+                    params={
+                        "query": query,
+                        "format": "json",
+                        "resultType": "core",
+                        "pageSize": self.ABSTRACT_BATCH_SIZE * 2,
+                    },
+                )
+                response.raise_for_status()
+                data = response.json()
+            except Exception as e:
+                logger.warning("Europe PMC abstract batch failed for %d DOIs: %s", len(chunk), e)
+                continue
+
+            for item in ((data.get("resultList") or {}).get("result") or []):
+                doi = IdCanonicalizer.canonicalize(item.get("doi") or "")
+                text = item.get("abstractText")
+                if doi and text:
+                    abstracts[doi] = _strip_markup(text)
+        return abstracts
 
     async def get_references(self, paper_id: str) -> list[CitationEdge]:
         return []

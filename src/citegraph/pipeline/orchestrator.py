@@ -11,6 +11,7 @@ from citegraph.metadata.resolver import MetadataResolver
 from citegraph.nlp.population_extractor import PopulationExtractor
 from citegraph.nlp.population_resolver import PopulationResolver
 from citegraph.citations.retriever import CitationRetriever
+from citegraph.providers.europe_pmc import EuropePMCProvider
 from citegraph.citations.traversal import CitationTraversal
 from citegraph.graph.builder import GraphBuilder
 from citegraph.graph.weighting import WeightCalculator
@@ -26,8 +27,42 @@ class PipelineOrchestrator:
         self.pop_extractor = PopulationExtractor()
         self.pop_resolver = PopulationResolver()
         self.citation_retriever = CitationRetriever()
+        self.europe_pmc = EuropePMCProvider()
         self.weight_calc = WeightCalculator()
         self.graph_builder = GraphBuilder()
+
+    async def _backfill_abstracts(self, papers: dict) -> int:
+        """Fill in abstracts Europe PMC has but OpenAlex does not.
+
+        Returns the number recovered. One batched search covers the whole set,
+        so this is a single extra request for a typical run.
+        """
+        if not settings.enable_europe_pmc:
+            return 0
+
+        needing = [p for p in papers.values() if not p.abstract and p.doi]
+        if not needing:
+            return 0
+
+        try:
+            found = await self.europe_pmc.get_abstracts_by_doi([p.doi for p in needing])
+        except Exception as e:
+            logger.warning("Abstract backfill failed: %s", e)
+            return 0
+
+        recovered = 0
+        for paper in needing:
+            text = found.get(paper.doi)
+            if text:
+                paper.abstract = text
+                paper.provenance.setdefault("europe_pmc", {})["abstract_backfilled"] = True
+                recovered += 1
+        if recovered:
+            logger.info(
+                "Backfilled %d abstract(s) from Europe PMC for %d paper(s) without one",
+                recovered, len(needing),
+            )
+        return recovered
 
     async def run(self, query: PaperQuery, backward_depth: int = 2, forward_depth: int = 1, max_papers: int = 100, run_id: str = None) -> RunResult:
         run_id = run_id or str(uuid.uuid4())
@@ -42,6 +77,11 @@ class PipelineOrchestrator:
         # 3. Traversal
         traversal = CitationTraversal(self.metadata_resolver, self.citation_retriever)
         await traversal.traverse(seed_paper, backward_depth, forward_depth, max_papers)
+
+        # 3b. Backfill abstracts. Population evidence can only be extracted from
+        # text, and OpenAlex carries no abstract for a sizeable share of works,
+        # so those papers would report "missing" purely for lack of input.
+        abstracts_recovered = await self._backfill_abstracts(traversal.papers)
 
         # 4. Population Extraction for all papers
         all_candidates = []
@@ -78,6 +118,17 @@ class PipelineOrchestrator:
         # Surface what the traversal had to work around, so a sparse graph can
         # be explained (few citations vs. records merged vs. lookups that failed).
         warnings = list(traversal.warnings)
+        without_text = sum(1 for p in traversal.papers.values() if not p.abstract)
+        if abstracts_recovered:
+            warnings.append(
+                f"Recovered {abstracts_recovered} abstract(s) from Europe PMC that "
+                "OpenAlex did not carry; population evidence needs abstract text."
+            )
+        if without_text:
+            warnings.append(
+                f"{without_text} of {len(traversal.papers)} paper(s) have no abstract "
+                "in any provider, so no population evidence can be extracted for them."
+            )
         if traversal.duplicates_merged:
             warnings.append(
                 f"Merged {traversal.duplicates_merged} duplicate record(s): the same "
