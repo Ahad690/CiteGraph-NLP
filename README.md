@@ -15,6 +15,36 @@ The project is a research prototype that makes uncertainty visible using confide
 
 ---
 
+## Live Deployment
+
+| Component | URL |
+|-----------|-----|
+| Frontend (Cloudflare Pages) | https://citegraph-nlp.pages.dev |
+| Backend API | https://citegraph-api.penora.us |
+| API docs | https://citegraph-api.penora.us/docs |
+| Health check | https://citegraph-api.penora.us/health |
+
+The backend runs as a Docker container bound to `127.0.0.1:18030` on a shared
+host, behind nginx with a Let's Encrypt certificate. It is not reachable
+directly; only nginx can reach the port.
+
+`CORS_ORIGINS` is set to the Pages origin, so the API accepts browser requests
+from the deployed frontend and no other site. `VITE_API_BASE` is inlined by
+Vite at build time, so the frontend must be rebuilt if the API host changes.
+
+The previous Firebase URLs are kept alive and now 301-redirect here, preserving
+any links in already-submitted coursework:
+
+- `https://citegraph-nlp1.web.app/*` -> `https://citegraph-nlp.pages.dev/*`
+- `https://citegraph-nlp1.firebaseapp.com/*` -> `https://citegraph-nlp.pages.dev/*`
+
+Both deployments run from GitHub Actions on a push to `main`
+(`.github/workflows/deploy-backend.yml`, `deploy-frontend.yml`). The frontend
+workflow needs the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`
+repository secrets.
+
+---
+
 ## What It Does
 
 CiteGraph-NLP starts from a research paper identifier and builds a structured citation analysis pipeline:

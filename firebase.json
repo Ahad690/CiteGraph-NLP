@@ -2,16 +2,23 @@
   "hosting": [
     {
       "target": "frontend",
-      "public": "frontend/dist/client",
+      "public": "firebase-redirect",
       "ignore": [
         "firebase.json",
         "**/.*",
         "**/node_modules/**"
       ],
-      "rewrites": [
+      "redirects": [
         {
-          "source": "**",
-          "destination": "/index.html"
+          "comment": "The bare root is matched explicitly: /:path* does not cover it, and the root is the URL most likely to appear in already-submitted reports.",
+          "source": "/",
+          "destination": "https://citegraph-nlp.pages.dev/",
+          "type": 301
+        },
+        {
+          "source": "/:path*",
+          "destination": "https://citegraph-nlp.pages.dev/:path*",
+          "type": 301
         }
       ]
     }
