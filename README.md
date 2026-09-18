@@ -184,6 +184,8 @@ Key environment variables:
 |----------|---------|-------------|
 | `APP_ENV` | `development` | Environment name |
 | `LOG_LEVEL` | `INFO` | Logging level |
+| `API_KEY` | — | When set, every `/api` request must send a matching `X-API-Key` header |
+| `CORS_ORIGINS` | `http://localhost:5173,http://127.0.0.1:5173` | Comma-separated browser origins allowed to call the API |
 | `OPENALEX_EMAIL` | — | Email for OpenAlex API (polite pool) |
 | `ENABLE_OPENALEX` | `true` | Toggle OpenAlex provider |
 | `ENABLE_CROSSREF` | `true` | Toggle Crossref provider |
@@ -492,6 +494,8 @@ All configuration is in `src/citegraph/config.py` via `pydantic-settings`. Overr
 |---------|-------------|---------|-------------|
 | `app_env` | `APP_ENV` | `development` | Runtime environment |
 | `log_level` | `LOG_LEVEL` | `INFO` | Logging verbosity |
+| `api_key` | `API_KEY` | `None` | Shared secret required in the `X-API-Key` header; unset leaves the API open |
+| `cors_origins` | `CORS_ORIGINS` | `http://localhost:5173,http://127.0.0.1:5173` | Allowed browser origins (comma-separated) |
 | `openalex_email` | `OPENALEX_EMAIL` | `None` | Email for OpenAlex polite pool |
 | `enable_openalex` | `ENABLE_OPENALEX` | `True` | Enable OpenAlex provider |
 | `enable_crossref` | `ENABLE_CROSSREF` | `True` | Enable Crossref provider |
@@ -560,6 +564,28 @@ docker run -p 8000:8000 citegraph-api
 ```bash
 docker compose --profile neo4j up --build
 ```
+
+---
+
+## Security Notes
+
+The API performs outbound HTTP requests on behalf of the caller, so a public
+deployment needs two settings configured:
+
+- **`API_KEY`** — unset by default so the local demo and `docker compose up`
+  work with no configuration. Set it before exposing the service to the
+  internet; every `/api` route then requires an `X-API-Key` header. `/health`
+  stays open for uptime probes.
+- **`CORS_ORIGINS`** — defaults to the local Vite dev server. Set it to the
+  deployed frontend origin (for example a Cloudflare Pages URL). A wildcard is
+  deliberately not used: it would let any page a developer visits drive their
+  locally running instance and read the responses.
+
+URL inputs (`query_type: "url"`) are fetched server-side. Hosts resolving to
+private, loopback, link-local, or reserved addresses are refused, and each
+redirect hop is re-validated, so the endpoint cannot be used to reach internal
+services. The optional Neo4j profile has no default password and binds only to
+loopback; set `NEO4J_PASSWORD` before enabling it.
 
 ---
 

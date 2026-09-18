@@ -59,10 +59,17 @@ services:
     image: neo4j:5-community
     container_name: citegraph-neo4j
     ports:
-      - "7474:7474"
-      - "7687:7687"
+      # Bound to loopback: the Neo4j browser and bolt port should not be
+      # reachable from outside the host.
+      - "127.0.0.1:7474:7474"
+      - "127.0.0.1:7687:7687"
     environment:
-      - NEO4J_AUTH=neo4j/password
+      # No default password. Set NEO4J_PASSWORD in .env before enabling this
+      # profile; left empty the container refuses to start rather than coming
+      # up with a well-known credential. (A `:?` guard is deliberately not used
+      # here -- Compose interpolates before filtering profiles, so it would
+      # break the default `docker compose up` as well.)
+      - NEO4J_AUTH=neo4j/${NEO4J_PASSWORD:-}
     volumes:
       - neo4j_data:/data
     profiles:

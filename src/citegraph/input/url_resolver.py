@@ -1,5 +1,8 @@
+import asyncio
+import ipaddress
 import logging
 import re
+import socket
 from urllib.parse import parse_qsl, urlparse
 
 import httpx
@@ -75,18 +78,77 @@ class URLIdentifierResolver:
 
         return None
 
+    MAX_REDIRECTS = 5
+
+    @staticmethod
+    async def _resolves_to_public_address(url: str) -> bool:
+        """True when every address the URL's host resolves to is public.
+
+        The URL here comes straight from the API request body, so without this
+        check the server can be pointed at loopback, link-local (cloud metadata)
+        or RFC1918 addresses and made to issue requests from inside the trust
+        boundary.
+        """
+        parsed = urlparse(url)
+        if parsed.scheme not in {"http", "https"} or not parsed.hostname:
+            return False
+
+        port = parsed.port or (443 if parsed.scheme == "https" else 80)
+        try:
+            infos = await asyncio.get_running_loop().getaddrinfo(
+                parsed.hostname, port, type=socket.SOCK_STREAM
+            )
+        except (socket.gaierror, UnicodeError, ValueError) as exc:
+            logger.info("Refusing URL %s: host does not resolve (%s)", url, exc)
+            return False
+
+        for info in infos:
+            try:
+                address = ipaddress.ip_address(info[4][0])
+            except ValueError:
+                return False
+            if (
+                address.is_private
+                or address.is_loopback
+                or address.is_link_local
+                or address.is_reserved
+                or address.is_multicast
+                or address.is_unspecified
+            ):
+                logger.warning(
+                    "Refusing to fetch %s: host resolves to non-public address %s",
+                    url, address,
+                )
+                return False
+        return True
+
     async def resolve_from_page_metadata(self, url: str) -> PaperQuery | None:
         parsed = urlparse(url)
         if parsed.scheme not in {"http", "https"} or not parsed.netloc:
             return None
 
         try:
-            async with httpx.AsyncClient(timeout=10.0, follow_redirects=True, max_redirects=5) as client:
-                response = await client.get(
-                    url,
-                    headers={"User-Agent": "CiteGraph-NLP/0.1.0"},
-                )
-                response.raise_for_status()
+            # Redirects are followed manually so every hop is re-validated --
+            # otherwise a public host could simply redirect to an internal one.
+            async with httpx.AsyncClient(timeout=10.0, follow_redirects=False) as client:
+                current = url
+                for _ in range(self.MAX_REDIRECTS + 1):
+                    if not await self._resolves_to_public_address(current):
+                        return None
+
+                    response = await client.get(
+                        current,
+                        headers={"User-Agent": "CiteGraph-NLP/0.1.0"},
+                    )
+                    if response.is_redirect and response.next_request is not None:
+                        current = str(response.next_request.url)
+                        continue
+
+                    response.raise_for_status()
+                    break
+                else:
+                    logger.info("Too many redirects while resolving %s", url)
+                    return None
         except Exception as exc:
             logger.info("Could not fetch URL metadata for %s: %s", url, exc)
             return None
@@ -130,4 +192,5 @@ class URLIdentifierResolver:
         match = self.DOI_PATTERN.search(value)
         if not match:
             return None
-        return IdCanonicalizer.canonicalize(match.group(0).rstrip("."))
+        doi = IdCanonicalizer.canonicalize(match.group(0).rstrip("."))
+        return IdCanonicalizer.strip_doi_view_suffix(doi)

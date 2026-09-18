@@ -10,6 +10,18 @@ from citegraph.utils.ids import IdCanonicalizer
 
 logger = logging.getLogger(__name__)
 
+def _quote_term(value: str) -> str:
+    """Escape a value for interpolation into a Europe PMC field expression.
+
+    The search grammar is Lucene-like, so an unescaped double quote closes the
+    term early and the remainder is parsed as operators. Free-text titles reach
+    here straight from the request body (and from third-party page metadata via
+    the URL resolver), so they must be escaped rather than trusted.
+    """
+    escaped = value.replace("\\", "\\\\").replace('"', '\\"')
+    return f'"{escaped}"'
+
+
 class EuropePMCProvider:
     name = "europe_pmc"
 
@@ -25,13 +37,13 @@ class EuropePMCProvider:
             # Format query for Europe PMC
             search_query = None
             if query.query_type == "doi":
-                search_query = f'DOI:"{cid}"'
+                search_query = f'DOI:{_quote_term(cid)}'
             elif query.query_type == "pmid":
-                search_query = f'EXT_ID:{cid}'
+                search_query = f'EXT_ID:{_quote_term(cid)}'
             elif query.query_type == "pmcid":
-                search_query = f'PMCID:{cid}'
+                search_query = f'PMCID:{_quote_term(cid)}'
             elif query.query_type == "title":
-                search_query = f'TITLE:"{cid}"'
+                search_query = f'TITLE:{_quote_term(cid)}'
             elif query.query_type == "url":
                 # Robust URL parsing to extract DOI, PMID, or PMCID
                 from urllib.parse import urlparse, parse_qsl
@@ -57,8 +69,10 @@ class EuropePMCProvider:
                     if target:
                         doi_match = doi_pat.search(target)
                         if doi_match:
-                            doi = IdCanonicalizer.canonicalize(doi_match.group(0))
-                            search_query = f'DOI:"{doi}"'
+                            doi = IdCanonicalizer.strip_doi_view_suffix(
+                                IdCanonicalizer.canonicalize(doi_match.group(0))
+                            )
+                            search_query = f'DOI:{_quote_term(doi)}'
                             break
                             
                 # If no DOI, look for PMCID
@@ -68,7 +82,7 @@ class EuropePMCProvider:
                             pmcid_match = pmcid_pat.search(target)
                             if pmcid_match:
                                 pmcid = IdCanonicalizer.canonicalize(pmcid_match.group(0))
-                                search_query = f'PMCID:{pmcid}'
+                                search_query = f'PMCID:{_quote_term(pmcid)}'
                                 break
                                 
                 # If no DOI or PMCID, check specific URL paths or query params for PMID
@@ -78,20 +92,20 @@ class EuropePMCProvider:
                         pmid_match = re.search(r'/pubmed/(\d+)', parsed.path, re.I)
                         if pmid_match:
                             pmid = IdCanonicalizer.canonicalize(pmid_match.group(1))
-                            search_query = f'EXT_ID:{pmid}'
+                            search_query = f'EXT_ID:{_quote_term(pmid)}'
                     # Or check query params if they look like pmid/id
                     if not search_query:
                         for key, val in parse_qsl(parsed.query):
                             if key.lower() in ("pmid", "id", "ext_id") and pmid_pat.match(val):
                                 pmid = IdCanonicalizer.canonicalize(val)
-                                search_query = f'EXT_ID:{pmid}'
+                                search_query = f'EXT_ID:{_quote_term(pmid)}'
                                 break
                     # Or generic digits at the end of pubmed domain path
                     if not search_query and "pubmed.ncbi.nlm.nih.gov" in parsed.netloc:
                         pmid_match = re.search(r'/(\d+)/?$', parsed.path)
                         if pmid_match:
                             pmid = IdCanonicalizer.canonicalize(pmid_match.group(1))
-                            search_query = f'EXT_ID:{pmid}'
+                            search_query = f'EXT_ID:{_quote_term(pmid)}'
                             
                 if not search_query:
                     return ProviderResult(error=f"Could not extract a valid DOI, PMID, or PMCID from URL: {cid}")

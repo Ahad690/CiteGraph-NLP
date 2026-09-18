@@ -87,10 +87,18 @@ async def execute_run(run_id: str, request: RunRequest):
             await store.update_status(run_id, "failed", "Aborted due to server shutdown")
         except:
             pass 
-    except Exception as e:
+    except ValueError as e:
+        # Input/resolution problems are the caller's own doing and are safe to
+        # echo back -- they describe the query, not the server.
         logger.error(f"Run {run_id} failed: {e}")
-        # Mark as failed in DB
         await store.update_status(run_id, "failed", str(e))
+    except Exception as e:
+        # Anything else may carry internal detail (filesystem paths, driver
+        # messages), so keep it in the log and hand the caller a reference only.
+        logger.exception(f"Run {run_id} failed: {e}")
+        await store.update_status(
+            run_id, "failed", f"Run failed due to an internal error (ref: {run_id})"
+        )
 
 @router.get("/runs/{run_id}", response_model=RunResult | RunStatus)
 async def get_run(run_id: str):
