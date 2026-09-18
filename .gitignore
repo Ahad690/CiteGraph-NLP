@@ -132,6 +132,10 @@ ranked_foundational_papers_*.csv
 # -----------------------------
 *.pdf
 *.docx
+# ...except the rendered thesis, which is tracked so it can be shared
+# straight from GitHub. Regenerate per Appendix C.6.
+!thesis/CiteGraph-NLP-Thesis.pdf
+!thesis/CiteGraph-NLP-Thesis.docx
 *.doc
 *.pptx
 *.xlsx
@@ -183,6 +187,5 @@ landing-page/.nitro/
 landing-page/.wrangler/
 landing-page/.dev.vars
 
-# Rendered thesis outputs (regenerate with scripts/build_thesis.py + pandoc)
-thesis/CiteGraph-NLP-Thesis.pdf
-thesis/CiteGraph-NLP-Thesis.docx
+# Rendered thesis outputs are tracked so the PDF can be shared directly from
+# GitHub. Regenerate them with scripts/build_thesis.py + pandoc (Appendix C.6).
