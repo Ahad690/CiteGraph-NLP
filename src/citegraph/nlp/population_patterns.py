@@ -58,7 +58,79 @@ POPULATION_PATTERNS = [
         "pattern": rf'\bsample\s+size\s+of\s+({NUMERIC_PATTERN})\b',
         "type": "SAMPLE_SIZE_GENERIC",
         "weight": 0.9
-    }
+    },
+    # --- phrasings the original set missed -------------------------------
+    # Observational and epidemiological papers rarely say "patients were
+    # randomized"; they report cases, subjects or a plain total.
+    {
+        "name": "TOTAL_OF",
+        "pattern": rf'\ba\s+total\s+of\s+({NUMERIC_PATTERN})\b',
+        "type": "SAMPLE_SIZE_GENERIC",
+        "weight": 0.85
+    },
+    {
+        "name": "CASES_COUNT",
+        "pattern": rf'\b({NUMERIC_PATTERN})\s+(?:laboratory-|lab-|virologically\s+)?(?:confirmed\s+|reported\s+|suspected\s+|index\s+)?cases\b',
+        "type": "SAMPLE_SIZE_GENERIC",
+        "weight": 0.7
+    },
+    {
+        "name": "SUBJECTS_COUNT",
+        "pattern": rf'\b({NUMERIC_PATTERN})\s+(?:healthy\s+|consecutive\s+|adult\s+)?(?:subjects|individuals|volunteers|adults|children|infants|women|men)\b',
+        "type": "TOTAL_ENROLLED",
+        "weight": 0.7
+    },
+    {
+        "name": "CONSECUTIVE_PATIENTS",
+        "pattern": rf'\b({NUMERIC_PATTERN})\s+consecutive\s+(?:patients|cases|subjects)\b',
+        "type": "TOTAL_ENROLLED",
+        "weight": 0.8
+    },
+    {
+        "name": "INCLUDED_COUNT",
+        "pattern": rf'\b(?:included|recruited|studied|evaluated|assessed)\s+({NUMERIC_PATTERN})\b',
+        "type": "TOTAL_ANALYZED",
+        "weight": 0.8
+    },
+    {
+        "name": "DATA_FROM",
+        "pattern": rf'\bdata\s+(?:on|from|regarding)\s+(?:the\s+first\s+)?({NUMERIC_PATTERN})\b',
+        "type": "TOTAL_ANALYZED",
+        "weight": 0.75
+    },
+    # Semantic types the README documents but no pattern ever produced.
+    # Kept as two single-group patterns: the extractor reads group(1), so an
+    # alternation with a capture group in each branch would yield None.
+    {
+        "name": "SCREENED_COUNT",
+        "pattern": rf'\bscreened\s+({NUMERIC_PATTERN})\b',
+        "type": "SCREENED",
+        "weight": 0.8
+    },
+    {
+        "name": "WERE_SCREENED",
+        "pattern": rf'\b({NUMERIC_PATTERN})\s+(?:patients\s+|participants\s+|subjects\s+)?(?:were\s+)?screened\b',
+        "type": "SCREENED",
+        "weight": 0.8
+    },
+    {
+        "name": "COMPLETED_COUNT",
+        "pattern": rf'\b({NUMERIC_PATTERN})\s+(?:patients\s+|participants\s+|subjects\s+)?completed\b',
+        "type": "COMPLETERS",
+        "weight": 0.75
+    },
+    {
+        "name": "ARM_SIZE_GROUP",
+        "pattern": rf'\b(?:group|arm)\s+\(\s*[Nn]\s*=\s*({NUMERIC_PATTERN})\s*\)',
+        "type": "ARM_SIZE",
+        "weight": 0.7
+    },
+    {
+        "name": "FOLLOWED_UP",
+        "pattern": rf'\b({NUMERIC_PATTERN})\s+(?:patients\s+|participants\s+)?(?:were\s+)?followed\s+(?:up|for)\b',
+        "type": "FOLLOWUP_COUNT",
+        "weight": 0.7
+    },
 ]
 
 # Patterns to ignore (false positives)

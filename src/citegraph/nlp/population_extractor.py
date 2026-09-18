@@ -33,19 +33,27 @@ class PopulationExtractor:
             sentences = re.split(r'(?<=[.!?])\s+', text)
 
         for sentence in sentences:
-            # Check for ignore patterns first
-            should_skip_sentence = False
-            for ignore_p in IGNORE_PATTERNS:
-                if re.search(ignore_p, sentence):
-                    should_skip_sentence = True
-                    break
-            
-            if should_skip_sentence:
-                continue
+            # Locate the spans that must not be read as population sizes (years,
+            # percentages, p-values, dosages). These are matched per-span rather
+            # than per-sentence: skipping the whole sentence discarded every
+            # genuine count that merely shared a sentence with a date, which is
+            # most of them ("...1099 patients ... through January 29, 2020").
+            ignore_spans = [
+                match.span()
+                for ignore_p in IGNORE_PATTERNS
+                for match in re.finditer(ignore_p, sentence)
+            ]
 
             for pattern_info in POPULATION_PATTERNS:
                 matches = re.finditer(pattern_info["pattern"], sentence, re.IGNORECASE)
                 for match in matches:
+                    # Only reject when the captured number itself sits inside an
+                    # ignored span, not when one appears elsewhere in the sentence.
+                    number_start, number_end = match.span(1)
+                    if any(start < number_end and number_start < end
+                           for start, end in ignore_spans):
+                        continue
+
                     raw_value = match.group(1).replace(',', '')
                     try:
                         value = int(float(raw_value))
