@@ -1,4 +1,4 @@
-# Chapter 5 (continued) — Dashboard and Interaction Design
+# Chapter 5 (continued): Dashboard and Interaction Design
 
 The analysis pipeline produces a graph, a ranking and a set of confidence-scored
 extractions. None of that is useful to a reader unless it can be interrogated.
@@ -64,10 +64,7 @@ where Section 6.4.4 shows it currently overstates its case.
 
 ### 5.13.1 Status before number
 
-Every extracted population is displayed with its status — `resolved`,
-`ambiguous` or `missing` — adjacent to the value, not in a tooltip or a detail
-panel. The three states are visually distinct. A number presented without its
-status invites the reader to treat an ambiguous extraction as a settled fact.
+Every extracted population is displayed with its status, `resolved`, `ambiguous` or `missing`, adjacent to the value, not in a tooltip or a detail panel. The three states are visually distinct. A number presented without its status invites the reader to treat an ambiguous extraction as a settled fact.
 
 ### 5.13.2 The supporting sentence is reachable
 
@@ -95,9 +92,9 @@ was wrong. A user filtering for high confidence would retain the errors.
 
 This is a presentation problem as much as a modelling one. Until the score is
 calibrated (Section 8.2.1), displaying it as a precise quantity overstates what
-is known. A coarser presentation — or an explicit statement that the score
-reflects which pattern matched rather than probability of correctness — would
-be more truthful with the current model.
+is known. A coarser presentation, or an explicit statement that the score
+reflects which pattern matched rather than probability of correctness, would be
+more truthful with the current model.
 
 ## 5.14 Graph Visualisation
 
@@ -118,7 +115,7 @@ verifies it: zero dangling edges across three runs.
 
 **Weights are visible.** Edge thickness encodes the final weight. Before the
 defect in Section 5.6 was found, every weight was zero and every edge rendered
-identically — which, in retrospect, was an available visual signal that
+identically, which, in retrospect, was an available visual signal that
 something was wrong, and one nobody read as such.
 
 ## 5.15 Export Design
@@ -133,11 +130,11 @@ Five formats, each with a distinct audience.
 | Markdown | A readable report for inclusion in notes or a literature review |
 | GraphML | Import into Gephi, yEd or Cytoscape Desktop for further analysis |
 
-Two exports exist because of things learned during evaluation. The **edge list**
-was added because a paper list cannot express a graph, and any external analysis
-of the weighting needs the components. **GraphML** was added because the
-frontend already advertised it as a format although no endpoint existed — the
-button returned 404.
+Two exports exist because of things learned during evaluation. The **edge
+list** was added because a paper list cannot express a graph, and any external
+analysis of the weighting needs the components. **GraphML** was added because
+the frontend already advertised it as a format although no endpoint existed,
+the button returned 404.
 
 The Markdown report states explicitly when no population evidence was found and
 what that means for the weights, rather than presenting an effectively

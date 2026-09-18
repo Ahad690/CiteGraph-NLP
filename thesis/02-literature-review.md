@@ -1,4 +1,4 @@
-# Chapter 2 — Literature Review
+# Chapter 2: Literature Review
 
 This chapter surveys four bodies of work that the project draws on: citation
 analysis and bibliometrics (2.1), the structure of citation networks (2.2),
@@ -66,17 +66,17 @@ incomparability of raw counts and suggests a normalisation.
 
 The practical consequence for this project is a design constraint rather than a
 theoretical one. Because the distribution is heavy-tailed, a seed paper may
-have tens of thousands of citing works — the AlphaFold paper used as a test
-case in Chapter 6 has over thirty thousand. No interactive traversal can
-enumerate them. Section 4.5 describes the sampling strategy this forces, and
-Section 7.3 treats the resulting incompleteness as a threat to validity.
+have tens of thousands of citing works, the AlphaFold paper used as a test case
+in Chapter 6 has over thirty thousand. No interactive traversal can enumerate
+them. Section 4.5 describes the sampling strategy this forces, and Section 7.3
+treats the resulting incompleteness as a threat to validity.
 
 ### 2.2.2 Network models of scientific collaboration and citation
 
 Newman's analysis of scientific collaboration networks [newman2001structure]
 characterised the small-world and clustering properties of coauthorship graphs.
-Although coauthorship is not citation, the structural findings — short path
-lengths, high clustering, heavy-tailed degree — recur in citation graphs and
+Although coauthorship is not citation, the structural findings, short path
+lengths, high clustering, heavy-tailed degree, recur in citation graphs and
 bear on this system: short paths mean a bounded-depth traversal reaches
 substantial portions of a local neighbourhood, and high clustering means the
 papers retrieved tend to be topically coherent, which is observed empirically
@@ -91,8 +91,8 @@ hyperlinks, but citation graphs are directed graphs of the same shape.
 
 Chen and colleagues applied PageRank directly to a physics citation network
 [chen2007gems] and found that it surfaces papers that raw citation count does
-not — work that is cited by influential papers rather than by many papers.
-They characterise these as "scientific gems". Walker and colleagues proposed
+not, work that is cited by influential papers rather than by many papers. They
+characterise these as "scientific gems". Walker and colleagues proposed
 CiteRank [walker2007citerank], a model of network traffic that adds an explicit
 ageing term so that recent papers are not penalised purely for having had less
 time to accumulate citations.
@@ -125,7 +125,7 @@ citation data. Four sources are relevant.
 **Crossref** [hendricks2020crossref] is the DOI registration agency for
 scholarly publishing and the canonical source for publisher-deposited metadata,
 including reference lists where publishers deposit them. Crossref's coverage of
-reference lists is uneven because deposit is at publisher discretion — a
+reference lists is uneven because deposit is at publisher discretion, a
 limitation this project encountered directly and quantified in Section 6.3.
 
 **OpenAlex** [priem2022openalex] is an open catalogue of scholarly works
@@ -137,7 +137,7 @@ system.
 **Microsoft Academic Graph** [wang2020mag] was the prior generation of this
 infrastructure. Its discontinuation, and OpenAlex's emergence as successor, is
 a reminder that a system built on a single provider inherits that provider's
-lifespan — one motivation for the multi-provider design in Section 4.3.
+lifespan, one motivation for the multi-provider design in Section 4.3.
 
 **Europe PMC** [europepmc2015] is a full-text literature database for the life
 sciences providing abstracts and, for open-access content, full text. In this
@@ -158,7 +158,7 @@ articles are legally retrievable.
 The GENIA corpus [kim2003genia] established the pattern for biomedical IE
 evaluation: a semantically annotated corpus of abstracts supporting supervised
 training and comparable evaluation. Its significance for this project is
-methodological — it demonstrates that abstract-level annotation is a legitimate
+methodological, it demonstrates that abstract-level annotation is a legitimate
 evaluation substrate, which is the basis for the gold standard in Section 6.1.
 
 ### 2.4.2 PICO extraction
@@ -170,8 +170,8 @@ annotations of these elements over a large set of abstracts. Jin and Szolovits
 [jin2018pico] approach the detection task with LSTM models.
 
 The *P* of PICO is the element this project extracts, but with an important
-narrowing. PICO population annotation captures the described population —
-"adults over 65 with type 2 diabetes" — as a text span. CiteGraph-NLP extracts
+narrowing. PICO population annotation captures the described population,
+"adults over 65 with type 2 diabetes", as a text span. CiteGraph-NLP extracts
 the *cardinality* of that population: the integer count of subjects. These are
 related but distinct tasks, and the distinction matters when comparing results.
 A PICO system that correctly identifies a population span has not necessarily
@@ -194,11 +194,11 @@ yields substantial gains over general-domain models on domain tasks. ScispaCy
 None of these is used in the delivered system, which extracts using regular
 expressions. This is a deliberate scope decision rather than an oversight, and
 the trade-off should be stated honestly. Pattern-based extraction is
-transparent — every decision traces to a named pattern and can be explained to a
-user — and requires no training data, which the project did not have. It is
-also brittle in exactly the way Section 6.4 measures: the system distinguishes
-*randomised* from *enrolled* from *analysed* correctly in only 6 of 10 cases,
-a discrimination a domain-adapted model would be expected to make more reliably.
+transparent, every decision traces to a named pattern and can be explained to a
+user, and requires no training data, which the project did not have. It is also
+brittle in exactly the way Section 6.4 measures: the system distinguishes
+*randomised* from *enrolled* from *analysed* correctly in only 6 of 10 cases, a
+discrimination a domain-adapted model would be expected to make more reliably.
 
 ### 2.4.4 Automated evidence appraisal
 
@@ -212,7 +212,7 @@ comparison is instructive rather than favourable. Trialstreamer extracts trial
 characteristics at scale using trained models over full text, with published
 evaluation. CiteGraph-NLP extracts one characteristic from abstracts using
 patterns, evaluated on twenty papers. What this project does that Trialstreamer
-does not is use the extracted scale *as a citation-graph edge weight* — the
+does not is use the extracted scale *as a citation-graph edge weight*, the
 combination of extraction with network analysis is where the work sits, not in
 the extraction itself.
 
@@ -224,7 +224,7 @@ supported by, but not identical to, the methodological literature.
 PRISMA [moher2009prisma] standardises the reporting of systematic reviews, and
 the Cochrane risk-of-bias tool [higgins2011cochrane] structures appraisal of
 individual trials. Both make clear that sample size is *one* dimension among
-several — allocation concealment, blinding, attrition and selective reporting
+several, allocation concealment, blinding, attrition and selective reporting
 all bear on trustworthiness, and none is captured by a participant count.
 
 Ioannidis [ioannidis2005why] and Button et al. [button2013power] supply the
@@ -260,10 +260,10 @@ automatically extracted study-scale evidence as a weight on citation edges, and
 propagating that weight through a graph ranking.**
 
 Two qualifications bound the claim. First, the components are individually
-established; the contribution is their combination and a measured account of how
-well it works, not a new method. Second, this thesis does not demonstrate that
-evidence-weighted ranking is *better* than unweighted ranking — no comparative
-experiment was performed, and Section 7.3 states this as the principal
-unaddressed question.
+established; the contribution is their combination and a measured account of
+how well it works, not a new method. Second, this thesis does not demonstrate
+that evidence-weighted ranking is *better* than unweighted ranking, no
+comparative experiment was performed, and Section 7.3 states this as the
+principal unaddressed question.
 
 ---

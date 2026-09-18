@@ -1,4 +1,4 @@
-# Appendix A — API Reference
+# Appendix A: API Reference
 
 Base URL of the deployed instance: `https://citegraph-api.penora.us`
 Interactive documentation: `/docs`
@@ -81,16 +81,8 @@ Every link endpoint is guaranteed present in `nodes` (Section 4.4.2).
 
 ## A.5 Exports
 
-All exports return a file with the correct `Content-Type` and a
-`Content-Disposition` filename — not a JSON envelope (Section 5.8).
-
-| Endpoint | Type | Contents |
-|----------|------|----------|
-| `/export/json` | `application/json` | Full result, indented |
-| `/export/csv` | `text/csv` | One row per paper: identifiers, authors, journal, `n_eff`, population status and confidence, in/out degree, foundational rank, seed flag |
-| `/export/edges.csv` | `text/csv` | One row per edge with every weight component |
-| `/export/markdown` | `text/markdown` | Report: seed details, summary, foundational ranking, population evidence, top citation paths |
-| `/export/graphml` | `application/xml` | GraphML for Gephi, yEd or Cytoscape Desktop |
+All exports return a file with the correct `Content-Type` and a `Content-Disposition` filename, not a JSON envelope (Section 5.8). 
+| Endpoint | Type | Contents | |----------|------|----------| | `/export/json` | `application/json` | Full result, indented | | `/export/csv` | `text/csv` | One row per paper: identifiers, authors, journal, `n_eff`, population status and confidence, in/out degree, foundational rank, seed flag | | `/export/edges.csv` | `text/csv` | One row per edge with every weight component | | `/export/markdown` | `text/markdown` | Report: seed details, summary, foundational ranking, population evidence, top citation paths | | `/export/graphml` | `application/xml` | GraphML for Gephi, yEd or Cytoscape Desktop |
 
 Both CSV exports are written with Python's `csv` module, so commas, quotes and
 newlines inside titles and journal names are escaped correctly, and carry a

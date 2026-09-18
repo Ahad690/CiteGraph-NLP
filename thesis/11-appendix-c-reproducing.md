@@ -1,4 +1,4 @@
-# Appendix C — Reproducing the Results
+# Appendix C: Reproducing the Results
 
 Every quantitative claim in Chapter 6 is produced by a script committed to the
 repository. This appendix gives the commands.
@@ -15,9 +15,7 @@ pip install -r requirements.txt
 cp .env.example .env          # then set OPENALEX_EMAIL
 ```
 
-Setting `OPENALEX_EMAIL` is not optional in practice. OpenAlex serves
-identified callers from a faster "polite pool"; without it, request latency —
-which Section 6.6 shows dominates runtime — is materially worse.
+Setting `OPENALEX_EMAIL` is not optional in practice. OpenAlex serves identified callers from a faster "polite pool"; without it, request latency, which Section 6.6 shows dominates runtime, is materially worse.
 
 ## C.2 Test suite
 
@@ -79,15 +77,23 @@ page counts in this thesis were measured with:
 pandoc thesis/CiteGraph-NLP-Thesis.md \
   -o thesis/CiteGraph-NLP-Thesis.pdf \
   --pdf-engine=weasyprint \
+  -f markdown-smart \
   --toc --toc-depth=3 \
   --number-sections
 ```
+
+`-f markdown-smart` matters. Pandoc's smart typography rewrites `--` as an en
+dash and `---` as an em dash, so the rendered PDF ends up containing dashes the
+source never had. A mechanical pre-submission check run against that PDF then
+reports them as prose findings: five of the six em dashes flagged in one such
+run came from this conversion rather than from the manuscript.
 
 A DOCX, if the department requires one:
 
 ```bash
 pandoc thesis/CiteGraph-NLP-Thesis.md \
   -o thesis/CiteGraph-NLP-Thesis.docx \
+  -f markdown-smart \
   --toc --toc-depth=3
 ```
 
@@ -128,10 +134,10 @@ The deployed instance is documented in the project README.
 ## C.8 A caveat on exact reproduction
 
 The evaluation queries live scholarly APIs. OpenAlex and Crossref revise
-records continuously — abstracts are added, reference lists are corrected,
+records continuously, abstracts are added, reference lists are corrected,
 citation counts change daily. A rerun may therefore differ from the figures in
-Chapter 6, particularly the traversal statistics in Section 6.5, which depend on
-what the providers hold at query time.
+Chapter 6, particularly the traversal statistics in Section 6.5, which depend
+on what the providers hold at query time.
 
 The gold-standard labels are fixed and committed, so the extraction metrics in
 Section 6.4 are stable provided the abstracts remain retrievable. Section 8.2.7

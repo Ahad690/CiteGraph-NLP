@@ -76,7 +76,7 @@ def build_references() -> str:
         container = r.get("container")
         year = r.get("year")
         doi = r.get("doi")
-        parts = [f"**[{i}]** `{r['key']}` — {authors}."]
+        parts = [f"**[{i}]** `{r['key']}`. {authors}."]
         parts.append(f'"{title}."')
         if container:
             parts.append(f"*{container}*,")
@@ -92,7 +92,7 @@ def build_references() -> str:
     if data.get("unverified"):
         lines += ["## Unverified candidates (not cited)", ""]
         for r in data["unverified"]:
-            lines.append(f"- `{r['key']}` ({r['doi']}) — did not resolve; excluded.")
+            lines.append(f"- `{r['key']}` ({r['doi']}) : did not resolve; excluded.")
         lines.append("")
     return "\n".join(lines)
 
@@ -107,7 +107,7 @@ def build_gold_standard_appendix() -> str:
         per_paper = {r["doi"]: r for r in res["population_extraction"]["per_paper"]}
 
     lines = [
-        "# Appendix D — Gold Standard Annotations", "",
+        "# Appendix D: Gold Standard Annotations", "",
         "The complete annotated set used in Chapter 6. Each label was assigned by",
         "reading the abstract retrieved through the same providers the pipeline",
         "uses; the supporting sentence is quoted so every label is auditable.", "",
@@ -122,13 +122,13 @@ def build_gold_standard_appendix() -> str:
         pred = per_paper.get(g["doi"], {})
         p = pred.get("predicted_n_eff")
         gold = g["n_eff"]
-        mark = "—"
+        mark = "n/a"
         if per_paper:
             mark = "ok" if p == gold else "**miss**"
         lines.append(
             f"| {i} | `{g['doi']}` | {g['design']} | "
-            f"{gold if gold is not None else '—'} | "
-            f"{p if p is not None else '—'} | {mark} |"
+            f"{gold if gold is not None else 'none'} | "
+            f"{p if p is not None else 'none'} | {mark} |"
         )
 
     lines += ["", "## D.2 Annotations with supporting evidence", ""]

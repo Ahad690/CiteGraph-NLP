@@ -1,4 +1,4 @@
-# Chapter 5 — Implementation
+# Chapter 5: Implementation
 
 This chapter describes the delivered implementation and, in Sections 5.3 to
 5.8, the defects found when the system was systematically instrumented and
@@ -17,7 +17,7 @@ each produced output that looked plausible.
 | Graph | NetworkX [hagberg2008networkx] | Mature PageRank and path algorithms |
 | Persistence | SQLite + aiosqlite | Sufficient for run records; no server to operate |
 | Retry | Tenacity | Declarative retry policy |
-| Frontend | React, TypeScript, Vite, TanStack Router | — |
+| Frontend | React, TypeScript, Vite, TanStack Router | n/a |
 | Visualisation | Cytoscape.js | Interactive graph rendering |
 | Testing | pytest, pytest-asyncio, respx | 102 tests; respx mocks HTTP at transport level |
 
@@ -34,12 +34,9 @@ populations, weight edges, build graph, run analytics. Each stage is a separate
 module; the orchestrator holds no domain logic beyond sequencing and the
 assembly of warnings.
 
-Runs execute as background tasks. A `POST` returns a run identifier
-immediately, and the client polls. This is necessary because runs take tens of
-seconds to minutes — Section 6.6 characterises the distribution — which far
-exceeds a reasonable HTTP timeout.
+Runs execute as background tasks. A `POST` returns a run identifier immediately, and the client polls. This is necessary because runs take tens of seconds to minutes, Section 6.6 characterises the distribution, which far exceeds a reasonable HTTP timeout.
 
-## 5.3 Defect 1 — Traversal Discarding the Majority of Every Graph
+## 5.3 Defect 1: Traversal Discarding the Majority of Every Graph
 
 ### 5.3.1 Symptom
 
@@ -70,8 +67,8 @@ constructible as a query: 19     REJECTED: 21
 ```
 
 Every OpenAlex-sourced reference was discarded. Only Crossref's DOI-formatted
-references survived. Where Crossref holds no reference list — which is common,
-since deposit is at publisher discretion — the result was a graph of one node:
+references survived. Where Crossref holds no reference list, which is common,
+since deposit is at publisher discretion, the result was a graph of one node:
 
 ```
 references for PMID 32109013 : OpenAlex 21, Crossref 0  ->  usable nodes 0
@@ -88,9 +85,10 @@ filter=cites:W3008827533                 ->  HTTP 200, meta.count = 30606
 ```
 
 This is the more instructive of the two faults. The malformed query returned
-**HTTP 200 with a count of zero** rather than an error. No exception was raised,
-no log line was emitted, and the system reported "this paper has no citing
-works" — a statement that is occasionally true and therefore unremarkable.
+**HTTP 200 with a count of zero** rather than an error. No exception was
+raised, no log line was emitted, and the system reported "this paper has no
+citing works", a statement that is occasionally true and therefore
+unremarkable.
 
 ### 5.3.4 Resolution
 
@@ -106,7 +104,7 @@ seed to a work identifier before filtering.
 | Edges with a resolved endpoint | 262 with dangling | 163, none dangling |
 | Runtime, 100-paper run | 273 s | 55 s |
 
-## 5.4 Defect 2 — A Single Null Field Discarding Batches of Fifty
+## 5.4 Defect 2: A Single Null Field Discarding Batches of Fifty
 
 ### 5.4.1 Symptom
 
@@ -149,7 +147,7 @@ A secondary effect was discovered at the same time: because batch failures
 forced a fallback to per-paper resolution, the run had been taking 209 s. After
 the fix the same run took 12 s.
 
-## 5.5 Defect 3 — Ignore Rules Discarding the Numbers They Protect
+## 5.5 Defect 3: Ignore Rules Discarding the Numbers They Protect
 
 ### 5.5.1 Symptom
 
@@ -157,8 +155,8 @@ Only 15% of papers in a typical graph received any population evidence.
 
 ### 5.5.2 Diagnosis
 
-The extractor applied its ignore patterns — years, percentages, p-values,
-dosages — at *sentence* granularity:
+The extractor applied its ignore patterns, years, percentages, p-values,
+dosages, at *sentence* granularity:
 
 ```python
 for ignore_p in IGNORE_PATTERNS:
@@ -186,21 +184,10 @@ Ignore patterns are now matched per *span*. A candidate is rejected only when
 the captured number itself falls inside an ignored span. A year is still never
 read as a population; a count standing beside a year survives.
 
-Separately, the pattern set assumed randomised-trial phrasing. "We analyzed
-data on the first 425 confirmed cases" matched nothing, because no pattern
-covered *cases*. Patterns were added for the phrasings observational papers
-use — *a total of N*, *N confirmed cases*, *N subjects*, *N consecutive
-patients*, *included/recruited/studied N*, *data on N* — along with patterns for
-`SCREENED`, `COMPLETERS`, `ARM_SIZE` and `FOLLOWUP_COUNT`, four semantic types
-the model defined but which no pattern could previously emit.
+Separately, the pattern set assumed randomised-trial phrasing. "We analyzed data on the first 425 confirmed cases" matched nothing, because no pattern covered *cases*. Patterns were added for the phrasings observational papers use, *a total of N*, *N confirmed cases*, *N subjects*, *N consecutive patients*, *included/recruited/studied N*, *data on N*, along with patterns for `SCREENED`, `COMPLETERS`, `ARM_SIZE` and `FOLLOWUP_COUNT`, four semantic types the model defined but which no pattern could previously emit. 
+| Measure (40-paper graph) | Before | After | |--------------------------|-------:|------:| | Papers with extracted evidence | 7 | 15 | | Of those with an abstract | 7/29 | 15/29 | | High confidence (≥ 0.8) | 3 | 10 |
 
-| Measure (40-paper graph) | Before | After |
-|--------------------------|-------:|------:|
-| Papers with extracted evidence | 7 | 15 |
-| Of those with an abstract | 7/29 | 15/29 |
-| High confidence (≥ 0.8) | 3 | 10 |
-
-## 5.6 Defect 4 — Edge Weights Collapsing to Zero
+## 5.6 Defect 4: Edge Weights Collapsing to Zero
 
 ### 5.6.1 Symptom
 
@@ -221,7 +208,7 @@ resolution with no candidates -> n_eff=None  confidence=0.0
 ```
 
 Every edge weight was exactly zero for any paper where extraction found
-nothing — which, before Defect 3 was fixed, was 85% of papers.
+nothing, which, before Defect 3 was fixed, was 85% of papers.
 
 The ranking nonetheless produced sensible output, and this is why the fault
 survived. The graph builder contained:
@@ -230,10 +217,7 @@ survived. The graph builder contained:
 weight=edge.final_weight or 1.0
 ```
 
-In Python, `0.0 or 1.0` evaluates to `1.0`. Every zeroed weight was silently
-replaced by 1.0, and PageRank ran **unweighted**. The system's central claim —
-evidence-weighted citation analysis — was not operating, and the fallback that
-concealed it was an accident of truthiness rather than a designed behaviour.
+In Python, `0.0 or 1.0` evaluates to `1.0`. Every zeroed weight was silently replaced by 1.0, and PageRank ran **unweighted**. The system's central claim, evidence-weighted citation analysis, was not operating, and the fallback that concealed it was an accident of truthiness rather than a designed behaviour.
 
 ### 5.6.3 Resolution
 
@@ -242,16 +226,16 @@ falls back only on a genuine `None`, so a real zero can no longer be disguised.
 
 | Case | n_eff | confidence | final weight |
 |------|------:|-----------:|-------------:|
-| No evidence | — | 0.00 | 0.125 |
+| No evidence | n/a | 0.00 | 0.125 |
 | Small trial | 120 | 0.85 | 0.391 |
 | Large trial | 8,500 | 0.90 | 0.655 |
 | Very large | 100,000 | 0.95 | 0.837 |
 | Large, low confidence | 8,500 | 0.30 | 0.302 |
 
 Evidence still outranks absence, larger samples outrank smaller, and low
-confidence is penalised — but nothing collapses to zero.
+confidence is penalised, but nothing collapses to zero.
 
-## 5.7 Defect 5 — Server-Side Request Forgery in URL Input
+## 5.7 Defect 5: Server-Side Request Forgery in URL Input
 
 Accepting an article URL requires fetching it when no identifier can be parsed
 from the URL text. The implementation fetched any URL that had a scheme and a
@@ -266,9 +250,7 @@ listener received 1 request
 resolver returned: query_type='title' value='Internal Service Banner v2.4'
 ```
 
-The system could be directed at loopback, link-local (cloud metadata) or private
-addresses, and the fetched page's `citation_title` was forwarded to Crossref and
-Europe PMC as a search term — a narrow but real exfiltration channel.
+The system could be directed at loopback, link-local (cloud metadata) or private addresses, and the fetched page's `citation_title` was forwarded to Crossref and Europe PMC as a search term, a narrow but real exfiltration channel.
 
 The resolver now rejects any URL whose host resolves to a private, loopback,
 link-local, reserved, multicast or unspecified address, and follows redirects
@@ -280,19 +262,13 @@ includes `/`, so matching against a URL path ran past the end of the DOI into
 the publisher's view segment, yielding `10.3389/fcomp.2024.1387354/full` and
 failing the run. Trailing view segments are now trimmed.
 
-## 5.8 Defect 6 — Exports Returning JSON Envelopes
+## 5.8 Defect 6: Exports Returning JSON Envelopes
 
 The frontend saved export responses directly to disk as `citegraph-<id>.csv`,
 but the backend returned `{"csv": "..."}`. Users received a `.csv` file
 containing a JSON envelope with the whole table escaped onto one line.
 
-All exports now return the file itself with the correct `Content-Type` and a
-`Content-Disposition` filename. Both CSV exports are written with the `csv`
-module, so a comma, quote or newline in a title or journal can no longer break
-a row — the previous hand-rolled formatting never escaped the journal field at
-all — and carry a UTF-8 byte-order mark so spreadsheet software renders accented
-author names correctly. An edge-list export and a GraphML export were added;
-the frontend had offered GraphML as a format although no such route existed.
+All exports now return the file itself with the correct `Content-Type` and a `Content-Disposition` filename. Both CSV exports are written with the `csv` module, so a comma, quote or newline in a title or journal can no longer break a row, the previous hand-rolled formatting never escaped the journal field at all, and carry a UTF-8 byte-order mark so spreadsheet software renders accented author names correctly. An edge-list export and a GraphML export were added; the frontend had offered GraphML as a format although no such route existed.
 
 ## 5.9 Deployment
 
@@ -333,8 +309,8 @@ the number of nodes bore any relation to the number of references available, or
 that edge weights varied.
 
 The methodological conclusion is that for a system whose output is a ranked
-list, correctness cannot be established by testing that the pipeline runs.
-It requires measurement against known quantities — which is what Chapter 6
-reports, and what the project proposal had specified from the outset.
+list, correctness cannot be established by testing that the pipeline runs. It
+requires measurement against known quantities, which is what Chapter 6 reports,
+and what the project proposal had specified from the outset.
 
 ---

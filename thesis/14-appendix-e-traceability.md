@@ -1,4 +1,4 @@
-# Appendix E — Requirements Traceability
+# Appendix E: Requirements Traceability
 
 This appendix maps every requirement from Chapter 3 to the implementing module,
 the verifying test or measurement, and the section reporting the outcome. Its
@@ -21,11 +21,11 @@ them to be inferred from absence.
 | FR-10 | Forward traversal, depth 0–2 | `citations/traversal.py`, `providers/openalex.py` | §6.5 | Met |
 | FR-11 | Bound total papers 1–200 | `api/routes.py` | `test_api_comprehensive.py` | Met |
 | FR-12 | Merge duplicate records | `citations/traversal.py` | §6.5 | Met; **merge precision unmeasured** (§7.3.2) |
-| FR-13 | No dangling edges | `citations/traversal.py` | §6.5 — 0 across 3 runs | Met |
+| FR-13 | No dangling edges | `citations/traversal.py` | §6.5, 0 across 3 runs | Met |
 | FR-14 | Extract population candidates | `nlp/population_extractor.py` | §6.4.1 | Met |
-| FR-15 | Classify semantic type | `nlp/population_patterns.py` | §6.4.3 — 6/10 | **Partially met** |
-| FR-16 | Resolve to one value per paper | `nlp/population_resolver.py` | §6.4.2 — 10/11 | Met |
-| FR-17 | Attach confidence and status | `models/population.py` | §6.4.4 | **Partially met — confidence uncalibrated** |
+| FR-15 | Classify semantic type | `nlp/population_patterns.py` | §6.4.3, 6/10 | **Partially met** |
+| FR-16 | Resolve to one value per paper | `nlp/population_resolver.py` | §6.4.2, 10/11 | Met |
+| FR-17 | Attach confidence and status | `models/population.py` | §6.4.4 | **Partially met, confidence uncalibrated** |
 | FR-18 | Ignore years, percentages, p-values | `nlp/population_extractor.py` | `test_population_patterns.py` | Met |
 | FR-19 | Evidence-based edge weighting | `graph/weighting.py` | §5.6 | Met |
 | FR-20 | Non-zero weight without evidence | `graph/weighting.py`, `graph/builder.py` | §5.6 | Met |
@@ -35,7 +35,7 @@ them to be inferred from absence.
 | FR-24 | REST API and dashboard | `api/`, `frontend/` | §5.9, §5.11 | Met |
 
 **Summary:** 22 of 24 met; FR-15 and FR-17 partially met. Both partial results
-concern the same underlying weakness — the system's semantic and probabilistic
+concern the same underlying weakness, the system's semantic and probabilistic
 judgements about extractions are weaker than its value extraction.
 
 ## E.2 Non-functional requirements
@@ -68,9 +68,9 @@ Listed for completeness; discussed in Section 7.4.
 
 | RQ | Question | Answered in | Verdict |
 |----|----------|-------------|---------|
-| RQ1 | Reliable pattern-based extraction? | §6.4 | Partially — detection strong (F1 0.957), typing weak (0.60), confidence uncalibrated |
-| RQ2 | Does text availability constrain more than accuracy? | §6.3 | Yes — 28% of papers lacked abstracts; all recoverable from a second provider |
-| RQ3 | Defensible evidence-weighted ranking? | §6.5 | **Unproven** — plausible output, no relevance study, no baseline comparison |
-| RQ4 | Fast enough, and what dominates? | §6.6 | Yes — 19 s mean; 63% network I/O, 2.5% analytics |
+| RQ1 | Reliable pattern-based extraction? | §6.4 | Partially, detection strong (F1 0.957), typing weak (0.60), confidence uncalibrated |
+| RQ2 | Does text availability constrain more than accuracy? | §6.3 | Yes, 28% of papers lacked abstracts; all recoverable from a second provider |
+| RQ3 | Defensible evidence-weighted ranking? | §6.5 | **Unproven**, plausible output, no relevance study, no baseline comparison |
+| RQ4 | Fast enough, and what dominates? | §6.6 | Yes, 19 s mean; 63% network I/O, 2.5% analytics |
 
 ---

@@ -1,4 +1,4 @@
-# Chapter 3 — Requirements and Methodology
+# Chapter 3: Requirements and Methodology
 
 ## 3.1 Requirements Elicitation
 
@@ -8,8 +8,8 @@ project proposal approved by the department, a Product Requirement Document
 before implementation began.
 
 The feasibility study is worth describing because it shaped the scope
-materially. It assessed each intended component — metadata resolution, PDF
-parsing, population extraction, citation traversal, graph construction — and
+materially. It assessed each intended component, metadata resolution, PDF
+parsing, population extraction, citation traversal, graph construction, and
 judged the difficulty of each independently. Its conclusion on full-text
 parsing was the decisive one: obtaining legal full text at scale is gated by
 open-access status rather than by parsing capability, and a pipeline that
@@ -96,7 +96,7 @@ detectable.
 Development followed an iterative build–measure–correct cycle rather than a
 waterfall. Given a four-person team, a fixed academic deadline and external
 dependencies whose behaviour was not fully known in advance, planning the
-system completely before building it was not realistic — a judgement the
+system completely before building it was not realistic, a judgement the
 feasibility study supported.
 
 Each iteration comprised: implement a pipeline stage; write automated tests;
@@ -117,13 +117,13 @@ comprises 102 automated tests. Continuous integration deploys the backend to a
 shared host and the frontend to a content delivery network on merge to the main
 branch.
 
-Two properties of the test suite are worth noting because they bear on
-Chapter 5. First, the suite passed in full throughout the period in which the
-traversal defect described in Section 5.3 was discarding the majority of every
-graph; the tests asserted that the pipeline completed and returned a structure
-of the right shape, not that the structure was correct. Second, two defects in
-the test suite itself were found — one hung the entire suite indefinitely, and
-one masked a failure on the database read path. A test suite is software and is
+Two properties of the test suite are worth noting because they bear on Chapter
+5. First, the suite passed in full throughout the period in which the traversal
+defect described in Section 5.3 was discarding the majority of every graph; the
+tests asserted that the pipeline completed and returned a structure of the
+right shape, not that the structure was correct. Second, two defects in the
+test suite itself were found, one hung the entire suite indefinitely, and one
+masked a failure on the database read path. A test suite is software and is
 subject to the same defects as the system it tests.
 
 ## 3.5 Evaluation Strategy
@@ -140,24 +140,15 @@ reported as unmeasured where one does not.
 Population extraction is evaluated against a hand-annotated gold standard of 20
 papers. The construction protocol is:
 
-1. Select papers spanning study designs — randomised trials, cohort studies,
-   case series, epidemiological analyses, modelling studies — plus negatives:
-   reviews, guidelines, and computational papers with no human subjects.
-2. Retrieve the abstract through the same providers the pipeline uses.
-3. Read each abstract and record the effective population size, defined as the
-   total number of human subjects the paper's primary analysis rests on as
-   stated in the abstract.
-4. Record the supporting sentence verbatim so every label is auditable.
-5. Where no human study population is stated, label the paper negative; the
-   correct system behaviour is to extract nothing.
+1. Select papers spanning study designs, randomised trials, cohort studies, case series, epidemiological analyses, modelling studies, plus negatives: reviews, guidelines, and computational papers with no human subjects. 2. Retrieve the abstract through the same providers the pipeline uses. 3. Read each abstract and record the effective population size, defined as the total number of human subjects the paper's primary analysis rests on as stated in the abstract. 4. Record the supporting sentence verbatim so every label is auditable. 5. Where no human study population is stated, label the paper negative; the correct system behaviour is to extract nothing.
 
 Nine of the twenty are negatives, and several are *hard* negatives whose
 abstracts contain large, salient numbers that are not study populations: an
 epidemic case tally of 2,794 laboratory-confirmed infections, an ImageNet
 dataset size of 1.2 million images, and a systematic review whose units are
-studies rather than patients. Including these is a deliberate design choice —
-a positives-only gold set cannot measure false positives, and false positives
-are the failure mode that most damages user trust.
+studies rather than patients. Including these is a deliberate design choice, a
+positives-only gold set cannot measure false positives, and false positives are
+the failure mode that most damages user trust.
 
 ### 3.5.3 Statistical treatment
 

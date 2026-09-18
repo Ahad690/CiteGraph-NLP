@@ -1,4 +1,4 @@
-# Chapter 6 (continued) — Extended Analysis
+# Chapter 6 (continued): Extended Analysis
 
 ## 6.9 Performance by Study Design
 
@@ -13,26 +13,24 @@ uniform, and that the failures cluster.
 | Case series | 2 | 2 | 2/2 | **1/2** | 0.85 |
 | Epidemiological | 1 | 1 | 1/1 | 1/1 | 0.85 |
 | Modelling | 1 | 1 | 1/1 | 1/1 | 0.85 |
-| Review | 3 | 0 | 3/3 | — | 0.00 |
-| Virus characterisation | 2 | 0 | 2/2 | — | 0.00 |
-| Computational | 2 | 0 | 2/2 | — | 0.00 |
-| Guideline | 1 | 0 | 1/1 | — | 0.00 |
-| **Systematic review** | **1** | **0** | **0/1** | — | **0.90** |
+| Review | 3 | 0 | 3/3 | n/a | 0.00 |
+| Virus characterisation | 2 | 0 | 2/2 | n/a | 0.00 |
+| Computational | 2 | 0 | 2/2 | n/a | 0.00 |
+| Guideline | 1 | 0 | 1/1 | n/a | 0.00 |
+| **Systematic review** | **1** | **0** | **0/1** | n/a | **0.90** |
 
 Gold populations span 41 to 43,548 subjects, median 1,099.
 
 Three patterns are visible.
 
-**Randomised trials are the easy case, and the system is built for them.**
-Five of five correct, with the highest mean confidence (0.96). RCT abstracts
-follow a reporting convention — a single headline number introduced by
-*randomised*, *assigned* or *enrolled* — that surface patterns capture well.
-This is unsurprising given that the pattern set was written with trial phrasing
-in mind, and it should temper any generalisation from the headline F1.
+**Randomised trials are the easy case, and the system is built for them.** Five
+of five correct, with the highest mean confidence (0.96). RCT abstracts follow a reporting convention that surface patterns capture well: a single headline number introduced by *randomised*, *assigned* or *enrolled*. This is
+unsurprising given that the pattern set was written with trial phrasing in
+mind, and it should temper any generalisation from the headline F1.
 
 **Clear negatives are handled cleanly.** Reviews, guidelines, virus
 characterisation and computational papers were all correctly rejected, with
-confidence 0.00 — including the hard negatives containing an ImageNet dataset
+confidence 0.00, including the hard negatives containing an ImageNet dataset
 size and an epidemic case tally. The ignore rules and the requirement that a
 number appear in a population-bearing construction are doing real work here.
 
@@ -50,10 +48,10 @@ whose abstracts most resemble clinical reports without describing a cohort.
 
 ## 6.10 The Confidence Calibration Failure in Detail
 
-Section 6.4.4 reported that mean confidence was 0.91 when extraction was correct
-and 0.90 when it was wrong. The design breakdown explains why, and the
-explanation is not that the model is poorly fitted — it is that there is no
-model.
+Section 6.4.4 reported that mean confidence was 0.91 when extraction was
+correct and 0.90 when it was wrong. The design breakdown explains why: there is
+no model behind the score at all, so there is nothing that could have been
+fitted well or badly.
 
 Confidence is computed as:
 
@@ -75,11 +73,11 @@ exactly this reason: it matched a high-weight pattern, and the system has no
 means of noticing that the match is out of domain.
 
 The fix is not to adjust the weights. It is to make confidence a function of
-observed correctness — fitting a calibration model over features such as
-pattern identity, the number and spread of competing candidates, sentence
-position, and the presence of design-indicating terms — which requires labelled
-data at a scale the present gold standard does not reach. Section 8.2.1 and
-8.2.3 are therefore coupled: calibration is blocked on corpus size.
+observed correctness, fitting a calibration model over features such as pattern
+identity, the number and spread of competing candidates, sentence position, and
+the presence of design-indicating terms, which requires labelled data at a
+scale the present gold standard does not reach. Section 8.2.1 and 8.2.3 are
+therefore coupled: calibration is blocked on corpus size.
 
 Until then, the honest framing for a user is that the confidence score indicates
 *how specific the matched pattern was*, not *how likely the answer is to be
@@ -113,9 +111,7 @@ bears on how a user should read a sparse graph: low density may indicate an
 interdisciplinary or recent seed rather than a thin literature, and the system
 currently offers no signal to tell them apart.
 
-The runtime difference follows directly from density — fewer edges means fewer
-neighbours to resolve — which reinforces the finding in Section 6.6.1 that cost
-is driven by the number of external lookups rather than by graph computation.
+The runtime difference follows directly from density. Fewer edges means fewer neighbours to resolve, which reinforces the finding in Section 6.6.1 that cost is driven by the number of external lookups rather than by graph computation.
 
 ## 6.12 What the Abstract Backfill Changed, Stage by Stage
 
@@ -133,8 +129,7 @@ failure.
 | Status `missing` | 25 | 20 |
 
 Eleven papers moved from "no text" to "text available", and five of those then
-yielded a population. The remaining six had text but no reportable population —
-correctly, since they were reviews, guidelines and discovery papers.
+yielded a population. The remaining six had text but no reportable population. That is correct: they were reviews, guidelines and discovery papers.
 
 The distinction matters for how the result is read. Before the backfill, 25 of
 40 papers reported `missing`, and nothing in the output distinguished *no
@@ -151,7 +146,7 @@ Chapter 5. Each row is the state after the named correction.
 | State | Papers with `n_eff` | High confidence | Runtime |
 |-------|--------------------:|----------------:|--------:|
 | Initial (as delivered before measurement) | 7 (18%) | 3 | 93.3 s |
-| After per-span ignore matching (§5.5) | 15 (38%) | 10 | — |
+| After per-span ignore matching (§5.5) | 15 (38%) | 10 | n/a |
 | After connection pooling (§6.6.3) | 15 | 10 | 27.9 s |
 | After Europe PMC backfill (§6.3) | **20 (50%)** | **11** | 27.0 s |
 
@@ -160,8 +155,8 @@ high-confidence extractions from 3 to 11, while runtime fell by roughly 71%.
 
 The composition of that gain is the point. Of the 13 additional papers with
 evidence, eight came from correcting extraction logic and five from querying a
-second data source. The second intervention is far cheaper — one additional API
-call per run against a rewrite of the ignore-matching logic — and would not have
+second data source. The second intervention is far cheaper, one additional API
+call per run against a rewrite of the ignore-matching logic, and would not have
 been identified without separating "no text" from "extraction failed" in the
 measurement. Section 7.1.1 draws the general lesson.
 

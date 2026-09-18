@@ -10,8 +10,7 @@ The project is a research prototype that makes uncertainty visible using confide
 
 - M. Ahad Imran (F23607034)
 - Syed Zain-ul-Abidin (F23607031)
-- Hamza Abdul Karim (F23607046)
-- M. Usman Nasir (F23607004)
+- Anas Zafar (F22607024)
 
 ---
 

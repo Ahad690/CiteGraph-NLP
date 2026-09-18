@@ -1,4 +1,4 @@
-# Appendix F — Test Suite and Verification Inventory
+# Appendix F: Test Suite and Verification Inventory
 
 ## F.1 Composition
 

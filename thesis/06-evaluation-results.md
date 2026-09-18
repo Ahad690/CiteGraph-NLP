@@ -1,4 +1,4 @@
-# Chapter 6 — Evaluation and Results
+# Chapter 6: Evaluation and Results
 
 All results in this chapter were produced by `scripts/run_evaluation.py`,
 committed to the project repository. Appendix C gives the commands. The run
@@ -28,8 +28,9 @@ providers the pipeline uses.
 | Computational (no human subjects) | 2 | negative |
 | **Negatives** | **9** | |
 
-Positive sample sizes span 41 to 43,548 subjects — three orders of magnitude —
-which is the range the logarithmic normalisation in Section 4.5 is designed for.
+Positive sample sizes span 41 to 43,548 subjects, three orders of magnitude,
+which is the range the logarithmic normalisation in Section 4.5 is designed
+for.
 
 ### 6.1.2 Hard negatives
 
@@ -48,8 +49,8 @@ most informative in the set.
 
 ### 6.1.3 Annotation protocol and its limits
 
-Each label records the effective population — the total human subjects the
-primary analysis rests on, as stated in the abstract — with the supporting
+Each label records the effective population, the total human subjects the
+primary analysis rests on, as stated in the abstract, with the supporting
 sentence quoted verbatim so the label is auditable. Where no human study
 population is stated, the label is negative and correct behaviour is to extract
 nothing.
@@ -94,7 +95,7 @@ downstream. Measured on a 40-paper traversal graph:
 
 This is the single most consequential measurement in the evaluation, and it
 answers **RQ2**. Before the backfill, 28% of papers could not be evaluated at
-all — not because extraction failed, but because there was nothing to read.
+all, not because extraction failed, but because there was nothing to read.
 Every one of those abstracts existed in Europe PMC, and none in Crossref.
 
 Two conclusions follow. First, a pipeline drawing abstracts from a single
@@ -116,14 +117,14 @@ Detection is the binary decision: does this paper report a study population?
 
 | Metric | Value | 95% CI |
 |--------|------:|--------|
-| Precision | 0.917 | — |
-| Recall | 1.000 | — |
-| Specificity | 0.889 | — |
-| F1 | 0.957 | — |
+| Precision | 0.917 | n/a |
+| Recall | 1.000 | n/a |
+| Specificity | 0.889 | n/a |
+| F1 | 0.957 | n/a |
 | Accuracy | 0.950 | [0.764, 0.991] |
 
 Recall is perfect on this set: every paper that reports a population had one
-extracted. The confidence interval on accuracy is wide — [0.764, 0.991] — and
+extracted. The confidence interval on accuracy is wide, [0.764, 0.991], and
 must be quoted with the point estimate. A recall of 1.000 on eleven positives
 is statistically consistent with a true recall substantially below 1.
 
@@ -137,8 +138,8 @@ the sample-size caveat above.
 |--------|------:|--------|
 | Exact value correct | 10 / 11 (0.909) | [0.623, 0.984] |
 
-The single failure is instructive. For Wang et al., *JAMA* 2020 — a case series
-of 138 hospitalised patients — the system extracted **36**. The abstract states
+The single failure is instructive. For Wang et al., *JAMA* 2020, a case series
+of 138 hospitalised patients, the system extracted **36**. The abstract states
 the cohort size in the Design section and then reports numerous subgroup counts
 in Results; the resolver selected a subgroup. This is a *resolution* failure,
 not a detection failure: the correct candidate was extracted, and the selection
@@ -161,13 +162,7 @@ categories. The four errors:
 | Huang et al. 2020 | `TOTAL_ANALYZED` | `TOTAL_ENROLLED` |
 | Verity et al. 2020 | `SAMPLE_SIZE_GENERIC` | `TOTAL_ANALYZED` |
 
-All four are *adjacent-category* confusions among quantities that are often
-numerically equal — a trial that randomises 4,744 and analyses 4,744 differs
-only in framing. The first error has a traceable cause: the phrase "A total of
-43,548 participants underwent randomization" matches a generic `a total of N`
-pattern that is typed `SAMPLE_SIZE_GENERIC`, and that pattern outranked the
-randomisation-specific one. This is a pattern-priority defect, not an inherent
-limit.
+All four are *adjacent-category* confusions among quantities that are often numerically equal, a trial that randomises 4,744 and analyses 4,744 differs only in framing. The first error has a traceable cause: the phrase "A total of 43,548 participants underwent randomization" matches a generic `a total of N` pattern that is typed `SAMPLE_SIZE_GENERIC`, and that pattern outranked the randomisation-specific one. This is a pattern-priority defect, not an inherent limit.
 
 The practical impact on the system is smaller than the number suggests: the
 weighting formula uses the *value*, not the type. Type accuracy affects the
@@ -214,7 +209,7 @@ Three traversals at `max_papers = 40`, backward depth 2, forward depth 1:
 
 Every run filled its budget with distinct papers, every edge had both endpoints
 present, and no node was orphaned. Duplicate merging occurred before the budget
-was consumed, so the two merges on the first graph did not reduce it below 40 —
+was consumed, so the two merges on the first graph did not reduce it below 40,
 which matters for interpretation: a sparse graph indicates few citations, not
 records lost to deduplication.
 
@@ -226,12 +221,12 @@ does.
 
 **On ranking quality (RQ3).** A qualitative observation: seeded with the 2021
 AlphaFold paper, the top-ranked foundational paper was Anfinsen's 1973
-*"Principles that Govern the Folding of Protein Chains"* — the work that
-founded the protein-folding problem. This is the behaviour the design intends.
-It is an anecdote, not a measurement. No relevance judgement study was
-conducted, no comparison against unweighted PageRank was run, and a single
-favourable example does not establish that evidence weighting improves ranking.
-Section 7.3 records this as the principal unaddressed question.
+*"Principles that Govern the Folding of Protein Chains"*, the work that founded
+the protein-folding problem. This is the behaviour the design intends. It is an
+anecdote, not a measurement. No relevance judgement study was conducted, no
+comparison against unweighted PageRank was run, and a single favourable example
+does not establish that evidence weighting improves ranking. Section 7.3
+records this as the principal unaddressed question.
 
 ## 6.6 Performance
 
@@ -252,7 +247,7 @@ Instrumented 40-paper run:
 
 This answers **RQ4**. The system is I/O-bound: 58 HTTP requests across three
 providers dominate, and all graph analytics together are 2.5% of runtime. The
-graph algorithms are not the bottleneck and, at this scale, never will be —
+graph algorithms are not the bottleneck and, at this scale, never will be,
 which retrospectively validates the choice of an in-memory graph over a
 database (Section 5.1). Population extraction at 28% is now the second cost and
 the first place local optimisation would pay.
@@ -280,13 +275,8 @@ and TLS handshake:
 | New client per request | 1.03 s | 8.72 s |
 | One pooled client | 0.42 s | 3.65 s |
 
-Approximately 634 ms of handshake per request — 58% of the time each call took.
-On a full run with identical output:
-
-| | Before | After |
-|---|---:|---:|
-| Mean request latency | 2,893 ms | 573 ms |
-| 40-paper run | 93.3 s | 27.9 s |
+Approximately 634 ms of handshake per request, 58% of the time each call took. On a full run with identical output: 
+| | Before | After | |---|---:|---:| | Mean request latency | 2,893 ms | 573 ms | | 40-paper run | 93.3 s | 27.9 s |
 
 ### 6.6.4 Path ranking complexity
 
@@ -301,7 +291,7 @@ synthetic layered graphs:
 | 91 | 1,830 | 11.92 s | 0.06 s | 191× |
 | 151 | 5,050 | 117.96 s | 0.27 s | 434× |
 
-The redesign — one depth-limited DFS feeding a bounded heap — returns an
+The redesign, one depth-limited DFS feeding a bounded heap, returns an
 identical top-ten (verified by comparing path sets and scores against the
 exhaustive computation). The speed-up widens with size because the original was
 O(nodes × paths) and the replacement is O(paths).
@@ -320,15 +310,15 @@ This caught three identifiers that had been assigned incorrectly:
 | PageRank on citations | `10.1016/j.joi.2007.01.001` | A journal-impact-factor rank-order paper |
 | Trialstreamer | `10.1093/jamia/ocv044` | RobotReviewer |
 
-A fourth candidate — the 1999 PageRank technical report — has no resolvable DOI
+A fourth candidate, the 1999 PageRank technical report, has no resolvable DOI
 and was dropped rather than cited with a fabricated identifier; PageRank is
 cited through Brin and Page (1998) and Chen et al. (2007) instead.
 
 This is reported because it is a result about method. Citations composed from
-memory are wrong at a non-trivial rate — three of twenty-nine here, roughly
-10% — and the errors are invisible without verification, since a plausible DOI
-looks exactly like a correct one. All twenty-nine entries in the final
-bibliography resolve.
+memory are wrong at a non-trivial rate, three of twenty-nine here, roughly 10%,
+and the errors are invisible without verification, since a plausible DOI looks
+exactly like a correct one. All twenty-nine entries in the final bibliography
+resolve.
 
 ## 6.8 Summary of Results Against Objectives
 

@@ -1,20 +1,20 @@
-# Chapter 1 — Introduction
+# Chapter 1: Introduction
 
 ## 1.1 Background and Motivation
 
 Scientific knowledge is cumulative, and the citation is the mechanism by which
 that accumulation is recorded. When a paper cites another, it declares a
 dependency: some part of the new work rests on the earlier one. Garfield's
-proposal for a citation index [garfield1955] rested on exactly this observation
-— that the network of citations is itself a navigable structure, and that
-following it backwards should let a reader reach the origin of an idea.
+proposal for a citation index [garfield1955] rested on exactly this
+observation, that the network of citations is itself a navigable structure, and
+that following it backwards should let a reader reach the origin of an idea.
 
 Seventy years later, the network exists and is machine-readable. OpenAlex
 [priem2022openalex], Crossref [hendricks2020crossref] and Europe PMC
 [europepmc2015] between them expose hundreds of millions of works and their
 reference lists through open APIs. What has not kept pace is the interpretation
-of that network. The dominant summary statistics — citation count, h-index
-[hirsch2005hindex], journal impact factor — all treat citations as
+of that network. The dominant summary statistics, citation count, h-index
+[hirsch2005hindex], journal impact factor, all treat citations as
 interchangeable units. A citation is a citation.
 
 That assumption is convenient and, for many purposes, wrong. Consider two
@@ -63,7 +63,7 @@ undertaking by a trained team.
 
 The gap this project addresses sits between the second and third options: an
 automated traversal that is aware, however imperfectly, of how much evidence
-each cited paper actually reports — and that is honest about the imperfection.
+each cited paper actually reports, and that is honest about the imperfection.
 
 ## 1.3 Research Questions
 
@@ -150,7 +150,7 @@ ranked graph, deployed and publicly reachable, with 102 automated tests.
 evidence scales the evidential term of the edge weight while a structural term
 always applies, so an edge whose evidence could not be extracted retains a
 uniform non-zero weight instead of vanishing. Section 5.6 shows that the
-original formulation — multiplying the entire weight by confidence — silently
+original formulation, multiplying the entire weight by confidence, silently
 collapsed every edge weight to exactly zero for any paper outside clinical
 phrasing, and that the defect was masked by a Python truthiness accident.
 

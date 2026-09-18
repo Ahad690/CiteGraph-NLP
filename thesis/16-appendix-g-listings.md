@@ -1,4 +1,4 @@
-# Appendix G — Selected Code Listings
+# Appendix G: Selected Code Listings
 
 Extracts from the delivered system, chosen because each embodies a decision
 argued elsewhere in the thesis. Listings are lightly trimmed for width;

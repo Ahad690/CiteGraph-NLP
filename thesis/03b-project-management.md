@@ -1,4 +1,4 @@
-# Chapter 3 (continued) — Project Management
+# Chapter 3 (continued): Project Management
 
 ## 3.6 Team Organisation
 
@@ -21,11 +21,11 @@ the NLP work was testable without a working traversal.
 
 This had a cost that Chapter 5 makes visible. Clean interfaces let each module
 be tested in isolation, and each module *was* correct in isolation. The
-traversal defect (Section 5.3) lived precisely at the seam — the traversal
+traversal defect (Section 5.3) lived precisely at the seam, the traversal
 correctly asked the resolver for a paper, and the resolver correctly rejected
-an identifier it was never designed to receive. Both sides behaved as specified.
-Interface-level correctness does not compose into system-level correctness, and
-nothing in the division of labour was positioned to notice.
+an identifier it was never designed to receive. Both sides behaved as
+specified. Interface-level correctness does not compose into system-level
+correctness, and nothing in the division of labour was positioned to notice.
 
 ## 3.7 Development Timeline
 
@@ -40,9 +40,9 @@ nothing in the division of labour was positioned to notice.
 | Documentation | Thesis, reproducibility artifacts | This document |
 
 The final phase is the one worth commentary. It was originally scoped as
-"testing and documentation" — a wrap-up phase. It became the phase in which
-most of the project's substantive faults were found, because it was the first
-time the system was measured rather than exercised.
+"testing and documentation", a wrap-up phase. It became the phase in which most
+of the project's substantive faults were found, because it was the first time
+the system was measured rather than exercised.
 
 Had the evaluation harness been built when the proposal specified it, the same
 defects would have surfaced months earlier and at lower cost. The empty
@@ -67,7 +67,7 @@ were:
 
 **Silent data loss inside the pipeline.** No risk entry anticipated that the
 system might run to completion while discarding most of its input. The register
-was oriented toward external failures — APIs down, rate limits, legal limits —
+was oriented toward external failures, APIs down, rate limits, legal limits,
 and assumed internal correctness would follow from testing.
 
 **A test suite that passes while the system is wrong.** The plan treated tests
@@ -89,7 +89,7 @@ insufficient for a system whose output is a ranked list.
 Deployment is automated from the main branch: backend changes rebuild the
 container and restart it behind nginx; frontend changes rebuild the static
 bundle and publish it. The backend container binds the loopback interface only,
-because the host is shared with unrelated services — a constraint that produced
+because the host is shared with unrelated services, a constraint that produced
 its own defect, recorded in Section 5.9.
 
 ## 3.10 Lessons for Process
@@ -101,10 +101,7 @@ The evaluation plan existed from the proposal. Deferring it deferred all the
 information it would have produced.
 
 **Prefer measurements over assertions for pipelines.** A test that a stage
-returns the right *shape* is cheap and weak. A measurement that compares a
-stage's output against an independently known quantity — how many references
-the provider reported, what a human read in the abstract — is more expensive and
-far stronger.
+returns the right *shape* is cheap and weak. A measurement compares a stage's output against a quantity known independently: how many references the provider reported, or what a human read in the abstract. That costs more to build and is far stronger.
 
 **Treat silence as suspicious.** Every defect in Chapter 5 was silent: a
 warning-level log, an HTTP 200 with an empty result, a falsy value coerced to a

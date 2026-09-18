@@ -14,12 +14,11 @@
 |------|---------------------|
 | M. Ahad Imran | F23607034 |
 | Syed Zain-ul-Abidin | F23607031 |
-| Hamza Abdul Karim | F23607046 |
-| M. Usman Nasir | F23607004 |
+| Anas Zafar | F22607024 |
 
-**Supervisor:** *[to be completed]*
+**Supervisor:** Dr. Amna Ikram
 
-**Session:** 2023–2026
+**Session:** 2023–2027
 
 ---
 
@@ -31,6 +30,16 @@ scholarly APIs under their published terms of use. No paywalled full text was
 scraped or redistributed. Every quantitative result reported in Chapter 6 was
 produced by a script committed to the project repository and can be recomputed
 by a reader with network access; the commands are given in Appendix C.
+
+**Provenance of the work.** An initial prototype of this system was developed in
+the sixth semester. The project has been carried forward into the Final Year
+Project in the seventh semester, and the team composition has changed since the
+prototype phase. The work presented here substantially extends that prototype.
+The evaluation reported in Chapter 6 was designed and executed during the FYP
+phase, and the corrections catalogued in Chapter 5, including the traversal,
+weighting and extraction defects, were identified and resolved in this phase.
+Where a result or component predates the FYP, this is stated at the point of use
+rather than presented as new work.
 
 Where the delivered system falls short of the original project proposal, this
 thesis states the shortfall explicitly rather than describing the intended
@@ -59,13 +68,7 @@ weights each citation edge by a normalised population score scaled by extraction
 confidence, and ranks probable foundational papers using PageRank over the
 weighted graph.
 
-The contribution is not a new ranking algorithm — PageRank on citation networks
-is long established [chen2007gems; walker2007citerank]. It is a working,
-measured pipeline that makes the *uncertainty* of automated evidence extraction
-visible to the user: every extracted population carries a confidence score and a
-status of `resolved`, `ambiguous` or `missing`, and edges whose evidence could
-not be established fall back to a uniform structural weight rather than silently
-disappearing.
+The contribution is not a new ranking algorithm. PageRank on citation networks is long established [chen2007gems; walker2007citerank]. It is a working, measured pipeline that makes the *uncertainty* of automated evidence extraction visible to the user: every extracted population carries a confidence score and a status of `resolved`, `ambiguous` or `missing`, and edges whose evidence could not be established fall back to a uniform structural weight rather than silently disappearing.
 
 The system was evaluated against a 20-paper gold standard annotated from
 abstract text, spanning randomised trials, cohort studies, case series,
@@ -98,14 +101,7 @@ biomedical NLP, PageRank, evidence synthesis, scholarly APIs
 
 ## Table of Contents
 
-1. **Introduction** — motivation, problem statement, objectives, scope, contributions
-2. **Literature Review** — citation analysis, scholarly infrastructure, biomedical information extraction, evidence appraisal
-3. **Requirements and Methodology** — requirements capture, development process, evaluation strategy
-4. **System Design and Architecture** — layered architecture, data model, algorithms
-5. **Implementation** — pipeline stages, provider integration, engineering defects and their resolution
-6. **Evaluation and Results** — gold standard, measured results, performance, failure analysis
-7. **Discussion** — interpretation, threats to validity, divergence from the proposal
-8. **Conclusion and Future Work**
+1. **Introduction**, motivation, problem statement, objectives, scope, contributions 2. **Literature Review**, citation analysis, scholarly infrastructure, biomedical information extraction, evidence appraisal 3. **Requirements and Methodology**, requirements capture, development process, evaluation strategy 4. **System Design and Architecture**, layered architecture, data model, algorithms 5. **Implementation**, pipeline stages, provider integration, engineering defects and their resolution 6. **Evaluation and Results**, gold standard, measured results, performance, failure analysis 7. **Discussion**, interpretation, threats to validity, divergence from the proposal 8. **Conclusion and Future Work**
 
 **Appendices**
 

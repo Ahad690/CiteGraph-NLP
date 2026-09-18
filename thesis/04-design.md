@@ -1,4 +1,4 @@
-# Chapter 4 — System Design and Architecture
+# Chapter 4: System Design and Architecture
 
 ## 4.1 Architectural Overview
 
@@ -74,7 +74,7 @@ The canonical record of a work.
 |-------|------|-------|
 | `paper_id` | str | Canonical identifier; DOI preferred, then PMID, then OpenAlex ID |
 | `doi`, `pmid`, `pmcid`, `openalex_id` | str? | All known identifiers, retained for aliasing |
-| `title`, `authors`, `year`, `journal` | — | Bibliographic metadata |
+| `title`, `authors`, `year`, `journal` | n/a | Bibliographic metadata |
 | `abstract` | str? | Extraction input; may be backfilled from a secondary provider |
 | `source_ids` | dict | Provider-specific identifiers |
 | `metadata_confidence` | float | Higher when several providers agree |
@@ -122,8 +122,8 @@ gold-standard evaluation in Chapter 6 relies on the same property.
 | `SCREENED` | Subjects screened for eligibility |
 | `COMPLETERS` | Subjects completing the protocol |
 | `FOLLOWUP_COUNT` | Subjects followed up |
-| `EVENT_COUNT` | Outcome event counts — *no pattern emits this* |
-| `UNKNOWN_NUMERIC` | Unclassified — *no pattern emits this* |
+| `EVENT_COUNT` | Outcome event counts, *no pattern emits this* |
+| `UNKNOWN_NUMERIC` | Unclassified, *no pattern emits this* |
 
 The last two are defined in the model but no extraction pattern produces them.
 They are listed here as specified-but-unimplemented rather than quietly omitted.
@@ -151,8 +151,8 @@ whole-record: Crossref is preferred for title, year, authors and journal because
 it carries publisher-deposited metadata; OpenAlex is preferred for abstracts
 because it reconstructs them from an inverted index.
 
-Concurrency here is genuine parallelism of I/O — three providers queried at once
-rather than in sequence — and is the reason seed resolution costs under two
+Concurrency here is genuine parallelism of I/O, three providers queried at once
+rather than in sequence, and is the reason seed resolution costs under two
 seconds rather than six.
 
 ### 4.3.2 Identifier canonicalisation
@@ -174,10 +174,10 @@ Section 5.7 documents the URL cases.
 
 Traversal is breadth-first and **level-synchronous**: the complete frontier at
 depth *d* is expanded before any node at depth *d+1*. This is not the natural
-formulation — a simple queue-based BFS is shorter — but it is what makes
-batching possible. Because the entire frontier's neighbours are known at once,
-their metadata can be fetched in batches of fifty rather than one request per
-paper. Section 5.3 quantifies the difference.
+formulation, a simple queue-based BFS is shorter, but it is what makes batching
+possible. Because the entire frontier's neighbours are known at once, their
+metadata can be fetched in batches of fifty rather than one request per paper.
+Section 5.3 quantifies the difference.
 
 ### 4.4.2 Identity aliasing
 
@@ -208,7 +208,7 @@ Section 6.3 reports the recovery rate.
 
 Both directions compete for one budget of papers. A heavily cited paper would
 otherwise consume the entire budget on citing works, starving the backward walk
-that finds foundational papers — which is the system's purpose. The traversal
+that finds foundational papers, which is the system's purpose. The traversal
 therefore reserves a share for each direction, defaulting to 65% backward and
 35% forward, and releases a direction's unused reservation to the other when it
 can no longer expand.
@@ -217,7 +217,7 @@ can no longer expand.
 
 ### 4.5.1 Formulation
 
-Each edge is weighted by the evidence reported in the **target** paper — the
+Each edge is weighted by the evidence reported in the **target** paper, the
 work being cited, since that is where the evidence being relied upon resides.
 
 ```
@@ -240,7 +240,7 @@ difference.
 
 Confidence multiplies the evidence term only; the journal term always applies.
 This matters more than it appears. If confidence multiplied the whole weight,
-then a paper with no extractable population — confidence 0.0 by definition —
+then a paper with no extractable population, confidence 0.0 by definition,
 would produce an edge weight of exactly zero. Every edge in a non-clinical
 graph would be zero, and the weighted ranking would silently become unweighted.
 
@@ -249,11 +249,7 @@ describes how it was found and why it was invisible.
 
 ### 4.5.3 Acknowledged simplification
 
-`journal_score` is a constant 0.5 for every paper. The proposal envisaged a
-venue-quality term. It is not implemented, and the constant means the term
-contributes a uniform 0.125 to every edge — a floor rather than a
-discriminating signal. Section 7.4 lists this among the divergences from the
-proposal.
+`journal_score` is a constant 0.5 for every paper. The proposal envisaged a venue-quality term. It is not implemented, and the constant means the term contributes a uniform 0.125 to every edge, a floor rather than a discriminating signal. Section 7.4 lists this among the divergences from the proposal.
 
 ## 4.6 Graph Analytics
 
@@ -268,7 +264,7 @@ normalised population score scaled by population confidence.
 
 The age term is a deliberate inversion of the usual bibliometric bias. Citation
 counts favour recent, highly visible work [waltman2016review]; this system is
-looking for origins, so age is rewarded. The weights are not empirically tuned —
+looking for origins, so age is rewarded. The weights are not empirically tuned,
 they were set by judgement and no sensitivity analysis was performed, which
 Section 7.3 records as a limitation.
 
@@ -279,8 +275,8 @@ and a depth penalty of 1/√(length).
 
 Path enumeration is the one component with combinatorial risk. A densely
 interlinked graph contains an astronomical number of simple paths, and the
-naive formulation — enumerate all simple paths to each node, score them, sort,
-keep ten — is quadratic in a way that is easy to miss. Section 5.6 reports the
+naive formulation, enumerate all simple paths to each node, score them, sort,
+keep ten, is quadratic in a way that is easy to miss. Section 5.6 reports the
 measurement and the redesign: a single depth-limited depth-first traversal
 feeding a bounded heap, with a hard cap on paths examined.
 
@@ -302,7 +298,7 @@ correspondingly smaller evidential contribution.
 **Explicit reporting of absence.** Run results carry warnings naming how many
 abstracts were unavailable, how many were recovered from a secondary provider,
 and how many duplicate records were merged. A sparse graph can therefore be
-explained — few citations, or records merged, or lookups failed — rather than
+explained, few citations, or records merged, or lookups failed, rather than
 leaving the user to guess.
 
 The generated Markdown report states plainly when no population evidence was

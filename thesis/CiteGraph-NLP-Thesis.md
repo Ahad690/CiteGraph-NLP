@@ -14,12 +14,11 @@
 |------|---------------------|
 | M. Ahad Imran | F23607034 |
 | Syed Zain-ul-Abidin | F23607031 |
-| Hamza Abdul Karim | F23607046 |
-| M. Usman Nasir | F23607004 |
+| Anas Zafar | F22607024 |
 
-**Supervisor:** *[to be completed]*
+**Supervisor:** Dr. Amna Ikram
 
-**Session:** 2023–2026
+**Session:** 2023–2027
 
 ---
 
@@ -31,6 +30,16 @@ scholarly APIs under their published terms of use. No paywalled full text was
 scraped or redistributed. Every quantitative result reported in Chapter 6 was
 produced by a script committed to the project repository and can be recomputed
 by a reader with network access; the commands are given in Appendix C.
+
+**Provenance of the work.** An initial prototype of this system was developed in
+the sixth semester. The project has been carried forward into the Final Year
+Project in the seventh semester, and the team composition has changed since the
+prototype phase. The work presented here substantially extends that prototype.
+The evaluation reported in Chapter 6 was designed and executed during the FYP
+phase, and the corrections catalogued in Chapter 5, including the traversal,
+weighting and extraction defects, were identified and resolved in this phase.
+Where a result or component predates the FYP, this is stated at the point of use
+rather than presented as new work.
 
 Where the delivered system falls short of the original project proposal, this
 thesis states the shortfall explicitly rather than describing the intended
@@ -59,13 +68,7 @@ weights each citation edge by a normalised population score scaled by extraction
 confidence, and ranks probable foundational papers using PageRank over the
 weighted graph.
 
-The contribution is not a new ranking algorithm — PageRank on citation networks
-is long established [chen2007gems; walker2007citerank]. It is a working,
-measured pipeline that makes the *uncertainty* of automated evidence extraction
-visible to the user: every extracted population carries a confidence score and a
-status of `resolved`, `ambiguous` or `missing`, and edges whose evidence could
-not be established fall back to a uniform structural weight rather than silently
-disappearing.
+The contribution is not a new ranking algorithm. PageRank on citation networks is long established [chen2007gems; walker2007citerank]. It is a working, measured pipeline that makes the *uncertainty* of automated evidence extraction visible to the user: every extracted population carries a confidence score and a status of `resolved`, `ambiguous` or `missing`, and edges whose evidence could not be established fall back to a uniform structural weight rather than silently disappearing.
 
 The system was evaluated against a 20-paper gold standard annotated from
 abstract text, spanning randomised trials, cohort studies, case series,
@@ -98,14 +101,7 @@ biomedical NLP, PageRank, evidence synthesis, scholarly APIs
 
 ## Table of Contents
 
-1. **Introduction** — motivation, problem statement, objectives, scope, contributions
-2. **Literature Review** — citation analysis, scholarly infrastructure, biomedical information extraction, evidence appraisal
-3. **Requirements and Methodology** — requirements capture, development process, evaluation strategy
-4. **System Design and Architecture** — layered architecture, data model, algorithms
-5. **Implementation** — pipeline stages, provider integration, engineering defects and their resolution
-6. **Evaluation and Results** — gold standard, measured results, performance, failure analysis
-7. **Discussion** — interpretation, threats to validity, divergence from the proposal
-8. **Conclusion and Future Work**
+1. **Introduction**, motivation, problem statement, objectives, scope, contributions 2. **Literature Review**, citation analysis, scholarly infrastructure, biomedical information extraction, evidence appraisal 3. **Requirements and Methodology**, requirements capture, development process, evaluation strategy 4. **System Design and Architecture**, layered architecture, data model, algorithms 5. **Implementation**, pipeline stages, provider integration, engineering defects and their resolution 6. **Evaluation and Results**, gold standard, measured results, performance, failure analysis 7. **Discussion**, interpretation, threats to validity, divergence from the proposal 8. **Conclusion and Future Work**
 
 **Appendices**
 
@@ -142,23 +138,23 @@ biomedical NLP, PageRank, evidence synthesis, scholarly APIs
 
 \newpage
 
-# Chapter 1 — Introduction
+# Chapter 1: Introduction
 
 ## 1.1 Background and Motivation
 
 Scientific knowledge is cumulative, and the citation is the mechanism by which
 that accumulation is recorded. When a paper cites another, it declares a
 dependency: some part of the new work rests on the earlier one. Garfield's
-proposal for a citation index [garfield1955] rested on exactly this observation
-— that the network of citations is itself a navigable structure, and that
-following it backwards should let a reader reach the origin of an idea.
+proposal for a citation index [garfield1955] rested on exactly this
+observation, that the network of citations is itself a navigable structure, and
+that following it backwards should let a reader reach the origin of an idea.
 
 Seventy years later, the network exists and is machine-readable. OpenAlex
 [priem2022openalex], Crossref [hendricks2020crossref] and Europe PMC
 [europepmc2015] between them expose hundreds of millions of works and their
 reference lists through open APIs. What has not kept pace is the interpretation
-of that network. The dominant summary statistics — citation count, h-index
-[hirsch2005hindex], journal impact factor — all treat citations as
+of that network. The dominant summary statistics, citation count, h-index
+[hirsch2005hindex], journal impact factor, all treat citations as
 interchangeable units. A citation is a citation.
 
 That assumption is convenient and, for many purposes, wrong. Consider two
@@ -207,7 +203,7 @@ undertaking by a trained team.
 
 The gap this project addresses sits between the second and third options: an
 automated traversal that is aware, however imperfectly, of how much evidence
-each cited paper actually reports — and that is honest about the imperfection.
+each cited paper actually reports, and that is honest about the imperfection.
 
 ## 1.3 Research Questions
 
@@ -294,7 +290,7 @@ ranked graph, deployed and publicly reachable, with 102 automated tests.
 evidence scales the evidential term of the edge weight while a structural term
 always applies, so an edge whose evidence could not be extracted retains a
 uniform non-zero weight instead of vanishing. Section 5.6 shows that the
-original formulation — multiplying the entire weight by confidence — silently
+original formulation, multiplying the entire weight by confidence, silently
 collapsed every edge weight to exactly zero for any paper outside clinical
 phrasing, and that the defect was masked by a Python truthiness accident.
 
@@ -340,7 +336,7 @@ catalogues every divergence between the proposal and the delivered system.
 
 \newpage
 
-# Chapter 2 — Literature Review
+# Chapter 2: Literature Review
 
 This chapter surveys four bodies of work that the project draws on: citation
 analysis and bibliometrics (2.1), the structure of citation networks (2.2),
@@ -408,17 +404,17 @@ incomparability of raw counts and suggests a normalisation.
 
 The practical consequence for this project is a design constraint rather than a
 theoretical one. Because the distribution is heavy-tailed, a seed paper may
-have tens of thousands of citing works — the AlphaFold paper used as a test
-case in Chapter 6 has over thirty thousand. No interactive traversal can
-enumerate them. Section 4.5 describes the sampling strategy this forces, and
-Section 7.3 treats the resulting incompleteness as a threat to validity.
+have tens of thousands of citing works, the AlphaFold paper used as a test case
+in Chapter 6 has over thirty thousand. No interactive traversal can enumerate
+them. Section 4.5 describes the sampling strategy this forces, and Section 7.3
+treats the resulting incompleteness as a threat to validity.
 
 ### 2.2.2 Network models of scientific collaboration and citation
 
 Newman's analysis of scientific collaboration networks [newman2001structure]
 characterised the small-world and clustering properties of coauthorship graphs.
-Although coauthorship is not citation, the structural findings — short path
-lengths, high clustering, heavy-tailed degree — recur in citation graphs and
+Although coauthorship is not citation, the structural findings, short path
+lengths, high clustering, heavy-tailed degree, recur in citation graphs and
 bear on this system: short paths mean a bounded-depth traversal reaches
 substantial portions of a local neighbourhood, and high clustering means the
 papers retrieved tend to be topically coherent, which is observed empirically
@@ -433,8 +429,8 @@ hyperlinks, but citation graphs are directed graphs of the same shape.
 
 Chen and colleagues applied PageRank directly to a physics citation network
 [chen2007gems] and found that it surfaces papers that raw citation count does
-not — work that is cited by influential papers rather than by many papers.
-They characterise these as "scientific gems". Walker and colleagues proposed
+not, work that is cited by influential papers rather than by many papers. They
+characterise these as "scientific gems". Walker and colleagues proposed
 CiteRank [walker2007citerank], a model of network traffic that adds an explicit
 ageing term so that recent papers are not penalised purely for having had less
 time to accumulate citations.
@@ -467,7 +463,7 @@ citation data. Four sources are relevant.
 **Crossref** [hendricks2020crossref] is the DOI registration agency for
 scholarly publishing and the canonical source for publisher-deposited metadata,
 including reference lists where publishers deposit them. Crossref's coverage of
-reference lists is uneven because deposit is at publisher discretion — a
+reference lists is uneven because deposit is at publisher discretion, a
 limitation this project encountered directly and quantified in Section 6.3.
 
 **OpenAlex** [priem2022openalex] is an open catalogue of scholarly works
@@ -479,7 +475,7 @@ system.
 **Microsoft Academic Graph** [wang2020mag] was the prior generation of this
 infrastructure. Its discontinuation, and OpenAlex's emergence as successor, is
 a reminder that a system built on a single provider inherits that provider's
-lifespan — one motivation for the multi-provider design in Section 4.3.
+lifespan, one motivation for the multi-provider design in Section 4.3.
 
 **Europe PMC** [europepmc2015] is a full-text literature database for the life
 sciences providing abstracts and, for open-access content, full text. In this
@@ -500,7 +496,7 @@ articles are legally retrievable.
 The GENIA corpus [kim2003genia] established the pattern for biomedical IE
 evaluation: a semantically annotated corpus of abstracts supporting supervised
 training and comparable evaluation. Its significance for this project is
-methodological — it demonstrates that abstract-level annotation is a legitimate
+methodological, it demonstrates that abstract-level annotation is a legitimate
 evaluation substrate, which is the basis for the gold standard in Section 6.1.
 
 ### 2.4.2 PICO extraction
@@ -512,8 +508,8 @@ annotations of these elements over a large set of abstracts. Jin and Szolovits
 [jin2018pico] approach the detection task with LSTM models.
 
 The *P* of PICO is the element this project extracts, but with an important
-narrowing. PICO population annotation captures the described population —
-"adults over 65 with type 2 diabetes" — as a text span. CiteGraph-NLP extracts
+narrowing. PICO population annotation captures the described population,
+"adults over 65 with type 2 diabetes", as a text span. CiteGraph-NLP extracts
 the *cardinality* of that population: the integer count of subjects. These are
 related but distinct tasks, and the distinction matters when comparing results.
 A PICO system that correctly identifies a population span has not necessarily
@@ -536,11 +532,11 @@ yields substantial gains over general-domain models on domain tasks. ScispaCy
 None of these is used in the delivered system, which extracts using regular
 expressions. This is a deliberate scope decision rather than an oversight, and
 the trade-off should be stated honestly. Pattern-based extraction is
-transparent — every decision traces to a named pattern and can be explained to a
-user — and requires no training data, which the project did not have. It is
-also brittle in exactly the way Section 6.4 measures: the system distinguishes
-*randomised* from *enrolled* from *analysed* correctly in only 6 of 10 cases,
-a discrimination a domain-adapted model would be expected to make more reliably.
+transparent, every decision traces to a named pattern and can be explained to a
+user, and requires no training data, which the project did not have. It is also
+brittle in exactly the way Section 6.4 measures: the system distinguishes
+*randomised* from *enrolled* from *analysed* correctly in only 6 of 10 cases, a
+discrimination a domain-adapted model would be expected to make more reliably.
 
 ### 2.4.4 Automated evidence appraisal
 
@@ -554,7 +550,7 @@ comparison is instructive rather than favourable. Trialstreamer extracts trial
 characteristics at scale using trained models over full text, with published
 evaluation. CiteGraph-NLP extracts one characteristic from abstracts using
 patterns, evaluated on twenty papers. What this project does that Trialstreamer
-does not is use the extracted scale *as a citation-graph edge weight* — the
+does not is use the extracted scale *as a citation-graph edge weight*, the
 combination of extraction with network analysis is where the work sits, not in
 the extraction itself.
 
@@ -566,7 +562,7 @@ supported by, but not identical to, the methodological literature.
 PRISMA [moher2009prisma] standardises the reporting of systematic reviews, and
 the Cochrane risk-of-bias tool [higgins2011cochrane] structures appraisal of
 individual trials. Both make clear that sample size is *one* dimension among
-several — allocation concealment, blinding, attrition and selective reporting
+several, allocation concealment, blinding, attrition and selective reporting
 all bear on trustworthiness, and none is captured by a participant count.
 
 Ioannidis [ioannidis2005why] and Button et al. [button2013power] supply the
@@ -602,17 +598,17 @@ automatically extracted study-scale evidence as a weight on citation edges, and
 propagating that weight through a graph ranking.**
 
 Two qualifications bound the claim. First, the components are individually
-established; the contribution is their combination and a measured account of how
-well it works, not a new method. Second, this thesis does not demonstrate that
-evidence-weighted ranking is *better* than unweighted ranking — no comparative
-experiment was performed, and Section 7.3 states this as the principal
-unaddressed question.
+established; the contribution is their combination and a measured account of
+how well it works, not a new method. Second, this thesis does not demonstrate
+that evidence-weighted ranking is *better* than unweighted ranking, no
+comparative experiment was performed, and Section 7.3 states this as the
+principal unaddressed question.
 
 ---
 
 \newpage
 
-# Chapter 3 — Requirements and Methodology
+# Chapter 3: Requirements and Methodology
 
 ## 3.1 Requirements Elicitation
 
@@ -622,8 +618,8 @@ project proposal approved by the department, a Product Requirement Document
 before implementation began.
 
 The feasibility study is worth describing because it shaped the scope
-materially. It assessed each intended component — metadata resolution, PDF
-parsing, population extraction, citation traversal, graph construction — and
+materially. It assessed each intended component, metadata resolution, PDF
+parsing, population extraction, citation traversal, graph construction, and
 judged the difficulty of each independently. Its conclusion on full-text
 parsing was the decisive one: obtaining legal full text at scale is gated by
 open-access status rather than by parsing capability, and a pipeline that
@@ -710,7 +706,7 @@ detectable.
 Development followed an iterative build–measure–correct cycle rather than a
 waterfall. Given a four-person team, a fixed academic deadline and external
 dependencies whose behaviour was not fully known in advance, planning the
-system completely before building it was not realistic — a judgement the
+system completely before building it was not realistic, a judgement the
 feasibility study supported.
 
 Each iteration comprised: implement a pipeline stage; write automated tests;
@@ -731,13 +727,13 @@ comprises 102 automated tests. Continuous integration deploys the backend to a
 shared host and the frontend to a content delivery network on merge to the main
 branch.
 
-Two properties of the test suite are worth noting because they bear on
-Chapter 5. First, the suite passed in full throughout the period in which the
-traversal defect described in Section 5.3 was discarding the majority of every
-graph; the tests asserted that the pipeline completed and returned a structure
-of the right shape, not that the structure was correct. Second, two defects in
-the test suite itself were found — one hung the entire suite indefinitely, and
-one masked a failure on the database read path. A test suite is software and is
+Two properties of the test suite are worth noting because they bear on Chapter
+5. First, the suite passed in full throughout the period in which the traversal
+defect described in Section 5.3 was discarding the majority of every graph; the
+tests asserted that the pipeline completed and returned a structure of the
+right shape, not that the structure was correct. Second, two defects in the
+test suite itself were found, one hung the entire suite indefinitely, and one
+masked a failure on the database read path. A test suite is software and is
 subject to the same defects as the system it tests.
 
 ## 3.5 Evaluation Strategy
@@ -754,24 +750,15 @@ reported as unmeasured where one does not.
 Population extraction is evaluated against a hand-annotated gold standard of 20
 papers. The construction protocol is:
 
-1. Select papers spanning study designs — randomised trials, cohort studies,
-   case series, epidemiological analyses, modelling studies — plus negatives:
-   reviews, guidelines, and computational papers with no human subjects.
-2. Retrieve the abstract through the same providers the pipeline uses.
-3. Read each abstract and record the effective population size, defined as the
-   total number of human subjects the paper's primary analysis rests on as
-   stated in the abstract.
-4. Record the supporting sentence verbatim so every label is auditable.
-5. Where no human study population is stated, label the paper negative; the
-   correct system behaviour is to extract nothing.
+1. Select papers spanning study designs, randomised trials, cohort studies, case series, epidemiological analyses, modelling studies, plus negatives: reviews, guidelines, and computational papers with no human subjects. 2. Retrieve the abstract through the same providers the pipeline uses. 3. Read each abstract and record the effective population size, defined as the total number of human subjects the paper's primary analysis rests on as stated in the abstract. 4. Record the supporting sentence verbatim so every label is auditable. 5. Where no human study population is stated, label the paper negative; the correct system behaviour is to extract nothing.
 
 Nine of the twenty are negatives, and several are *hard* negatives whose
 abstracts contain large, salient numbers that are not study populations: an
 epidemic case tally of 2,794 laboratory-confirmed infections, an ImageNet
 dataset size of 1.2 million images, and a systematic review whose units are
-studies rather than patients. Including these is a deliberate design choice —
-a positives-only gold set cannot measure false positives, and false positives
-are the failure mode that most damages user trust.
+studies rather than patients. Including these is a deliberate design choice, a
+positives-only gold set cannot measure false positives, and false positives are
+the failure mode that most damages user trust.
 
 ### 3.5.3 Statistical treatment
 
@@ -820,7 +807,7 @@ papers would not be detected by the present measurement.
 
 \newpage
 
-# Chapter 3 (continued) — Project Management
+# Chapter 3 (continued): Project Management
 
 ## 3.6 Team Organisation
 
@@ -843,11 +830,11 @@ the NLP work was testable without a working traversal.
 
 This had a cost that Chapter 5 makes visible. Clean interfaces let each module
 be tested in isolation, and each module *was* correct in isolation. The
-traversal defect (Section 5.3) lived precisely at the seam — the traversal
+traversal defect (Section 5.3) lived precisely at the seam, the traversal
 correctly asked the resolver for a paper, and the resolver correctly rejected
-an identifier it was never designed to receive. Both sides behaved as specified.
-Interface-level correctness does not compose into system-level correctness, and
-nothing in the division of labour was positioned to notice.
+an identifier it was never designed to receive. Both sides behaved as
+specified. Interface-level correctness does not compose into system-level
+correctness, and nothing in the division of labour was positioned to notice.
 
 ## 3.7 Development Timeline
 
@@ -862,9 +849,9 @@ nothing in the division of labour was positioned to notice.
 | Documentation | Thesis, reproducibility artifacts | This document |
 
 The final phase is the one worth commentary. It was originally scoped as
-"testing and documentation" — a wrap-up phase. It became the phase in which
-most of the project's substantive faults were found, because it was the first
-time the system was measured rather than exercised.
+"testing and documentation", a wrap-up phase. It became the phase in which most
+of the project's substantive faults were found, because it was the first time
+the system was measured rather than exercised.
 
 Had the evaluation harness been built when the proposal specified it, the same
 defects would have surfaced months earlier and at lower cost. The empty
@@ -889,7 +876,7 @@ were:
 
 **Silent data loss inside the pipeline.** No risk entry anticipated that the
 system might run to completion while discarding most of its input. The register
-was oriented toward external failures — APIs down, rate limits, legal limits —
+was oriented toward external failures, APIs down, rate limits, legal limits,
 and assumed internal correctness would follow from testing.
 
 **A test suite that passes while the system is wrong.** The plan treated tests
@@ -911,7 +898,7 @@ insufficient for a system whose output is a ranked list.
 Deployment is automated from the main branch: backend changes rebuild the
 container and restart it behind nginx; frontend changes rebuild the static
 bundle and publish it. The backend container binds the loopback interface only,
-because the host is shared with unrelated services — a constraint that produced
+because the host is shared with unrelated services, a constraint that produced
 its own defect, recorded in Section 5.9.
 
 ## 3.10 Lessons for Process
@@ -923,10 +910,7 @@ The evaluation plan existed from the proposal. Deferring it deferred all the
 information it would have produced.
 
 **Prefer measurements over assertions for pipelines.** A test that a stage
-returns the right *shape* is cheap and weak. A measurement that compares a
-stage's output against an independently known quantity — how many references
-the provider reported, what a human read in the abstract — is more expensive and
-far stronger.
+returns the right *shape* is cheap and weak. A measurement compares a stage's output against a quantity known independently: how many references the provider reported, or what a human read in the abstract. That costs more to build and is far stronger.
 
 **Treat silence as suspicious.** Every defect in Chapter 5 was silent: a
 warning-level log, an HTTP 200 with an empty result, a falsy value coerced to a
@@ -937,7 +921,7 @@ that never has anything to report.
 
 \newpage
 
-# Chapter 4 — System Design and Architecture
+# Chapter 4: System Design and Architecture
 
 ## 4.1 Architectural Overview
 
@@ -1013,7 +997,7 @@ The canonical record of a work.
 |-------|------|-------|
 | `paper_id` | str | Canonical identifier; DOI preferred, then PMID, then OpenAlex ID |
 | `doi`, `pmid`, `pmcid`, `openalex_id` | str? | All known identifiers, retained for aliasing |
-| `title`, `authors`, `year`, `journal` | — | Bibliographic metadata |
+| `title`, `authors`, `year`, `journal` | n/a | Bibliographic metadata |
 | `abstract` | str? | Extraction input; may be backfilled from a secondary provider |
 | `source_ids` | dict | Provider-specific identifiers |
 | `metadata_confidence` | float | Higher when several providers agree |
@@ -1061,8 +1045,8 @@ gold-standard evaluation in Chapter 6 relies on the same property.
 | `SCREENED` | Subjects screened for eligibility |
 | `COMPLETERS` | Subjects completing the protocol |
 | `FOLLOWUP_COUNT` | Subjects followed up |
-| `EVENT_COUNT` | Outcome event counts — *no pattern emits this* |
-| `UNKNOWN_NUMERIC` | Unclassified — *no pattern emits this* |
+| `EVENT_COUNT` | Outcome event counts, *no pattern emits this* |
+| `UNKNOWN_NUMERIC` | Unclassified, *no pattern emits this* |
 
 The last two are defined in the model but no extraction pattern produces them.
 They are listed here as specified-but-unimplemented rather than quietly omitted.
@@ -1090,8 +1074,8 @@ whole-record: Crossref is preferred for title, year, authors and journal because
 it carries publisher-deposited metadata; OpenAlex is preferred for abstracts
 because it reconstructs them from an inverted index.
 
-Concurrency here is genuine parallelism of I/O — three providers queried at once
-rather than in sequence — and is the reason seed resolution costs under two
+Concurrency here is genuine parallelism of I/O, three providers queried at once
+rather than in sequence, and is the reason seed resolution costs under two
 seconds rather than six.
 
 ### 4.3.2 Identifier canonicalisation
@@ -1113,10 +1097,10 @@ Section 5.7 documents the URL cases.
 
 Traversal is breadth-first and **level-synchronous**: the complete frontier at
 depth *d* is expanded before any node at depth *d+1*. This is not the natural
-formulation — a simple queue-based BFS is shorter — but it is what makes
-batching possible. Because the entire frontier's neighbours are known at once,
-their metadata can be fetched in batches of fifty rather than one request per
-paper. Section 5.3 quantifies the difference.
+formulation, a simple queue-based BFS is shorter, but it is what makes batching
+possible. Because the entire frontier's neighbours are known at once, their
+metadata can be fetched in batches of fifty rather than one request per paper.
+Section 5.3 quantifies the difference.
 
 ### 4.4.2 Identity aliasing
 
@@ -1147,7 +1131,7 @@ Section 6.3 reports the recovery rate.
 
 Both directions compete for one budget of papers. A heavily cited paper would
 otherwise consume the entire budget on citing works, starving the backward walk
-that finds foundational papers — which is the system's purpose. The traversal
+that finds foundational papers, which is the system's purpose. The traversal
 therefore reserves a share for each direction, defaulting to 65% backward and
 35% forward, and releases a direction's unused reservation to the other when it
 can no longer expand.
@@ -1156,7 +1140,7 @@ can no longer expand.
 
 ### 4.5.1 Formulation
 
-Each edge is weighted by the evidence reported in the **target** paper — the
+Each edge is weighted by the evidence reported in the **target** paper, the
 work being cited, since that is where the evidence being relied upon resides.
 
 ```
@@ -1179,7 +1163,7 @@ difference.
 
 Confidence multiplies the evidence term only; the journal term always applies.
 This matters more than it appears. If confidence multiplied the whole weight,
-then a paper with no extractable population — confidence 0.0 by definition —
+then a paper with no extractable population, confidence 0.0 by definition,
 would produce an edge weight of exactly zero. Every edge in a non-clinical
 graph would be zero, and the weighted ranking would silently become unweighted.
 
@@ -1188,11 +1172,7 @@ describes how it was found and why it was invisible.
 
 ### 4.5.3 Acknowledged simplification
 
-`journal_score` is a constant 0.5 for every paper. The proposal envisaged a
-venue-quality term. It is not implemented, and the constant means the term
-contributes a uniform 0.125 to every edge — a floor rather than a
-discriminating signal. Section 7.4 lists this among the divergences from the
-proposal.
+`journal_score` is a constant 0.5 for every paper. The proposal envisaged a venue-quality term. It is not implemented, and the constant means the term contributes a uniform 0.125 to every edge, a floor rather than a discriminating signal. Section 7.4 lists this among the divergences from the proposal.
 
 ## 4.6 Graph Analytics
 
@@ -1207,7 +1187,7 @@ normalised population score scaled by population confidence.
 
 The age term is a deliberate inversion of the usual bibliometric bias. Citation
 counts favour recent, highly visible work [waltman2016review]; this system is
-looking for origins, so age is rewarded. The weights are not empirically tuned —
+looking for origins, so age is rewarded. The weights are not empirically tuned,
 they were set by judgement and no sensitivity analysis was performed, which
 Section 7.3 records as a limitation.
 
@@ -1218,8 +1198,8 @@ and a depth penalty of 1/√(length).
 
 Path enumeration is the one component with combinatorial risk. A densely
 interlinked graph contains an astronomical number of simple paths, and the
-naive formulation — enumerate all simple paths to each node, score them, sort,
-keep ten — is quadratic in a way that is easy to miss. Section 5.6 reports the
+naive formulation, enumerate all simple paths to each node, score them, sort,
+keep ten, is quadratic in a way that is easy to miss. Section 5.6 reports the
 measurement and the redesign: a single depth-limited depth-first traversal
 feeding a bounded heap, with a hard cap on paths examined.
 
@@ -1241,7 +1221,7 @@ correspondingly smaller evidential contribution.
 **Explicit reporting of absence.** Run results carry warnings naming how many
 abstracts were unavailable, how many were recovered from a secondary provider,
 and how many duplicate records were merged. A sparse graph can therefore be
-explained — few citations, or records merged, or lookups failed — rather than
+explained, few citations, or records merged, or lookups failed, rather than
 leaving the user to guess.
 
 The generated Markdown report states plainly when no population evidence was
@@ -1252,13 +1232,13 @@ unweighted ranking as though it were evidence-weighted.
 
 \newpage
 
-# Chapter 4 (continued) — Algorithm Specifications
+# Chapter 4 (continued): Algorithm Specifications
 
 This chapter states the five core algorithms precisely enough to be
 reimplemented. Each is given as pseudocode with its complexity, its failure
 modes, and a note on the design decisions that are not obvious from the code.
 
-## 4.8 Algorithm 1 — Metadata Merge
+## 4.8 Algorithm 1: Metadata Merge
 
 ### 4.8.1 Problem
 
@@ -1306,13 +1286,13 @@ merge is effectively constant time. The cost of resolution is entirely the
 network I/O that precedes it, which is why the three provider queries are issued
 concurrently (Section 4.3.1).
 
-The confidence heuristic at line 21 — 0.95 when more than one provider returned
-a record, 0.80 otherwise — is agreement-as-confidence, and it is weak. It
+The confidence heuristic at line 21, 0.95 when more than one provider returned
+a record, 0.80 otherwise, is agreement-as-confidence, and it is weak. It
 rewards two providers *returning* a record, not two providers *agreeing* on its
 contents. A stronger formulation would compare the fields themselves and reduce
 confidence on disagreement. This is not implemented.
 
-## 4.9 Algorithm 2 — Level-Synchronous Citation Traversal
+## 4.9 Algorithm 2: Level-Synchronous Citation Traversal
 
 ### 4.9.1 Problem
 
@@ -1429,7 +1409,7 @@ Let *N* be `max_papers` and *F* the mean out-degree per expanded paper.
 
 - Edge fetches: one request per frontier paper, O(*N*) requests in the worst
   case, issued with concurrency 5.
-- Metadata fetches: O(*N* / 50) batched requests — the decisive improvement.
+- Metadata fetches: O(*N* / 50) batched requests: the decisive improvement.
   The pre-batching implementation issued O(*N*) individual resolutions, each
   querying three providers, for O(3*N*) requests.
 - Edge dedup: O(1) per edge via a hash set of committed pairs. The original
@@ -1445,7 +1425,7 @@ Let *N* be `max_papers` and *F* the mean out-degree per expanded paper.
 | Same work under two DOIs with near-identical titles | Title-prefix match with year agreement |
 | A heavily cited seed | Forward results are sorted by citation count and capped |
 
-## 4.10 Algorithm 3 — Population Candidate Extraction
+## 4.10 Algorithm 3: Population Candidate Extraction
 
 ### 4.10.1 Specification
 
@@ -1487,15 +1467,9 @@ by spaCy sentence segmentation rather than by matching.
 
 ### 4.10.3 The span-versus-sentence decision
 
-Lines 8–15 encode the single most consequential correction made to this
-algorithm. The original implementation evaluated the ignore patterns against
-the *whole sentence* and skipped every candidate in it on a match. Because
-`IGNORE_PATTERNS` contains `\b20\d{2}\b`, and clinical abstracts mention a year
-in most sentences, the rule discarded the very numbers it existed to protect.
-Section 5.5 gives the measurement. Evaluating per span preserves the intent —
-a year is never read as a population — without the collateral loss.
+Lines 8–15 encode the single most consequential correction made to this algorithm. The original implementation evaluated the ignore patterns against the *whole sentence* and skipped every candidate in it on a match. Because `IGNORE_PATTERNS` contains `\b20\d{2}\b`, and clinical abstracts mention a year in most sentences, the rule discarded the very numbers it existed to protect. Section 5.5 gives the measurement. Evaluating per span preserves the intent, a year is never read as a population, without the collateral loss.
 
-## 4.11 Algorithm 4 — Population Resolution
+## 4.11 Algorithm 4: Population Resolution
 
 ### 4.11.1 Specification
 
@@ -1533,15 +1507,15 @@ with type priorities: `TOTAL_RANDOMIZED` 10, `TOTAL_ANALYZED` 9,
 
 ### 4.11.2 Known weakness
 
-This algorithm produced the single value error in the evaluation
-(Section 6.4.2). For a case series of 138 patients whose abstract also reports
-many subgroup counts, the selection returned 36. The scoring rewards pattern
+This algorithm produced the single value error in the evaluation (Section
+6.4.2). For a case series of 138 patients whose abstract also reports many
+subgroup counts, the selection returned 36. The scoring rewards pattern
 confidence and type priority but has no notion of *which number the abstract is
-about* — a subgroup count matched by a high-priority pattern outranks the cohort
+about*, a subgroup count matched by a high-priority pattern outranks the cohort
 total matched by a lower-priority one. Position in the abstract, and the
 relationship between competing values, are both unused signals.
 
-## 4.12 Algorithm 5 — Bounded Path Ranking
+## 4.12 Algorithm 5: Bounded Path Ranking
 
 ### 4.12.1 Problem
 
@@ -1591,12 +1565,7 @@ SCORE_PATH(path):
 
 ### 4.12.3 Complexity
 
-The replacement is O(*P*) in the number of simple paths within the cutoff, with
-O(*top_n*) memory. The original was O(*V* · *P*): `all_simple_paths` was called
-once per target vertex, and each call re-explored the entire reachable subgraph
-to depth 4, yielding only the paths terminating at that target. It also
-materialised a result dictionary — including a title lookup per node — for every
-path before sorting and discarding all but ten.
+The replacement is O(*P*) in the number of simple paths within the cutoff, with O(*top_n*) memory. The original was O(*V* · *P*): `all_simple_paths` was called once per target vertex, and each call re-explored the entire reachable subgraph to depth 4, yielding only the paths terminating at that target. It also materialised a result dictionary, including a title lookup per node, for every path before sorting and discarding all but ten.
 
 Measured on layered synthetic graphs (Section 6.6.4), the redesign is 126× to
 434× faster, with the gap widening as the graph grows, and returns an identical
@@ -1612,7 +1581,7 @@ as exhaustive.
 
 \newpage
 
-# Chapter 5 — Implementation
+# Chapter 5: Implementation
 
 This chapter describes the delivered implementation and, in Sections 5.3 to
 5.8, the defects found when the system was systematically instrumented and
@@ -1631,7 +1600,7 @@ each produced output that looked plausible.
 | Graph | NetworkX [hagberg2008networkx] | Mature PageRank and path algorithms |
 | Persistence | SQLite + aiosqlite | Sufficient for run records; no server to operate |
 | Retry | Tenacity | Declarative retry policy |
-| Frontend | React, TypeScript, Vite, TanStack Router | — |
+| Frontend | React, TypeScript, Vite, TanStack Router | n/a |
 | Visualisation | Cytoscape.js | Interactive graph rendering |
 | Testing | pytest, pytest-asyncio, respx | 102 tests; respx mocks HTTP at transport level |
 
@@ -1648,12 +1617,9 @@ populations, weight edges, build graph, run analytics. Each stage is a separate
 module; the orchestrator holds no domain logic beyond sequencing and the
 assembly of warnings.
 
-Runs execute as background tasks. A `POST` returns a run identifier
-immediately, and the client polls. This is necessary because runs take tens of
-seconds to minutes — Section 6.6 characterises the distribution — which far
-exceeds a reasonable HTTP timeout.
+Runs execute as background tasks. A `POST` returns a run identifier immediately, and the client polls. This is necessary because runs take tens of seconds to minutes, Section 6.6 characterises the distribution, which far exceeds a reasonable HTTP timeout.
 
-## 5.3 Defect 1 — Traversal Discarding the Majority of Every Graph
+## 5.3 Defect 1: Traversal Discarding the Majority of Every Graph
 
 ### 5.3.1 Symptom
 
@@ -1684,8 +1650,8 @@ constructible as a query: 19     REJECTED: 21
 ```
 
 Every OpenAlex-sourced reference was discarded. Only Crossref's DOI-formatted
-references survived. Where Crossref holds no reference list — which is common,
-since deposit is at publisher discretion — the result was a graph of one node:
+references survived. Where Crossref holds no reference list, which is common,
+since deposit is at publisher discretion, the result was a graph of one node:
 
 ```
 references for PMID 32109013 : OpenAlex 21, Crossref 0  ->  usable nodes 0
@@ -1702,9 +1668,10 @@ filter=cites:W3008827533                 ->  HTTP 200, meta.count = 30606
 ```
 
 This is the more instructive of the two faults. The malformed query returned
-**HTTP 200 with a count of zero** rather than an error. No exception was raised,
-no log line was emitted, and the system reported "this paper has no citing
-works" — a statement that is occasionally true and therefore unremarkable.
+**HTTP 200 with a count of zero** rather than an error. No exception was
+raised, no log line was emitted, and the system reported "this paper has no
+citing works", a statement that is occasionally true and therefore
+unremarkable.
 
 ### 5.3.4 Resolution
 
@@ -1720,7 +1687,7 @@ seed to a work identifier before filtering.
 | Edges with a resolved endpoint | 262 with dangling | 163, none dangling |
 | Runtime, 100-paper run | 273 s | 55 s |
 
-## 5.4 Defect 2 — A Single Null Field Discarding Batches of Fifty
+## 5.4 Defect 2: A Single Null Field Discarding Batches of Fifty
 
 ### 5.4.1 Symptom
 
@@ -1763,7 +1730,7 @@ A secondary effect was discovered at the same time: because batch failures
 forced a fallback to per-paper resolution, the run had been taking 209 s. After
 the fix the same run took 12 s.
 
-## 5.5 Defect 3 — Ignore Rules Discarding the Numbers They Protect
+## 5.5 Defect 3: Ignore Rules Discarding the Numbers They Protect
 
 ### 5.5.1 Symptom
 
@@ -1771,8 +1738,8 @@ Only 15% of papers in a typical graph received any population evidence.
 
 ### 5.5.2 Diagnosis
 
-The extractor applied its ignore patterns — years, percentages, p-values,
-dosages — at *sentence* granularity:
+The extractor applied its ignore patterns, years, percentages, p-values,
+dosages, at *sentence* granularity:
 
 ```python
 for ignore_p in IGNORE_PATTERNS:
@@ -1800,21 +1767,10 @@ Ignore patterns are now matched per *span*. A candidate is rejected only when
 the captured number itself falls inside an ignored span. A year is still never
 read as a population; a count standing beside a year survives.
 
-Separately, the pattern set assumed randomised-trial phrasing. "We analyzed
-data on the first 425 confirmed cases" matched nothing, because no pattern
-covered *cases*. Patterns were added for the phrasings observational papers
-use — *a total of N*, *N confirmed cases*, *N subjects*, *N consecutive
-patients*, *included/recruited/studied N*, *data on N* — along with patterns for
-`SCREENED`, `COMPLETERS`, `ARM_SIZE` and `FOLLOWUP_COUNT`, four semantic types
-the model defined but which no pattern could previously emit.
+Separately, the pattern set assumed randomised-trial phrasing. "We analyzed data on the first 425 confirmed cases" matched nothing, because no pattern covered *cases*. Patterns were added for the phrasings observational papers use, *a total of N*, *N confirmed cases*, *N subjects*, *N consecutive patients*, *included/recruited/studied N*, *data on N*, along with patterns for `SCREENED`, `COMPLETERS`, `ARM_SIZE` and `FOLLOWUP_COUNT`, four semantic types the model defined but which no pattern could previously emit. 
+| Measure (40-paper graph) | Before | After | |--------------------------|-------:|------:| | Papers with extracted evidence | 7 | 15 | | Of those with an abstract | 7/29 | 15/29 | | High confidence (≥ 0.8) | 3 | 10 |
 
-| Measure (40-paper graph) | Before | After |
-|--------------------------|-------:|------:|
-| Papers with extracted evidence | 7 | 15 |
-| Of those with an abstract | 7/29 | 15/29 |
-| High confidence (≥ 0.8) | 3 | 10 |
-
-## 5.6 Defect 4 — Edge Weights Collapsing to Zero
+## 5.6 Defect 4: Edge Weights Collapsing to Zero
 
 ### 5.6.1 Symptom
 
@@ -1835,7 +1791,7 @@ resolution with no candidates -> n_eff=None  confidence=0.0
 ```
 
 Every edge weight was exactly zero for any paper where extraction found
-nothing — which, before Defect 3 was fixed, was 85% of papers.
+nothing, which, before Defect 3 was fixed, was 85% of papers.
 
 The ranking nonetheless produced sensible output, and this is why the fault
 survived. The graph builder contained:
@@ -1844,10 +1800,7 @@ survived. The graph builder contained:
 weight=edge.final_weight or 1.0
 ```
 
-In Python, `0.0 or 1.0` evaluates to `1.0`. Every zeroed weight was silently
-replaced by 1.0, and PageRank ran **unweighted**. The system's central claim —
-evidence-weighted citation analysis — was not operating, and the fallback that
-concealed it was an accident of truthiness rather than a designed behaviour.
+In Python, `0.0 or 1.0` evaluates to `1.0`. Every zeroed weight was silently replaced by 1.0, and PageRank ran **unweighted**. The system's central claim, evidence-weighted citation analysis, was not operating, and the fallback that concealed it was an accident of truthiness rather than a designed behaviour.
 
 ### 5.6.3 Resolution
 
@@ -1856,16 +1809,16 @@ falls back only on a genuine `None`, so a real zero can no longer be disguised.
 
 | Case | n_eff | confidence | final weight |
 |------|------:|-----------:|-------------:|
-| No evidence | — | 0.00 | 0.125 |
+| No evidence | n/a | 0.00 | 0.125 |
 | Small trial | 120 | 0.85 | 0.391 |
 | Large trial | 8,500 | 0.90 | 0.655 |
 | Very large | 100,000 | 0.95 | 0.837 |
 | Large, low confidence | 8,500 | 0.30 | 0.302 |
 
 Evidence still outranks absence, larger samples outrank smaller, and low
-confidence is penalised — but nothing collapses to zero.
+confidence is penalised, but nothing collapses to zero.
 
-## 5.7 Defect 5 — Server-Side Request Forgery in URL Input
+## 5.7 Defect 5: Server-Side Request Forgery in URL Input
 
 Accepting an article URL requires fetching it when no identifier can be parsed
 from the URL text. The implementation fetched any URL that had a scheme and a
@@ -1880,9 +1833,7 @@ listener received 1 request
 resolver returned: query_type='title' value='Internal Service Banner v2.4'
 ```
 
-The system could be directed at loopback, link-local (cloud metadata) or private
-addresses, and the fetched page's `citation_title` was forwarded to Crossref and
-Europe PMC as a search term — a narrow but real exfiltration channel.
+The system could be directed at loopback, link-local (cloud metadata) or private addresses, and the fetched page's `citation_title` was forwarded to Crossref and Europe PMC as a search term, a narrow but real exfiltration channel.
 
 The resolver now rejects any URL whose host resolves to a private, loopback,
 link-local, reserved, multicast or unspecified address, and follows redirects
@@ -1894,19 +1845,13 @@ includes `/`, so matching against a URL path ran past the end of the DOI into
 the publisher's view segment, yielding `10.3389/fcomp.2024.1387354/full` and
 failing the run. Trailing view segments are now trimmed.
 
-## 5.8 Defect 6 — Exports Returning JSON Envelopes
+## 5.8 Defect 6: Exports Returning JSON Envelopes
 
 The frontend saved export responses directly to disk as `citegraph-<id>.csv`,
 but the backend returned `{"csv": "..."}`. Users received a `.csv` file
 containing a JSON envelope with the whole table escaped onto one line.
 
-All exports now return the file itself with the correct `Content-Type` and a
-`Content-Disposition` filename. Both CSV exports are written with the `csv`
-module, so a comma, quote or newline in a title or journal can no longer break
-a row — the previous hand-rolled formatting never escaped the journal field at
-all — and carry a UTF-8 byte-order mark so spreadsheet software renders accented
-author names correctly. An edge-list export and a GraphML export were added;
-the frontend had offered GraphML as a format although no such route existed.
+All exports now return the file itself with the correct `Content-Type` and a `Content-Disposition` filename. Both CSV exports are written with the `csv` module, so a comma, quote or newline in a title or journal can no longer break a row, the previous hand-rolled formatting never escaped the journal field at all, and carry a UTF-8 byte-order mark so spreadsheet software renders accented author names correctly. An edge-list export and a GraphML export were added; the frontend had offered GraphML as a format although no such route existed.
 
 ## 5.9 Deployment
 
@@ -1947,15 +1892,15 @@ the number of nodes bore any relation to the number of references available, or
 that edge weights varied.
 
 The methodological conclusion is that for a system whose output is a ranked
-list, correctness cannot be established by testing that the pipeline runs.
-It requires measurement against known quantities — which is what Chapter 6
-reports, and what the project proposal had specified from the outset.
+list, correctness cannot be established by testing that the pipeline runs. It
+requires measurement against known quantities, which is what Chapter 6 reports,
+and what the project proposal had specified from the outset.
 
 ---
 
 \newpage
 
-# Chapter 5 (continued) — Dashboard and Interaction Design
+# Chapter 5 (continued): Dashboard and Interaction Design
 
 The analysis pipeline produces a graph, a ranking and a set of confidence-scored
 extractions. None of that is useful to a reader unless it can be interrogated.
@@ -2021,10 +1966,7 @@ where Section 6.4.4 shows it currently overstates its case.
 
 ### 5.13.1 Status before number
 
-Every extracted population is displayed with its status — `resolved`,
-`ambiguous` or `missing` — adjacent to the value, not in a tooltip or a detail
-panel. The three states are visually distinct. A number presented without its
-status invites the reader to treat an ambiguous extraction as a settled fact.
+Every extracted population is displayed with its status, `resolved`, `ambiguous` or `missing`, adjacent to the value, not in a tooltip or a detail panel. The three states are visually distinct. A number presented without its status invites the reader to treat an ambiguous extraction as a settled fact.
 
 ### 5.13.2 The supporting sentence is reachable
 
@@ -2052,9 +1994,9 @@ was wrong. A user filtering for high confidence would retain the errors.
 
 This is a presentation problem as much as a modelling one. Until the score is
 calibrated (Section 8.2.1), displaying it as a precise quantity overstates what
-is known. A coarser presentation — or an explicit statement that the score
-reflects which pattern matched rather than probability of correctness — would
-be more truthful with the current model.
+is known. A coarser presentation, or an explicit statement that the score
+reflects which pattern matched rather than probability of correctness, would be
+more truthful with the current model.
 
 ## 5.14 Graph Visualisation
 
@@ -2075,7 +2017,7 @@ verifies it: zero dangling edges across three runs.
 
 **Weights are visible.** Edge thickness encodes the final weight. Before the
 defect in Section 5.6 was found, every weight was zero and every edge rendered
-identically — which, in retrospect, was an available visual signal that
+identically, which, in retrospect, was an available visual signal that
 something was wrong, and one nobody read as such.
 
 ## 5.15 Export Design
@@ -2090,11 +2032,11 @@ Five formats, each with a distinct audience.
 | Markdown | A readable report for inclusion in notes or a literature review |
 | GraphML | Import into Gephi, yEd or Cytoscape Desktop for further analysis |
 
-Two exports exist because of things learned during evaluation. The **edge list**
-was added because a paper list cannot express a graph, and any external analysis
-of the weighting needs the components. **GraphML** was added because the
-frontend already advertised it as a format although no endpoint existed — the
-button returned 404.
+Two exports exist because of things learned during evaluation. The **edge
+list** was added because a paper list cannot express a graph, and any external
+analysis of the weighting needs the components. **GraphML** was added because
+the frontend already advertised it as a format although no endpoint existed,
+the button returned 404.
 
 The Markdown report states explicitly when no population evidence was found and
 what that means for the weights, rather than presenting an effectively
@@ -2106,7 +2048,7 @@ likely to circulate.
 
 \newpage
 
-# Chapter 6 — Evaluation and Results
+# Chapter 6: Evaluation and Results
 
 All results in this chapter were produced by `scripts/run_evaluation.py`,
 committed to the project repository. Appendix C gives the commands. The run
@@ -2136,8 +2078,9 @@ providers the pipeline uses.
 | Computational (no human subjects) | 2 | negative |
 | **Negatives** | **9** | |
 
-Positive sample sizes span 41 to 43,548 subjects — three orders of magnitude —
-which is the range the logarithmic normalisation in Section 4.5 is designed for.
+Positive sample sizes span 41 to 43,548 subjects, three orders of magnitude,
+which is the range the logarithmic normalisation in Section 4.5 is designed
+for.
 
 ### 6.1.2 Hard negatives
 
@@ -2156,8 +2099,8 @@ most informative in the set.
 
 ### 6.1.3 Annotation protocol and its limits
 
-Each label records the effective population — the total human subjects the
-primary analysis rests on, as stated in the abstract — with the supporting
+Each label records the effective population, the total human subjects the
+primary analysis rests on, as stated in the abstract, with the supporting
 sentence quoted verbatim so the label is auditable. Where no human study
 population is stated, the label is negative and correct behaviour is to extract
 nothing.
@@ -2202,7 +2145,7 @@ downstream. Measured on a 40-paper traversal graph:
 
 This is the single most consequential measurement in the evaluation, and it
 answers **RQ2**. Before the backfill, 28% of papers could not be evaluated at
-all — not because extraction failed, but because there was nothing to read.
+all, not because extraction failed, but because there was nothing to read.
 Every one of those abstracts existed in Europe PMC, and none in Crossref.
 
 Two conclusions follow. First, a pipeline drawing abstracts from a single
@@ -2224,14 +2167,14 @@ Detection is the binary decision: does this paper report a study population?
 
 | Metric | Value | 95% CI |
 |--------|------:|--------|
-| Precision | 0.917 | — |
-| Recall | 1.000 | — |
-| Specificity | 0.889 | — |
-| F1 | 0.957 | — |
+| Precision | 0.917 | n/a |
+| Recall | 1.000 | n/a |
+| Specificity | 0.889 | n/a |
+| F1 | 0.957 | n/a |
 | Accuracy | 0.950 | [0.764, 0.991] |
 
 Recall is perfect on this set: every paper that reports a population had one
-extracted. The confidence interval on accuracy is wide — [0.764, 0.991] — and
+extracted. The confidence interval on accuracy is wide, [0.764, 0.991], and
 must be quoted with the point estimate. A recall of 1.000 on eleven positives
 is statistically consistent with a true recall substantially below 1.
 
@@ -2245,8 +2188,8 @@ the sample-size caveat above.
 |--------|------:|--------|
 | Exact value correct | 10 / 11 (0.909) | [0.623, 0.984] |
 
-The single failure is instructive. For Wang et al., *JAMA* 2020 — a case series
-of 138 hospitalised patients — the system extracted **36**. The abstract states
+The single failure is instructive. For Wang et al., *JAMA* 2020, a case series
+of 138 hospitalised patients, the system extracted **36**. The abstract states
 the cohort size in the Design section and then reports numerous subgroup counts
 in Results; the resolver selected a subgroup. This is a *resolution* failure,
 not a detection failure: the correct candidate was extracted, and the selection
@@ -2269,13 +2212,7 @@ categories. The four errors:
 | Huang et al. 2020 | `TOTAL_ANALYZED` | `TOTAL_ENROLLED` |
 | Verity et al. 2020 | `SAMPLE_SIZE_GENERIC` | `TOTAL_ANALYZED` |
 
-All four are *adjacent-category* confusions among quantities that are often
-numerically equal — a trial that randomises 4,744 and analyses 4,744 differs
-only in framing. The first error has a traceable cause: the phrase "A total of
-43,548 participants underwent randomization" matches a generic `a total of N`
-pattern that is typed `SAMPLE_SIZE_GENERIC`, and that pattern outranked the
-randomisation-specific one. This is a pattern-priority defect, not an inherent
-limit.
+All four are *adjacent-category* confusions among quantities that are often numerically equal, a trial that randomises 4,744 and analyses 4,744 differs only in framing. The first error has a traceable cause: the phrase "A total of 43,548 participants underwent randomization" matches a generic `a total of N` pattern that is typed `SAMPLE_SIZE_GENERIC`, and that pattern outranked the randomisation-specific one. This is a pattern-priority defect, not an inherent limit.
 
 The practical impact on the system is smaller than the number suggests: the
 weighting formula uses the *value*, not the type. Type accuracy affects the
@@ -2322,7 +2259,7 @@ Three traversals at `max_papers = 40`, backward depth 2, forward depth 1:
 
 Every run filled its budget with distinct papers, every edge had both endpoints
 present, and no node was orphaned. Duplicate merging occurred before the budget
-was consumed, so the two merges on the first graph did not reduce it below 40 —
+was consumed, so the two merges on the first graph did not reduce it below 40,
 which matters for interpretation: a sparse graph indicates few citations, not
 records lost to deduplication.
 
@@ -2334,12 +2271,12 @@ does.
 
 **On ranking quality (RQ3).** A qualitative observation: seeded with the 2021
 AlphaFold paper, the top-ranked foundational paper was Anfinsen's 1973
-*"Principles that Govern the Folding of Protein Chains"* — the work that
-founded the protein-folding problem. This is the behaviour the design intends.
-It is an anecdote, not a measurement. No relevance judgement study was
-conducted, no comparison against unweighted PageRank was run, and a single
-favourable example does not establish that evidence weighting improves ranking.
-Section 7.3 records this as the principal unaddressed question.
+*"Principles that Govern the Folding of Protein Chains"*, the work that founded
+the protein-folding problem. This is the behaviour the design intends. It is an
+anecdote, not a measurement. No relevance judgement study was conducted, no
+comparison against unweighted PageRank was run, and a single favourable example
+does not establish that evidence weighting improves ranking. Section 7.3
+records this as the principal unaddressed question.
 
 ## 6.6 Performance
 
@@ -2360,7 +2297,7 @@ Instrumented 40-paper run:
 
 This answers **RQ4**. The system is I/O-bound: 58 HTTP requests across three
 providers dominate, and all graph analytics together are 2.5% of runtime. The
-graph algorithms are not the bottleneck and, at this scale, never will be —
+graph algorithms are not the bottleneck and, at this scale, never will be,
 which retrospectively validates the choice of an in-memory graph over a
 database (Section 5.1). Population extraction at 28% is now the second cost and
 the first place local optimisation would pay.
@@ -2388,13 +2325,8 @@ and TLS handshake:
 | New client per request | 1.03 s | 8.72 s |
 | One pooled client | 0.42 s | 3.65 s |
 
-Approximately 634 ms of handshake per request — 58% of the time each call took.
-On a full run with identical output:
-
-| | Before | After |
-|---|---:|---:|
-| Mean request latency | 2,893 ms | 573 ms |
-| 40-paper run | 93.3 s | 27.9 s |
+Approximately 634 ms of handshake per request, 58% of the time each call took. On a full run with identical output: 
+| | Before | After | |---|---:|---:| | Mean request latency | 2,893 ms | 573 ms | | 40-paper run | 93.3 s | 27.9 s |
 
 ### 6.6.4 Path ranking complexity
 
@@ -2409,7 +2341,7 @@ synthetic layered graphs:
 | 91 | 1,830 | 11.92 s | 0.06 s | 191× |
 | 151 | 5,050 | 117.96 s | 0.27 s | 434× |
 
-The redesign — one depth-limited DFS feeding a bounded heap — returns an
+The redesign, one depth-limited DFS feeding a bounded heap, returns an
 identical top-ten (verified by comparing path sets and scores against the
 exhaustive computation). The speed-up widens with size because the original was
 O(nodes × paths) and the replacement is O(paths).
@@ -2428,15 +2360,15 @@ This caught three identifiers that had been assigned incorrectly:
 | PageRank on citations | `10.1016/j.joi.2007.01.001` | A journal-impact-factor rank-order paper |
 | Trialstreamer | `10.1093/jamia/ocv044` | RobotReviewer |
 
-A fourth candidate — the 1999 PageRank technical report — has no resolvable DOI
+A fourth candidate, the 1999 PageRank technical report, has no resolvable DOI
 and was dropped rather than cited with a fabricated identifier; PageRank is
 cited through Brin and Page (1998) and Chen et al. (2007) instead.
 
 This is reported because it is a result about method. Citations composed from
-memory are wrong at a non-trivial rate — three of twenty-nine here, roughly
-10% — and the errors are invisible without verification, since a plausible DOI
-looks exactly like a correct one. All twenty-nine entries in the final
-bibliography resolve.
+memory are wrong at a non-trivial rate, three of twenty-nine here, roughly 10%,
+and the errors are invisible without verification, since a plausible DOI looks
+exactly like a correct one. All twenty-nine entries in the final bibliography
+resolve.
 
 ## 6.8 Summary of Results Against Objectives
 
@@ -2462,7 +2394,7 @@ defensible output on inspection, has not been validated against human judgement
 
 \newpage
 
-# Chapter 6 (continued) — Extended Analysis
+# Chapter 6 (continued): Extended Analysis
 
 ## 6.9 Performance by Study Design
 
@@ -2477,26 +2409,24 @@ uniform, and that the failures cluster.
 | Case series | 2 | 2 | 2/2 | **1/2** | 0.85 |
 | Epidemiological | 1 | 1 | 1/1 | 1/1 | 0.85 |
 | Modelling | 1 | 1 | 1/1 | 1/1 | 0.85 |
-| Review | 3 | 0 | 3/3 | — | 0.00 |
-| Virus characterisation | 2 | 0 | 2/2 | — | 0.00 |
-| Computational | 2 | 0 | 2/2 | — | 0.00 |
-| Guideline | 1 | 0 | 1/1 | — | 0.00 |
-| **Systematic review** | **1** | **0** | **0/1** | — | **0.90** |
+| Review | 3 | 0 | 3/3 | n/a | 0.00 |
+| Virus characterisation | 2 | 0 | 2/2 | n/a | 0.00 |
+| Computational | 2 | 0 | 2/2 | n/a | 0.00 |
+| Guideline | 1 | 0 | 1/1 | n/a | 0.00 |
+| **Systematic review** | **1** | **0** | **0/1** | n/a | **0.90** |
 
 Gold populations span 41 to 43,548 subjects, median 1,099.
 
 Three patterns are visible.
 
-**Randomised trials are the easy case, and the system is built for them.**
-Five of five correct, with the highest mean confidence (0.96). RCT abstracts
-follow a reporting convention — a single headline number introduced by
-*randomised*, *assigned* or *enrolled* — that surface patterns capture well.
-This is unsurprising given that the pattern set was written with trial phrasing
-in mind, and it should temper any generalisation from the headline F1.
+**Randomised trials are the easy case, and the system is built for them.** Five
+of five correct, with the highest mean confidence (0.96). RCT abstracts follow a reporting convention that surface patterns capture well: a single headline number introduced by *randomised*, *assigned* or *enrolled*. This is
+unsurprising given that the pattern set was written with trial phrasing in
+mind, and it should temper any generalisation from the headline F1.
 
 **Clear negatives are handled cleanly.** Reviews, guidelines, virus
 characterisation and computational papers were all correctly rejected, with
-confidence 0.00 — including the hard negatives containing an ImageNet dataset
+confidence 0.00, including the hard negatives containing an ImageNet dataset
 size and an epidemic case tally. The ignore rules and the requirement that a
 number appear in a population-bearing construction are doing real work here.
 
@@ -2514,10 +2444,10 @@ whose abstracts most resemble clinical reports without describing a cohort.
 
 ## 6.10 The Confidence Calibration Failure in Detail
 
-Section 6.4.4 reported that mean confidence was 0.91 when extraction was correct
-and 0.90 when it was wrong. The design breakdown explains why, and the
-explanation is not that the model is poorly fitted — it is that there is no
-model.
+Section 6.4.4 reported that mean confidence was 0.91 when extraction was
+correct and 0.90 when it was wrong. The design breakdown explains why: there is
+no model behind the score at all, so there is nothing that could have been
+fitted well or badly.
 
 Confidence is computed as:
 
@@ -2539,11 +2469,11 @@ exactly this reason: it matched a high-weight pattern, and the system has no
 means of noticing that the match is out of domain.
 
 The fix is not to adjust the weights. It is to make confidence a function of
-observed correctness — fitting a calibration model over features such as
-pattern identity, the number and spread of competing candidates, sentence
-position, and the presence of design-indicating terms — which requires labelled
-data at a scale the present gold standard does not reach. Section 8.2.1 and
-8.2.3 are therefore coupled: calibration is blocked on corpus size.
+observed correctness, fitting a calibration model over features such as pattern
+identity, the number and spread of competing candidates, sentence position, and
+the presence of design-indicating terms, which requires labelled data at a
+scale the present gold standard does not reach. Section 8.2.1 and 8.2.3 are
+therefore coupled: calibration is blocked on corpus size.
 
 Until then, the honest framing for a user is that the confidence score indicates
 *how specific the matched pattern was*, not *how likely the answer is to be
@@ -2577,9 +2507,7 @@ bears on how a user should read a sparse graph: low density may indicate an
 interdisciplinary or recent seed rather than a thin literature, and the system
 currently offers no signal to tell them apart.
 
-The runtime difference follows directly from density — fewer edges means fewer
-neighbours to resolve — which reinforces the finding in Section 6.6.1 that cost
-is driven by the number of external lookups rather than by graph computation.
+The runtime difference follows directly from density. Fewer edges means fewer neighbours to resolve, which reinforces the finding in Section 6.6.1 that cost is driven by the number of external lookups rather than by graph computation.
 
 ## 6.12 What the Abstract Backfill Changed, Stage by Stage
 
@@ -2597,8 +2525,7 @@ failure.
 | Status `missing` | 25 | 20 |
 
 Eleven papers moved from "no text" to "text available", and five of those then
-yielded a population. The remaining six had text but no reportable population —
-correctly, since they were reviews, guidelines and discovery papers.
+yielded a population. The remaining six had text but no reportable population. That is correct: they were reviews, guidelines and discovery papers.
 
 The distinction matters for how the result is read. Before the backfill, 25 of
 40 papers reported `missing`, and nothing in the output distinguished *no
@@ -2615,7 +2542,7 @@ Chapter 5. Each row is the state after the named correction.
 | State | Papers with `n_eff` | High confidence | Runtime |
 |-------|--------------------:|----------------:|--------:|
 | Initial (as delivered before measurement) | 7 (18%) | 3 | 93.3 s |
-| After per-span ignore matching (§5.5) | 15 (38%) | 10 | — |
+| After per-span ignore matching (§5.5) | 15 (38%) | 10 | n/a |
 | After connection pooling (§6.6.3) | 15 | 10 | 27.9 s |
 | After Europe PMC backfill (§6.3) | **20 (50%)** | **11** | 27.0 s |
 
@@ -2624,8 +2551,8 @@ high-confidence extractions from 3 to 11, while runtime fell by roughly 71%.
 
 The composition of that gain is the point. Of the 13 additional papers with
 evidence, eight came from correcting extraction logic and five from querying a
-second data source. The second intervention is far cheaper — one additional API
-call per run against a rewrite of the ignore-matching logic — and would not have
+second data source. The second intervention is far cheaper, one additional API
+call per run against a rewrite of the ignore-matching logic, and would not have
 been identified without separating "no text" from "extraction failed" in the
 measurement. Section 7.1.1 draws the general lesson.
 
@@ -2633,13 +2560,13 @@ measurement. Section 7.1.1 draws the general lesson.
 
 \newpage
 
-# Chapter 7 — Discussion
+# Chapter 7: Discussion
 
 ## 7.1 Interpretation of Results
 
 ### 7.1.1 Extraction works better than the project expected; availability is the real ceiling
 
-The headline extraction result — precision 0.917, recall 1.000, F1 0.957 — is
+The headline extraction result, precision 0.917, recall 1.000, F1 0.957, is
 better than a hand-written pattern system might be expected to achieve, and the
 temptation is to attribute this to the patterns. The measurement in Section 6.3
 argues otherwise. Before the abstract backfill, 28% of papers in a
@@ -2650,7 +2577,7 @@ constraint; the availability of text was.
 This reframes what limits the system. On a 40-paper graph, the improvement from
 fixing the extraction logic (Section 5.5) raised coverage from 7 papers to 15;
 adding a second abstract provider raised it from 15 to 20. Data plumbing
-delivered as much as algorithmic work, and it is the cheaper of the two — one
+delivered as much as algorithmic work, and it is the cheaper of the two, one
 additional API call per run.
 
 The generalisable observation is that in a pipeline drawing on external
@@ -2661,17 +2588,17 @@ goes to the wrong place.
 
 ### 7.1.2 Semantic typing is the genuine weakness
 
-Type accuracy of 6/10 is the weakest result, and the errors are not random.
-All four are adjacent-category confusions — randomised versus enrolled versus
-analysed — among quantities that are frequently numerically identical.
+Type accuracy of 6/10 is the weakest result, and the errors are not random. All
+four are adjacent-category confusions, randomised versus enrolled versus
+analysed, among quantities that are frequently numerically identical.
 Distinguishing them requires reading the *role* the number plays in the study
 design, which is a semantic judgement rather than a lexical one. Surface
 patterns are the wrong instrument.
 
 The impact on the system is bounded, because the weighting uses the value and
-not the type. But the aspiration in the proposal — to classify evidence by
-study role — is not achieved, and a supervised model trained on PICO
-annotations [nye2018ebmnlp] is the natural route to it.
+not the type. But the aspiration in the proposal, to classify evidence by study
+role, is not achieved, and a supervised model trained on PICO annotations
+[nye2018ebmnlp] is the natural route to it.
 
 ### 7.1.3 The confidence scores do not mean what they appear to
 
@@ -2681,7 +2608,7 @@ was wrong. The score does not discriminate.
 
 This matters disproportionately because surfacing uncertainty is the system's
 distinguishing claim. A user filtering for high-confidence extractions would
-retain the false positive — a systematic review misread at confidence 0.90 —
+retain the false positive, a systematic review misread at confidence 0.90,
 alongside the correct results. The confidence currently encodes *which pattern
 matched*, a property of the system, not *how likely this match is to be right*,
 a property of the world. Those are different quantities and the interface
@@ -2693,11 +2620,11 @@ than twenty papers.
 
 ### 7.1.4 The system is I/O-bound, and that is a design conclusion
 
-Graph analytics account for 2.5% of runtime; network calls account for 63%.
-Two consequences follow for anyone building similar systems. The choice of
-graph library is nearly irrelevant at this scale, and effort spent optimising
-PageRank would be wasted. Conversely, HTTP-level engineering — connection
-pooling, request batching, avoiding per-item lookups — produced the largest
+Graph analytics account for 2.5% of runtime; network calls account for 63%. Two
+consequences follow for anyone building similar systems. The choice of graph
+library is nearly irrelevant at this scale, and effort spent optimising
+PageRank would be wasted. Conversely, HTTP-level engineering, connection
+pooling, request batching, avoiding per-item lookups, produced the largest
 single performance gain in the project: 93.3 s to 27.9 s, a 3.3× improvement
 from reusing one pooled client rather than creating one per request.
 
@@ -2710,7 +2637,7 @@ whether this system was correct.**
 Six defects reached a system with 102 passing tests. Four produced no error and
 no visible symptom. The traversal defect discarded roughly half of every graph
 while the suite passed, because the tests asserted that a run completed and
-returned a structure of the right shape — not that the structure bore any
+returned a structure of the right shape, not that the structure bore any
 relation to the available literature.
 
 The defects that are hardest to find share a signature: they *degrade* rather
@@ -2720,14 +2647,7 @@ with no citing works. An edge weight of 0.0 silently rewritten to 1.0 by
 Python's `or` still yields a ranking. In each case the system produced a
 defensible-looking answer to the wrong question.
 
-What surfaced them was not more testing but *measurement against known
-quantities*: comparing the number of nodes retrieved against the number of
-references the provider reported, comparing extracted populations against
-hand-read abstracts, timing each stage. Notably, the evaluation plan that would
-have caught most of these was specified in the project proposal from the start
-and left unimplemented — the empty `evaluation/` directory was itself the
-strongest early warning available, and nothing in the repository made its
-emptiness visible.
+What surfaced them was not more testing but *measurement against known quantities*: comparing the number of nodes retrieved against the number of references the provider reported, comparing extracted populations against hand-read abstracts, timing each stage. Notably, the evaluation plan that would have caught most of these was specified in the project proposal from the start and left unimplemented, the empty `evaluation/` directory was itself the strongest early warning available, and nothing in the repository made its emptiness visible.
 
 ## 7.3 Threats to Validity
 
@@ -2760,8 +2680,8 @@ incorrectly collapsed two distinct papers would not be detected.
 
 ### 7.3.3 External validity
 
-**Sample size.** Twenty papers, eleven positive. The confidence intervals —
-accuracy [0.764, 0.991], value accuracy [0.623, 0.984] — are wide and are
+**Sample size.** Twenty papers, eleven positive. The confidence intervals,
+accuracy [0.764, 0.991], value accuracy [0.623, 0.984], are wide and are
 reported alongside every point estimate for this reason.
 
 **Domain concentration.** Positives are biomedical, mostly COVID-era and
@@ -2773,13 +2693,13 @@ corpus would be more reproducible and is proposed in Section 8.2.
 
 ### 7.3.4 Conclusion validity
 
-**No comparative baseline.** The central question — does evidence-weighted
-ranking outperform unweighted PageRank? — was **not tested**. No A/B comparison
+**No comparative baseline.** The central question, does evidence-weighted
+ranking outperform unweighted PageRank?, was **not tested**. No A/B comparison
 was run and no human relevance judgements were collected. The AlphaFold-to-
 Anfinsen result in Section 6.5 is a single favourable anecdote. This thesis
 therefore demonstrates that evidence-weighted ranking *can be computed* and
-*produces plausible output*, not that it is better. That is the most significant
-unaddressed question in the work.
+*produces plausible output*, not that it is better. That is the most
+significant unaddressed question in the work.
 
 ## 7.4 Divergence from the Project Proposal
 
@@ -2791,14 +2711,14 @@ are listed here rather than omitted.
 | GROBID full-text PDF parsing | Configuration flags only; no implementation | Extraction is abstract-only. Sample sizes stated only in Methods are unreachable. This is the largest functional shortfall. |
 | Neo4j study-aware graph store | NetworkX in-memory | No practical consequence at 200 nodes; §6.6 supports the choice |
 | Study-aware knowledge graph | One-to-one paper→study mapping, `dedupe_confidence` hardcoded to 0.8 | Papers reporting the same trial are counted as independent evidence |
-| Streamlit dashboard | Not implemented; React SPA delivered instead | None — the React dashboard supersedes it |
+| Streamlit dashboard | Not implemented; React SPA delivered instead | None, the React dashboard supersedes it |
 | `EVENT_COUNT`, `UNKNOWN_NUMERIC` types | Defined in the model; no pattern emits either | Two documented categories can never appear |
 | Journal quality term | Constant 0.5 | The β term is a uniform floor, not a signal |
 | Evaluation plan (§13) | Implemented during thesis preparation | Reported in Chapter 6 |
 
 The study-aware graph is the most conceptually significant omission. The
-proposal's intent was that several papers reporting one trial — a protocol, a
-primary results paper, a secondary analysis — collapse to one study node, so the
+proposal's intent was that several papers reporting one trial, a protocol, a
+primary results paper, a secondary analysis, collapse to one study node, so the
 trial's evidence is counted once. The delivered system treats them as three
 independent papers, which overstates the evidential weight of well-published
 trials. The identity aliasing described in Section 4.4.2 solves the easier
@@ -2830,8 +2750,8 @@ same one that keeps the system within bounds.
 
 Two risks deserve statement. First, **misplaced authority**: a ranked list
 presented by software invites more confidence than a heuristic deserves. The
-mitigations in Section 4.7 — status labels, explicit reporting of absence, a
-standing caution in generated reports — are partial, and Section 6.4.4 shows one
+mitigations in Section 4.7, status labels, explicit reporting of absence, a
+standing caution in generated reports, are partial, and Section 6.4.4 shows one
 of them is weaker than it appears. Second, **entrenchment of visibility**: any
 citation-based ranking amplifies already-visible work, and the age term here
 does not correct for the systematic under-citation of research from
@@ -2841,7 +2761,7 @@ under-resourced institutions and non-English literatures.
 
 \newpage
 
-# Chapter 8 — Conclusion and Future Work
+# Chapter 8: Conclusion and Future Work
 
 ## 8.1 Conclusion
 
@@ -2853,42 +2773,41 @@ a citation to a 43,548-participant trial from a citation to a case report.
 A working system was built, deployed and measured. Against the four research
 questions of Section 1.3:
 
-**RQ1 — Can population sizes be extracted reliably enough by pattern-based
-methods?** Partially. Detection achieved precision 0.917 and recall 1.000
-(F1 0.957, accuracy 95% CI [0.764, 0.991]) on a 20-paper gold standard, and
-exact values were correct in 10 of 11 positive cases. But semantic type
-classification reached only 6 of 10, and — more seriously — the confidence
-scores attached to extractions do not discriminate correct from incorrect
-results (mean 0.91 when right, 0.90 when wrong). Extraction is good enough to
-drive edge weighting; the uncertainty signalling around it is not yet
-trustworthy.
+**RQ1, Can population sizes be extracted reliably enough by pattern-based
+methods?** Partially. Detection achieved precision 0.917 and recall 1.000 (F1
+0.957, accuracy 95% CI [0.764, 0.991]) on a 20-paper gold standard, and exact
+values were correct in 10 of 11 positive cases. But semantic type
+classification reached only 6 of 10, and, more seriously, the confidence scores
+attached to extractions do not discriminate correct from incorrect results
+(mean 0.91 when right, 0.90 when wrong). Extraction is good enough to drive
+edge weighting; the uncertainty signalling around it is not yet trustworthy.
 
-**RQ2 — What proportion of papers carry the text needed, and does availability
+**RQ2. What proportion of papers carry the text needed, and does availability
 constrain the approach more than accuracy?** Yes, decisively. In a
 representative 40-paper graph, 28% of papers carried no abstract in the primary
 provider. All were recoverable from a second provider in a single batched
 request. Data availability, not extraction logic, was the binding constraint on
 coverage, and the cheaper of the two to fix.
 
-**RQ3 — Does evidence weighting produce a defensible ranking?** Unproven. The
-system produces plausible output — seeded with the 2021 AlphaFold paper it
-surfaced Anfinsen's 1973 paper founding the protein-folding problem — but no
+**RQ3, Does evidence weighting produce a defensible ranking?** Unproven. The
+system produces plausible output, seeded with the 2021 AlphaFold paper it
+surfaced Anfinsen's 1973 paper founding the protein-folding problem, but no
 relevance judgement study was run and no comparison against unweighted PageRank
 was performed. This thesis shows the ranking *can be computed* and *looks
 sensible*, not that it is better than the unweighted baseline. This is the
 principal unaddressed question in the work.
 
-**RQ4 — Can traversal be made fast enough for interactive use, and what
+**RQ4. Can traversal be made fast enough for interactive use, and what
 dominates?** Yes. A 40-paper analysis completes in a mean of 19 s, and a
-100-paper analysis in about 31 s. The cost is overwhelmingly network I/O
-(63%); all graph analytics together account for 2.5%. The largest single
-improvement came not from algorithmic work but from reusing one pooled HTTP
-client instead of creating one per request, which cut a representative run from
-93.3 s to 27.9 s.
+100-paper analysis in about 31 s. The cost is overwhelmingly network I/O (63%);
+all graph analytics together account for 2.5%. The largest single improvement
+came not from algorithmic work but from reusing one pooled HTTP client instead
+of creating one per request, which cut a representative run from 93.3 s to 27.9
+s.
 
 Beyond the research questions, the work produced a second result the authors
 did not anticipate. Six substantial defects were found in a system that passed
-102 automated tests, and four of them produced no error and no visible symptom —
+102 automated tests, and four of them produced no error and no visible symptom,
 including one that discarded roughly half of every graph, one that made every
 forward-citation query silently return zero, and one that collapsed every edge
 weight to zero while a Python truthiness accident concealed it by substituting
@@ -2911,10 +2830,10 @@ Ordered by expected value relative to cost.
 
 The clearest and most valuable correction. Confidence currently encodes which
 pattern matched rather than how likely the match is to be correct (§6.4.4).
-Calibrating against held-out labelled data — for example by fitting a logistic
+Calibrating against held-out labelled data, for example by fitting a logistic
 model over pattern identity, sentence features and competing-candidate
-structure — would make the score mean what the interface claims. This requires
-a larger gold standard, which §8.2.3 addresses, and would make the system's
+structure, would make the score mean what the interface claims. This requires a
+larger gold standard, which §8.2.3 addresses, and would make the system's
 distinguishing feature actually trustworthy.
 
 ### 8.2.2 Compare against an unweighted baseline
@@ -2968,7 +2887,7 @@ detection when extraction logic changes.
 
 Garfield's original caveat (§2.1.1): a citation may be critical rather than
 supportive. Classifying citation context would let the graph distinguish
-support from refutation — a substantially harder problem, and the most
+support from refutation, a substantially harder problem, and the most
 speculative item here.
 
 ## 8.3 Closing Remarks
@@ -2979,7 +2898,7 @@ The system produced plausible output throughout a period in which it was
 discarding half of every graph, returning zero forward citations for every
 paper, and running an unweighted ranking while presenting it as
 evidence-weighted. Every automated test passed. What exposed the faults was
-measuring the system against quantities known independently — how many
+measuring the system against quantities known independently, how many
 references the provider reported, what a human reading the abstract found, how
 long each stage took.
 
@@ -2994,7 +2913,7 @@ authors would carry into another project.
 
 \newpage
 
-# Appendix A — API Reference
+# Appendix A: API Reference
 
 Base URL of the deployed instance: `https://citegraph-api.penora.us`
 Interactive documentation: `/docs`
@@ -3077,16 +2996,8 @@ Every link endpoint is guaranteed present in `nodes` (Section 4.4.2).
 
 ## A.5 Exports
 
-All exports return a file with the correct `Content-Type` and a
-`Content-Disposition` filename — not a JSON envelope (Section 5.8).
-
-| Endpoint | Type | Contents |
-|----------|------|----------|
-| `/export/json` | `application/json` | Full result, indented |
-| `/export/csv` | `text/csv` | One row per paper: identifiers, authors, journal, `n_eff`, population status and confidence, in/out degree, foundational rank, seed flag |
-| `/export/edges.csv` | `text/csv` | One row per edge with every weight component |
-| `/export/markdown` | `text/markdown` | Report: seed details, summary, foundational ranking, population evidence, top citation paths |
-| `/export/graphml` | `application/xml` | GraphML for Gephi, yEd or Cytoscape Desktop |
+All exports return a file with the correct `Content-Type` and a `Content-Disposition` filename, not a JSON envelope (Section 5.8). 
+| Endpoint | Type | Contents | |----------|------|----------| | `/export/json` | `application/json` | Full result, indented | | `/export/csv` | `text/csv` | One row per paper: identifiers, authors, journal, `n_eff`, population status and confidence, in/out degree, foundational rank, seed flag | | `/export/edges.csv` | `text/csv` | One row per edge with every weight component | | `/export/markdown` | `text/markdown` | Report: seed details, summary, foundational ranking, population evidence, top citation paths | | `/export/graphml` | `application/xml` | GraphML for Gephi, yEd or Cytoscape Desktop |
 
 Both CSV exports are written with Python's `csv` module, so commas, quotes and
 newlines inside titles and journal names are escaped correctly, and carry a
@@ -3096,7 +3007,7 @@ UTF-8 byte-order mark so spreadsheet software renders accented author names.
 
 \newpage
 
-# Appendix B — Configuration Reference
+# Appendix B: Configuration Reference
 
 All settings are read by `pydantic-settings` from environment variables or a
 `.env` file.
@@ -3157,7 +3068,7 @@ recommends 100 or below: 200 takes around 3.5 minutes and exceeds NFR-1.
 | `enable_grobid` | `ENABLE_GROBID` | `true` | **Flag only; no PDF parsing is implemented** (§7.4) |
 | `grobid_url` | `GROBID_URL` | `http://localhost:8070` | Unused |
 | `enable_neo4j` | `ENABLE_NEO4J` | `false` | **Flag only; no Neo4j integration is implemented** |
-| `neo4j_uri` / `neo4j_user` | — | — | Unused |
+| `neo4j_uri` / `neo4j_user` | n/a | n/a | Unused |
 | `neo4j_password` | `NEO4J_PASSWORD` | unset | No default; required before enabling the profile |
 
 The GROBID and Neo4j flags are configuration remnants of capabilities specified
@@ -3182,7 +3093,7 @@ Not environment-configurable; changing them requires a code edit.
 
 \newpage
 
-# Appendix C — Reproducing the Results
+# Appendix C: Reproducing the Results
 
 Every quantitative claim in Chapter 6 is produced by a script committed to the
 repository. This appendix gives the commands.
@@ -3199,9 +3110,7 @@ pip install -r requirements.txt
 cp .env.example .env          # then set OPENALEX_EMAIL
 ```
 
-Setting `OPENALEX_EMAIL` is not optional in practice. OpenAlex serves
-identified callers from a faster "polite pool"; without it, request latency —
-which Section 6.6 shows dominates runtime — is materially worse.
+Setting `OPENALEX_EMAIL` is not optional in practice. OpenAlex serves identified callers from a faster "polite pool"; without it, request latency, which Section 6.6 shows dominates runtime, is materially worse.
 
 ## C.2 Test suite
 
@@ -3263,15 +3172,23 @@ page counts in this thesis were measured with:
 pandoc thesis/CiteGraph-NLP-Thesis.md \
   -o thesis/CiteGraph-NLP-Thesis.pdf \
   --pdf-engine=weasyprint \
+  -f markdown-smart \
   --toc --toc-depth=3 \
   --number-sections
 ```
+
+`-f markdown-smart` matters. Pandoc's smart typography rewrites `--` as an en
+dash and `---` as an em dash, so the rendered PDF ends up containing dashes the
+source never had. A mechanical pre-submission check run against that PDF then
+reports them as prose findings: five of the six em dashes flagged in one such
+run came from this conversion rather than from the manuscript.
 
 A DOCX, if the department requires one:
 
 ```bash
 pandoc thesis/CiteGraph-NLP-Thesis.md \
   -o thesis/CiteGraph-NLP-Thesis.docx \
+  -f markdown-smart \
   --toc --toc-depth=3
 ```
 
@@ -3312,10 +3229,10 @@ The deployed instance is documented in the project README.
 ## C.8 A caveat on exact reproduction
 
 The evaluation queries live scholarly APIs. OpenAlex and Crossref revise
-records continuously — abstracts are added, reference lists are corrected,
+records continuously, abstracts are added, reference lists are corrected,
 citation counts change daily. A rerun may therefore differ from the figures in
-Chapter 6, particularly the traversal statistics in Section 6.5, which depend on
-what the providers hold at query time.
+Chapter 6, particularly the traversal statistics in Section 6.5, which depend
+on what the providers hold at query time.
 
 The gold-standard labels are fixed and committed, so the extraction metrics in
 Section 6.4 are stable provided the abstracts remain retrievable. Section 8.2.7
@@ -3325,7 +3242,7 @@ proposes snapshotting the corpus to remove this dependency entirely.
 
 \newpage
 
-# Appendix D — Gold Standard Annotations
+# Appendix D: Gold Standard Annotations
 
 The complete annotated set used in Chapter 6. Each label was assigned by
 reading the abstract retrieved through the same providers the pipeline
@@ -3350,15 +3267,15 @@ population is stated and the correct behaviour is to extract nothing.
 | 9 | `10.1056/nejmoa2001316` | epidemiological | 425 | 425 | ok |
 | 10 | `10.1016/s2213-2600(20)30079-5` | cohort | 52 | 52 | ok |
 | 11 | `10.1016/s1473-3099(20)30243-7` | modelling | 1334 | 1334 | ok |
-| 12 | `10.1056/nejmoa2001017` | virus_characterisation | — | — | ok |
-| 13 | `10.1038/s41586-020-2012-7` | virus_characterisation | — | — | ok |
-| 14 | `10.1136/bmj.m1328` | systematic_review | — | 27 | **miss** |
-| 15 | `10.1038/s41577-020-0311-8` | review | — | — | ok |
-| 16 | `10.1164/rccm.201908-1581st` | guideline | — | — | ok |
-| 17 | `10.1056/nejmra2026131` | review | — | — | ok |
-| 18 | `10.1038/s41586-021-03819-2` | computational | — | — | ok |
-| 19 | `10.1038/nature14539` | review | — | — | ok |
-| 20 | `10.1145/3065386` | computational | — | — | ok |
+| 12 | `10.1056/nejmoa2001017` | virus_characterisation | none | none | ok |
+| 13 | `10.1038/s41586-020-2012-7` | virus_characterisation | none | none | ok |
+| 14 | `10.1136/bmj.m1328` | systematic_review | none | 27 | **miss** |
+| 15 | `10.1038/s41577-020-0311-8` | review | none | none | ok |
+| 16 | `10.1164/rccm.201908-1581st` | guideline | none | none | ok |
+| 17 | `10.1056/nejmra2026131` | review | none | none | ok |
+| 18 | `10.1038/s41586-021-03819-2` | computational | none | none | ok |
+| 19 | `10.1038/nature14539` | review | none | none | ok |
+| 20 | `10.1145/3065386` | computational | none | none | ok |
 
 ## D.2 Annotations with supporting evidence
 
@@ -3504,7 +3421,7 @@ population is stated and the correct behaviour is to extract nothing.
 
 \newpage
 
-# Appendix E — Requirements Traceability
+# Appendix E: Requirements Traceability
 
 This appendix maps every requirement from Chapter 3 to the implementing module,
 the verifying test or measurement, and the section reporting the outcome. Its
@@ -3527,11 +3444,11 @@ them to be inferred from absence.
 | FR-10 | Forward traversal, depth 0–2 | `citations/traversal.py`, `providers/openalex.py` | §6.5 | Met |
 | FR-11 | Bound total papers 1–200 | `api/routes.py` | `test_api_comprehensive.py` | Met |
 | FR-12 | Merge duplicate records | `citations/traversal.py` | §6.5 | Met; **merge precision unmeasured** (§7.3.2) |
-| FR-13 | No dangling edges | `citations/traversal.py` | §6.5 — 0 across 3 runs | Met |
+| FR-13 | No dangling edges | `citations/traversal.py` | §6.5, 0 across 3 runs | Met |
 | FR-14 | Extract population candidates | `nlp/population_extractor.py` | §6.4.1 | Met |
-| FR-15 | Classify semantic type | `nlp/population_patterns.py` | §6.4.3 — 6/10 | **Partially met** |
-| FR-16 | Resolve to one value per paper | `nlp/population_resolver.py` | §6.4.2 — 10/11 | Met |
-| FR-17 | Attach confidence and status | `models/population.py` | §6.4.4 | **Partially met — confidence uncalibrated** |
+| FR-15 | Classify semantic type | `nlp/population_patterns.py` | §6.4.3, 6/10 | **Partially met** |
+| FR-16 | Resolve to one value per paper | `nlp/population_resolver.py` | §6.4.2, 10/11 | Met |
+| FR-17 | Attach confidence and status | `models/population.py` | §6.4.4 | **Partially met, confidence uncalibrated** |
 | FR-18 | Ignore years, percentages, p-values | `nlp/population_extractor.py` | `test_population_patterns.py` | Met |
 | FR-19 | Evidence-based edge weighting | `graph/weighting.py` | §5.6 | Met |
 | FR-20 | Non-zero weight without evidence | `graph/weighting.py`, `graph/builder.py` | §5.6 | Met |
@@ -3541,7 +3458,7 @@ them to be inferred from absence.
 | FR-24 | REST API and dashboard | `api/`, `frontend/` | §5.9, §5.11 | Met |
 
 **Summary:** 22 of 24 met; FR-15 and FR-17 partially met. Both partial results
-concern the same underlying weakness — the system's semantic and probabilistic
+concern the same underlying weakness, the system's semantic and probabilistic
 judgements about extractions are weaker than its value extraction.
 
 ## E.2 Non-functional requirements
@@ -3574,16 +3491,16 @@ Listed for completeness; discussed in Section 7.4.
 
 | RQ | Question | Answered in | Verdict |
 |----|----------|-------------|---------|
-| RQ1 | Reliable pattern-based extraction? | §6.4 | Partially — detection strong (F1 0.957), typing weak (0.60), confidence uncalibrated |
-| RQ2 | Does text availability constrain more than accuracy? | §6.3 | Yes — 28% of papers lacked abstracts; all recoverable from a second provider |
-| RQ3 | Defensible evidence-weighted ranking? | §6.5 | **Unproven** — plausible output, no relevance study, no baseline comparison |
-| RQ4 | Fast enough, and what dominates? | §6.6 | Yes — 19 s mean; 63% network I/O, 2.5% analytics |
+| RQ1 | Reliable pattern-based extraction? | §6.4 | Partially, detection strong (F1 0.957), typing weak (0.60), confidence uncalibrated |
+| RQ2 | Does text availability constrain more than accuracy? | §6.3 | Yes, 28% of papers lacked abstracts; all recoverable from a second provider |
+| RQ3 | Defensible evidence-weighted ranking? | §6.5 | **Unproven**, plausible output, no relevance study, no baseline comparison |
+| RQ4 | Fast enough, and what dominates? | §6.6 | Yes, 19 s mean; 63% network I/O, 2.5% analytics |
 
 ---
 
 \newpage
 
-# Appendix F — Test Suite and Verification Inventory
+# Appendix F: Test Suite and Verification Inventory
 
 ## F.1 Composition
 
@@ -3678,7 +3595,7 @@ tests, listed so the evidence base is complete.
 
 \newpage
 
-# Appendix G — Selected Code Listings
+# Appendix G: Selected Code Listings
 
 Extracts from the delivered system, chosen because each embodies a decision
 argued elsewhere in the thesis. Listings are lightly trimmed for width;
@@ -3958,89 +3875,89 @@ Section 6.7 for the three identifiers this process corrected.
 
 All 29 entries resolve as of the verification run.
 
-**[1]** `beltagy2019scibert` — Iz Beltagy, Kyle Lo, and Arman Cohan. "SciBERT: A Pretrained Language Model for Scientific Text." *Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP)*, 2019. DOI: [10.18653/v1/D19-1371](https://doi.org/10.18653/v1/D19-1371)
+**[1]** `beltagy2019scibert`. Iz Beltagy, Kyle Lo, and Arman Cohan. "SciBERT: A Pretrained Language Model for Scientific Text." *Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP)*, 2019. DOI: [10.18653/v1/D19-1371](https://doi.org/10.18653/v1/D19-1371)
   <br/>*Cited for:* SciBERT
 
-**[2]** `brin1998anatomy` — Sergey Brin, and Lawrence Page. "The anatomy of a large-scale hypertextual Web search engine." *Computer Networks and ISDN Systems*, 1998. DOI: [10.1016/S0169-7552(98)00110-X](https://doi.org/10.1016/S0169-7552(98)00110-X)
+**[2]** `brin1998anatomy`. Sergey Brin, and Lawrence Page. "The anatomy of a large-scale hypertextual Web search engine." *Computer Networks and ISDN Systems*, 1998. DOI: [10.1016/S0169-7552(98)00110-X](https://doi.org/10.1016/S0169-7552(98)00110-X)
   <br/>*Cited for:* Anatomy of a large-scale hypertextual search engine
 
-**[3]** `button2013power` — Katherine S. Button et al.. "Power failure: why small sample size undermines the reliability of neuroscience." *Nature Reviews Neuroscience*, 2013. DOI: [10.1038/nrn3475](https://doi.org/10.1038/nrn3475)
+**[3]** `button2013power`. Katherine S. Button et al.. "Power failure: why small sample size undermines the reliability of neuroscience." *Nature Reviews Neuroscience*, 2013. DOI: [10.1038/nrn3475](https://doi.org/10.1038/nrn3475)
   <br/>*Cited for:* Small sample size undermines reliability
 
-**[4]** `chen2007cocitation` — Chaomei Chen. "CiteSpace II: Detecting and visualizing emerging trends and transient patterns in scientific literature." *Journal of the American Society for Information Science and Technology*, 2005. DOI: [10.1002/asi.20317](https://doi.org/10.1002/asi.20317)
+**[4]** `chen2007cocitation`. Chaomei Chen. "CiteSpace II: Detecting and visualizing emerging trends and transient patterns in scientific literature." *Journal of the American Society for Information Science and Technology*, 2005. DOI: [10.1002/asi.20317](https://doi.org/10.1002/asi.20317)
   <br/>*Cited for:* CiteSpace / co-citation visual analytics
 
-**[5]** `chen2007gems` — P. Chen, H. Xie, S. Maslov, and S. Redner. "Finding scientific gems with Google’s PageRank algorithm." *Journal of Informetrics*, 2007. DOI: [10.1016/j.joi.2006.06.001](https://doi.org/10.1016/j.joi.2006.06.001)
+**[5]** `chen2007gems`. P. Chen, H. Xie, S. Maslov, and S. Redner. "Finding scientific gems with Google’s PageRank algorithm." *Journal of Informetrics*, 2007. DOI: [10.1016/j.joi.2006.06.001](https://doi.org/10.1016/j.joi.2006.06.001)
   <br/>*Cited for:* Finding scientific gems with PageRank on a citation network
 
-**[6]** `europepmc2015` — Anon.. "Europe PMC: a full-text literature database for the life sciences and platform for innovation." *Nucleic Acids Research*, 2014. DOI: [10.1093/nar/gku1061](https://doi.org/10.1093/nar/gku1061)
+**[6]** `europepmc2015`. Anon.. "Europe PMC: a full-text literature database for the life sciences and platform for innovation." *Nucleic Acids Research*, 2014. DOI: [10.1093/nar/gku1061](https://doi.org/10.1093/nar/gku1061)
   <br/>*Cited for:* Europe PMC full-text literature database
 
-**[7]** `garfield1955` — Eugene Garfield. "Citation Indexes for Science." *Science*, 1955. DOI: [10.1126/science.122.3159.108](https://doi.org/10.1126/science.122.3159.108)
+**[7]** `garfield1955`. Eugene Garfield. "Citation Indexes for Science." *Science*, 1955. DOI: [10.1126/science.122.3159.108](https://doi.org/10.1126/science.122.3159.108)
   <br/>*Cited for:* Citation indexing as a tool for science
 
-**[8]** `hagberg2008networkx` — Aric A. Hagberg, Daniel A. Schult, and Pieter J. Swart. "Exploring Network Structure, Dynamics, and Function using NetworkX." *Proceedings of the Python in Science Conference*, 2008. DOI: [10.25080/TCWV9851](https://doi.org/10.25080/TCWV9851)
+**[8]** `hagberg2008networkx`. Aric A. Hagberg, Daniel A. Schult, and Pieter J. Swart. "Exploring Network Structure, Dynamics, and Function using NetworkX." *Proceedings of the Python in Science Conference*, 2008. DOI: [10.25080/TCWV9851](https://doi.org/10.25080/TCWV9851)
   <br/>*Cited for:* NetworkX
 
-**[9]** `hendricks2020crossref` — Ginny Hendricks, Dominika Tkaczyk, Jennifer Lin, and Patricia Feeney. "Crossref: The sustainable source of community-owned scholarly metadata." *Quantitative Science Studies*, 2020. DOI: [10.1162/qss_a_00022](https://doi.org/10.1162/qss_a_00022)
+**[9]** `hendricks2020crossref`. Ginny Hendricks, Dominika Tkaczyk, Jennifer Lin, and Patricia Feeney. "Crossref: The sustainable source of community-owned scholarly metadata." *Quantitative Science Studies*, 2020. DOI: [10.1162/qss_a_00022](https://doi.org/10.1162/qss_a_00022)
   <br/>*Cited for:* Crossref as scholarly infrastructure
 
-**[10]** `higgins2011cochrane` — J. P. T. Higgins et al.. "The Cochrane Collaboration's tool for assessing risk of bias in randomised trials." *BMJ*, 2011. DOI: [10.1136/bmj.d5928](https://doi.org/10.1136/bmj.d5928)
+**[10]** `higgins2011cochrane`. J. P. T. Higgins et al.. "The Cochrane Collaboration's tool for assessing risk of bias in randomised trials." *BMJ*, 2011. DOI: [10.1136/bmj.d5928](https://doi.org/10.1136/bmj.d5928)
   <br/>*Cited for:* Cochrane risk of bias tool
 
-**[11]** `hirsch2005hindex` — J. E. Hirsch. "An index to quantify an individual's scientific research output." *Proceedings of the National Academy of Sciences*, 2005. DOI: [10.1073/pnas.0507655102](https://doi.org/10.1073/pnas.0507655102)
+**[11]** `hirsch2005hindex`. J. E. Hirsch. "An index to quantify an individual's scientific research output." *Proceedings of the National Academy of Sciences*, 2005. DOI: [10.1073/pnas.0507655102](https://doi.org/10.1073/pnas.0507655102)
   <br/>*Cited for:* h-index
 
-**[12]** `ioannidis2005why` — John P. A. Ioannidis. "Why Most Published Research Findings Are False." *PLoS Medicine*, 2005. DOI: [10.1371/journal.pmed.0020124](https://doi.org/10.1371/journal.pmed.0020124)
+**[12]** `ioannidis2005why`. John P. A. Ioannidis. "Why Most Published Research Findings Are False." *PLoS Medicine*, 2005. DOI: [10.1371/journal.pmed.0020124](https://doi.org/10.1371/journal.pmed.0020124)
   <br/>*Cited for:* Why most published research findings are false
 
-**[13]** `jin2018pico` — Di Jin, and Peter Szolovits. "PICO Element Detection in Medical Text via Long Short-Term Memory Neural Networks." *Proceedings of the BioNLP 2018 workshop*, 2018. DOI: [10.18653/v1/W18-2308](https://doi.org/10.18653/v1/W18-2308)
+**[13]** `jin2018pico`. Di Jin, and Peter Szolovits. "PICO Element Detection in Medical Text via Long Short-Term Memory Neural Networks." *Proceedings of the BioNLP 2018 workshop*, 2018. DOI: [10.18653/v1/W18-2308](https://doi.org/10.18653/v1/W18-2308)
   <br/>*Cited for:* PICO element detection
 
-**[14]** `kim2003genia` — J.-D. Kim, T. Ohta, Y. Tateisi, and J. Tsujii. "GENIA corpus—a semantically annotated corpus for bio-textmining." *Bioinformatics*, 2003. DOI: [10.1093/bioinformatics/btg1023](https://doi.org/10.1093/bioinformatics/btg1023)
+**[14]** `kim2003genia`. J.-D. Kim, T. Ohta, Y. Tateisi, and J. Tsujii. "GENIA corpus—a semantically annotated corpus for bio-textmining." *Bioinformatics*, 2003. DOI: [10.1093/bioinformatics/btg1023](https://doi.org/10.1093/bioinformatics/btg1023)
   <br/>*Cited for:* GENIA corpus for biomedical IE
 
-**[15]** `lee2020biobert` — Jinhyuk Lee et al.. "BioBERT: a pre-trained biomedical language representation model for biomedical text mining." *Bioinformatics*, 2019. DOI: [10.1093/bioinformatics/btz682](https://doi.org/10.1093/bioinformatics/btz682)
+**[15]** `lee2020biobert`. Jinhyuk Lee et al.. "BioBERT: a pre-trained biomedical language representation model for biomedical text mining." *Bioinformatics*, 2019. DOI: [10.1093/bioinformatics/btz682](https://doi.org/10.1093/bioinformatics/btz682)
   <br/>*Cited for:* BioBERT
 
-**[16]** `lopez2009grobid` — Patrice Lopez. "GROBID: Combining Automatic Bibliographic Data Recognition and Term Extraction for Scholarship Publications." *Lecture Notes in Computer Science*, 2009. DOI: [10.1007/978-3-642-04346-8_62](https://doi.org/10.1007/978-3-642-04346-8_62)
+**[16]** `lopez2009grobid`. Patrice Lopez. "GROBID: Combining Automatic Bibliographic Data Recognition and Term Extraction for Scholarship Publications." *Lecture Notes in Computer Science*, 2009. DOI: [10.1007/978-3-642-04346-8_62](https://doi.org/10.1007/978-3-642-04346-8_62)
   <br/>*Cited for:* GROBID
 
-**[17]** `marshall2016robotreviewer` — Iain J Marshall, Joël Kuiper, and Byron C Wallace. "RobotReviewer: evaluation of a system for automatically assessing bias in clinical trials." *Journal of the American Medical Informatics Association*, 2015. DOI: [10.1093/jamia/ocv044](https://doi.org/10.1093/jamia/ocv044)
+**[17]** `marshall2016robotreviewer`. Iain J Marshall, Joël Kuiper, and Byron C Wallace. "RobotReviewer: evaluation of a system for automatically assessing bias in clinical trials." *Journal of the American Medical Informatics Association*, 2015. DOI: [10.1093/jamia/ocv044](https://doi.org/10.1093/jamia/ocv044)
   <br/>*Cited for:* RobotReviewer: automatic risk-of-bias assessment
 
-**[18]** `marshall2020trialstreamer` — Iain Marshall et al.. "Trialstreamer: A living, automatically updated database of clinical trial reports." *Journal of the American Medical Informatics Association*, 2020. DOI: [10.1093/jamia/ocaa163](https://doi.org/10.1093/jamia/ocaa163)
+**[18]** `marshall2020trialstreamer`. Iain Marshall et al.. "Trialstreamer: A living, automatically updated database of clinical trial reports." *Journal of the American Medical Informatics Association*, 2020. DOI: [10.1093/jamia/ocaa163](https://doi.org/10.1093/jamia/ocaa163)
   <br/>*Cited for:* Trialstreamer: auto-updated RCT database
 
-**[19]** `martin2021oadoi` — Heather Piwowar et al.. "The state of OA: a large-scale analysis of the prevalence and impact of Open Access articles." *PeerJ*, 2018. DOI: [10.7717/peerj.4375](https://doi.org/10.7717/peerj.4375)
+**[19]** `martin2021oadoi`. Heather Piwowar et al.. "The state of OA: a large-scale analysis of the prevalence and impact of Open Access articles." *PeerJ*, 2018. DOI: [10.7717/peerj.4375](https://doi.org/10.7717/peerj.4375)
   <br/>*Cited for:* Unpaywall / open access state
 
-**[20]** `moher2009prisma` — David Moher, Alessandro Liberati, Jennifer Tetzlaff, Douglas G. Altman, and The PRISMA Group. "Preferred Reporting Items for Systematic Reviews and Meta-Analyses: The PRISMA Statement." *PLoS Medicine*, 2009. DOI: [10.1371/journal.pmed.1000097](https://doi.org/10.1371/journal.pmed.1000097)
+**[20]** `moher2009prisma`. David Moher, Alessandro Liberati, Jennifer Tetzlaff, Douglas G. Altman, and The PRISMA Group. "Preferred Reporting Items for Systematic Reviews and Meta-Analyses: The PRISMA Statement." *PLoS Medicine*, 2009. DOI: [10.1371/journal.pmed.1000097](https://doi.org/10.1371/journal.pmed.1000097)
   <br/>*Cited for:* PRISMA reporting guideline
 
-**[21]** `neumann2019scispacy` — Mark Neumann, Daniel King, Iz Beltagy, and Waleed Ammar. "ScispaCy: Fast and Robust Models for Biomedical Natural Language Processing." *Proceedings of the 18th BioNLP Workshop and Shared Task*, 2019. DOI: [10.18653/v1/W19-5034](https://doi.org/10.18653/v1/W19-5034)
+**[21]** `neumann2019scispacy`. Mark Neumann, Daniel King, Iz Beltagy, and Waleed Ammar. "ScispaCy: Fast and Robust Models for Biomedical Natural Language Processing." *Proceedings of the 18th BioNLP Workshop and Shared Task*, 2019. DOI: [10.18653/v1/W19-5034](https://doi.org/10.18653/v1/W19-5034)
   <br/>*Cited for:* ScispaCy biomedical NLP pipeline
 
-**[22]** `newman2001structure` — M. E. J. Newman. "The structure of scientific collaboration networks." *Proceedings of the National Academy of Sciences*, 2001. DOI: [10.1073/pnas.98.2.404](https://doi.org/10.1073/pnas.98.2.404)
+**[22]** `newman2001structure`. M. E. J. Newman. "The structure of scientific collaboration networks." *Proceedings of the National Academy of Sciences*, 2001. DOI: [10.1073/pnas.98.2.404](https://doi.org/10.1073/pnas.98.2.404)
   <br/>*Cited for:* Structure of scientific collaboration networks
 
-**[23]** `nye2018ebmnlp` — Benjamin Nye et al.. "A Corpus with Multi-Level Annotations of Patients, Interventions and Outcomes to Support Language Processing for Medical Literature." *Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)*, 2018. DOI: [10.18653/v1/P18-1019](https://doi.org/10.18653/v1/P18-1019)
+**[23]** `nye2018ebmnlp`. Benjamin Nye et al.. "A Corpus with Multi-Level Annotations of Patients, Interventions and Outcomes to Support Language Processing for Medical Literature." *Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)*, 2018. DOI: [10.18653/v1/P18-1019](https://doi.org/10.18653/v1/P18-1019)
   <br/>*Cited for:* EBM-NLP corpus: PICO spans in abstracts
 
-**[24]** `priem2022openalex` — Jason R Priem et al.. "OpenAlex Snapshot." *arXiv (Cornell University)*, 2022. DOI: [10.48550/arXiv.2205.01833](https://doi.org/10.48550/arXiv.2205.01833)
+**[24]** `priem2022openalex`. Jason R Priem et al.. "OpenAlex Snapshot." *arXiv (Cornell University)*, 2022. DOI: [10.48550/arXiv.2205.01833](https://doi.org/10.48550/arXiv.2205.01833)
   <br/>*Cited for:* OpenAlex open scholarly catalogue
 
-**[25]** `radicchi2008universality` — Filippo Radicchi, Santo Fortunato, and Claudio Castellano. "Universality of citation distributions: Toward an objective measure of scientific impact." *Proceedings of the National Academy of Sciences*, 2008. DOI: [10.1073/pnas.0806977105](https://doi.org/10.1073/pnas.0806977105)
+**[25]** `radicchi2008universality`. Filippo Radicchi, Santo Fortunato, and Claudio Castellano. "Universality of citation distributions: Toward an objective measure of scientific impact." *Proceedings of the National Academy of Sciences*, 2008. DOI: [10.1073/pnas.0806977105](https://doi.org/10.1073/pnas.0806977105)
   <br/>*Cited for:* Universality of citation distributions
 
-**[26]** `redner1998citation` — S. Redner. "How popular is your paper? An empirical study of the citation distribution." *The European Physical Journal B*, 1998. DOI: [10.1007/s100510050359](https://doi.org/10.1007/s100510050359)
+**[26]** `redner1998citation`. S. Redner. "How popular is your paper? An empirical study of the citation distribution." *The European Physical Journal B*, 1998. DOI: [10.1007/s100510050359](https://doi.org/10.1007/s100510050359)
   <br/>*Cited for:* Citation distribution statistics
 
-**[27]** `walker2007citerank` — Dylan Walker, Huafeng Xie, Koon-Kiu Yan, and Sergei Maslov. "Ranking scientific publications using a model of network traffic." *Journal of Statistical Mechanics: Theory and Experiment*, 2007. DOI: [10.1088/1742-5468/2007/06/P06010](https://doi.org/10.1088/1742-5468/2007/06/P06010)
+**[27]** `walker2007citerank`. Dylan Walker, Huafeng Xie, Koon-Kiu Yan, and Sergei Maslov. "Ranking scientific publications using a model of network traffic." *Journal of Statistical Mechanics: Theory and Experiment*, 2007. DOI: [10.1088/1742-5468/2007/06/P06010](https://doi.org/10.1088/1742-5468/2007/06/P06010)
   <br/>*Cited for:* CiteRank: finding scientific gems
 
-**[28]** `waltman2016review` — Ludo Waltman. "A review of the literature on citation impact indicators." *Journal of Informetrics*, 2016. DOI: [10.1016/j.joi.2016.02.007](https://doi.org/10.1016/j.joi.2016.02.007)
+**[28]** `waltman2016review`. Ludo Waltman. "A review of the literature on citation impact indicators." *Journal of Informetrics*, 2016. DOI: [10.1016/j.joi.2016.02.007](https://doi.org/10.1016/j.joi.2016.02.007)
   <br/>*Cited for:* Review of citation impact indicators
 
-**[29]** `wang2020mag` — Kuansan Wang, Z. Shen, Chiyuan Huang, Chieh‐Han Wu, Yuxiao Dong, and Anshul Kanakia. "Microsoft Academic Graph: When experts are not enough." *Quantitative Science Studies*, 2020. DOI: [10.1162/qss_a_00021](https://doi.org/10.1162/qss_a_00021)
+**[29]** `wang2020mag`. Kuansan Wang, Z. Shen, Chiyuan Huang, Chieh‐Han Wu, Yuxiao Dong, and Anshul Kanakia. "Microsoft Academic Graph: When experts are not enough." *Quantitative Science Studies*, 2020. DOI: [10.1162/qss_a_00021](https://doi.org/10.1162/qss_a_00021)
   <br/>*Cited for:* Microsoft Academic Graph

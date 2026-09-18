@@ -1,4 +1,4 @@
-# Appendix B — Configuration Reference
+# Appendix B: Configuration Reference
 
 All settings are read by `pydantic-settings` from environment variables or a
 `.env` file.
@@ -59,7 +59,7 @@ recommends 100 or below: 200 takes around 3.5 minutes and exceeds NFR-1.
 | `enable_grobid` | `ENABLE_GROBID` | `true` | **Flag only; no PDF parsing is implemented** (§7.4) |
 | `grobid_url` | `GROBID_URL` | `http://localhost:8070` | Unused |
 | `enable_neo4j` | `ENABLE_NEO4J` | `false` | **Flag only; no Neo4j integration is implemented** |
-| `neo4j_uri` / `neo4j_user` | — | — | Unused |
+| `neo4j_uri` / `neo4j_user` | n/a | n/a | Unused |
 | `neo4j_password` | `NEO4J_PASSWORD` | unset | No default; required before enabling the profile |
 
 The GROBID and Neo4j flags are configuration remnants of capabilities specified

@@ -1,4 +1,4 @@
-# Appendix D — Gold Standard Annotations
+# Appendix D: Gold Standard Annotations
 
 The complete annotated set used in Chapter 6. Each label was assigned by
 reading the abstract retrieved through the same providers the pipeline
@@ -23,15 +23,15 @@ population is stated and the correct behaviour is to extract nothing.
 | 9 | `10.1056/nejmoa2001316` | epidemiological | 425 | 425 | ok |
 | 10 | `10.1016/s2213-2600(20)30079-5` | cohort | 52 | 52 | ok |
 | 11 | `10.1016/s1473-3099(20)30243-7` | modelling | 1334 | 1334 | ok |
-| 12 | `10.1056/nejmoa2001017` | virus_characterisation | — | — | ok |
-| 13 | `10.1038/s41586-020-2012-7` | virus_characterisation | — | — | ok |
-| 14 | `10.1136/bmj.m1328` | systematic_review | — | 27 | **miss** |
-| 15 | `10.1038/s41577-020-0311-8` | review | — | — | ok |
-| 16 | `10.1164/rccm.201908-1581st` | guideline | — | — | ok |
-| 17 | `10.1056/nejmra2026131` | review | — | — | ok |
-| 18 | `10.1038/s41586-021-03819-2` | computational | — | — | ok |
-| 19 | `10.1038/nature14539` | review | — | — | ok |
-| 20 | `10.1145/3065386` | computational | — | — | ok |
+| 12 | `10.1056/nejmoa2001017` | virus_characterisation | none | none | ok |
+| 13 | `10.1038/s41586-020-2012-7` | virus_characterisation | none | none | ok |
+| 14 | `10.1136/bmj.m1328` | systematic_review | none | 27 | **miss** |
+| 15 | `10.1038/s41577-020-0311-8` | review | none | none | ok |
+| 16 | `10.1164/rccm.201908-1581st` | guideline | none | none | ok |
+| 17 | `10.1056/nejmra2026131` | review | none | none | ok |
+| 18 | `10.1038/s41586-021-03819-2` | computational | none | none | ok |
+| 19 | `10.1038/nature14539` | review | none | none | ok |
+| 20 | `10.1145/3065386` | computational | none | none | ok |
 
 ## D.2 Annotations with supporting evidence
 
