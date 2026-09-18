@@ -182,3 +182,7 @@ landing-page/.tanstack/
 landing-page/.nitro/
 landing-page/.wrangler/
 landing-page/.dev.vars
+
+# Rendered thesis outputs (regenerate with scripts/build_thesis.py + pandoc)
+thesis/CiteGraph-NLP-Thesis.pdf
+thesis/CiteGraph-NLP-Thesis.docx
