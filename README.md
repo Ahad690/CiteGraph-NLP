@@ -634,6 +634,34 @@ services. The optional Neo4j profile has no default password and binds only to
 loopback; set `NEO4J_PASSWORD` before enabling it.
 
 ---
+## Demo
+
+### Frontend
+- **Live:** https://citegraph-nlp.pages.dev
+- **Local:** `http://localhost:5173`
+
+### API
+- **Live docs:** https://citegraph-api.penora.us/docs
+- **Local docs:** `http://localhost:8000/docs`
+
+### Health Check
+- https://citegraph-api.penora.us/health
+
+### Sample DOI
+- `10.1038/s41467-021-23458-5`
+
+### Paper Used in Demo
+- **Title:** [Nature Communications](https://www.nature.com/articles/s41467-021-23458-5)
+
+### Demo Video
+- [docs/submission/NLP_Project_Demo.mp4](https://github.com/Ahad690/CiteGraph-NLP/blob/main/docs/submission/NLP_Project_Demo.mp4)
+
+> The earlier result-snapshot link pointed at a run id stored on the previous
+> server, which was decommissioned; run ids are not portable between hosts, so
+> generate a fresh run to share a snapshot.
+
+---
+
 
 ## Limitations
 
