@@ -3173,9 +3173,15 @@ pandoc thesis/CiteGraph-NLP-Thesis.md \
   -o thesis/CiteGraph-NLP-Thesis.pdf \
   --pdf-engine=weasyprint \
   -f markdown-smart \
-  --toc --toc-depth=3 \
-  --number-sections
+  --toc --toc-depth=3
 ```
+
+Do not add `--number-sections`. Every section in this thesis already carries
+its number in the heading text, and the cross-references throughout the body
+point at those numbers. Pandoc's automatic numbering is added on top rather
+than replacing them, so headings render with two numbers ("2.1 1.1 Background
+and Motivation"), and its count is offset by one because it treats the front
+matter as the first chapter.
 
 `-f markdown-smart` matters. Pandoc's smart typography rewrites `--` as an en
 dash and `---` as an em dash, so the rendered PDF ends up containing dashes the
@@ -3197,8 +3203,8 @@ With a LaTeX distribution instead:
 ```bash
 pandoc thesis/CiteGraph-NLP-Thesis.md \
   -o thesis/CiteGraph-NLP-Thesis.pdf \
+  -f markdown-smart \
   --toc --toc-depth=3 \
-  --number-sections \
   -V documentclass=report \
   -V papersize=a4 \
   -V fontsize=11pt \
