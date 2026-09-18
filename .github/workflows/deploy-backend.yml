@@ -1,17 +1,22 @@
 name: Deploy Backend to Hetzner
 
 on:
+  # Manual only. The hardcoded HETZNER_HOST below (46.225.8.77) was deleted on
+  # 2026-05-31 and CiteGraph is not currently deployed anywhere, so an
+  # automatic push trigger would fail on every commit that touches src/.
+  # Restore the push block once a live target host exists (and set the host
+  # from a secret rather than hardcoding it).
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - 'src/**'
-      - 'requirements.txt'
-      - 'Dockerfile'
-      - '.dockerignore'
-      - 'scripts/deploy_to_hetzner.ps1'
-      - '.github/workflows/deploy-backend.yml'
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - 'src/**'
+  #     - 'requirements.txt'
+  #     - 'Dockerfile'
+  #     - '.dockerignore'
+  #     - 'scripts/deploy_to_hetzner.ps1'
+  #     - '.github/workflows/deploy-backend.yml'
 
 jobs:
   deploy:
