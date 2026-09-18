@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import re
 from typing import Dict, List, Optional, Set
 
 from citegraph.models.paper import Paper, PaperQuery
@@ -26,6 +27,10 @@ class CitationTraversal:
     MAX_CONCURRENT_EXPANSIONS = 5
     # Concurrent fallback resolutions (only for ids the batch endpoints missed).
     MAX_CONCURRENT_RESOLUTIONS = 8
+    # Title-prefix length used to spot the same work under two identifiers,
+    # and the shortest normalised title that may be matched that way.
+    TITLE_KEY_PREFIX = 80
+    MIN_TITLE_KEY_LENGTH = 25
     # Share of the paper budget reserved for forward citations when both
     # directions are active. Backward traversal keeps the rest, because
     # foundational-paper ranking depends on reaching far enough back.
@@ -40,15 +45,52 @@ class CitationTraversal:
         self.edges: List[CitationEdge] = []
         self.visited: Set[str] = set()
         self.warnings: List[str] = []
+        self.duplicates_merged = 0
 
         # Any identifier we have ever seen -> canonical paper_id.
         self._aliases: Dict[str, str] = {}
+        # Normalised title prefix -> canonical paper_id, for records that
+        # describe one work under two different identifiers.
+        self._title_keys: Dict[str, str] = {}
         # source/target pairs already emitted, for O(1) edge dedup.
         self._edge_keys: Set[tuple] = set()
         # Ids we tried and failed to resolve, so we do not retry them each level.
         self._unresolvable: Set[str] = set()
 
     # ---------------------------------------------------------------- ids ---
+
+    @classmethod
+    def title_key(cls, title: Optional[str]) -> Optional[str]:
+        """A comparison key for detecting the same work under two identifiers.
+
+        Sources occasionally hold two records for one article under different
+        DOIs -- typically the clean version and one with front matter merged
+        into the title ("...coronavirus infection1 1The authors thank..."). The
+        titles share a long prefix, so compare a normalised prefix rather than
+        the whole string. Returns None for titles too short to match safely.
+        """
+        if not title:
+            return None
+        normalised = " ".join(re.sub(r"[^a-z0-9]+", " ", title.lower()).split())
+        if len(normalised) < cls.MIN_TITLE_KEY_LENGTH:
+            return None
+        return normalised[: cls.TITLE_KEY_PREFIX]
+
+    def _duplicate_of(self, paper: Paper) -> Optional[str]:
+        """paper_id of an already-stored record that is the same work, if any."""
+        key = self.title_key(paper.title)
+        if not key:
+            return None
+        existing_id = self._title_keys.get(key)
+        if not existing_id or existing_id == paper.paper_id:
+            return None
+
+        existing = self.papers.get(existing_id)
+        # Publication years must agree when both are known, so two genuinely
+        # different papers that happen to open alike are not merged.
+        if existing and existing.year and paper.year and existing.year != paper.year:
+            return None
+        return existing_id
 
     def _register(self, paper: Paper) -> None:
         """Store a paper and map every identifier it carries onto its paper_id."""
@@ -57,6 +99,9 @@ class CitationTraversal:
         for raw in (paper.paper_id, paper.doi, paper.pmid, paper.pmcid, paper.openalex_id):
             if raw:
                 self._aliases[IdCanonicalizer.canonicalize(raw)] = paper.paper_id
+        key = self.title_key(paper.title)
+        if key:
+            self._title_keys.setdefault(key, paper.paper_id)
 
     def _alias(self, raw_id: str, paper_id: str) -> None:
         cid = IdCanonicalizer.canonicalize(raw_id)
@@ -187,6 +232,19 @@ class CitationTraversal:
             """Register a resolved paper, or alias it onto one we already have."""
             resolved.add(raw_id)
             if paper.paper_id not in self.papers:
+                # Same work under a second identifier: alias it instead of
+                # storing a second node. This runs before the budget check, so
+                # a duplicate never consumes one of the max_papers slots.
+                duplicate_of = self._duplicate_of(paper)
+                if duplicate_of:
+                    self.duplicates_merged += 1
+                    logger.debug(
+                        "Merging duplicate record %s into %s", paper.paper_id, duplicate_of
+                    )
+                    self._alias(paper.paper_id, duplicate_of)
+                    self._alias(raw_id, duplicate_of)
+                    return
+
                 if len(self.papers) >= max_papers:
                     return
                 self._register(paper)

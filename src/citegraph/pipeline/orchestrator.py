@@ -75,6 +75,16 @@ class PipelineOrchestrator:
         foundational_papers = analytics.rank_foundational_papers()
         ranked_paths = analytics.rank_paths(seed_paper.paper_id)
 
+        # Surface what the traversal had to work around, so a sparse graph can
+        # be explained (few citations vs. records merged vs. lookups that failed).
+        warnings = list(traversal.warnings)
+        if traversal.duplicates_merged:
+            warnings.append(
+                f"Merged {traversal.duplicates_merged} duplicate record(s): the same "
+                "work was indexed under more than one identifier. Merging happens "
+                "before the paper limit is applied, so it does not reduce the graph size."
+            )
+
         return RunResult(
             run_id=run_id,
             seed_paper_id=seed_paper.paper_id,
@@ -85,6 +95,6 @@ class PipelineOrchestrator:
             citation_edges=weighted_edges,
             ranked_foundational_papers=foundational_papers,
             ranked_paths=ranked_paths,
-            warnings=[],
+            warnings=warnings,
             created_at=datetime.utcnow()
         )
