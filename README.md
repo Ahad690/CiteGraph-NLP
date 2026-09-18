@@ -60,12 +60,13 @@ CiteGraph-NLP starts from a research paper identifier and builds a structured ci
 ### Pipeline Stages
 1. **Input Normalization** — Canonicalize identifiers (DOI/PMID/PMCID/OpenAlex ID)
 2. **Metadata Resolution** — Query OpenAlex, Crossref, and EuropePMC in parallel, merge results
-3. **Citation Traversal** — BFS-based backward (references) and forward (citations) traversal with configurable depth limits
-4. **Population Extraction** — Regex-based extraction of sample sizes from abstracts/text with semantic classification
-5. **Population Resolution** — Select best N_eff candidate per paper using confidence and type priority scoring
-6. **Edge Weighting** — Weight citation edges by normalized population evidence + journal score + confidence
-7. **Graph Analytics** — PageRank-based foundational paper ranking and citation path ranking
-8. **Export** — Results available as JSON, CSV, Markdown report, and graph visualization data
+3. **Citation Traversal** — Level-by-level BFS over backward references and forward citations, with batched metadata lookups. Records describing the same work under different identifiers are merged before the paper budget is applied, so deduplication never costs graph slots
+4. **Abstract Backfill** — Papers with no OpenAlex abstract are topped up from Europe PMC in one batched query; population evidence can only be read from text
+5. **Population Extraction** — Regex-based extraction of sample sizes from abstracts with semantic classification
+6. **Population Resolution** — Select best N_eff candidate per paper using confidence and type priority scoring
+7. **Edge Weighting** — Weight citation edges by normalized population evidence + journal score + confidence
+8. **Graph Analytics** — PageRank-based foundational paper ranking and citation path ranking
+9. **Export** — Results available as JSON, CSV, Markdown report, and graph visualization data
 
 ### Population Semantic Types
 | Type | Description |
@@ -77,16 +78,16 @@ CiteGraph-NLP starts from a research paper identifier and builds a structured ci
 | `ARM_SIZE` | Individual arm/group size |
 | `SCREENED` | Patients screened |
 | `COMPLETERS` | Patients who completed |
-| `EVENT_COUNT` | Event/outcome counts |
+| `EVENT_COUNT` | Event/outcome counts — *defined in the model, no extraction pattern emits it yet* |
 | `FOLLOWUP_COUNT` | Follow-up counts |
-| `UNKNOWN_NUMERIC` | Unclassified numbers |
+| `UNKNOWN_NUMERIC` | Unclassified numbers — *defined in the model, no extraction pattern emits it yet* |
 
 ---
 
 ## Tech Stack
 
 ### Backend
-- Python 3.11+
+- Python 3.10+ (the Docker image is `python:3.10-slim`)
 - FastAPI (async REST API)
 - Pydantic v2 (models & validation)
 - httpx (async HTTP client for API calls)
@@ -104,7 +105,7 @@ CiteGraph-NLP starts from a research paper identifier and builds a structured ci
 ### Dashboard / Frontend
 - React + TypeScript + Vite
 - Tailwind CSS + shadcn/ui
-- TanStack Query, React Router
+- TanStack Query, TanStack Router
 - Cytoscape.js graph visualization
 
 ---
@@ -125,7 +126,8 @@ citegraph-nlp/
 │   └── citegraph/
 │       ├── api/
 │       │   ├── main.py           # FastAPI app, CORS, router registration
-│       │   └── routes.py         # All API endpoints
+│       │   ├── routes.py         # All API endpoints
+│       │   └── security.py       # Optional API-key gate (API_KEY)
 │       ├── models/
 │       │   ├── paper.py          # Paper, PaperQuery
 │       │   ├── study.py          # Study
@@ -133,9 +135,10 @@ citegraph-nlp/
 │       │   ├── citation.py       # CitationEdge
 │       │   └── run.py            # RunResult
 │       ├── input/
-│       │   └── normalizer.py     # InputNormalizer
+│       │   ├── normalizer.py     # InputNormalizer
+│       │   └── url_resolver.py   # URL -> identifier, with SSRF guard
 │       ├── providers/
-│       │   ├── base.py           # MetadataProvider protocol, ProviderResult
+│       │   ├── base.py           # Provider protocol, pooled HTTP client, retry policy
 │       │   ├── openalex.py       # OpenAlex API client
 │       │   ├── crossref.py       # Crossref API client
 │       │   └── europe_pmc.py     # Europe PMC API client
@@ -165,11 +168,16 @@ citegraph-nlp/
 │       └── logging_config.py     # Logging setup
 │
 ├── frontend/                     # React dashboard
-├── tests/
+├── tests/                        # 102 tests
 │   ├── conftest.py
+│   ├── test_add_citegraph_route.py
+│   ├── test_api_comprehensive.py
 │   ├── test_input_normalizer.py
 │   ├── test_population_patterns.py
-│   └── test_api_comprehensive.py
+│   ├── test_ranking.py
+│   ├── test_sqlite_store.py
+│   ├── test_task_manager.py
+│   └── test_url_resolver.py
 │
 ├── scripts/
 ├── data/
@@ -188,8 +196,8 @@ citegraph-nlp/
 ### 1. Clone & Virtual Environment
 
 ```bash
-git clone https://github.com/your-username/citegraph-nlp.git
-cd citegraph-nlp
+git clone https://github.com/Ahad690/CiteGraph-NLP.git
+cd CiteGraph-NLP
 python -m venv .venv
 # Activate:
 # macOS/Linux: source .venv/bin/activate
@@ -540,6 +548,15 @@ All configuration is in `src/citegraph/config.py` via `pydantic-settings`. Overr
 | `weight_alpha` | `WEIGHT_ALPHA` | `0.75` | Population evidence weight |
 | `weight_beta` | `WEIGHT_BETA` | `0.25` | Journal score weight |
 | `n_reference` | `N_REFERENCE` | `100000` | N-score normalization reference |
+| `enable_pubmed` | `ENABLE_PUBMED` | `False` | Reserved; no PubMed provider is wired up |
+| `enable_semantic_scholar` | `ENABLE_SEMANTIC_SCHOLAR` | `False` | Reserved; no Semantic Scholar provider is wired up |
+| `enable_clinical_trials` | `ENABLE_CLINICAL_TRIALS` | `False` | Reserved; no ClinicalTrials provider is wired up |
+| `enable_unpaywall` | `ENABLE_UNPAYWALL` | `False` | Reserved; no Unpaywall provider is wired up |
+| `semantic_scholar_api_key` | `SEMANTIC_SCHOLAR_API_KEY` | `None` | Reserved for a future provider |
+| `ncbi_api_key` | `NCBI_API_KEY` | `None` | Reserved for a future provider |
+| `neo4j_uri` | `NEO4J_URI` | `bolt://localhost:7687` | Neo4j endpoint (optional profile) |
+| `neo4j_user` | `NEO4J_USER` | `neo4j` | Neo4j user (optional profile) |
+| `neo4j_password` | `NEO4J_PASSWORD` | `None` | Required before enabling the neo4j profile; no default |
 
 ---
 
