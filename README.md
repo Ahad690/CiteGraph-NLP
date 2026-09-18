@@ -374,47 +374,46 @@ Response:
 
 All export endpoints are available once a run reaches `completed` status.
 
-#### JSON Export
-```http
-GET /api/runs/{run_id}/export/json
-```
-Returns the full `RunResult` as raw JSON.
+Every export is returned as a downloadable file with a `Content-Disposition`
+header, not wrapped in a JSON envelope, so saving the response body gives a
+file that opens directly in Excel, a markdown viewer, or Gephi.
 
-#### CSV Export
-```http
-GET /api/runs/{run_id}/export/csv
-```
-Returns a CSV string with paper metadata and N_eff:
-```json
-{
-  "csv": "paper_id,title,year,journal,n_eff\n..."
-}
-```
+| Endpoint | Type | Contents |
+|----------|------|----------|
+| `GET /api/runs/{run_id}/export/json` | `application/json` | Full `RunResult`, indented |
+| `GET /api/runs/{run_id}/export/csv` | `text/csv` | One row per paper: ids, authors, journal, N_eff, population status and confidence, in/out degree, foundational rank, seed flag |
+| `GET /api/runs/{run_id}/export/edges.csv` | `text/csv` | One row per citation edge with every weight component |
+| `GET /api/runs/{run_id}/export/markdown` | `text/markdown` | Report: seed details, summary table, foundational ranking, population evidence, top citation paths |
+| `GET /api/runs/{run_id}/export/graphml` | `application/xml` | GraphML for Gephi / yEd / Cytoscape Desktop |
 
-#### Markdown Report
-```http
-GET /api/runs/{run_id}/export/markdown
-```
-Returns a formatted markdown analysis report:
-```json
-{
-  "report": "# CiteGraph-NLP Analysis Report\n..."
-}
-```
+Both CSV exports are written with the `csv` module (so titles containing
+commas, quotes or newlines stay in one field) and carry a UTF-8 BOM so Excel
+renders accented author names correctly.
 
 ---
 
 ## Edge Weighting Formula
 
-Citation edges are weighted using population evidence and confidence:
+Citation edges are weighted by population evidence, scaled by how confident
+the extraction was:
 
 ```
-N_score = log1p(N_eff) / log1p(N_reference)
-base_weight = alpha * N_score + beta * journal_score
-final_weight = base_weight * pop_confidence * edge_confidence
+N_score       = log1p(N_eff) / log1p(N_reference)
+evidence_term = alpha * N_score * pop_confidence
+final_weight  = (evidence_term + beta * journal_score) * edge_confidence
 ```
 
 Defaults: `alpha = 0.75`, `beta = 0.25`, `N_reference = 100000`
+
+Confidence scales the **evidence term only**. The journal term is structural
+and always applies, so a paper with no extractable population still produces a
+usable edge weight (`0.25 * 0.5 = 0.125`) rather than zero. Multiplying the
+whole weight by confidence collapsed every edge to exactly `0.0` for any paper
+outside clinical-trial phrasing, which silently reduced the ranking to
+unweighted PageRank.
+
+`base_weight` (`alpha * N_score + beta * journal_score`) is still reported on
+each edge as the unconfidenced score.
 
 ---
 

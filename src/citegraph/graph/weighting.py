@@ -27,12 +27,19 @@ class WeightCalculator:
             
             # For now, journal score is neutral fallback as per PRD
             journal_score = 0.5
-            
+
             base_weight = (self.alpha * n_score) + (self.beta * journal_score)
-            
-            # Adjust by confidence
+
+            # Confidence scales the *population evidence* only. Multiplying the
+            # whole base weight by it collapsed every edge to exactly 0.0 for any
+            # paper where extraction found nothing (confidence is 0.0 for a
+            # "missing" resolution) -- which is every paper outside clinical-trial
+            # phrasing. The journal term is structural and always applies, so an
+            # edge without population evidence keeps a small uniform weight
+            # instead of vanishing.
             pop_confidence = target_res.confidence if target_res else 0.5
-            final_weight = base_weight * pop_confidence * edge.confidence
+            evidence_term = self.alpha * n_score * pop_confidence
+            final_weight = (evidence_term + (self.beta * journal_score)) * edge.confidence
             
             edge.n_score = n_score
             edge.journal_score = journal_score

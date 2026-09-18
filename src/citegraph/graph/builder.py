@@ -31,7 +31,9 @@ class GraphBuilder:
                 edge.target_paper_id,
                 relation=edge.relation,
                 confidence=edge.confidence,
-                weight=edge.final_weight or 1.0,
+                # `or 1.0` would silently rewrite a genuine 0.0 weight to 1.0,
+                # which hid the fact that every edge was being zeroed out.
+                weight=edge.final_weight if edge.final_weight is not None else 1.0,
                 providers=",".join(edge.providers)
             )
 

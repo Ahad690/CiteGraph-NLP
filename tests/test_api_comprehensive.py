@@ -3,6 +3,8 @@ import respx
 import httpx
 import json
 import asyncio
+import csv
+import io
 from datetime import datetime, timezone
 from typing import AsyncGenerator
 
@@ -723,7 +725,8 @@ class TestExport:
         """JSON export must round-trip the full RunResult."""
         response = await client.get(f"/api/runs/{completed_run_id}/export/json")
         assert response.status_code == 200, response.text
-        data = response.json()
+        assert "attachment" in response.headers["content-disposition"]
+        data = json.loads(response.content.decode("utf-8"))
         assert data["run_id"] == completed_run_id
         assert data["seed_paper_id"] == "P_SEED"
         assert len(data["papers"]) == 2
@@ -734,28 +737,68 @@ class TestExport:
         assert data["ranked_foundational_papers"][0]["paper_id"] == "P_CITED"
 
     async def test_export_csv(self, client, completed_run_id):
-        """CSV export must contain the canonical header plus one row per paper."""
+        """CSV export must be a real CSV file, parseable by the csv module."""
         response = await client.get(f"/api/runs/{completed_run_id}/export/csv")
         assert response.status_code == 200, response.text
-        data = response.json()
-        assert "csv" in data
-        csv_text = data["csv"]
-        assert csv_text.startswith("paper_id,title,year,journal,n_eff")
-        # Header + 2 paper rows
-        lines = csv_text.strip().split("\n")
-        assert len(lines) == 3
-        # n_eff for seed (500) and blank for cited
-        assert "500" in csv_text
-        assert "P_SEED" in csv_text
-        assert "P_CITED" in csv_text
+        assert response.headers["content-type"].startswith("text/csv")
+        disposition = response.headers["content-disposition"]
+        assert "attachment" in disposition
+        assert f"citegraph-{completed_run_id}.csv" in disposition
+
+        text = response.content.decode("utf-8-sig")  # strip the Excel BOM
+        rows = list(csv.reader(io.StringIO(text)))
+        assert rows[0][:5] == ["paper_id", "title", "authors", "year", "journal"]
+        assert len(rows) == 3, "header + one row per paper"
+        body = " ".join(" ".join(r) for r in rows[1:])
+        assert "P_SEED" in body and "P_CITED" in body
+        assert "500" in body
+
+    async def test_export_csv_escapes_special_characters(self, client):
+        """A comma, quote or embedded newline must not break the row count."""
+        run_id = "csv-escape-run"
+        result = _build_completed_result(run_id)
+        result.papers[0].title = 'Trial: "A, B" study' + chr(10) + 'with a newline'
+        result.papers[0].journal = 'Journal of "Quotes", Vol 2'
+        await store.create_run(run_id)
+        await store.save_result(run_id, result)
+
+        response = await client.get(f"/api/runs/{run_id}/export/csv")
+        assert response.status_code == 200
+        rows = list(csv.reader(io.StringIO(response.content.decode("utf-8-sig"))))
+        assert len(rows) == 3, f"escaping broke the row count: got {len(rows)}"
+        assert "A, B" in rows[1][1]
+        assert "Quotes" in rows[1][4]
+
+    async def test_export_edges_csv(self, client, completed_run_id):
+        """Edges are exported separately; a paper list cannot describe the graph."""
+        response = await client.get(f"/api/runs/{completed_run_id}/export/edges.csv")
+        assert response.status_code == 200, response.text
+        rows = list(csv.reader(io.StringIO(response.content.decode("utf-8-sig"))))
+        assert rows[0][:4] == [
+            "source_paper_id", "source_title", "target_paper_id", "target_title",
+        ]
+        assert len(rows) == 2, "header + one row per edge"
+        assert rows[1][0] == "P_SEED" and rows[1][2] == "P_CITED"
+
+    async def test_export_graphml(self, client, completed_run_id):
+        """GraphML was offered by the frontend but had no route (404)."""
+        import xml.etree.ElementTree as ET
+
+        response = await client.get(f"/api/runs/{completed_run_id}/export/graphml")
+        assert response.status_code == 200, response.text
+        assert "attachment" in response.headers["content-disposition"]
+        root = ET.fromstring(response.content)
+        assert root.tag.endswith("graphml")
+        text = response.content.decode("utf-8")
+        assert "P_SEED" in text and "P_CITED" in text
 
     async def test_export_markdown(self, client, completed_run_id):
         """Markdown export must be a valid report mentioning run + foundational papers."""
         response = await client.get(f"/api/runs/{completed_run_id}/export/markdown")
         assert response.status_code == 200, response.text
-        data = response.json()
-        assert "report" in data
-        report = data["report"]
+        assert response.headers["content-type"].startswith("text/markdown")
+        assert "attachment" in response.headers["content-disposition"]
+        report = response.content.decode("utf-8")
         assert "CiteGraph-NLP" in report
         assert completed_run_id in report
         assert "P_SEED" in report
@@ -911,18 +954,23 @@ class TestDatasetExport:
         # /export/json
         json_resp = await client.get(f"/api/runs/{completed_run_id}/export/json")
         assert json_resp.status_code == 200
-        jdata = json_resp.json()
+        jdata = json.loads(json_resp.content.decode("utf-8"))
         assert jdata["run_id"] == completed_run_id
 
-        # /export/csv
+        # /export/csv — a real CSV body, not a JSON envelope
         csv_resp = await client.get(f"/api/runs/{completed_run_id}/export/csv")
         assert csv_resp.status_code == 200
-        assert "paper_id,title" in csv_resp.json()["csv"]
+        assert "paper_id" in csv_resp.content.decode("utf-8-sig")
 
         # /export/markdown
         md_resp = await client.get(f"/api/runs/{completed_run_id}/export/markdown")
         assert md_resp.status_code == 200
-        assert "CiteGraph-NLP" in md_resp.json()["report"]
+        assert "CiteGraph-NLP" in md_resp.content.decode("utf-8")
+
+        # /export/graphml
+        gml_resp = await client.get(f"/api/runs/{completed_run_id}/export/graphml")
+        assert gml_resp.status_code == 200
+        assert b"graphml" in gml_resp.content
 
     @respx.mock
     async def test_live_pipeline_post_then_terminal_status(self, client):
