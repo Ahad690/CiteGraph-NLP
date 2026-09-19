@@ -15,7 +15,7 @@ PDF converted from the Word file.
 |------|-------|--------------|-----------|-----------|
 | `1-current-as-committed.pdf` | 108 | **no** | Times New Roman 12pt | Pandoc's default web styling, printed |
 | `2-academic-serif.pdf` | 119 | yes | Times New Roman 11.5pt | Conventional university thesis |
-| `3-modern-report.pdf` | 112 | yes | Cambria 11pt | Technical report |
+| `3-modern-report.pdf` | 113 | yes | Cambria 11pt | Technical report |
 
 **1 — current.** What is committed in `thesis/CiteGraph-NLP-Thesis.pdf`. It is
 Pandoc's browser stylesheet sent to a printer: ragged-right text, no page
@@ -66,6 +66,9 @@ python scripts/render_thesis.py --docx
 
 `scripts/render_thesis.py` applies `thesis/print.css` and writes the tracked
 PDF and DOCX. `scripts/render_variants.py` regenerates this folder.
+
+All three PDFs are kept in the repository rather than treated as throwaway
+output, so any of them can be handed over without a rebuild.
 
 The two `*.docx` files are the earlier comparison between Pandoc's DOCX writer
 and the handwrite-studio pipeline, kept here for reference.

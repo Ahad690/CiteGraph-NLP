@@ -1,8 +1,10 @@
 install:
 	pip install -r requirements.txt
+	pip install -e .
+	python -m spacy download en_core_web_sm
 
 run-api:
-	uvicorn src.citegraph.api.main:app --reload
+	uvicorn citegraph.api.main:app --reload
 
 run-frontend:
 	npm --prefix frontend run dev

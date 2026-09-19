@@ -103,7 +103,23 @@ biomedical NLP, PageRank, evidence synthesis, scholarly APIs
 
 ## Acknowledgements
 
-*[to be completed by the authors]*
+We are grateful to **Sir Rooshan Saleem**, who teaches Natural Language
+Processing, for the idea this project started from and for telling us to build
+it. The suggestion that citation graphs could be weighted by the evidence the
+cited papers actually report, rather than by how often they are cited, is the
+premise the whole system rests on. Without that push there would have been no
+prototype to carry into the Final Year Project.
+
+We thank our supervisor, **Dr. Amna Ikram**, for guiding us through every stage
+of this FYP. Her direction shaped the scope, the evaluation and the decision to
+report the system's failures as carefully as its successes. Chapter 6 states
+where the system falls short of the original proposal, and that it does so at
+all is a result of her insistence that measured results matter more than
+claimed ones.
+
+We also thank the maintainers of OpenAlex, Crossref and Europe PMC, whose open
+APIs made this work possible at no cost, and the reviewers of our interim
+demonstrations for questions that sent us back to the measurements.
 
 ---
 

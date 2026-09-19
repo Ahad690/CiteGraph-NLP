@@ -32,6 +32,12 @@ dependencies = [
     "rich",
 ]
 
+# The package lives under src/, so tell setuptools where to look. Without
+# this, `pip install -e .` finds nothing and `uvicorn citegraph.api.main:app`
+# fails with ModuleNotFoundError even though the code is right there.
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"

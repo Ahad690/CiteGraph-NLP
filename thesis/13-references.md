@@ -19,7 +19,7 @@ All 29 entries resolve as of the verification run.
 **[4]** `chen2007cocitation`. Chaomei Chen. "CiteSpace II: Detecting and visualizing emerging trends and transient patterns in scientific literature." *Journal of the American Society for Information Science and Technology*, 2005. DOI: [10.1002/asi.20317](https://doi.org/10.1002/asi.20317)
   <br/>*Cited for:* CiteSpace / co-citation visual analytics
 
-**[5]** `chen2007gems`. P. Chen, H. Xie, S. Maslov, and S. Redner. "Finding scientific gems with Google’s PageRank algorithm." *Journal of Informetrics*, 2007. DOI: [10.1016/j.joi.2006.06.001](https://doi.org/10.1016/j.joi.2006.06.001)
+**[5]** `chen2007gems`. P. Chen, Haoxuan Xie, Sergei Maslov, and S. Redner. "Finding scientific gems with Google’s PageRank algorithm." *Journal of Informetrics*, 2006. DOI: [10.1016/j.joi.2006.06.001](https://doi.org/10.1016/j.joi.2006.06.001)
   <br/>*Cited for:* Finding scientific gems with PageRank on a citation network
 
 **[6]** `europepmc2015`. Anon.. "Europe PMC: a full-text literature database for the life sciences and platform for innovation." *Nucleic Acids Research*, 2014. DOI: [10.1093/nar/gku1061](https://doi.org/10.1093/nar/gku1061)
@@ -46,7 +46,7 @@ All 29 entries resolve as of the verification run.
 **[13]** `jin2018pico`. Di Jin, and Peter Szolovits. "PICO Element Detection in Medical Text via Long Short-Term Memory Neural Networks." *Proceedings of the BioNLP 2018 workshop*, 2018. DOI: [10.18653/v1/W18-2308](https://doi.org/10.18653/v1/W18-2308)
   <br/>*Cited for:* PICO element detection
 
-**[14]** `kim2003genia`. J.-D. Kim, T. Ohta, Y. Tateisi, and J. Tsujii. "GENIA corpus—a semantically annotated corpus for bio-textmining." *Bioinformatics*, 2003. DOI: [10.1093/bioinformatics/btg1023](https://doi.org/10.1093/bioinformatics/btg1023)
+**[14]** `kim2003genia`. JD Kim, Tomoko Ohta, Yuka Tateisi, and J Tsujii. "GENIA corpus—a semantically annotated corpus for bio-textmining." *Bioinformatics*, 2003. DOI: [10.1093/bioinformatics/btg1023](https://doi.org/10.1093/bioinformatics/btg1023)
   <br/>*Cited for:* GENIA corpus for biomedical IE
 
 **[15]** `lee2020biobert`. Jinhyuk Lee et al.. "BioBERT: a pre-trained biomedical language representation model for biomedical text mining." *Bioinformatics*, 2019. DOI: [10.1093/bioinformatics/btz682](https://doi.org/10.1093/bioinformatics/btz682)
@@ -64,7 +64,7 @@ All 29 entries resolve as of the verification run.
 **[19]** `martin2021oadoi`. Heather Piwowar et al.. "The state of OA: a large-scale analysis of the prevalence and impact of Open Access articles." *PeerJ*, 2018. DOI: [10.7717/peerj.4375](https://doi.org/10.7717/peerj.4375)
   <br/>*Cited for:* Unpaywall / open access state
 
-**[20]** `moher2009prisma`. David Moher, Alessandro Liberati, Jennifer Tetzlaff, Douglas G. Altman, and The PRISMA Group. "Preferred Reporting Items for Systematic Reviews and Meta-Analyses: The PRISMA Statement." *PLoS Medicine*, 2009. DOI: [10.1371/journal.pmed.1000097](https://doi.org/10.1371/journal.pmed.1000097)
+**[20]** `moher2009prisma`. David Moher, Alessandro Liberati, Jennifer Tetzlaff, and Douglas G. Altman. "Preferred Reporting Items for Systematic Reviews and Meta-Analyses: The PRISMA Statement." *PLoS Medicine*, 2009. DOI: [10.1371/journal.pmed.1000097](https://doi.org/10.1371/journal.pmed.1000097)
   <br/>*Cited for:* PRISMA reporting guideline
 
 **[21]** `neumann2019scispacy`. Mark Neumann, Daniel King, Iz Beltagy, and Waleed Ammar. "ScispaCy: Fast and Robust Models for Biomedical Natural Language Processing." *Proceedings of the 18th BioNLP Workshop and Shared Task*, 2019. DOI: [10.18653/v1/W19-5034](https://doi.org/10.18653/v1/W19-5034)
@@ -91,5 +91,5 @@ All 29 entries resolve as of the verification run.
 **[28]** `waltman2016review`. Ludo Waltman. "A review of the literature on citation impact indicators." *Journal of Informetrics*, 2016. DOI: [10.1016/j.joi.2016.02.007](https://doi.org/10.1016/j.joi.2016.02.007)
   <br/>*Cited for:* Review of citation impact indicators
 
-**[29]** `wang2020mag`. Kuansan Wang, Z. Shen, Chiyuan Huang, Chieh‐Han Wu, Yuxiao Dong, and Anshul Kanakia. "Microsoft Academic Graph: When experts are not enough." *Quantitative Science Studies*, 2020. DOI: [10.1162/qss_a_00021](https://doi.org/10.1162/qss_a_00021)
+**[29]** `wang2020mag`. Kuansan Wang, Zhihong Shen, Chiyuan Huang, Chieh-Han Wu, Yuxiao Dong, and Anshul Kanakia. "Microsoft Academic Graph: When experts are not enough." *Quantitative Science Studies*, 2020. DOI: [10.1162/qss_a_00021](https://doi.org/10.1162/qss_a_00021)
   <br/>*Cited for:* Microsoft Academic Graph

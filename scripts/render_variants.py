@@ -6,9 +6,10 @@ markdown and the same figures; what changes is typography and page furniture.
 
     python scripts/render_variants.py
 
-Output goes to thesis/renders/. The folder is ignored by git: it is there to
-be compared and thrown away, and whichever variant wins gets promoted into
-thesis/print.css and rendered by scripts/render_thesis.py as usual.
+Output goes to thesis/renders/, which is tracked: all three layouts are kept
+so any of them can be handed over without a rebuild. Whichever one wins can
+also be promoted into thesis/print.css and rendered by render_thesis.py as
+the default.
 """
 
 from __future__ import annotations

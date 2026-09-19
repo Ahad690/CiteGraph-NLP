@@ -151,19 +151,23 @@
       "key": "wang2020mag",
       "doi": "10.1162/qss_a_00021",
       "verified": true,
-      "source": "openalex",
+      "source": "crossref",
       "title": "Microsoft Academic Graph: When experts are not enough",
       "container": "Quantitative Science Studies",
       "year": 2020,
       "authors": [
         "Kuansan Wang",
-        "Z. Shen",
+        "Zhihong Shen",
         "Chiyuan Huang",
-        "Chieh‐Han Wu",
+        "Chieh-Han Wu",
         "Yuxiao Dong",
         "Anshul Kanakia"
       ],
-      "type": "article",
+      "type": "journal-article",
+      "publisher": "MIT Press",
+      "volume": "1",
+      "issue": "1",
+      "page": "396-413",
       "why_cited": "Microsoft Academic Graph"
     },
     {
@@ -192,18 +196,14 @@
       "key": "redner1998citation",
       "doi": "10.1007/s100510050359",
       "verified": true,
-      "source": "crossref",
+      "source": "openalex",
       "title": "How popular is your paper? An empirical study of the citation distribution",
       "container": "The European Physical Journal B",
       "year": 1998,
       "authors": [
         "S. Redner"
       ],
-      "type": "journal-article",
-      "publisher": "Springer Science and Business Media LLC",
-      "volume": "4",
-      "issue": "2",
-      "page": "131-134",
+      "type": "article",
       "why_cited": "Citation distribution statistics"
     },
     {
@@ -228,7 +228,7 @@
       "key": "radicchi2008universality",
       "doi": "10.1073/pnas.0806977105",
       "verified": true,
-      "source": "crossref",
+      "source": "openalex",
       "title": "Universality of citation distributions: Toward an objective measure of scientific impact",
       "container": "Proceedings of the National Academy of Sciences",
       "year": 2008,
@@ -237,32 +237,24 @@
         "Santo Fortunato",
         "Claudio Castellano"
       ],
-      "type": "journal-article",
-      "publisher": "National Academy of Sciences",
-      "volume": "105",
-      "issue": "45",
-      "page": "17268-17272",
+      "type": "article",
       "why_cited": "Universality of citation distributions"
     },
     {
       "key": "chen2007gems",
       "doi": "10.1016/j.joi.2006.06.001",
       "verified": true,
-      "source": "crossref",
+      "source": "openalex",
       "title": "Finding scientific gems with Google’s PageRank algorithm",
       "container": "Journal of Informetrics",
-      "year": 2007,
+      "year": 2006,
       "authors": [
         "P. Chen",
-        "H. Xie",
-        "S. Maslov",
+        "Haoxuan Xie",
+        "Sergei Maslov",
         "S. Redner"
       ],
-      "type": "journal-article",
-      "publisher": "Elsevier BV",
-      "volume": "1",
-      "issue": "1",
-      "page": "8-15",
+      "type": "article",
       "why_cited": "Finding scientific gems with PageRank on a citation network"
     },
     {
@@ -290,21 +282,17 @@
       "key": "kim2003genia",
       "doi": "10.1093/bioinformatics/btg1023",
       "verified": true,
-      "source": "crossref",
+      "source": "openalex",
       "title": "GENIA corpus—a semantically annotated corpus for bio-textmining",
       "container": "Bioinformatics",
       "year": 2003,
       "authors": [
-        "J.-D. Kim",
-        "T. Ohta",
-        "Y. Tateisi",
-        "J. Tsujii"
+        "JD Kim",
+        "Tomoko Ohta",
+        "Yuka Tateisi",
+        "J Tsujii"
       ],
-      "type": "journal-article",
-      "publisher": "Oxford University Press (OUP)",
-      "volume": "19",
-      "issue": "suppl_1",
-      "page": "i180-i182",
+      "type": "article",
       "why_cited": "GENIA corpus for biomedical IE"
     },
     {
@@ -491,7 +479,7 @@
       "key": "moher2009prisma",
       "doi": "10.1371/journal.pmed.1000097",
       "verified": true,
-      "source": "openalex",
+      "source": "crossref",
       "title": "Preferred Reporting Items for Systematic Reviews and Meta-Analyses: The PRISMA Statement",
       "container": "PLoS Medicine",
       "year": 2009,
@@ -500,23 +488,31 @@
         "Alessandro Liberati",
         "Jennifer Tetzlaff",
         "Douglas G. Altman",
-        "The PRISMA Group"
+        ""
       ],
-      "type": "review",
+      "type": "journal-article",
+      "publisher": "Public Library of Science (PLoS)",
+      "volume": "6",
+      "issue": "7",
+      "page": "e1000097",
       "why_cited": "PRISMA reporting guideline"
     },
     {
       "key": "ioannidis2005why",
       "doi": "10.1371/journal.pmed.0020124",
       "verified": true,
-      "source": "openalex",
+      "source": "crossref",
       "title": "Why Most Published Research Findings Are False",
       "container": "PLoS Medicine",
       "year": 2005,
       "authors": [
         "John P. A. Ioannidis"
       ],
-      "type": "article",
+      "type": "journal-article",
+      "publisher": "Public Library of Science (PLoS)",
+      "volume": "2",
+      "issue": "8",
+      "page": "e124",
       "why_cited": "Why most published research findings are false"
     },
     {

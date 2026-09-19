@@ -2,9 +2,60 @@
 
 **Confidence-Aware Citation Lineage and Study-Scale Knowledge Graph System**
 
+![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)
+![FastAPI](https://img.shields.io/badge/FastAPI-async-009688.svg)
+![React](https://img.shields.io/badge/React-TypeScript-61dafb.svg)
+![Tests](https://img.shields.io/badge/tests-102%20passing-brightgreen.svg)
+![Thesis](https://img.shields.io/badge/thesis-108%20pages-8a2be2.svg)
+![Status](https://img.shields.io/badge/status-deployed-success.svg)
+
 CiteGraph-NLP is an NLP + Knowledge Graph system for analyzing scientific papers, tracing citation lineages, extracting study population evidence, and ranking **probable foundational papers** using confidence-aware graph analytics.
 
 The project is a research prototype that makes uncertainty visible using confidence scores, provenance tracking, and ambiguity labels.
+
+## Telling someone about this project
+
+**One-liner:** Give it one paper and it builds the citation graph around it,
+then weights each citation by how much evidence the cited paper actually
+reports, so a 43,548-patient trial does not count the same as a three-patient
+case report.
+
+**Short pitch:** CiteGraph-NLP resolves a DOI, PMID, PMCID, title or URL
+against OpenAlex, Crossref and Europe PMC, traverses references and citing
+works breadth-first, reads study population sizes out of abstracts with a
+pattern-based extraction pipeline, weights every citation edge by that
+evidence scaled by extraction confidence, and ranks probable foundational
+papers with PageRank over the weighted graph. Every extracted population
+carries a confidence score and a status of `resolved`, `ambiguous` or
+`missing`, so the uncertainty is visible rather than hidden. Python, FastAPI
+and NetworkX on the backend; React, TypeScript and Cytoscape.js on the front.
+102 tests. Backend on a Hetzner VPS behind nginx, frontend on Cloudflare Pages.
+
+**What it is not:** a new ranking algorithm. PageRank over citation networks
+is long established. The contribution is a measured, working pipeline that
+makes the uncertainty of automated evidence extraction visible to the reader.
+
+**Try it:** <https://citegraph-nlp.pages.dev>
+**Run it locally:** [docs/SETUP.md](docs/SETUP.md)
+
+---
+
+## Documentation
+
+| Document | What it covers |
+|----------|----------------|
+| [docs/SETUP.md](docs/SETUP.md) | Local setup, clone to working dashboard |
+| [docs/API.md](docs/API.md) | Every endpoint, request and response shape |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | How the live system deploys, and what to do when it fails |
+| [USER_GUIDE.md](USER_GUIDE.md) | Using the dashboard |
+| [PROJECT_REPORT.md](PROJECT_REPORT.md) | What the system does and why, in plain language |
+| [project_proposal.md](project_proposal.md) | The original FYP proposal |
+| [citation_lineage_prd.md](citation_lineage_prd.md) | Product requirements the build followed |
+| [thesis/](thesis/) | The full thesis: 108 pages, 8 chapters, 8 appendices |
+| [thesis/figures/README.md](thesis/figures/README.md) | How each thesis figure is generated from the code |
+| [thesis/renders/README.md](thesis/renders/README.md) | Three PDF layouts of the thesis, compared |
+
+---
 
 ## Group Members
 
@@ -207,7 +258,13 @@ python -m venv .venv
 
 ```bash
 pip install -r requirements.txt
+pip install -e .
+python -m spacy download en_core_web_sm
 ```
+
+`pip install -e .` installs the project itself. Without it `import citegraph`
+fails, because the package lives under `src/` and nothing puts that directory
+on the path. `make install` runs all three.
 
 ### 3. Environment Configuration
 

@@ -194,7 +194,7 @@ landing-page/.dev.vars
 # and PNG figures beside them are the tracked artifacts.
 thesis/figures/_dot/
 
-# Layout comparison renders: the stylesheets and the README are tracked, the
-# PDFs and DOCX they produce are not. Regenerate with scripts/render_variants.py
-thesis/renders/*.pdf
-thesis/renders/*.docx
+# All three layout variants are kept as deliverables, so the renders folder is
+# tracked in full. Regenerate with scripts/render_variants.py.
+!thesis/renders/*.pdf
+!thesis/renders/*.docx
