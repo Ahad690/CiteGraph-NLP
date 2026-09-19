@@ -14,6 +14,9 @@ export function OverviewPage({ run }: { run: RunResult }) {
     .filter((v): v is number => typeof v === "number");
   const avgConfVal = avgConf.length ? avgConf.reduce((a, b) => a + b, 0) / avgConf.length : null;
   const topScore = run.ranked_foundational_papers[0]?.score;
+  const hasNoCitationLinks = run.status === "completed" && run.papers.length === 1 && run.citation_edges.length === 0;
+  const runYear = new Date(run.created_at).getFullYear();
+  const isRecentSeed = seed?.year != null && Number.isFinite(runYear) && seed.year >= runYear - 1 && seed.year <= runYear;
 
   const stats = [
     { label: "Papers found", value: formatNumber(run.papers.length), icon: FileText, accent: "indigo" },
@@ -58,6 +61,16 @@ export function OverviewPage({ run }: { run: RunResult }) {
         </div>
       </div>
 
+      {hasNoCitationLinks && (
+        <div role="note" className="rounded-2xl bg-amber/10 border border-amber/30 p-4 text-sm text-amber flex items-start gap-3">
+          <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+          <div>
+            <div className="font-semibold">No citation links available</div>
+            <p className="mt-1">This run found no usable reference or citing-paper links for the seed paper. {isRecentSeed ? "This is a recent paper, so citation indexing may improve over time." : "Metadata-provider coverage may be incomplete; try again later or check the paper's reference list."}</p>
+          </div>
+        </div>
+      )}
+
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
         {stats.map((s) => (
@@ -97,7 +110,7 @@ export function OverviewPage({ run }: { run: RunResult }) {
           {run.warnings.length === 0 ? (
             <div className="rounded-xl bg-emerald/10 border border-emerald/30 p-4 text-sm text-emerald flex items-start gap-2">
               <CheckCircle2 className="h-4 w-4 mt-0.5" />
-              <span>No warnings reported. Confidence-aware extraction completed cleanly.</span>
+              <span>No provider warnings were reported.</span>
             </div>
           ) : (
             <div className="space-y-2">

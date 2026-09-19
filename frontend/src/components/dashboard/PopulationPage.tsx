@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import type { PopulationResolution, RunResult, Paper } from "@/types/api";
 import { ConfidenceBadge } from "@/components/ui-kit/ConfidenceBadge";
 import { formatNumber, getCandidatesForPaper, getPaperById, truncateTitle, getConfidenceColor } from "@/lib/formatters";
-import { X, Search } from "lucide-react";
+import { X, Search, AlertTriangle } from "lucide-react";
 
 const STATUS_STYLE: Record<string, { label: string; color: string; bg: string }> = {
   resolved: { label: "Resolved", color: "#34d399", bg: "rgba(16,185,129,0.12)" },
@@ -50,6 +50,16 @@ export function PopulationPage({ run }: { run: RunResult }) {
           );
         })}
       </div>
+
+      {run.status === "completed" && run.population_resolutions.length > 0 && counts.missing === run.population_resolutions.length && (
+        <div role="note" className="rounded-2xl bg-amber/10 border border-amber/30 p-4 text-sm text-amber flex items-start gap-3">
+          <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+          <div>
+            <div className="font-semibold">No population values extracted</div>
+            <p className="mt-1">Extraction currently targets biomedical sample-size language in available abstracts. Technical papers may use datasets or benchmarks instead, which are not yet supported. Missing values can also mean an abstract was unavailable or its wording did not match; they do not prove a paper has no evidence.</p>
+          </div>
+        </div>
+      )}
 
       <div className="glass rounded-2xl p-4 flex items-center gap-3">
         <div className="flex items-center gap-2 px-3 h-10 rounded-xl bg-surface-strong/60 border border-border flex-1">
