@@ -5,6 +5,6 @@ import { PopulationPage } from "@/components/dashboard/PopulationPage";
 export const Route = createFileRoute("/population/$runId")({
   component: () => {
     const { runId } = Route.useParams();
-    return <DashboardRoute runId={runId} title="Population Extraction" subtitle="Confidence-aware extraction with visible uncertainty" render={(run) => <PopulationPage run={run} />} />;
+    return <DashboardRoute runId={runId} title="Evidence Extraction" subtitle="Clinical populations and technical dataset counts" render={(run) => <PopulationPage run={run} />} />;
   },
 });

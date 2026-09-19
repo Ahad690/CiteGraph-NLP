@@ -21,6 +21,7 @@ class GraphBuilder:
                 journal=paper.journal,
                 n_eff=res.n_eff if res else None,
                 population_confidence=res.confidence if res else 0.0,
+                research_domain=paper.research_domain,
                 type="paper"
             )
 

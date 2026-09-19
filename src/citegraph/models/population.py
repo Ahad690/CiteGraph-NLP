@@ -31,6 +31,6 @@ class PopulationResolution(BaseModel):
     n_eff: int | None = None
     semantic_type: str | None = None
     confidence: float
-    status: Literal["resolved", "ambiguous", "missing"]
+    status: Literal["resolved", "ambiguous", "missing", "not_applicable"]
     selected_candidate_id: str | None = None
     explanation: str

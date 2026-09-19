@@ -8,6 +8,7 @@ const STATUS_STYLE: Record<string, { label: string; color: string; bg: string }>
   resolved: { label: "Resolved", color: "#34d399", bg: "rgba(16,185,129,0.12)" },
   ambiguous: { label: "Ambiguous", color: "#fbbf24", bg: "rgba(245,158,11,0.12)" },
   missing: { label: "Missing", color: "#94a3b8", bg: "rgba(148,163,184,0.12)" },
+  not_applicable: { label: "N/A", color: "#94a3b8", bg: "rgba(148,163,184,0.12)" },
   low_confidence: { label: "Low confidence", color: "#fb7185", bg: "rgba(244,63,94,0.12)" },
 };
 
@@ -28,7 +29,7 @@ export function PopulationPage({ run }: { run: RunResult }) {
   }, [run, q, statusFilter]);
 
   const counts = useMemo(() => {
-    const c = { resolved: 0, ambiguous: 0, missing: 0, low_confidence: 0 } as Record<string, number>;
+    const c = { resolved: 0, ambiguous: 0, missing: 0, low_confidence: 0, not_applicable: 0 } as Record<string, number>;
     run.population_resolutions.forEach((r) => { c[r.status as string] = (c[r.status as string] || 0) + 1; });
     return c;
   }, [run]);
@@ -39,8 +40,8 @@ export function PopulationPage({ run }: { run: RunResult }) {
 
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {(["resolved", "ambiguous", "low_confidence", "missing"] as const).map((k) => {
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        {(["resolved", "ambiguous", "low_confidence", "missing", "not_applicable"] as const).map((k) => {
           const s = STATUS_STYLE[k];
           return (
             <button
@@ -55,12 +56,39 @@ export function PopulationPage({ run }: { run: RunResult }) {
         })}
       </div>
 
+      {run.technical_evidence.length > 0 && (
+        <div className="glass rounded-2xl p-5 space-y-3">
+          <h3 className="text-base font-semibold text-text-primary">Computer-science dataset evidence</h3>
+          <p className="text-xs text-text-secondary">Explicit example counts from abstracts or linked arXiv full text. These are not patient populations and do not affect citation ranking weights.</p>
+          {run.technical_evidence.map((item) => {
+            const paper = getPaperById(run.papers, item.paper_id);
+            return (
+              <div key={item.paper_id} className="rounded-xl border border-border bg-surface-strong/40 p-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="text-sm font-medium text-text-primary">{paper?.title ?? item.paper_id}</div>
+                  <span className="text-xs text-cyan">{item.status === "missing" ? "No dataset count found" : `${formatNumber(item.value)} ${item.unit ?? "examples"} · ${item.kind?.replaceAll("_", " ")} · ${item.section?.replaceAll("_", " ")} · ${Math.round(item.confidence * 100)}% confidence`}</span>
+                </div>
+                {item.evidence && <p className="text-xs text-text-secondary mt-2 italic">"{item.evidence}"</p>}
+                {item.status === "ambiguous" && <p className="text-xs text-amber mt-1">{item.explanation}</p>}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {run.papers.some((paper) => paper.research_domain === "nonclinical") && (
+        <div role="note" className="rounded-2xl bg-amber/10 border border-amber/30 p-4 text-sm text-amber flex items-start gap-3">
+          <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+          <p>Physics and engineering papers are marked N/A for clinical population. This pilot does not yet extract hardware-specific evidence such as device fidelity or qubit counts.</p>
+        </div>
+      )}
+
       {run.status === "completed" && counts.missing > 0 && (
         <div role="note" className="rounded-2xl bg-amber/10 border border-amber/30 p-4 text-sm text-amber flex items-start gap-3">
           <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
           <div>
-            <div className="font-semibold">Population coverage: {counts.missing} of {run.population_resolutions.length} missing</div>
-            <p className="mt-1">Of these, {missingWithoutAbstract} have no abstract and {counts.missing - missingWithoutAbstract} have an abstract but no matched population value. Available open-access Methods and Results sections are also searched{recoveredFromFullText > 0 ? `, recovering ${recoveredFromFullText} paper(s) in this run` : ""}. Technical datasets and benchmarks are not yet supported; missing does not prove a paper has no evidence.</p>
+            <div className="font-semibold">Clinical population coverage: {counts.missing} of {run.population_resolutions.length - counts.not_applicable} applicable papers missing</div>
+            <p className="mt-1">Of these, {missingWithoutAbstract} have no abstract and {counts.missing - missingWithoutAbstract} have an abstract but no matched population value. Available open-access Methods and Results sections are also searched{recoveredFromFullText > 0 ? `, recovering ${recoveredFromFullText} paper(s) in this run` : ""}. Technical dataset counts are reported separately; missing does not prove a paper has no evidence.</p>
           </div>
         </div>
       )}

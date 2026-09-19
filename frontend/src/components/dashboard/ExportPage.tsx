@@ -81,11 +81,12 @@ export function ExportPage({ run }: { run: RunResult }) {
           <Mini label="Papers" value={formatNumber(run.papers.length)} />
           <Mini label="Edges" value={formatNumber(run.citation_edges.length)} />
           <Mini label="Resolved population" value={formatNumber(resolved)} />
+          <Mini label="Dataset evidence" value={formatNumber(run.technical_evidence.filter((item) => item.value != null).length)} />
           <Mini label="Warnings" value={formatNumber(run.warnings.length)} />
         </div>
         <div className="mt-5 text-xs text-text-muted px-3 py-2 rounded-lg bg-surface-strong/40 border border-border">
           <span className="font-semibold text-text-secondary">Limitations: </span>
-          Citation coverage depends on available public metadata. Population extraction is confidence-aware and may be ambiguous.
+          Citation coverage depends on available public metadata. Clinical populations and technical dataset counts are separate; technical counts do not weight rankings.
         </div>
       </div>
     </div>

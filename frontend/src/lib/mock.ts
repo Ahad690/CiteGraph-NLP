@@ -9,6 +9,7 @@ export const mockRun: RunResult = {
     "Population extraction for 2 papers was ambiguous.",
     "Metadata coverage may be incomplete for 1 cited paper.",
   ],
+  technical_evidence: [],
   papers: [
     { paper_id: "paper_1", title: "Sustained virologic response in chronic hepatitis C: a multicenter randomized trial", doi: "10.1056/NEJMoa1402869", pmid: "24725239", pmcid: "PMC4123456", authors: ["Chen L.", "Patel R.", "Kowalski M.", "Almeida F."], year: 2018, journal: "New England Journal of Medicine", abstract: "We conducted a multicenter randomized trial to evaluate sustained virologic response across 8,500 patients with chronic hepatitis C infection.", metadata_confidence: 0.96, citation_count: 412, source_ids: { openalex: "W2104812345", crossref: "10.1056/NEJMoa1402869" } },
     { paper_id: "paper_2", title: "Direct-acting antivirals: long-term outcomes in hepatitis C cohort", doi: "10.1016/S0140-6736(15)00349-9", pmid: "26423181", authors: ["Singh A.", "Yamamoto K.", "Romero D."], year: 2015, journal: "The Lancet", abstract: "Long-term follow-up of 5,200 patients receiving direct-acting antivirals.", metadata_confidence: 0.92, citation_count: 1180, source_ids: { openalex: "W2189912331" } },

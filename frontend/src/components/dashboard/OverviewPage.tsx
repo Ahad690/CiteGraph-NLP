@@ -9,7 +9,10 @@ export function OverviewPage({ run }: { run: RunResult }) {
   const resolved = run.population_resolutions.filter((r) => r.status === "resolved").length;
   const ambiguous = run.population_resolutions.filter((r) => r.status === "ambiguous" || r.status === "low_confidence").length;
   const missing = run.population_resolutions.filter((r) => r.status === "missing").length;
+  const notApplicable = run.population_resolutions.filter((r) => r.status === "not_applicable").length;
+  const technicalResolved = run.technical_evidence.filter((r) => r.status !== "missing").length;
   const avgConf = run.population_resolutions
+    .filter((r) => r.status === "resolved" || r.status === "ambiguous")
     .map((r) => r.confidence)
     .filter((v): v is number => typeof v === "number");
   const avgConfVal = avgConf.length ? avgConf.reduce((a, b) => a + b, 0) / avgConf.length : null;
@@ -23,7 +26,9 @@ export function OverviewPage({ run }: { run: RunResult }) {
     { label: "Citation edges", value: formatNumber(run.citation_edges.length), icon: Network, accent: "cyan" },
     { label: "Resolved extractions", value: formatNumber(resolved), icon: CheckCircle2, accent: "emerald" },
     { label: "Ambiguous extractions", value: formatNumber(ambiguous), icon: AlertTriangle, accent: "amber" },
-    { label: "Missing population data", value: formatNumber(missing), icon: Users, accent: "muted" },
+    { label: "Missing clinical population", value: formatNumber(missing), icon: Users, accent: "muted" },
+    { label: "Population not applicable", value: formatNumber(notApplicable), icon: Users, accent: "muted" },
+    { label: "Technical evidence", value: formatNumber(technicalResolved), icon: CheckCircle2, accent: "cyan" },
     { label: "Avg. confidence", value: avgConfVal != null ? formatConfidence(avgConfVal) : "—", icon: Sparkles, accent: "purple" },
     { label: "Top foundational score", value: topScore != null ? formatConfidence(topScore) : "—", icon: Trophy, accent: "indigo" },
     { label: "Warnings", value: formatNumber(run.warnings.length), icon: AlertTriangle, accent: "rose" },
@@ -32,7 +37,7 @@ export function OverviewPage({ run }: { run: RunResult }) {
   const pipeline = [
     { label: "Metadata resolved", done: run.papers.length > 0 },
     { label: "Citations retrieved", done: run.citation_edges.length > 0 },
-    { label: "Population evidence extracted", done: run.population_resolutions.length > 0 },
+    { label: "Evidence extracted", done: resolved + ambiguous + technicalResolved > 0 },
     { label: "Knowledge graph built", done: run.citation_edges.length > 0 && run.papers.length > 1 },
     { label: "Rankings calculated", done: run.ranked_foundational_papers.length > 0 },
   ];
@@ -49,7 +54,7 @@ export function OverviewPage({ run }: { run: RunResult }) {
           </div>
           <h1 className="text-[28px] lg:text-[34px] font-bold tracking-tight text-text-primary">Citation Lineage Overview</h1>
           <p className="text-sm lg:text-base text-text-secondary mt-2 max-w-2xl">
-            Confidence-aware map of papers, population evidence, and probable foundational studies.
+            Confidence-aware map of papers, domain-specific evidence, and probable foundational studies.
           </p>
           {seed && (
             <div className="mt-5 rounded-2xl bg-surface-strong/50 border border-border p-4 max-w-3xl">
@@ -130,7 +135,7 @@ export function OverviewPage({ run }: { run: RunResult }) {
         <h3 className="text-base font-semibold text-text-primary mb-3">Continue exploring</h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
           <QuickCard to={`/metadata/${run.run_id}`} icon={FileText} title="View metadata" desc="All papers, authors, journals" />
-          <QuickCard to={`/population/${run.run_id}`} icon={Users} title="Population evidence" desc="Confidence-aware extraction" />
+          <QuickCard to={`/population/${run.run_id}`} icon={Users} title="Evidence extraction" desc="Clinical and technical evidence" />
           <QuickCard to={`/graph/${run.run_id}`} icon={Network} title="Citation graph" desc="Interactive visualization" />
           <QuickCard to={`/rankings/${run.run_id}`} icon={Trophy} title="Foundational rankings" desc="Probable foundational papers" />
           <QuickCard to={`/export/${run.run_id}`} icon={Download} title="Export report" desc="JSON, CSV, GraphML, MD" />

@@ -16,6 +16,7 @@ export function PaperDetailDrawer({ paper, run, onClose }: Props) {
   const isSeed = paper.paper_id === run.seed_paper_id;
   const isFoundational = run.ranked_foundational_papers.some((r) => r.paper_id === paper.paper_id);
   const population = getPopulationForPaper(run, paper.paper_id);
+  const technical = run.technical_evidence.find((item) => item.paper_id === paper.paper_id);
   const edges = getEdgesForPaper(run, paper.paper_id);
 
   const copy = (text: string, label: string) => {
@@ -47,6 +48,7 @@ export function PaperDetailDrawer({ paper, run, onClose }: Props) {
               {paper.year && <span>{paper.year}</span>}
               {paper.year && paper.journal && <span className="opacity-50">·</span>}
               {paper.journal && <span className="italic">{paper.journal}</span>}
+              {paper.research_field && <span>· {paper.research_field} (OpenAlex)</span>}
             </div>
           </div>
 
@@ -54,7 +56,7 @@ export function PaperDetailDrawer({ paper, run, onClose }: Props) {
             <Stat label="Citation count" value={formatNumber(paper.citation_count)} />
             <Stat label="Connected edges" value={String(edges.length)} />
             <Stat label="Metadata confidence" value={paper.metadata_confidence != null ? `${Math.round(paper.metadata_confidence * 100)}%` : "—"} />
-            <Stat label="Population N_eff" value={formatNumber(population?.n_eff)} />
+            <Stat label={technical ? "Dataset examples" : "Population N_eff"} value={technical ? formatNumber(technical.value) : population?.status === "not_applicable" ? "N/A" : formatNumber(population?.n_eff)} />
           </div>
 
           {paper.abstract && (
@@ -76,9 +78,20 @@ export function PaperDetailDrawer({ paper, run, onClose }: Props) {
             )}
             {paper.pmid && <Row label="PMID" value={paper.pmid} />}
             {paper.pmcid && <Row label="PMCID" value={paper.pmcid} />}
+            {paper.arxiv_id && <Row label="arXiv" value={paper.arxiv_id} action={<a href={`https://arxiv.org/abs/${paper.arxiv_id}`} target="_blank" rel="noreferrer" className="h-7 w-7 grid place-items-center rounded-lg hover:bg-surface-hover" aria-label="Open arXiv paper"><ExternalLink className="h-3.5 w-3.5" /></a>} />}
           </div>
 
-          {population && (
+          {technical && (
+            <div className="rounded-2xl border border-border bg-surface-strong/50 p-4 space-y-2">
+              <div className="label-tiny">Computer-science dataset evidence</div>
+              <div className="text-2xl font-bold text-text-primary">{formatNumber(technical.value)} {technical.unit ?? ""}</div>
+              {technical.section && <div className="text-xs text-text-muted">Source: {technical.section.replaceAll("_", " ")}</div>}
+              {technical.evidence && <p className="text-xs text-text-secondary italic">"{technical.evidence}"</p>}
+              <p className="text-xs text-text-muted">{technical.explanation}</p>
+            </div>
+          )}
+
+          {population && population.status !== "not_applicable" && (
             <div className="rounded-2xl border border-border bg-surface-strong/50 p-4 space-y-2">
               <div className="flex items-center justify-between">
                 <div className="label-tiny">Population evidence</div>

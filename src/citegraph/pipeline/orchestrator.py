@@ -12,8 +12,11 @@ from citegraph.input.normalizer import InputNormalizer
 from citegraph.metadata.resolver import MetadataResolver, doi_is_dead
 from citegraph.nlp.population_extractor import PopulationExtractor
 from citegraph.nlp.population_resolver import PopulationResolver
+from citegraph.nlp.technical_evidence import TechnicalEvidenceExtractor
+from citegraph.models.population import PopulationResolution
 from citegraph.citations.retriever import CitationRetriever
 from citegraph.providers.europe_pmc import EuropePMCProvider
+from citegraph.providers.arxiv_full_text import ArxivFullTextProvider
 from citegraph.citations.traversal import CitationTraversal
 from citegraph.graph.builder import GraphBuilder
 from citegraph.graph.weighting import WeightCalculator
@@ -23,13 +26,17 @@ from citegraph.config import settings
 logger = logging.getLogger(__name__)
 
 class PipelineOrchestrator:
+    MAX_TECH_FULL_TEXT = 10
+
     def __init__(self):
         self.normalizer = InputNormalizer()
         self.metadata_resolver = MetadataResolver()
         self.pop_extractor = PopulationExtractor()
         self.pop_resolver = PopulationResolver()
+        self.technical_extractor = TechnicalEvidenceExtractor()
         self.citation_retriever = CitationRetriever()
         self.europe_pmc = EuropePMCProvider()
+        self.arxiv_full_text = ArxivFullTextProvider()
         self.weight_calc = WeightCalculator()
         self.graph_builder = GraphBuilder()
 
@@ -110,6 +117,24 @@ class PipelineOrchestrator:
                 resolutions[resolution_index] = replacement[2]
         return [candidate for item in by_paper.values() for candidate in item[1]], len(by_paper)
 
+    async def _recover_technical_from_full_text(self, papers: dict, evidence: list, seed_paper_id: str) -> int:
+        missing = [item for item in evidence if item.status == "missing" and papers[item.paper_id].arxiv_id]
+        missing.sort(key=lambda item: item.paper_id != seed_paper_id)
+        recovered_count = 0
+        for item in missing[:self.MAX_TECH_FULL_TEXT]:
+            paper = papers[item.paper_id]
+            body = await self.arxiv_full_text.get_dataset_sections(paper.arxiv_id)
+            if not body:
+                continue
+            recovered = self.technical_extractor.extract(paper.paper_id, body, section="full_text")
+            if recovered.status == "missing":
+                continue
+            item_index = evidence.index(item)
+            evidence[item_index] = recovered
+            paper.provenance["technical_full_text"] = {"provider": "arxiv", "arxiv_id": paper.arxiv_id}
+            recovered_count += 1
+        return recovered_count
+
     async def run(self, query: PaperQuery, backward_depth: int = 2, forward_depth: int = 1, max_papers: int = 100, run_id: str = None) -> RunResult:
         run_id = run_id or str(uuid.uuid4())
         logger.info(f"Starting run {run_id} for {query.value}")
@@ -132,6 +157,7 @@ class PipelineOrchestrator:
         # 4. Population Extraction for all papers
         all_candidates = []
         all_resolutions = []
+        technical_evidence = []
         studies = []
         for paper_id, paper in traversal.papers.items():
             # Create a study node for each paper (simplified mapping)
@@ -143,7 +169,18 @@ class PipelineOrchestrator:
             )
             studies.append(study)
 
-            # In MVP, we might only have the abstract for extraction
+            if paper.research_domain in ("computer_science", "nonclinical"):
+                all_resolutions.append(PopulationResolution(
+                    paper_id=paper_id,
+                    study_id=study_id,
+                    confidence=0.0,
+                    status="not_applicable",
+                    explanation="Clinical population size is not applicable to this research field.",
+                ))
+                if paper.research_domain == "computer_science":
+                    technical_evidence.append(self.technical_extractor.extract(paper_id, paper.abstract))
+                continue
+
             candidates = self.pop_extractor.extract_candidates(paper_id, paper.abstract or "", section="abstract")
             all_candidates.extend(candidates)
             
@@ -153,12 +190,16 @@ class PipelineOrchestrator:
 
         full_text_candidates, full_text_recovered = await self._recover_from_full_text(traversal.papers, all_resolutions)
         all_candidates.extend(full_text_candidates)
+        technical_full_text_recovered = await self._recover_technical_from_full_text(
+            traversal.papers, technical_evidence, seed_paper.paper_id
+        )
 
         # 5. Weighting
-        weighted_edges = self.weight_calc.calculate_weights(traversal.edges, all_resolutions)
+        ranking_resolutions = all_resolutions if seed_paper.research_domain not in ("computer_science", "nonclinical") else []
+        weighted_edges = self.weight_calc.calculate_weights(traversal.edges, ranking_resolutions)
 
         # 6. Graph Building & Analytics
-        graph = self.graph_builder.build(list(traversal.papers.values()), weighted_edges, all_resolutions)
+        graph = self.graph_builder.build(list(traversal.papers.values()), weighted_edges, ranking_resolutions)
         analytics = GraphAnalytics(graph)
         
         foundational_papers = analytics.rank_foundational_papers()
@@ -188,6 +229,13 @@ class PipelineOrchestrator:
                 f"Recovered population evidence for {full_text_recovered} paper(s) from "
                 "Europe PMC open-access Methods/Results full text after abstract extraction found none."
             )
+        if technical_evidence:
+            warnings.append(
+                "Computer-science dataset counts come from abstracts or up to 10 linked arXiv PDFs; "
+                "they are not treated as clinical populations or used to weight citation rankings."
+            )
+        if technical_full_text_recovered:
+            warnings.append(f"Recovered dataset counts for {technical_full_text_recovered} paper(s) from arXiv full text.")
         if without_text:
             warnings.append(
                 f"{without_text} of {len(traversal.papers)} paper(s) have no abstract "
@@ -207,6 +255,7 @@ class PipelineOrchestrator:
             studies=studies,
             population_candidates=all_candidates,
             population_resolutions=all_resolutions,
+            technical_evidence=technical_evidence,
             citation_edges=weighted_edges,
             ranked_foundational_papers=foundational_papers,
             ranked_paths=ranked_paths,

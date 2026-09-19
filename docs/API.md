@@ -132,8 +132,15 @@ Before completion you get a `RunStatus`:
 ```
 
 On completion the full `RunResult` is returned instead: papers, studies,
-population candidates, population resolutions, citation edges, ranked
+population candidates, population resolutions, technical evidence, citation edges, ranked
 foundational papers, ranked paths, and any warnings the pipeline accumulated.
+
+`papers[].research_domain` is OpenAlex-field based (`biomedical`,
+`computer_science`, `nonclinical`, or `unknown`). Nonclinical papers have
+`population_resolutions[].status = "not_applicable"`. The separate
+`technical_evidence` array reports explicit CS dataset-example counts found in
+abstracts or up to 10 linked arXiv PDFs per run; those counts are not clinical N_eff and do not weight citation
+rankings. Older stored runs may have an empty technical-evidence array.
 
 | `status` | Meaning |
 |----------|---------|

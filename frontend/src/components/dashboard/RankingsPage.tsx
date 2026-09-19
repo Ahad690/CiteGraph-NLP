@@ -8,6 +8,9 @@ import { PaperDetailDrawer } from "./PaperDetailDrawer";
 import { getPaperById, getPopulationForPaper, formatNumber, formatConfidence, formatAuthors } from "@/lib/formatters";
 
 export function RankingsPage({ run }: { run: RunResult }) {
+  const seedDomain = run.papers.find((paper) => paper.paper_id === run.seed_paper_id)?.research_domain;
+  const technicalSeed = seedDomain === "computer_science";
+  const structuralSeed = technicalSeed || seedDomain === "nonclinical";
   const [minScore, setMinScore] = useState(0);
   const [highOnly, setHighOnly] = useState(false);
   const [hasPop, setHasPop] = useState(false);
@@ -17,11 +20,12 @@ export function RankingsPage({ run }: { run: RunResult }) {
     return run.ranked_foundational_papers.filter((r) => {
       if (r.score < minScore) return false;
       const pop = getPopulationForPaper(run, r.paper_id);
-      if (highOnly && (pop?.confidence ?? 0) < 0.75) return false;
-      if (hasPop && pop?.n_eff == null) return false;
+      const technical = run.technical_evidence.find((item) => item.paper_id === r.paper_id);
+      if (highOnly && (technicalSeed ? (technical?.confidence ?? 0) : (pop?.confidence ?? 0)) < 0.75) return false;
+      if (hasPop && (technicalSeed ? technical?.value == null : pop?.n_eff == null)) return false;
       return true;
     });
-  }, [run, minScore, highOnly, hasPop]);
+  }, [run, minScore, highOnly, hasPop, technicalSeed]);
 
   return (
     <div className="space-y-5">
@@ -34,7 +38,7 @@ export function RankingsPage({ run }: { run: RunResult }) {
           </div>
           <h1 className="text-[28px] font-bold tracking-tight text-text-primary">Top Probable Foundational Papers</h1>
           <p className="text-sm text-text-secondary mt-2 max-w-3xl">
-            These papers are ranked using citation position, graph connectivity, population evidence, source metrics, and confidence scores.
+            {structuralSeed ? "For nonclinical seeds, rankings use citation structure and age; technical counts are shown separately and do not influence scores." : "These papers are ranked using citation position, graph connectivity, clinical population evidence, source metrics, and confidence scores."}
           </p>
           <div className="mt-4 rounded-2xl bg-amber/10 border border-amber/30 p-3 flex items-start gap-2 text-xs text-amber max-w-3xl">
             <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
@@ -49,12 +53,12 @@ export function RankingsPage({ run }: { run: RunResult }) {
           <input type="range" min={0} max={1} step={0.05} value={minScore} onChange={(e) => setMinScore(Number(e.target.value))} className="w-full accent-indigo" />
           <div className="text-xs text-text-secondary font-mono">{formatConfidence(minScore)}</div>
         </div>
-        <label className="flex items-end gap-2 text-sm text-text-secondary">
+        {!structuralSeed || technicalSeed ? <label className="flex items-end gap-2 text-sm text-text-secondary">
           <input type="checkbox" checked={highOnly} onChange={(e) => setHighOnly(e.target.checked)} className="h-4 w-4 accent-indigo" /> High-confidence only
-        </label>
-        <label className="flex items-end gap-2 text-sm text-text-secondary">
-          <input type="checkbox" checked={hasPop} onChange={(e) => setHasPop(e.target.checked)} className="h-4 w-4 accent-indigo" /> Has population evidence
-        </label>
+        </label> : null}
+        {!structuralSeed || technicalSeed ? <label className="flex items-end gap-2 text-sm text-text-secondary">
+          <input type="checkbox" checked={hasPop} onChange={(e) => setHasPop(e.target.checked)} className="h-4 w-4 accent-indigo" /> {technicalSeed ? "Has dataset evidence" : "Has population evidence"}
+        </label> : null}
       </div>
 
       <div className="space-y-3">
@@ -62,6 +66,7 @@ export function RankingsPage({ run }: { run: RunResult }) {
           const paperItem = getPaperById(run.papers, r.paper_id);
           if (!paperItem) return null;
           const pop = getPopulationForPaper(run, r.paper_id);
+          const technical = run.technical_evidence.find((item) => item.paper_id === r.paper_id);
           const isTop3 = i < 3;
           return (
             <div
@@ -98,9 +103,9 @@ export function RankingsPage({ run }: { run: RunResult }) {
                     </div>
 
                     <div className="grid sm:grid-cols-3 gap-2 mt-4">
-                      <Stat label="N_eff" value={formatNumber(pop?.n_eff)} />
+                      <Stat label={technicalSeed ? "Dataset examples" : "Clinical N_eff"} value={structuralSeed && !technicalSeed ? "N/A" : formatNumber(technicalSeed ? technical?.value : pop?.n_eff)} />
                       <Stat label="Citations" value={formatNumber(paperItem.citation_count)} />
-                      <Stat label="Confidence" valueNode={<ConfidenceBadge score={pop?.confidence} />} />
+                      <Stat label="Confidence" valueNode={<ConfidenceBadge score={structuralSeed && !technicalSeed ? null : technicalSeed ? technical?.confidence : pop?.confidence} />} />
                     </div>
 
                     {r.explanation && (

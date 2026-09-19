@@ -40,6 +40,7 @@ export function normalizeRun(payload: RunPayload): RunResult {
     papers: completed ? (payload as RunResult).papers : [],
     population_resolutions: completed ? (payload as RunResult).population_resolutions ?? [] : [],
     population_candidates: completed ? (payload as RunResult).population_candidates ?? [] : [],
+    technical_evidence: completed ? (payload as RunResult).technical_evidence ?? [] : [],
     citation_edges: completed ? (payload as RunResult).citation_edges ?? [] : [],
     ranked_foundational_papers: completed
       ? (payload as RunResult).ranked_foundational_papers ?? []

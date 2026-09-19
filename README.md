@@ -16,20 +16,15 @@ The project is a research prototype that makes uncertainty visible using confide
 ## Telling someone about this project
 
 **One-liner:** Give it one paper and it builds the citation graph around it,
-then weights each citation by how much evidence the cited paper actually
-reports, so a 43,548-patient trial does not count the same as a three-patient
-case report.
+then uses clinical population evidence when applicable to weight citations.
+For computer-science papers, dataset counts are displayed separately while
+rankings remain based on citation structure and age.
 
 **Short pitch:** CiteGraph-NLP resolves a DOI, PMID, PMCID, title or URL
 against OpenAlex, Crossref and Europe PMC, traverses references and citing
-works breadth-first, reads study population sizes from abstracts and available open-access study sections with a
-pattern-based extraction pipeline, weights every citation edge by that
-evidence scaled by extraction confidence, and ranks probable foundational
-papers with PageRank over the weighted graph. Every extracted population
-carries a confidence score and a status of `resolved`, `ambiguous` or
-`missing`, so the uncertainty is visible rather than hidden. Python, FastAPI
+works breadth-first, reads clinical population sizes from abstracts and available open-access study sections, and separately extracts explicit computer-science dataset counts from abstracts and linked arXiv PDFs. Clinical population evidence affects rankings only for clinical/unknown seed domains; computer-science seeds use structural citation weights. Every extraction carries a confidence score and status, and nonclinical population values are marked `not_applicable` rather than missing. Python, FastAPI
 and NetworkX on the backend; React, TypeScript and Cytoscape.js on the front.
-102 tests. Backend on a Hetzner VPS behind nginx, frontend on Cloudflare Pages.
+Backend on a Hetzner VPS behind nginx, frontend on Cloudflare Pages.
 
 **What it is not:** a new ranking algorithm. PageRank over citation networks
 is long established. The contribution is a measured, working pipeline that
@@ -112,9 +107,9 @@ CiteGraph-NLP starts from a research paper identifier and builds a structured ci
 2. **Metadata Resolution** — Query OpenAlex, Crossref, and EuropePMC in parallel, merge results
 3. **Citation Traversal** — Level-by-level BFS over backward references and forward citations, with batched metadata lookups. Records describing the same work under different identifiers are merged before the paper budget is applied, so deduplication never costs graph slots
 4. **Abstract Backfill** — Papers with no OpenAlex abstract are topped up from Europe PMC in batched queries
-5. **Population Extraction** — Regex-based extraction from abstracts; when no population is found, try open-access Europe PMC Methods/Results full text for papers with a PMCID or a DOI linked to one
-6. **Population Resolution** — Select best N_eff candidate per paper using confidence and type priority scoring
-7. **Edge Weighting** — Weight citation edges by normalized population evidence + journal score + confidence
+5. **Domain-Aware Extraction** — OpenAlex primary-topic fields mark computer science and nonclinical physical science; clinical/unknown papers use population extraction, while computer-science papers use separate dataset-count extraction from abstracts or up to 10 linked arXiv PDFs per run
+6. **Population Resolution** — Select best clinical N_eff candidate per applicable paper using confidence and type priority scoring; try open-access Europe PMC Methods/Results full text when the abstract yields none
+7. **Edge Weighting** — Clinical seeds use normalized population evidence; computer-science and physical-science seeds use neutral structural citation weights, never dataset count as patient population
 8. **Graph Analytics** — PageRank-based foundational paper ranking and citation path ranking
 9. **Export** — Results available as JSON, CSV, Markdown report, and graph visualization data
 
@@ -408,6 +403,7 @@ Returns the run status while in progress, or the full `RunResult` when completed
 | `studies` | `array` | Study nodes derived from papers |
 | `population_candidates` | `array` | All extracted population candidates |
 | `population_resolutions` | `array` | Resolved N_eff per paper |
+| `technical_evidence` | `array` | Computer-science dataset-example counts from abstracts or arXiv full text, separate from clinical N_eff |
 | `citation_edges` | `array` | Weighted citation edges |
 | `ranked_foundational_papers` | `array` | Papers ranked by combined PageRank + year + evidence score |
 | `ranked_paths` | `array` | Citation paths from seed to foundational papers |
@@ -724,9 +720,11 @@ loopback; set `NEO4J_PASSWORD` before enabling it.
 - Citation coverage depends on public metadata APIs (OpenAlex, Crossref, Europe PMC)
 - Some papers may have incomplete references
 - Population extraction is regex-based and may miss complex formulations
-- PDF parsing requires GROBID and works best with well-structured PDFs
+- Full-text fallback covers open-access Europe PMC clinical articles and at most 10 arXiv PDFs per technical run; other technical full text is not yet supported
+- OpenAlex field-based domain labels can be missing or imperfect; papers without a clear field remain `unknown`
+- Dataset count heuristics are an initial CS/ML pilot, not validated measures of all technical evidence; physics and engineering papers are marked clinical-population N/A without a substitute metric
 - Foundational paper detection is probabilistic (PageRank + heuristics), not definitive
-- Best suited for biomedical and clinical research papers
+- Clinical population analysis remains best suited for biomedical papers; computer-science dataset counts are reported separately and never mixed into clinical rankings
 
 ---
 

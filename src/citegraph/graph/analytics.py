@@ -56,6 +56,7 @@ class GraphAnalytics:
             # Combined score
             final_score = (0.5 * influence_score) + (0.3 * year_score) + (0.2 * evidence_score)
             
+            evidence_description = ("population evidence" if n_eff else "no comparable clinical-population evidence")
             results.append({
                 "paper_id": paper_id,
                 "title": node_data.get("title"),
@@ -63,7 +64,7 @@ class GraphAnalytics:
                 "score": final_score,
                 "influence": influence_score,
                 "n_eff": n_eff,
-                "explanation": f"Ranked foundational based on citation influence ({influence_score:.2f}), year ({year}), and evidence strength."
+                "explanation": f"Ranked foundational based on citation influence ({influence_score:.2f}), year ({year}), and {evidence_description}."
             })
             
         return sorted(results, key=lambda x: x["score"], reverse=True)[:top_n]

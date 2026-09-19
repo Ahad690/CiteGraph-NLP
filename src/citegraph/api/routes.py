@@ -200,6 +200,7 @@ async def export_csv(run_id: str):
     result = await _load_result(run_id)
 
     resolutions = {r.paper_id: r for r in result.population_resolutions}
+    technical = {item.paper_id: item for item in result.technical_evidence}
     in_degree: Dict[str, int] = {}
     out_degree: Dict[str, int] = {}
     for edge in result.citation_edges:
@@ -217,11 +218,13 @@ async def export_csv(run_id: str):
     writer.writerow([
         "paper_id", "title", "authors", "year", "journal", "doi", "pmid",
         "n_eff", "population_status", "population_confidence",
+        "research_domain", "research_field", "dataset_examples", "dataset_unit", "dataset_kind", "dataset_status", "dataset_confidence", "dataset_evidence",
         "cited_by_in_graph", "references_in_graph", "foundational_rank",
         "is_seed",
     ])
     for paper in result.papers:
         res = resolutions.get(paper.paper_id)
+        dataset = technical.get(paper.paper_id)
         writer.writerow([
             paper.paper_id,
             paper.title or "",
@@ -233,6 +236,14 @@ async def export_csv(run_id: str):
             res.n_eff if res and res.n_eff is not None else "",
             res.status if res else "",
             f"{res.confidence:.2f}" if res else "",
+            paper.research_domain,
+            paper.research_field or "",
+            dataset.value if dataset and dataset.value is not None else "",
+            dataset.unit if dataset and dataset.unit else "",
+            dataset.kind if dataset and dataset.kind else "",
+            dataset.status if dataset else "",
+            f"{dataset.confidence:.2f}" if dataset else "",
+            dataset.evidence if dataset and dataset.evidence else "",
             in_degree.get(paper.paper_id, 0),
             out_degree.get(paper.paper_id, 0),
             ranks.get(paper.paper_id, ""),
@@ -311,6 +322,8 @@ async def export_markdown(run_id: str):
     papers = {p.paper_id: p for p in result.papers}
     seed = papers.get(result.seed_paper_id)
     resolved = [r for r in result.population_resolutions if r.n_eff is not None]
+    clinical_applicable = sum(r.status != "not_applicable" for r in result.population_resolutions)
+    technical_resolved = [item for item in result.technical_evidence if item.value is not None]
 
     lines = ["# CiteGraph-NLP Analysis Report", ""]
     if seed:
@@ -333,7 +346,8 @@ async def export_markdown(run_id: str):
         "| --- | --- |",
         f"| Papers in graph | {len(result.papers)} |",
         f"| Citation edges | {len(result.citation_edges)} |",
-        f"| Papers with population evidence | {len(resolved)} of {len(result.population_resolutions)} |",
+        f"| Papers with clinical population evidence | {len(resolved)} of {clinical_applicable} applicable |",
+        f"| Computer-science papers with dataset counts | {len(technical_resolved)} of {len(result.technical_evidence)} |",
         f"| Foundational candidates ranked | {len(result.ranked_foundational_papers)} |",
         f"| Citation paths ranked | {len(result.ranked_paths)} |",
         "",
@@ -341,7 +355,7 @@ async def export_markdown(run_id: str):
 
     lines += ["## Probable Foundational Papers", ""]
     if result.ranked_foundational_papers:
-        lines += ["| Rank | Title | Year | Score | N_eff |", "| ---: | --- | ---: | ---: | ---: |"]
+        lines += ["| Rank | Title | Year | Score | Clinical N_eff |", "| ---: | --- | ---: | ---: | ---: |"]
         for i, p in enumerate(result.ranked_foundational_papers, start=1):
             n_eff = p.get("n_eff")
             lines.append(
@@ -351,6 +365,19 @@ async def export_markdown(run_id: str):
     else:
         lines.append("_No foundational candidates were ranked for this run._")
     lines.append("")
+
+    if result.technical_evidence:
+        lines += ["## Computer-Science Dataset Evidence", "",
+                  "Dataset counts are extracted from abstracts or linked arXiv PDFs and are not comparable with patient populations or used in ranking weights.", "",
+                  "| Paper | Count | Unit | Kind | Status | Confidence |",
+                  "| --- | ---: | --- | --- | --- | ---: |"]
+        for item in result.technical_evidence:
+            paper = papers.get(item.paper_id)
+            lines.append(
+                f"| {_md(paper.title if paper else item.paper_id)} | {item.value if item.value is not None else '—'} "
+                f"| {_md(item.unit)} | {_md(item.kind)} | {item.status} | {item.confidence:.2f} |"
+            )
+        lines.append("")
 
     lines += ["## Population Evidence", ""]
     if resolved:
@@ -363,6 +390,8 @@ async def export_markdown(run_id: str):
                 f"| {label} | {res.n_eff} | {res.semantic_type or '—'} "
                 f"| {res.status} | {res.confidence:.2f} |"
             )
+    elif clinical_applicable == 0:
+        lines.append("_Clinical population size is not applicable to the papers in this run._")
     else:
         lines.append(
             "_No sample sizes were extracted. Extraction targets clinical-trial "
@@ -387,8 +416,8 @@ async def export_markdown(run_id: str):
 
     lines += [
         "---", "",
-        "_Rankings are probabilistic (PageRank over evidence-weighted citations "
-        "plus recency and evidence bonuses), not a definitive claim of "
+        "_Rankings are probabilistic (PageRank over citation weights "
+        "plus age and applicable clinical-evidence bonuses), not a definitive claim of "
         "originality. Review the underlying papers before citing._",
     ]
     return _attachment("\n".join(lines), "text/markdown", run_id, "md")

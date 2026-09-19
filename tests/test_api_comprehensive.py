@@ -787,6 +787,36 @@ class TestExport:
         assert "A, B" in rows[1][1]
         assert "Quotes" in rows[1][4]
 
+    async def test_technical_evidence_exports_separately(self, client):
+        from citegraph.models.technical_evidence import TechnicalEvidence
+
+        run_id = "technical-export-run"
+        result = _build_completed_result(run_id)
+        result.papers[0].research_domain = "computer_science"
+        result.papers[0].research_field = "Computer Science"
+        result.population_resolutions[0].n_eff = None
+        result.population_resolutions[0].status = "not_applicable"
+        result.technical_evidence = [TechnicalEvidence(
+            paper_id="P_SEED", status="resolved", kind="training_examples",
+            value=4_500_000, unit="sentence pairs", confidence=0.85,
+            evidence="We trained on 4.5 million sentence pairs.", section="abstract",
+            explanation="Explicit dataset scale.",
+        )]
+        await store.create_run(run_id)
+        await store.save_result(run_id, result)
+
+        csv_response = await client.get(f"/api/runs/{run_id}/export/csv")
+        rows = list(csv.DictReader(io.StringIO(csv_response.content.decode("utf-8-sig"))))
+        assert rows[0]["population_status"] == "not_applicable"
+        assert rows[0]["n_eff"] == ""
+        assert rows[0]["dataset_examples"] == "4500000"
+        assert rows[0]["dataset_kind"] == "training_examples"
+
+        markdown_response = await client.get(f"/api/runs/{run_id}/export/markdown")
+        assert "Computer-Science Dataset Evidence" in markdown_response.text
+        assert "4500000" in markdown_response.text
+        assert "0 of 0 applicable" in markdown_response.text
+
     async def test_export_edges_csv(self, client, completed_run_id):
         """Edges are exported separately; a paper list cannot describe the graph."""
         response = await client.get(f"/api/runs/{completed_run_id}/export/edges.csv")

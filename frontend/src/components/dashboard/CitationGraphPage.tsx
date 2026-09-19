@@ -6,6 +6,8 @@ import { getPaperById, formatConfidence } from "@/lib/formatters";
 import { X } from "lucide-react";
 
 export function CitationGraphPage({ run }: { run: RunResult }) {
+  const technicalSeed = run.papers.find((paper) => paper.paper_id === run.seed_paper_id)?.research_domain === "computer_science";
+  const nonclinicalSeed = run.papers.find((paper) => paper.paper_id === run.seed_paper_id)?.research_domain === "nonclinical";
   const years = run.papers.map((p) => p.year ?? 2000);
   const minY = Math.min(...years, 2000);
   const maxY = Math.max(...years, new Date().getFullYear());
@@ -44,8 +46,8 @@ export function CitationGraphPage({ run }: { run: RunResult }) {
             </div>
           </div>
           <Check label="Only seed-connected" value={filters.seedConnectedOnly} onChange={(v) => setFilters({ ...filters, seedConnectedOnly: v })} />
-          <Check label="Hide missing population" value={filters.hideMissing} onChange={(v) => setFilters({ ...filters, hideMissing: v })} />
-          <Check label="High-confidence only" value={filters.highConfOnly} onChange={(v) => setFilters({ ...filters, highConfOnly: v })} />
+          {!nonclinicalSeed && <Check label={technicalSeed ? "Hide missing dataset evidence" : "Hide missing population"} value={filters.hideMissing} onChange={(v) => setFilters({ ...filters, hideMissing: v })} />}
+          {!nonclinicalSeed && <Check label="High-confidence only" value={filters.highConfOnly} onChange={(v) => setFilters({ ...filters, highConfOnly: v })} />}
           <Check label="Highlight foundational" value={filters.highlightFoundational} onChange={(v) => setFilters({ ...filters, highlightFoundational: v })} />
           <button onClick={reset} className="w-full h-10 rounded-xl bg-surface-strong/60 border border-border hover:bg-surface-hover text-sm font-semibold text-text-primary">Reset filters</button>
         </div>

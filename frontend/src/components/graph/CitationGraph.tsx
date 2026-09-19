@@ -33,6 +33,8 @@ export interface GraphFilters {
 }
 
 export function CitationGraph({ run, filters, onSelectPaper, onSelectEdge }: Props) {
+  const technicalSeed = run.papers.find((paper) => paper.paper_id === run.seed_paper_id)?.research_domain === "computer_science";
+  const structuralSeed = technicalSeed || run.papers.find((paper) => paper.paper_id === run.seed_paper_id)?.research_domain === "nonclinical";
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const [size, setSize] = useState({ w: 800, h: 560 });
@@ -79,11 +81,12 @@ export function CitationGraph({ run, filters, onSelectPaper, onSelectEdge }: Pro
       if (filters.seedConnectedOnly && !seedConnectedSet.has(p.paper_id)) return false;
       if (p.year != null && (p.year < filters.yearRange[0] || p.year > filters.yearRange[1])) return false;
       const pop = getPopulationForPaper(run, p.paper_id);
-      if (filters.hideMissing && (!pop || pop.n_eff == null)) return false;
-      if (filters.highConfOnly && (!pop?.confidence || pop.confidence < 0.75)) return false;
+      const technical = run.technical_evidence.find((item) => item.paper_id === p.paper_id);
+      if (filters.hideMissing && (technicalSeed ? technical?.value == null : pop?.n_eff == null)) return false;
+      if (filters.highConfOnly && (technicalSeed ? (technical?.confidence ?? 0) : (pop?.confidence ?? 0)) < 0.75) return false;
       return true;
     });
-  }, [run, filters, seedConnectedSet]);
+  }, [run, filters, seedConnectedSet, technicalSeed]);
 
   const filteredEdges = useMemo(() => {
     const ids = new Set(filteredPapers.map((p) => p.paper_id));
@@ -107,12 +110,13 @@ export function CitationGraph({ run, filters, onSelectPaper, onSelectEdge }: Pro
     filteredPapers.forEach((p, i) => {
       const isSeed = p.paper_id === seedId;
       const pop = getPopulationForPaper(run, p.paper_id);
-      const sizeVal = pop?.n_eff
+      const technical = run.technical_evidence.find((item) => item.paper_id === p.paper_id);
+      const sizeVal = !structuralSeed && pop?.n_eff
         ? Math.max(14, Math.min(38, 12 + Math.log10(Math.max(10, pop.n_eff)) * 4))
         : 16;
       const color = isSeed
         ? "url(#seedGradient)"
-        : getConfidenceColor(pop?.confidence);
+        : structuralSeed && !technicalSeed ? "#64748b" : getConfidenceColor(technicalSeed ? technical?.value != null ? technical.confidence : undefined : pop?.n_eff != null ? pop.confidence : undefined);
       let x: number, y: number;
       if (isSeed) {
         x = cx; y = cy;
@@ -275,16 +279,17 @@ export function CitationGraph({ run, filters, onSelectPaper, onSelectEdge }: Pro
         const n = nodes[hoverNode];
         const sp = screen(n.x, n.y);
         const pop = getPopulationForPaper(run, n.id);
+        const technical = run.technical_evidence.find((item) => item.paper_id === n.id);
         return (
           <div className="pointer-events-none absolute glass-strong rounded-xl p-3 max-w-[280px] text-xs shadow-2xl"
                style={{ left: Math.min(size.w - 290, sp.x + 16), top: Math.max(8, sp.y - 80) }}>
             <div className="font-semibold text-text-primary leading-snug">{n.paper.title}</div>
             <div className="text-text-muted mt-1">{n.paper.year} · {n.paper.journal || "—"}</div>
             <div className="mt-2 grid grid-cols-2 gap-1 text-[11px]">
-              <div className="text-text-muted">N_eff</div>
-              <div className="text-text-secondary font-mono">{pop?.n_eff?.toLocaleString() || "—"}</div>
+              <div className="text-text-muted">{technicalSeed ? "Dataset examples" : "Clinical N_eff"}</div>
+              <div className="text-text-secondary font-mono">{structuralSeed && !technicalSeed ? "N/A" : technicalSeed ? technical?.value?.toLocaleString() ?? "—" : pop?.n_eff?.toLocaleString() ?? "—"}</div>
               <div className="text-text-muted">Confidence</div>
-              <div className="text-text-secondary font-mono">{pop?.confidence != null ? `${Math.round(pop.confidence * 100)}%` : "—"}</div>
+              <div className="text-text-secondary font-mono">{structuralSeed && !technicalSeed ? "N/A" : (technicalSeed ? technical?.confidence : pop?.confidence) != null ? `${Math.round((technicalSeed ? technical?.confidence : pop?.confidence)! * 100)}%` : "—"}</div>
             </div>
           </div>
         );
@@ -303,8 +308,8 @@ export function CitationGraph({ run, filters, onSelectPaper, onSelectEdge }: Pro
         <LegendRow color="#10b981" label="High confidence" />
         <LegendRow color="#f59e0b" label="Medium confidence" />
         <LegendRow color="#f43f5e" label="Low confidence" />
-        <LegendRow color="#64748b" label="Missing population" />
-        <div className="text-text-muted pt-1">Node size = N_eff · Edge thickness = weight</div>
+        <LegendRow color="#64748b" label={technicalSeed ? "No dataset evidence" : structuralSeed ? "No comparable evidence metric" : "Missing population"} />
+        <div className="text-text-muted pt-1">{structuralSeed ? "Node size fixed · Edge thickness = citation weight" : "Node size = N_eff · Edge thickness = weight"}</div>
         <div className="flex items-center gap-2 pt-1">
           <span className="h-3 w-3 rounded-full border-2 border-purple bg-transparent" />
           <span className="text-text-muted">Foundational candidate</span>

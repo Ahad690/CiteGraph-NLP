@@ -12,7 +12,7 @@ interface SidebarProps {
 const NAV = [
   { label: "Overview", icon: LayoutDashboard, base: "/dashboard" },
   { label: "Metadata", icon: FileText, base: "/metadata" },
-  { label: "Population Extraction", icon: Users, base: "/population" },
+  { label: "Evidence Extraction", icon: Users, base: "/population" },
   { label: "Citation Graph", icon: Network, base: "/graph" },
   { label: "Citation Paths", icon: GitBranch, base: "/paths" },
   { label: "Foundational Rankings", icon: Trophy, base: "/rankings" },

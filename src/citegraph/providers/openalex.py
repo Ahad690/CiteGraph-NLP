@@ -1,5 +1,6 @@
 import httpx
 import logging
+import re
 from typing import Any, Optional
 from datetime import datetime
 from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
@@ -28,7 +29,7 @@ class OpenAlexProvider:
     TITLE_SEARCH_CANDIDATES = 25
     WORK_FIELDS = (
         "id,doi,ids,display_name,authorships,publication_year,"
-        "primary_location,abstract_inverted_index"
+        "primary_location,abstract_inverted_index,primary_topic,locations"
     )
 
     def __init__(self):
@@ -82,7 +83,7 @@ class OpenAlexProvider:
             "search": title,
             "per-page": self.TITLE_SEARCH_CANDIDATES,
             "select": "id,doi,display_name,title,publication_year,cited_by_count,"
-                      "authorships,primary_location,abstract_inverted_index,ids",
+                      "authorships,primary_location,abstract_inverted_index,ids,primary_topic,locations",
         })
         results = (page or {}).get("results") or []
         if not results:
@@ -136,6 +137,36 @@ class OpenAlexProvider:
         journal = self._section(self._section(data, "primary_location"), "source").get(
             "display_name"
         )
+        arxiv_id = None
+        arxiv_sources = [doi or ""]
+        for location in data.get("locations") or []:
+            if isinstance(location, dict):
+                arxiv_sources.extend((location.get("landing_page_url") or "", location.get("pdf_url") or ""))
+        for source in arxiv_sources:
+            match = re.search(r"(?:arxiv\.org/(?:abs|pdf)/|arxiv\.)(\d{4}\.\d{4,5})(?:v\d+)?", source, re.IGNORECASE)
+            if match:
+                arxiv_id = match.group(1)
+                break
+        topic = self._section(data, "primary_topic")
+        field = self._section(topic, "field").get("display_name")
+        domain = self._section(topic, "domain").get("display_name")
+        topic_name = topic.get("display_name") or ""
+        title = data.get("display_name") or ""
+        hardware_topic = re.search(
+            r"\b(quantum|photonic|photonics|qubits?|superconducting|silicon chip|integrated circuit)\b",
+            f"{title} {topic_name}",
+            re.IGNORECASE,
+        )
+        if field == "Computer Science" and hardware_topic:
+            research_domain = "nonclinical"
+        elif field == "Computer Science":
+            research_domain = "computer_science"
+        elif domain == "Health Sciences" or field == "Medicine":
+            research_domain = "biomedical"
+        elif domain == "Physical Sciences":
+            research_domain = "nonclinical"
+        else:
+            research_domain = "unknown"
 
         return Paper(
             paper_id=paper_id,
@@ -143,11 +174,14 @@ class OpenAlexProvider:
             pmid=pmid,
             pmcid=pmcid,
             openalex_id=openalex_id,
+            arxiv_id=arxiv_id,
             title=data.get("display_name") or "Unknown Title",
             authors=authors,
             year=data.get("publication_year"),
             journal=journal,
             abstract=self._parse_abstract(data.get("abstract_inverted_index")),
+            research_domain=research_domain,
+            research_field=field,
             source_ids={"openalex": openalex_id},
             metadata_confidence=0.9,
             provenance={"openalex": {"retrieved_at": datetime.utcnow().isoformat()}}

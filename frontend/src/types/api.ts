@@ -12,7 +12,7 @@ export type SemanticType =
   | "SAMPLE_SIZE_GENERIC"
   | "UNKNOWN_NUMERIC";
 
-export type PopulationStatus = "resolved" | "ambiguous" | "missing" | "low_confidence";
+export type PopulationStatus = "resolved" | "ambiguous" | "missing" | "low_confidence" | "not_applicable";
 
 export type ConfidenceLevel = "high" | "medium" | "low";
 
@@ -24,10 +24,13 @@ export interface Paper {
   doi?: string | null;
   pmid?: string | null;
   pmcid?: string | null;
+  arxiv_id?: string | null;
   authors: string[];
   year?: number | null;
   journal?: string | null;
   abstract?: string | null;
+  research_domain?: "biomedical" | "computer_science" | "nonclinical" | "unknown";
+  research_field?: string | null;
   metadata_confidence?: number | null;
   citation_count?: number | null;
   source_ids?: Record<string, string>;
@@ -91,6 +94,18 @@ export interface RankedPath {
   titles?: string[];
 }
 
+export interface TechnicalEvidence {
+  paper_id: string;
+  status: "resolved" | "ambiguous" | "missing";
+  kind?: "training_examples" | "evaluation_examples" | "dataset_examples" | null;
+  value?: number | null;
+  unit?: string | null;
+  confidence: number;
+  evidence?: string | null;
+  section?: string | null;
+  explanation: string;
+}
+
 export interface RunResult {
   run_id: string;
   status: RunStatus;
@@ -98,6 +113,7 @@ export interface RunResult {
   papers: Paper[];
   population_resolutions: PopulationResolution[];
   population_candidates: PopulationCandidate[];
+  technical_evidence: TechnicalEvidence[];
   citation_edges: CitationEdge[];
   ranked_foundational_papers: RankedFoundationalPaper[];
   ranked_paths: RankedPath[];
