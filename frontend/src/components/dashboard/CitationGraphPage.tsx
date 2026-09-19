@@ -8,6 +8,9 @@ import { X } from "lucide-react";
 export function CitationGraphPage({ run }: { run: RunResult }) {
   const technicalSeed = run.papers.find((paper) => paper.paper_id === run.seed_paper_id)?.research_domain === "computer_science";
   const nonclinicalSeed = run.papers.find((paper) => paper.paper_id === run.seed_paper_id)?.research_domain === "nonclinical";
+  const hasEvidence = technicalSeed
+    ? run.technical_evidence.some((item) => item.value != null)
+    : run.population_resolutions.some((item) => item.n_eff != null);
   const years = run.papers.map((p) => p.year ?? 2000);
   const minY = Math.min(...years, 2000);
   const maxY = Math.max(...years, new Date().getFullYear());
@@ -46,8 +49,13 @@ export function CitationGraphPage({ run }: { run: RunResult }) {
             </div>
           </div>
           <Check label="Only seed-connected" value={filters.seedConnectedOnly} onChange={(v) => setFilters({ ...filters, seedConnectedOnly: v })} />
-          {!nonclinicalSeed && <Check label={technicalSeed ? "Hide missing dataset evidence" : "Hide missing population"} value={filters.hideMissing} onChange={(v) => setFilters({ ...filters, hideMissing: v })} />}
-          {!nonclinicalSeed && <Check label="High-confidence only" value={filters.highConfOnly} onChange={(v) => setFilters({ ...filters, highConfOnly: v })} />}
+          {!nonclinicalSeed && (
+            <div>
+              <Check label={technicalSeed ? "Hide missing dataset evidence" : "Hide missing population"} value={filters.hideMissing && hasEvidence} disabled={!hasEvidence} onChange={(v) => setFilters({ ...filters, hideMissing: v })} />
+              {!hasEvidence && <p className="mt-1 pl-7 text-xs text-text-muted">No {technicalSeed ? "dataset counts" : "clinical population values"} were found in this run.</p>}
+            </div>
+          )}
+          <Check label="High metadata confidence only" value={filters.highConfOnly} onChange={(v) => setFilters({ ...filters, highConfOnly: v })} />
           <Check label="Highlight foundational" value={filters.highlightFoundational} onChange={(v) => setFilters({ ...filters, highlightFoundational: v })} />
           <button onClick={reset} className="w-full h-10 rounded-xl bg-surface-strong/60 border border-border hover:bg-surface-hover text-sm font-semibold text-text-primary">Reset filters</button>
         </div>
@@ -55,7 +63,7 @@ export function CitationGraphPage({ run }: { run: RunResult }) {
         <div className="h-[680px] lg:h-[720px]">
           <CitationGraph
             run={run}
-            filters={filters}
+            filters={hasEvidence ? filters : { ...filters, hideMissing: false }}
             onSelectPaper={setPaper}
             onSelectEdge={setEdge}
           />
@@ -87,10 +95,10 @@ function Slider({ label, value, onChange }: { label: string; value: number; onCh
   );
 }
 
-function Check({ label, value, onChange }: { label: string; value: boolean; onChange: (v: boolean) => void }) {
+function Check({ label, value, disabled = false, onChange }: { label: string; value: boolean; disabled?: boolean; onChange: (v: boolean) => void }) {
   return (
-    <label className="flex items-center gap-2.5 cursor-pointer text-sm text-text-secondary hover:text-text-primary">
-      <input type="checkbox" checked={value} onChange={(e) => onChange(e.target.checked)} className="h-4 w-4 accent-indigo rounded" />
+    <label className={`flex items-center gap-2.5 text-sm ${disabled ? "cursor-not-allowed text-text-muted" : "cursor-pointer text-text-secondary hover:text-text-primary"}`}>
+      <input type="checkbox" checked={value} disabled={disabled} onChange={(e) => onChange(e.target.checked)} className="h-4 w-4 accent-indigo rounded" />
       {label}
     </label>
   );

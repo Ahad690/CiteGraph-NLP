@@ -79,8 +79,8 @@ export function MetadataPage({ run }: { run: RunResult }) {
       {rows.length === 0 ? (
         <EmptyState title="No papers match your filters" description="Try clearing search or filters." />
       ) : (
-        <div className="glass rounded-2xl overflow-hidden">
-          <div className="hidden md:grid grid-cols-[1fr_80px_180px_180px_120px_120px_140px] gap-3 px-4 py-3 border-b border-border text-[11px] uppercase tracking-wider text-text-muted font-semibold">
+        <div className="glass rounded-2xl max-h-[70vh] overflow-auto scrollbar-thin">
+          <div className="hidden md:grid min-w-[1120px] grid-cols-[minmax(280px,2fr)_80px_180px_180px_110px_120px_120px] gap-3 px-4 py-3 border-b border-border text-[11px] uppercase tracking-wider text-text-muted font-semibold">
             <SortHeader label="Title" k="title" sortKey={sortKey} dir={sortDir} onClick={toggleSort} />
             <SortHeader label="Year" k="year" sortKey={sortKey} dir={sortDir} onClick={toggleSort} />
             <span>Journal</span>
@@ -89,17 +89,17 @@ export function MetadataPage({ run }: { run: RunResult }) {
             <SortHeader label="Confidence" k="confidence" sortKey={sortKey} dir={sortDir} onClick={toggleSort} />
             <span>Role</span>
           </div>
-          <div className="divide-y divide-border max-h-[70vh] overflow-y-auto scrollbar-thin">
+          <div className="divide-y divide-border">
             {rows.map((p) => {
               const isSeed = p.paper_id === run.seed_paper_id;
               return (
                 <button
                   key={p.paper_id}
                   onClick={() => setSelected(p)}
-                  className={`w-full text-left grid grid-cols-1 md:grid-cols-[1fr_80px_180px_180px_120px_120px_140px] gap-3 px-4 py-3.5 hover:bg-surface-hover/40 transition-colors ${isSeed ? "bg-gradient-to-r from-indigo/10 to-cyan/5 border-l-2 border-l-cyan" : ""}`}
+                  className={`w-full text-left grid grid-cols-1 md:min-w-[1120px] md:grid-cols-[minmax(280px,2fr)_80px_180px_180px_110px_120px_120px] gap-3 px-4 py-3.5 hover:bg-surface-hover/40 transition-colors ${isSeed ? "bg-gradient-to-r from-indigo/10 to-cyan/5 border-l-2 border-l-cyan" : ""}`}
                 >
                   <div className="min-w-0">
-                    <div className="text-sm font-medium text-text-primary leading-snug">{truncateTitle(p.title, 110)}</div>
+                    <div className="text-sm font-medium text-text-primary leading-snug line-clamp-2">{truncateTitle(p.title, 110)}</div>
                     {p.doi && <div className="text-[11px] text-text-muted font-mono mt-0.5 truncate">{p.doi}</div>}
                   </div>
                   <div className="text-sm text-text-secondary">{p.year ?? "—"}</div>

@@ -83,7 +83,7 @@ export function CitationGraph({ run, filters, onSelectPaper, onSelectEdge }: Pro
       const pop = getPopulationForPaper(run, p.paper_id);
       const technical = run.technical_evidence.find((item) => item.paper_id === p.paper_id);
       if (filters.hideMissing && (technicalSeed ? technical?.value == null : pop?.n_eff == null)) return false;
-      if (filters.highConfOnly && (technicalSeed ? (technical?.confidence ?? 0) : (pop?.confidence ?? 0)) < 0.75) return false;
+      if (filters.highConfOnly && (p.metadata_confidence ?? 0) < 0.75) return false;
       return true;
     });
   }, [run, filters, seedConnectedSet, technicalSeed]);
@@ -273,6 +273,12 @@ export function CitationGraph({ run, filters, onSelectPaper, onSelectEdge }: Pro
           })}
         </g>
       </svg>
+
+      {filteredPapers.length === 0 && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-6 text-center text-sm text-text-secondary">
+          No papers match these filters. Adjust the year range or reset the filters.
+        </div>
+      )}
 
       {/* Tooltip */}
       {hoverNode && nodes[hoverNode] && (() => {

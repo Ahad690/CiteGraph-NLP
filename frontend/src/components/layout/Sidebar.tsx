@@ -1,11 +1,11 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { LayoutDashboard, FileText, Users, Network, GitBranch, Trophy, Download, Sparkles, ArrowUpRight } from "lucide-react";
 import { RunStatusCard } from "./RunStatusCard";
-import type { RunResult } from "@/types/api";
+import type { RunPayload } from "@/types/api";
 
 interface SidebarProps {
   runId: string | null;
-  run?: RunResult;
+  run?: RunPayload;
   loading?: boolean;
 }
 

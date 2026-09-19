@@ -2,13 +2,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { RefreshCw, Download, Search } from "lucide-react";
 import { StatusBadge } from "../ui-kit/StatusBadge";
-import type { RunResult } from "@/types/api";
+import type { RunPayload } from "@/types/api";
+import { deriveStatus } from "@/lib/runNormalization";
 
 interface TopHeaderProps {
   title: string;
   subtitle?: string;
   runId: string | null;
-  run?: RunResult;
+  run?: RunPayload;
 }
 
 export function TopHeader({ title, subtitle, runId, run }: TopHeaderProps) {
@@ -31,7 +32,7 @@ export function TopHeader({ title, subtitle, runId, run }: TopHeaderProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          {run && <StatusBadge status={run.status} />}
+          {run && <StatusBadge status={deriveStatus(run)} />}
           <button
             onClick={() => runId && qc.invalidateQueries({ queryKey: ["run", runId] })}
             className="h-10 w-10 grid place-items-center rounded-xl bg-surface-strong/60 border border-border hover:bg-surface-hover transition-colors"
