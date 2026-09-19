@@ -1,0 +1,65 @@
+/* Print rules for the WeasyPrint path.
+ *
+ * The assembler joins chapters with a \newpage marker. That marker is a raw
+ * LaTeX command, so the LaTeX writer honours it and the HTML writer drops it.
+ * render_thesis.py therefore rewrites each marker to <div class="pagebreak">
+ * before handing the body to Pandoc, and this file gives that div its meaning.
+ * Without it, chapters start on a fresh page only when the previous chapter
+ * happens to fill one.
+ */
+
+.pagebreak {
+  break-before: page;
+}
+
+/* Keep a figure whole, and keep its caption on the same page as its image.
+ * The generated diagrams in Chapter 4, Chapter 5 and Appendix H are large
+ * enough that WeasyPrint will otherwise split image from caption.
+ */
+figure {
+  break-inside: avoid;
+  margin: 1.2em 0;
+  text-align: center;
+}
+
+figure img {
+  max-width: 100%;
+  height: auto;
+}
+
+figcaption {
+  font-size: 0.85em;
+  line-height: 1.35;
+  text-align: left;
+  margin-top: 0.5em;
+}
+
+/* A heading should not be the last thing on a page. */
+h1, h2, h3, h4 {
+  break-after: avoid;
+}
+
+/* Tables are numerous in the appendices; do not strand a header row. */
+table {
+  break-inside: auto;
+}
+
+thead {
+  break-after: avoid;
+}
+
+tr {
+  break-inside: avoid;
+}
+
+/* The front matter carries the title page and must not be pushed around by
+ * the chapter rules above.
+ */
+.frontmatter {
+  break-after: page;
+}
+
+.frontmatter img {
+  display: block;
+  margin: 0 auto 1.5em auto;
+}

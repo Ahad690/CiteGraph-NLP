@@ -70,7 +70,28 @@ artifacts, then concatenates all chapters into
 `thesis/CiteGraph-NLP-Thesis.md`. The reference list is *generated*, not
 hand-maintained, so it cannot drift from the verification record.
 
-## C.6 Rendering to PDF
+## C.6 Regenerating the figures
+
+```bash
+python scripts/generate_diagrams.py
+```
+
+Writes all eight SVG figures to `thesis/figures/`. Needs `pylint`, `code2flow`
+and the Graphviz `dot` binary; the first two install with
+
+```bash
+pip install pylint code2flow
+```
+
+and Graphviz is a separate native package (`winget install Graphviz.Graphviz`,
+`brew install graphviz`, or `apt install graphviz`). Appendix H explains what
+each figure is derived from and why the chapter versions are reduced.
+
+The figures are committed, so rebuilding the thesis does not require Graphviz.
+Rerun the script only after changing the models, the package layout or the
+orchestrator, since those are what the figures are derived from.
+
+## C.7 Rendering to PDF
 
 Two engines work. WeasyPrint needs no LaTeX installation and is what the
 page counts in this thesis were measured with:
@@ -122,7 +143,7 @@ pandoc thesis/CiteGraph-NLP-Thesis.md \
 `\newpage` markers between chapters are inserted by the assembly script and are
 honoured by the LaTeX writer.
 
-## C.7 Running the system
+## C.8 Running the system
 
 Locally:
 
@@ -139,7 +160,7 @@ docker compose up --build
 
 The deployed instance is documented in the project README.
 
-## C.8 A caveat on exact reproduction
+## C.9 A caveat on exact reproduction
 
 The evaluation queries live scholarly APIs. OpenAlex and Crossref revise
 records continuously, abstracts are added, reference lists are corrected,

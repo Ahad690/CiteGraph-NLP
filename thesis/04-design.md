@@ -38,6 +38,27 @@ back by the dashboard and the export endpoints.
                     └─────────────────────────────────┘
 ```
 
+![**Figure 4.1** Inter-package dependencies, produced by running `pyreverse`
+over `src/citegraph` and collapsing its 46 module nodes to the 13 packages
+they belong to. Each arrow stands for one or more imports and is drawn
+thicker the more imports it carries. The heaviest arrows run downward into
+`models`, which holds the Pydantic types every other package
+constructs.](figures/architecture_packages.svg){width=100%}
+
+The figure is generated rather than drawn, so it shows what the code imports
+rather than what the design intended. Two properties are worth reading off it.
+Nothing below `pipeline` imports anything above it, so the layering claimed in
+Section 4.1.1 holds in the import graph and not only in prose. And `providers`
+is reached from `citations`, `metadata` and `pipeline` but reaches back to
+nothing except `models` and `config`, which is what makes the Europe PMC
+backfill of Section 4.4.3 a local change.
+
+![**Figure 4.2** Object composition among the classes that participate in a
+relationship, from `pyreverse` with the 15 unrelated classes removed.
+`PipelineOrchestrator` composes eight collaborators, one per stage; edge
+labels are the attribute names the orchestrator stores them
+under.](figures/classes_core.svg){width=95%}
+
 ### 4.1.1 Design principles
 
 **Separation of retrieval from interpretation.** The provider layer knows how
@@ -65,6 +86,13 @@ appears as a node; its edges simply carry no evidential term.
 
 Five entities, defined as Pydantic models so that validation happens at
 construction.
+
+![**Figure 4.3** The extraction half of the data model, introspected from the
+Pydantic classes in `src/citegraph/models/`. Field names and types are read
+from the live model definitions, so this figure cannot drift from the code.
+A query resolves to a `Paper`; the abstract of that paper yields zero or more
+`PopulationCandidate` rows; and the resolver collapses those candidates to at
+most one `PopulationResolution`.](figures/datamodel_extraction.svg){width=52%}
 
 ### 4.2.1 Paper
 
@@ -140,6 +168,12 @@ They are listed here as specified-but-unimplemented rather than quietly omitted.
 
 Retaining the components rather than only the final weight means a user can see
 *why* an edge is weighted as it is, and the edge-list export exposes all of them.
+
+![**Figure 4.4** The graph half of the data model. `CitationEdge` draws its
+structural fields from two `Paper` records and its evidential fields
+(`n_score`, `final_weight`) from the `PopulationResolution` of its target.
+`RunResult` is the aggregate that is serialised to SQLite and returned to the
+dashboard.](figures/datamodel_graph.svg){width=100%}
 
 ## 4.3 Metadata Resolution
 

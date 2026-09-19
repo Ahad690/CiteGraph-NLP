@@ -216,7 +216,7 @@ does not is use the extracted scale *as a citation-graph edge weight*, the
 combination of extraction with network analysis is where the work sits, not in
 the extraction itself.
 
-## 2.5 Evidence Appraisal and the Role of Study Size
+## 2.5 Evidence appraisal and the role of study size
 
 The premise that sample size is a meaningful proxy for evidential weight is
 supported by, but not identical to, the methodological literature.

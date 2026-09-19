@@ -34,6 +34,22 @@ populations, weight edges, build graph, run analytics. Each stage is a separate
 module; the orchestrator holds no domain logic beyond sequencing and the
 assembly of warnings.
 
+![**Figure 5.1** Calls made by `PipelineOrchestrator.run()`, traced by
+`code2flow` over the source and cut two levels below the entry point. Node
+labels carry the line number the function is defined at, so the figure doubles
+as an index into the source. Dotted boxes are files and classes, and green
+nodes call nothing further within the project. `run()` sits at the left, the
+stages it calls form the middle column, and the functions those stages call in
+turn sit at the right.](figures/callgraph_pipeline.svg){width=62%}
+
+Reading the figure against the stage list above shows one structural property
+worth stating: `run()` calls each stage directly and no stage calls another.
+Sequencing lives in one function, so a stage can be reordered or removed by
+editing `run()` alone. The single exception is `_backfill_abstracts()`, which
+`run()` delegates to and which in turn calls the Europe PMC provider; it was
+added as a separate method rather than inline because it is the one stage that
+is skipped entirely when every abstract is already present.
+
 Runs execute as background tasks. A `POST` returns a run identifier
 immediately, and the client polls. This is necessary because runs take tens of
 seconds to minutes, Section 6.6 characterises the distribution, which far
@@ -247,7 +263,7 @@ falls back only on a genuine `None`, so a real zero can no longer be disguised.
 Evidence still outranks absence, larger samples outrank smaller, and low
 confidence is penalised, but nothing collapses to zero.
 
-## 5.7 Defect 5: server-Side request forgery in URL input
+## 5.7 Defect 5: server-side request forgery in URL input
 
 Accepting an article URL requires fetching it when no identifier can be parsed
 from the URL text. The implementation fetched any URL that had a scheme and a

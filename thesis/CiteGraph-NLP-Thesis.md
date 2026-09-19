@@ -1,3 +1,5 @@
+![National University of Technology](assets/nutech-logo.png){width=45mm}
+
 # CiteGraph-NLP: A Confidence-Aware System for Citation Lineage Analysis and Study-Scale Evidence Extraction
 
 **A thesis submitted in partial fulfilment of the requirements for the degree of**
@@ -122,7 +124,29 @@ biomedical NLP, PageRank, evidence synthesis, scholarly APIs
 - B. Configuration Reference
 - C. Reproducing the Results
 - D. Gold Standard Annotations
-- E. Verified Reference Metadata
+- E. Requirements Traceability
+- F. Test Inventory
+- G. Source Listings
+- H. Full-Scale Generated Diagrams
+
+---
+
+## List of Figures
+
+Every structural figure is generated from the source tree by
+`scripts/generate_diagrams.py`; Appendix H records how, and carries the
+full-scale plates the chapter figures are reduced from.
+
+| Figure | Subject |
+|--------|---------|
+| 4.1 | Inter-package dependencies |
+| 4.2 | Object composition among related classes |
+| 4.3 | Data model, query to population |
+| 4.4 | Data model, population to run result |
+| 5.1 | Calls made by the pipeline orchestrator |
+| H.1 | Combined data model, all seven entities |
+| H.2 | Complete class diagram |
+| H.3 | Complete call graph |
 
 ---
 
@@ -563,7 +587,7 @@ does not is use the extracted scale *as a citation-graph edge weight*, the
 combination of extraction with network analysis is where the work sits, not in
 the extraction itself.
 
-## 2.5 Evidence Appraisal and the Role of Study Size
+## 2.5 Evidence appraisal and the role of study size
 
 The premise that sample size is a meaningful proxy for evidential weight is
 supported by, but not identical to, the methodological literature.
@@ -688,7 +712,7 @@ method and the section reporting the result.
 | FR-23 | Export results as JSON, CSV, edge-list CSV, Markdown and GraphML | Automated test, §5.8 |
 | FR-24 | Provide a REST API and a web dashboard | Deployment, §5.9 |
 
-## 3.3 Non-Functional Requirements
+## 3.3 Non-functional requirements
 
 | ID | Requirement | Target | Result |
 |----|-------------|--------|--------|
@@ -710,11 +734,11 @@ detectable.
 
 ### 3.4.1 Process
 
-Development followed an iterative build–measure–correct cycle rather than a
-waterfall. Given a four-person team, a fixed academic deadline and external
-dependencies whose behaviour was not fully known in advance, planning the
-system completely before building it was not realistic, a judgement the
-feasibility study supported.
+Development followed an iterative cycle of building, measuring and correcting
+rather than a waterfall. Given a three-person team, a fixed academic deadline
+and external dependencies whose behaviour was not fully known in advance,
+planning the system completely before building it was not realistic, a
+judgement the feasibility study supported.
 
 Each iteration comprised: implement a pipeline stage; write automated tests;
 run the stage against live scholarly APIs; inspect the output for correctness;
@@ -816,9 +840,10 @@ papers would not be detected by the present measurement.
 
 ## 3.6 Team Organisation
 
-Four members worked across a pipeline that decomposes naturally into
-independent modules with narrow interfaces. Ownership was assigned by module so
-that two people rarely edited the same file, with review shared.
+Three members worked across a pipeline that decomposes naturally into
+independent modules with narrow interfaces. Work was organised by module rather
+than by person, into the four areas below, so that two people rarely edited the
+same file; review was shared, and the fourth area was covered jointly.
 
 | Area | Primary responsibility |
 |------|------------------------|
@@ -967,6 +992,27 @@ back by the dashboard and the export endpoints.
                     └─────────────────────────────────┘
 ```
 
+![**Figure 4.1** Inter-package dependencies, produced by running `pyreverse`
+over `src/citegraph` and collapsing its 46 module nodes to the 13 packages
+they belong to. Each arrow stands for one or more imports and is drawn
+thicker the more imports it carries. The heaviest arrows run downward into
+`models`, which holds the Pydantic types every other package
+constructs.](figures/architecture_packages.svg){width=100%}
+
+The figure is generated rather than drawn, so it shows what the code imports
+rather than what the design intended. Two properties are worth reading off it.
+Nothing below `pipeline` imports anything above it, so the layering claimed in
+Section 4.1.1 holds in the import graph and not only in prose. And `providers`
+is reached from `citations`, `metadata` and `pipeline` but reaches back to
+nothing except `models` and `config`, which is what makes the Europe PMC
+backfill of Section 4.4.3 a local change.
+
+![**Figure 4.2** Object composition among the classes that participate in a
+relationship, from `pyreverse` with the 15 unrelated classes removed.
+`PipelineOrchestrator` composes eight collaborators, one per stage; edge
+labels are the attribute names the orchestrator stores them
+under.](figures/classes_core.svg){width=95%}
+
 ### 4.1.1 Design principles
 
 **Separation of retrieval from interpretation.** The provider layer knows how
@@ -994,6 +1040,13 @@ appears as a node; its edges simply carry no evidential term.
 
 Five entities, defined as Pydantic models so that validation happens at
 construction.
+
+![**Figure 4.3** The extraction half of the data model, introspected from the
+Pydantic classes in `src/citegraph/models/`. Field names and types are read
+from the live model definitions, so this figure cannot drift from the code.
+A query resolves to a `Paper`; the abstract of that paper yields zero or more
+`PopulationCandidate` rows; and the resolver collapses those candidates to at
+most one `PopulationResolution`.](figures/datamodel_extraction.svg){width=52%}
 
 ### 4.2.1 Paper
 
@@ -1069,6 +1122,12 @@ They are listed here as specified-but-unimplemented rather than quietly omitted.
 
 Retaining the components rather than only the final weight means a user can see
 *why* an edge is weighted as it is, and the edge-list export exposes all of them.
+
+![**Figure 4.4** The graph half of the data model. `CitationEdge` draws its
+structural fields from two `Paper` records and its evidential fields
+(`n_score`, `final_weight`) from the `PopulationResolution` of its target.
+`RunResult` is the aggregate that is serialised to SQLite and returned to the
+dashboard.](figures/datamodel_graph.svg){width=100%}
 
 ## 4.3 Metadata Resolution
 
@@ -1296,7 +1355,7 @@ rewards two providers *returning* a record, not two providers *agreeing* on its
 contents. A stronger formulation would compare the fields themselves and reduce
 confidence on disagreement. This is not implemented.
 
-## 4.9 Algorithm 2: level-Synchronous citation traversal
+## 4.9 Algorithm 2: level-synchronous citation traversal
 
 ### 4.9.1 Problem
 
@@ -1630,6 +1689,22 @@ populations, weight edges, build graph, run analytics. Each stage is a separate
 module; the orchestrator holds no domain logic beyond sequencing and the
 assembly of warnings.
 
+![**Figure 5.1** Calls made by `PipelineOrchestrator.run()`, traced by
+`code2flow` over the source and cut two levels below the entry point. Node
+labels carry the line number the function is defined at, so the figure doubles
+as an index into the source. Dotted boxes are files and classes, and green
+nodes call nothing further within the project. `run()` sits at the left, the
+stages it calls form the middle column, and the functions those stages call in
+turn sit at the right.](figures/callgraph_pipeline.svg){width=62%}
+
+Reading the figure against the stage list above shows one structural property
+worth stating: `run()` calls each stage directly and no stage calls another.
+Sequencing lives in one function, so a stage can be reordered or removed by
+editing `run()` alone. The single exception is `_backfill_abstracts()`, which
+`run()` delegates to and which in turn calls the Europe PMC provider; it was
+added as a separate method rather than inline because it is the one stage that
+is skipped entirely when every abstract is already present.
+
 Runs execute as background tasks. A `POST` returns a run identifier
 immediately, and the client polls. This is necessary because runs take tens of
 seconds to minutes, Section 6.6 characterises the distribution, which far
@@ -1843,7 +1918,7 @@ falls back only on a genuine `None`, so a real zero can no longer be disguised.
 Evidence still outranks absence, larger samples outrank smaller, and low
 confidence is penalised, but nothing collapses to zero.
 
-## 5.7 Defect 5: server-Side request forgery in URL input
+## 5.7 Defect 5: server-side request forgery in URL input
 
 Accepting an article URL requires fetching it when no identifier can be parsed
 from the URL text. The implementation fetched any URL that had a scheme and a
@@ -2409,7 +2484,7 @@ and the errors are invisible without verification, since a plausible DOI looks
 exactly like a correct one. All twenty-nine entries in the final bibliography
 resolve.
 
-## 6.8 Summary of Results against objectives
+## 6.8 Summary of results against objectives
 
 | Objective | Status | Evidence |
 |-----------|--------|----------|
@@ -2433,7 +2508,7 @@ defensible output on inspection, has not been validated against human judgement
 
 # Chapter 6 (continued): Extended Analysis
 
-## 6.9 Performance by Study Design
+## 6.9 Performance by study design
 
 Aggregate metrics conceal where a system succeeds and fails. Breaking the
 gold-standard results down by study design shows that performance is not
@@ -2519,7 +2594,7 @@ Until then, the honest framing for a user is that the confidence score indicates
 right*. Section 5.13.4 notes that the interface does not currently make this
 distinction.
 
-## 6.11 Sensitivity of the Graph to Seed Choice
+## 6.11 Sensitivity of the graph to seed choice
 
 The three traversals in Section 6.5 produced markedly different graph
 structures from the same parameters.
@@ -2575,7 +2650,7 @@ different facts about a paper, and only the second is a statement about the
 paper itself. The warnings described in Section 4.7 were added so that the
 output now separates them.
 
-## 6.13 Cumulative Effect of the Corrections
+## 6.13 Cumulative effect of the corrections
 
 Measured on the same 40-paper graph across the correction sequence in
 Chapter 5. Each row is the state after the named correction.
@@ -3203,7 +3278,28 @@ artifacts, then concatenates all chapters into
 `thesis/CiteGraph-NLP-Thesis.md`. The reference list is *generated*, not
 hand-maintained, so it cannot drift from the verification record.
 
-## C.6 Rendering to PDF
+## C.6 Regenerating the figures
+
+```bash
+python scripts/generate_diagrams.py
+```
+
+Writes all eight SVG figures to `thesis/figures/`. Needs `pylint`, `code2flow`
+and the Graphviz `dot` binary; the first two install with
+
+```bash
+pip install pylint code2flow
+```
+
+and Graphviz is a separate native package (`winget install Graphviz.Graphviz`,
+`brew install graphviz`, or `apt install graphviz`). Appendix H explains what
+each figure is derived from and why the chapter versions are reduced.
+
+The figures are committed, so rebuilding the thesis does not require Graphviz.
+Rerun the script only after changing the models, the package layout or the
+orchestrator, since those are what the figures are derived from.
+
+## C.7 Rendering to PDF
 
 Two engines work. WeasyPrint needs no LaTeX installation and is what the
 page counts in this thesis were measured with:
@@ -3255,7 +3351,7 @@ pandoc thesis/CiteGraph-NLP-Thesis.md \
 `\newpage` markers between chapters are inserted by the assembly script and are
 honoured by the LaTeX writer.
 
-## C.7 Running the system
+## C.8 Running the system
 
 Locally:
 
@@ -3272,7 +3368,7 @@ docker compose up --build
 
 The deployed instance is documented in the project README.
 
-## C.8 A caveat on exact reproduction
+## C.9 A caveat on exact reproduction
 
 The evaluation queries live scholarly APIs. OpenAlex and Crossref revise
 records continuously, abstracts are added, reference lists are corrected,
@@ -3901,6 +3997,119 @@ def wilson_interval(successes: int, trials: int, z: float = 1.96):
                    + z * z / (4 * trials * trials)) ** 0.5) / denominator
     return (max(0.0, centre - margin), min(1.0, centre + margin))
 ```
+
+\newpage
+
+# Appendix H: Full-Scale Generated Diagrams
+
+Every figure in this thesis that describes the structure of the system was
+produced by running a tool over `src/citegraph`, not by drawing it. The
+chapters show reduced views chosen to stay legible at page width. This
+appendix carries the complete plates the reductions were taken from, so a
+reader can check that nothing material was hidden by the reduction.
+
+## H.1 How the figures are produced
+
+One script generates all eight:
+
+```bash
+python scripts/generate_diagrams.py
+```
+
+It needs `pylint` (which supplies `pyreverse`), `code2flow`, and the Graphviz
+`dot` binary on `PATH`. Output lands in `thesis/figures/` as SVG. The script
+prints the node and edge counts for each figure, which is how the counts
+quoted in the captions were obtained.
+
+| Figure | Source | Tool |
+|--------|--------|------|
+| 4.1 Inter-package dependencies | `src/citegraph` imports | `pyreverse`, collapsed to packages |
+| 4.2 Object composition | class attributes | `pyreverse -k`, filtered to connected classes |
+| 4.3 Data model, extraction half | `models/` Pydantic classes | introspection of `model_fields` |
+| 4.4 Data model, graph half | `models/` Pydantic classes | introspection of `model_fields` |
+| 5.1 Orchestrator call graph | `pipeline/orchestrator.py` | `code2flow`, depth 2 |
+| H.1 Combined data model | `models/` Pydantic classes | introspection of `model_fields` |
+| H.2 Complete class diagram | all classes | `pyreverse` |
+| H.3 Complete call graph | all functions | `code2flow` |
+
+The data-model figures deserve a note on method. They are not parsed from
+source text; the script imports the Pydantic classes and reads
+`model_fields`, which is the same structure Pydantic uses to validate incoming
+data at runtime. A field renamed in the code changes the next figure without
+anyone editing a diagram, and a figure showing a field that no longer exists
+is not possible.
+
+## H.2 Why the chapter figures are reduced
+
+Three reductions are applied, each for the same reason. How legible a
+Graphviz figure is at a fixed page width depends only on the ratio between its
+font size and its total width, and enlarging the font enlarges the boxes by
+the same proportion. Narrowing the graph is therefore the only lever
+available.
+
+**Collapsing modules to packages** (Figure 4.1). The raw output has 46 module
+nodes and 83 import edges, and at page width its labels render at roughly
+three points. Collapsing each module to its package leaves 13 nodes and 38
+edges, and carries the discarded detail as edge thickness rather than losing
+it.
+
+**Filtering unrelated classes** (Figure 4.2). `pyreverse` draws every class it
+finds, including the 15 that take part in no association or inheritance
+relationship. Those 15 occupy a full column of the canvas and contribute no
+structure, so they are dropped from the chapter figure. Plate H.2 below
+retains them.
+
+**Splitting the data model** (Figures 4.3 and 4.4). Seven entities carrying 63
+fields do not fit one page at a readable size in any orientation. The chapter
+uses two overlapping views, one per half of the pipeline, with `Paper`,
+`Study` and `PopulationResolution` appearing in both because they are the
+entities the two halves share. Plate H.1 below is the combined view.
+
+No reduction removes an entity, a class relationship or a package dependency
+without it appearing in a plate here.
+
+## H.3 Plates
+
+![**Plate H.1** The complete data model: all seven Pydantic entities with
+every field and type, and all ten relationships. Figures 4.3 and 4.4 are the
+two halves of this diagram.](figures/datamodel_full.svg){width=64%}
+
+\newpage
+
+![**Plate H.2** The complete class diagram from `pyreverse`, including the
+classes that participate in no relationship. Reproduced at full scale; the
+labels are small in print and are intended to be read by zooming the PDF or by
+opening `thesis/figures/classes_full.svg`, which is vector and scales without
+loss.](figures/classes_full.svg){width=100%}
+
+\newpage
+
+![**Plate H.3** The complete call graph from `code2flow`: 105 functions and
+every call between them, grouped by file and class. Figure 5.1 is the subgraph
+reachable from `PipelineOrchestrator.run()` within two
+levels.](figures/callgraph_full.svg){width=88%}
+
+## H.4 A caveat on the call graphs
+
+`code2flow` resolves calls statically by name, which has two consequences a
+reader should keep in mind when using Plate H.3 as a map of control flow.
+
+Calls made through a variable whose type it cannot infer are recorded against
+an unknown owner and do not appear as edges. This affects the provider calls
+most, because the orchestrator holds providers behind the `MetadataProvider`
+protocol; a call to `provider.resolve()` cannot be attributed to
+`OpenAlexProvider`, `CrossrefProvider` or `EuropePMCProvider` without running
+the program. The three concrete providers therefore appear less connected in
+the plate than they are at runtime.
+
+Second, the tool records a call site, not a call count or an execution order.
+An edge drawn once may execute once per paper in a graph of several hundred,
+and the left-to-right arrangement within a rank carries no meaning. Section
+6.6 gives the measured runtime distribution, which is the correct source for
+where time is actually spent.
+
+Neither limitation affects the class, package or data-model figures, which are
+derived from declarations rather than from call sites.
 
 \newpage
 

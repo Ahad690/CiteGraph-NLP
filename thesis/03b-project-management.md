@@ -2,9 +2,10 @@
 
 ## 3.6 Team Organisation
 
-Four members worked across a pipeline that decomposes naturally into
-independent modules with narrow interfaces. Ownership was assigned by module so
-that two people rarely edited the same file, with review shared.
+Three members worked across a pipeline that decomposes naturally into
+independent modules with narrow interfaces. Work was organised by module rather
+than by person, into the four areas below, so that two people rarely edited the
+same file; review was shared, and the fourth area was covered jointly.
 
 | Area | Primary responsibility |
 |------|------------------------|

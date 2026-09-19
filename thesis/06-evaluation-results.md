@@ -326,7 +326,7 @@ and the errors are invisible without verification, since a plausible DOI looks
 exactly like a correct one. All twenty-nine entries in the final bibliography
 resolve.
 
-## 6.8 Summary of Results against objectives
+## 6.8 Summary of results against objectives
 
 | Objective | Status | Evidence |
 |-----------|--------|----------|

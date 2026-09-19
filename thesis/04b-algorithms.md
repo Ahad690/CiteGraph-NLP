@@ -58,7 +58,7 @@ rewards two providers *returning* a record, not two providers *agreeing* on its
 contents. A stronger formulation would compare the fields themselves and reduce
 confidence on disagreement. This is not implemented.
 
-## 4.9 Algorithm 2: level-Synchronous citation traversal
+## 4.9 Algorithm 2: level-synchronous citation traversal
 
 ### 4.9.1 Problem
 

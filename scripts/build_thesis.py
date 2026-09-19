@@ -41,6 +41,7 @@ CHAPTERS = [
     "14-appendix-e-traceability.md",
     "15-appendix-f-tests.md",
     "16-appendix-g-listings.md",
+    "17-appendix-h-diagrams.md",
     "13-references.md",
 ]
 
@@ -171,7 +172,7 @@ def assemble() -> None:
     print(f"  table rows        : {table_rows:,}")
     print(f"  code fences       : {code_fences}")
     print(f"  estimated A4 pages: ~{est_pages}  (calibrated against a real render)")
-    print("  verify with the Pandoc + WeasyPrint command in Appendix C.6")
+    print("  verify with the Pandoc + WeasyPrint command in Appendix C.7")
     if missing:
         print(f"  MISSING        : {missing}")
 

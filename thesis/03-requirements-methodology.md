@@ -71,7 +71,7 @@ method and the section reporting the result.
 | FR-23 | Export results as JSON, CSV, edge-list CSV, Markdown and GraphML | Automated test, §5.8 |
 | FR-24 | Provide a REST API and a web dashboard | Deployment, §5.9 |
 
-## 3.3 Non-Functional Requirements
+## 3.3 Non-functional requirements
 
 | ID | Requirement | Target | Result |
 |----|-------------|--------|--------|
@@ -93,11 +93,11 @@ detectable.
 
 ### 3.4.1 Process
 
-Development followed an iterative build–measure–correct cycle rather than a
-waterfall. Given a four-person team, a fixed academic deadline and external
-dependencies whose behaviour was not fully known in advance, planning the
-system completely before building it was not realistic, a judgement the
-feasibility study supported.
+Development followed an iterative cycle of building, measuring and correcting
+rather than a waterfall. Given a three-person team, a fixed academic deadline
+and external dependencies whose behaviour was not fully known in advance,
+planning the system completely before building it was not realistic, a
+judgement the feasibility study supported.
 
 Each iteration comprised: implement a pipeline stage; write automated tests;
 run the stage against live scholarly APIs; inspect the output for correctness;

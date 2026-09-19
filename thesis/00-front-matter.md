@@ -1,3 +1,5 @@
+![National University of Technology](assets/nutech-logo.png){width=45mm}
+
 # CiteGraph-NLP: A Confidence-Aware System for Citation Lineage Analysis and Study-Scale Evidence Extraction
 
 **A thesis submitted in partial fulfilment of the requirements for the degree of**
@@ -122,7 +124,29 @@ biomedical NLP, PageRank, evidence synthesis, scholarly APIs
 - B. Configuration Reference
 - C. Reproducing the Results
 - D. Gold Standard Annotations
-- E. Verified Reference Metadata
+- E. Requirements Traceability
+- F. Test Inventory
+- G. Source Listings
+- H. Full-Scale Generated Diagrams
+
+---
+
+## List of Figures
+
+Every structural figure is generated from the source tree by
+`scripts/generate_diagrams.py`; Appendix H records how, and carries the
+full-scale plates the chapter figures are reduced from.
+
+| Figure | Subject |
+|--------|---------|
+| 4.1 | Inter-package dependencies |
+| 4.2 | Object composition among related classes |
+| 4.3 | Data model, query to population |
+| 4.4 | Data model, population to run result |
+| 5.1 | Calls made by the pipeline orchestrator |
+| H.1 | Combined data model, all seven entities |
+| H.2 | Complete class diagram |
+| H.3 | Complete call graph |
 
 ---
 

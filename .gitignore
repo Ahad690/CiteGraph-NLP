@@ -133,7 +133,7 @@ ranked_foundational_papers_*.csv
 *.pdf
 *.docx
 # ...except the rendered thesis, which is tracked so it can be shared
-# straight from GitHub. Regenerate per Appendix C.6.
+# straight from GitHub. Regenerate per Appendix C.7.
 !thesis/CiteGraph-NLP-Thesis.pdf
 !thesis/CiteGraph-NLP-Thesis.docx
 *.doc
@@ -188,4 +188,8 @@ landing-page/.wrangler/
 landing-page/.dev.vars
 
 # Rendered thesis outputs are tracked so the PDF can be shared directly from
-# GitHub. Regenerate them with scripts/build_thesis.py + pandoc (Appendix C.6).
+# GitHub. Regenerate them with scripts/build_thesis.py + pandoc (Appendix C.7).
+
+# Intermediate DOT sources written by scripts/generate_diagrams.py; the SVG
+# and PNG figures beside them are the tracked artifacts.
+thesis/figures/_dot/

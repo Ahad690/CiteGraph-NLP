@@ -1,6 +1,6 @@
 # Chapter 6 (continued): Extended Analysis
 
-## 6.9 Performance by Study Design
+## 6.9 Performance by study design
 
 Aggregate metrics conceal where a system succeeds and fails. Breaking the
 gold-standard results down by study design shows that performance is not
@@ -86,7 +86,7 @@ Until then, the honest framing for a user is that the confidence score indicates
 right*. Section 5.13.4 notes that the interface does not currently make this
 distinction.
 
-## 6.11 Sensitivity of the Graph to Seed Choice
+## 6.11 Sensitivity of the graph to seed choice
 
 The three traversals in Section 6.5 produced markedly different graph
 structures from the same parameters.
@@ -142,7 +142,7 @@ different facts about a paper, and only the second is a statement about the
 paper itself. The warnings described in Section 4.7 were added so that the
 output now separates them.
 
-## 6.13 Cumulative Effect of the Corrections
+## 6.13 Cumulative effect of the corrections
 
 Measured on the same 40-paper graph across the correction sequence in
 Chapter 5. Each row is the state after the named correction.
