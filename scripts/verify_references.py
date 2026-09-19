@@ -57,15 +57,62 @@ CANDIDATES: list[tuple[str, str, str]] = [
     ("lopez2009grobid", "10.1007/978-3-642-04346-8_62", "GROBID"),
     # --- graph tooling ---
     ("hagberg2008networkx", "10.25080/TCWV9851", "NetworkX"),
+    # --- statistical treatment of a small evaluation set (Chapter 3, 6) ---
+    ("wilson1927", "10.1080/01621459.1927.10502953", "Wilson score interval"),
+    ("brown2001interval", "10.1214/ss/1009213286", "Interval estimation for a binomial proportion"),
+    ("agresti1998approximate", "10.1080/00031305.1998.10480550", "Approximate beats exact for binomial intervals"),
+    # --- annotation reliability (Chapter 3) ---
+    ("cohen1960kappa", "10.1177/001316446002000104", "Cohen's kappa"),
+    ("artstein2008kappa", "10.1162/coli.07-034-r2", "Inter-coder agreement for computational linguistics"),
+    ("hripcsak2005agreement", "10.1197/jamia.m1733", "Agreement, F-measure and reliability in IR"),
+    # --- PageRank parameters (Chapter 4) ---
+    ("langville2004deeper", "10.1080/15427951.2004.10129091", "Deeper inside PageRank"),
+    ("boldi2005damping", "10.1145/1060745.1060827", "PageRank as a function of the damping factor"),
+    # --- classification metrics (Chapter 6) ---
+    ("sokolova2009measures", "10.1016/j.ipm.2009.03.002", "Systematic analysis of classification performance measures"),
+    ("fawcett2006roc", "10.1016/j.patrec.2005.10.010", "Introduction to ROC analysis"),
+    # --- confidence calibration, the thesis's main negative result (Chapter 6, 8) ---
+    ("niculescu2005probabilities", "10.1145/1102351.1102430", "Predicting good probabilities with supervised learning"),
+    ("guo2017calibration", "10.48550/arXiv.1706.04599", "On calibration of modern neural networks"),
+    ("wynants2020prediction", "10.1136/bmj.m1328", "The systematic review the extractor false-positived on"),
+    # --- reproducibility (Chapter 3, 7) ---
+    ("peng2011reproducible", "10.1126/science.1213847", "Reproducible research in computational science"),
+    ("baker2016reproducibility", "10.1038/533452a", "1,500 scientists on reproducibility"),
 ]
+
+
+USER_AGENT = "CiteGraph-NLP-thesis/0.1 (mailto:muhammadahadf23@nutech.edu.pk)"
+
+# Crossref throttles a burst. Firing every candidate at once made entries that
+# resolve perfectly well come back as FAIL, and because the bibliography is
+# generated from this file's output, a throttled run silently dropped good
+# references from the thesis. Requests are therefore serialised through a small
+# semaphore and a 429 or 5xx is retried rather than believed.
+MAX_CONCURRENT = 4
+RETRY_STATUS = frozenset({429, 500, 502, 503, 504})
+MAX_ATTEMPTS = 4
+
+
+async def _get(client: httpx.AsyncClient, url: str, **kwargs) -> httpx.Response | None:
+    """GET with backoff on the statuses that mean 'ask again', not 'no'."""
+    delay = 2.0
+    for attempt in range(MAX_ATTEMPTS):
+        response = await client.get(url, **kwargs)
+        if response.status_code not in RETRY_STATUS:
+            return response
+        if attempt < MAX_ATTEMPTS - 1:
+            await asyncio.sleep(delay)
+            delay *= 2
+    return response
 
 
 async def resolve(client: httpx.AsyncClient, key: str, doi: str) -> dict:
     record = {"key": key, "doi": doi, "verified": False, "source": None}
     try:
-        r = await client.get(
+        r = await _get(
+            client,
             f"https://api.crossref.org/works/{doi}",
-            headers={"User-Agent": "CiteGraph-NLP-thesis/0.1 (mailto:muhammadahadf23@nutech.edu.pk)"},
+            headers={"User-Agent": USER_AGENT},
         )
         if r.status_code == 200:
             m = r.json().get("message", {})
@@ -90,7 +137,8 @@ async def resolve(client: httpx.AsyncClient, key: str, doi: str) -> dict:
         record["crossref_error"] = str(e)
 
     try:
-        r = await client.get(f"https://api.openalex.org/works/doi:{doi}")
+        r = await _get(client, f"https://api.openalex.org/works/doi:{doi}",
+                       headers={"User-Agent": USER_AGENT})
         if r.status_code == 200:
             d = r.json()
             loc = d.get("primary_location") or {}
@@ -144,7 +192,13 @@ async def main() -> int:
         unique.append((key, doi, note))
 
     async with httpx.AsyncClient(timeout=40, follow_redirects=True) as client:
-        results = await asyncio.gather(*(resolve(client, k, d) for k, d, _n in unique))
+        gate = asyncio.Semaphore(MAX_CONCURRENT)
+
+        async def guarded(key: str, doi: str) -> dict:
+            async with gate:
+                return await resolve(client, key, doi)
+
+        results = await asyncio.gather(*(guarded(k, d) for k, d, _n in unique))
 
     notes = {k: n for k, _d, n in unique}
     for r in results:

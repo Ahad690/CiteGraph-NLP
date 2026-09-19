@@ -89,6 +89,17 @@ because nothing in the repository recorded that the metrics were missing.
 Making recomputability an explicit requirement means a gap of that kind becomes
 detectable.
 
+The requirement follows Peng's argument that for computational work the
+reproducible-research standard, code and data published alongside the claims,
+is the minimum that makes a result checkable at all, since the analysis is the
+experiment [peng2011reproducible]. Baker's survey of 1,576 researchers puts
+the practical case: more than half had failed to reproduce another group's
+result and over 70% had failed to reproduce their own, with selective
+reporting and unavailable methods among the causes most often named
+[baker2016reproducibility]. Both point at the same remedy, which is why every
+number in Chapter 6 is produced by a committed script rather than transcribed
+from a run someone remembers doing.
+
 ## 3.4 Development Methodology
 
 ### 3.4.1 Process
@@ -152,16 +163,39 @@ the failure mode that most damages user trust.
 
 ### 3.5.3 Statistical treatment
 
-Proportions are reported with 95% Wilson score intervals. The Wilson interval
-is used rather than the normal approximation because the sample is small
-(n = 20 overall, n = 11 positives), where the normal approximation is
-unreliable and degenerates entirely at proportions of 0 or 1.
+Proportions are reported with 95% Wilson score intervals [wilson1927]. The
+Wilson interval is used rather than the normal approximation because the
+sample is small (n = 20 overall, n = 11 positives), where the normal
+approximation is unreliable and degenerates entirely at proportions of 0 or 1.
+Brown, Cai and DasGupta show that the normal approximation's coverage is
+erratic even at sample sizes far larger than this one, and recommend the
+Wilson interval as the default for small n [brown2001interval]. Agresti and
+Coull make the related point that the exact Clopper-Pearson interval, despite
+its name, is conservative rather than accurate, so exactness is not the
+property to optimise for here [agresti1998approximate].
 
 The intervals are wide, and Chapter 6 reports them alongside every point
 estimate rather than quoting point estimates alone. A recall of 1.000 on
 eleven positives is consistent with a true recall as low as roughly 0.74.
 
-### 3.5.4 Acknowledged limitations of the evaluation
+### 3.5.4 Annotation reliability, and what this evaluation does not establish
+
+The gold standard was annotated from abstract text by the project team.
+Because a single annotator produced it, no inter-annotator agreement statistic
+can be computed, and the conventional measures for the purpose, Cohen's kappa
+[cohen1960kappa] and the variants surveyed for computational linguistics by
+Artstein and Poesio [artstein2008kappa], are therefore unavailable.
+
+This is a real limitation rather than a formality. Hripcsak and Rothschild
+show that for information-retrieval-style tasks the F-measure approximates the
+chance-corrected agreement two annotators would reach, which means a
+single-annotator gold standard cannot separate the system's error from the
+annotator's [hripcsak2005agreement]. Where an annotation was a judgement call
+rather than a reading, Appendix D records the reasoning so that a second
+reader can disagree with a specific decision rather than with the set as a
+whole.
+
+### 3.5.5 Acknowledged limitations of the evaluation
 
 Four limitations are stated in advance because they bound every result in
 Chapter 6.
@@ -177,7 +211,7 @@ Chapter 6.
 - **Domain concentration.** The positives are biomedical. Performance on other
   literatures is not measured and should not be assumed.
 
-### 3.5.5 What is not evaluated
+### 3.5.6 What is not evaluated
 
 Two things the proposal listed are not evaluated, and are reported as gaps
 rather than passed over.

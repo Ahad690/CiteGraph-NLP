@@ -302,10 +302,28 @@ looking for origins, so age is rewarded. The weights are not empirically tuned,
 they were set by judgement and no sensitivity analysis was performed, which
 Section 7.3 records as a limitation.
 
+PageRank runs with NetworkX's default damping factor of 0.85
+[hagberg2008networkx], the value Brin and Page used [brin1998anatomy], and the
+choice is inherited rather than argued for. That is worth stating plainly,
+because the damping factor is not a neutral knob. Boldi, Santini and Vigna
+show that PageRank varies with it in ways that change the induced ranking, and
+that values approaching 1 make the ranking depend increasingly on the graph's
+dangling-node structure rather than on its link topology [boldi2005damping].
+Langville and Meyer give the same result from the linear-algebraic side: the
+damping factor governs the convergence rate and the sensitivity of the
+stationary vector, so it trades stability against fidelity to the raw link
+structure [langville2004deeper]. On a graph of at most 200 nodes assembled
+under a traversal budget, the dangling-node population is an artifact of where
+the traversal stopped rather than a property of the literature, which is
+exactly the regime those results warn about. No sensitivity analysis over the
+damping factor was run. Section 8.2 lists it as work the evaluation needs.
+
 ### 4.6.2 Citation path ranking
 
 Paths from the seed are scored by mean edge weight, multiplied path confidence,
-and a depth penalty of 1/√(length).
+and a depth penalty of 1/√(length). The penalty is a judgement rather than a
+derivation, chosen so that a long path of strong edges can still outrank a
+short path of weak ones without long paths dominating by accumulation alone.
 
 Path enumeration is the one component with combinatorial risk. A densely
 interlinked graph contains an astronomical number of simple paths, and the

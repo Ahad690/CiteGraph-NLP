@@ -120,7 +120,25 @@ Snapshotting the gold-standard records so the evaluation does not depend on live
 APIs (§7.3.3), making results exactly reproducible and allowing regression
 detection when extraction logic changes.
 
-### 8.2.8 Citation context and sentiment
+### 8.2.8 Parameter sensitivity analysis
+
+Several numbers in the system were set by judgement and never varied: the
+PageRank damping factor of 0.85 inherited from the library default
+(§4.6.1), the weights 0.5/0.3/0.2 combining PageRank, age and evidence, the
+weighting constants α = 0.75 and β = 0.25, and the path-length penalty of
+1/√(length). None has been swept.
+
+The damping factor is the one with published reason to expect sensitivity.
+Boldi, Santini and Vigna show the induced ranking changes with it, and that
+the dependence grows with the proportion of dangling nodes
+[boldi2005damping]. In a graph capped at 200 papers, every node at the
+traversal frontier is dangling by construction, so the proportion is large and
+determined by where the budget ran out rather than by the literature. Re-running
+the rankings across a grid of damping values and reporting the rank correlation
+between them would establish whether the foundational-paper ordering is a
+property of the evidence or of the parameter, and it needs no new data.
+
+### 8.2.9 Citation context and sentiment
 
 Garfield's original caveat (§2.1.1): a citation may be critical rather than
 supportive. Classifying citation context would let the graph distinguish

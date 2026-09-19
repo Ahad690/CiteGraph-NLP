@@ -77,14 +77,18 @@
       "key": "waltman2016review",
       "doi": "10.1016/j.joi.2016.02.007",
       "verified": true,
-      "source": "openalex",
+      "source": "crossref",
       "title": "A review of the literature on citation impact indicators",
       "container": "Journal of Informetrics",
       "year": 2016,
       "authors": [
         "Ludo Waltman"
       ],
-      "type": "article",
+      "type": "journal-article",
+      "publisher": "Elsevier BV",
+      "volume": "10",
+      "issue": "2",
+      "page": "365-391",
       "why_cited": "Review of citation impact indicators"
     },
     {
@@ -174,36 +178,44 @@
       "key": "martin2021oadoi",
       "doi": "10.7717/peerj.4375",
       "verified": true,
-      "source": "openalex",
+      "source": "crossref",
       "title": "The state of OA: a large-scale analysis of the prevalence and impact of Open Access articles",
       "container": "PeerJ",
       "year": 2018,
       "authors": [
         "Heather Piwowar",
-        "Jason R Priem",
+        "Jason Priem",
         "Vincent Larivière",
-        "Juan Pablo Alperín",
+        "Juan Pablo Alperin",
         "Lisa Matthias",
         "Bree Norlander",
         "Ashley Farley",
-        "Jevin D. West",
+        "Jevin West",
         "Stefanie Haustein"
       ],
-      "type": "article",
+      "type": "journal-article",
+      "publisher": "PeerJ",
+      "volume": "6",
+      "issue": null,
+      "page": "e4375",
       "why_cited": "Unpaywall / open access state"
     },
     {
       "key": "redner1998citation",
       "doi": "10.1007/s100510050359",
       "verified": true,
-      "source": "openalex",
+      "source": "crossref",
       "title": "How popular is your paper? An empirical study of the citation distribution",
       "container": "The European Physical Journal B",
       "year": 1998,
       "authors": [
         "S. Redner"
       ],
-      "type": "article",
+      "type": "journal-article",
+      "publisher": "Springer Science and Business Media LLC",
+      "volume": "4",
+      "issue": "2",
+      "page": "131-134",
       "why_cited": "Citation distribution statistics"
     },
     {
@@ -228,7 +240,7 @@
       "key": "radicchi2008universality",
       "doi": "10.1073/pnas.0806977105",
       "verified": true,
-      "source": "openalex",
+      "source": "crossref",
       "title": "Universality of citation distributions: Toward an objective measure of scientific impact",
       "container": "Proceedings of the National Academy of Sciences",
       "year": 2008,
@@ -237,24 +249,32 @@
         "Santo Fortunato",
         "Claudio Castellano"
       ],
-      "type": "article",
+      "type": "journal-article",
+      "publisher": "National Academy of Sciences",
+      "volume": "105",
+      "issue": "45",
+      "page": "17268-17272",
       "why_cited": "Universality of citation distributions"
     },
     {
       "key": "chen2007gems",
       "doi": "10.1016/j.joi.2006.06.001",
       "verified": true,
-      "source": "openalex",
+      "source": "crossref",
       "title": "Finding scientific gems with Google’s PageRank algorithm",
       "container": "Journal of Informetrics",
-      "year": 2006,
+      "year": 2007,
       "authors": [
         "P. Chen",
-        "Haoxuan Xie",
-        "Sergei Maslov",
+        "H. Xie",
+        "S. Maslov",
         "S. Redner"
       ],
-      "type": "article",
+      "type": "journal-article",
+      "publisher": "Elsevier BV",
+      "volume": "1",
+      "issue": "1",
+      "page": "8-15",
       "why_cited": "Finding scientific gems with PageRank on a citation network"
     },
     {
@@ -282,17 +302,21 @@
       "key": "kim2003genia",
       "doi": "10.1093/bioinformatics/btg1023",
       "verified": true,
-      "source": "openalex",
+      "source": "crossref",
       "title": "GENIA corpus—a semantically annotated corpus for bio-textmining",
       "container": "Bioinformatics",
       "year": 2003,
       "authors": [
-        "JD Kim",
-        "Tomoko Ohta",
-        "Yuka Tateisi",
-        "J Tsujii"
+        "J.-D. Kim",
+        "T. Ohta",
+        "Y. Tateisi",
+        "J. Tsujii"
       ],
-      "type": "article",
+      "type": "journal-article",
+      "publisher": "Oxford University Press (OUP)",
+      "volume": "19",
+      "issue": "suppl_1",
+      "page": "i180-i182",
       "why_cited": "GENIA corpus for biomedical IE"
     },
     {
@@ -384,23 +408,27 @@
       "key": "marshall2020trialstreamer",
       "doi": "10.1093/jamia/ocaa163",
       "verified": true,
-      "source": "openalex",
+      "source": "crossref",
       "title": "Trialstreamer: A living, automatically updated database of clinical trial reports",
       "container": "Journal of the American Medical Informatics Association",
       "year": 2020,
       "authors": [
-        "Iain Marshall",
+        "Iain J Marshall",
         "Benjamin Nye",
         "Joël Kuiper",
-        "Anna H Noel-Storr",
-        "Iain Marshall",
+        "Anna Noel-Storr",
+        "Rachel Marshall",
         "Rory Maclean",
         "Frank Soboczenski",
         "Ani Nenkova",
         "James Thomas",
-        "Byron Wallace"
+        "Byron C Wallace"
       ],
-      "type": "article",
+      "type": "journal-article",
+      "publisher": "Oxford University Press (OUP)",
+      "volume": "27",
+      "issue": "12",
+      "page": "1903-1912",
       "why_cited": "Trialstreamer: auto-updated RCT database"
     },
     {
@@ -576,6 +604,295 @@
       "issue": null,
       "page": "11-15",
       "why_cited": "NetworkX"
+    },
+    {
+      "key": "wilson1927",
+      "doi": "10.1080/01621459.1927.10502953",
+      "verified": true,
+      "source": "crossref",
+      "title": "Probable Inference, the Law of Succession, and Statistical Inference",
+      "container": "Journal of the American Statistical Association",
+      "year": 1927,
+      "authors": [
+        "Edwin B. Wilson"
+      ],
+      "type": "journal-article",
+      "publisher": "Informa UK Limited",
+      "volume": "22",
+      "issue": "158",
+      "page": "209-212",
+      "why_cited": "Wilson score interval"
+    },
+    {
+      "key": "brown2001interval",
+      "doi": "10.1214/ss/1009213286",
+      "verified": true,
+      "source": "crossref",
+      "title": "Interval Estimation for a Binomial Proportion",
+      "container": "Statistical Science",
+      "year": 2001,
+      "authors": [
+        "Lawrence D. Brown",
+        "T. Tony Cai",
+        "Anirban DasGupta"
+      ],
+      "type": "journal-article",
+      "publisher": "Institute of Mathematical Statistics",
+      "volume": "16",
+      "issue": "2",
+      "page": null,
+      "why_cited": "Interval estimation for a binomial proportion"
+    },
+    {
+      "key": "agresti1998approximate",
+      "doi": "10.1080/00031305.1998.10480550",
+      "verified": true,
+      "source": "crossref",
+      "title": "Approximate is Better than “Exact” for Interval Estimation of Binomial Proportions",
+      "container": "The American Statistician",
+      "year": 1998,
+      "authors": [
+        "Alan Agresti",
+        "Brent A. Coull"
+      ],
+      "type": "journal-article",
+      "publisher": "Informa UK Limited",
+      "volume": "52",
+      "issue": "2",
+      "page": "119-126",
+      "why_cited": "Approximate beats exact for binomial intervals"
+    },
+    {
+      "key": "cohen1960kappa",
+      "doi": "10.1177/001316446002000104",
+      "verified": true,
+      "source": "crossref",
+      "title": "A Coefficient of Agreement for Nominal Scales",
+      "container": "Educational and Psychological Measurement",
+      "year": 1960,
+      "authors": [
+        "Jacob Cohen"
+      ],
+      "type": "journal-article",
+      "publisher": "SAGE Publications",
+      "volume": "20",
+      "issue": "1",
+      "page": "37-46",
+      "why_cited": "Cohen's kappa"
+    },
+    {
+      "key": "artstein2008kappa",
+      "doi": "10.1162/coli.07-034-r2",
+      "verified": true,
+      "source": "crossref",
+      "title": "Inter-Coder Agreement for Computational Linguistics",
+      "container": "Computational Linguistics",
+      "year": 2008,
+      "authors": [
+        "Ron Artstein",
+        "Massimo Poesio"
+      ],
+      "type": "journal-article",
+      "publisher": "MIT Press",
+      "volume": "34",
+      "issue": "4",
+      "page": "555-596",
+      "why_cited": "Inter-coder agreement for computational linguistics"
+    },
+    {
+      "key": "hripcsak2005agreement",
+      "doi": "10.1197/jamia.m1733",
+      "verified": true,
+      "source": "crossref",
+      "title": "Agreement, the F-Measure, and Reliability in Information Retrieval",
+      "container": "Journal of the American Medical Informatics Association",
+      "year": 2005,
+      "authors": [
+        "G. Hripcsak"
+      ],
+      "type": "journal-article",
+      "publisher": "Oxford University Press (OUP)",
+      "volume": "12",
+      "issue": "3",
+      "page": "296-298",
+      "why_cited": "Agreement, F-measure and reliability in IR"
+    },
+    {
+      "key": "langville2004deeper",
+      "doi": "10.1080/15427951.2004.10129091",
+      "verified": true,
+      "source": "crossref",
+      "title": "Deeper Inside PageRank",
+      "container": "Internet Mathematics",
+      "year": 2004,
+      "authors": [
+        "Amy Langville",
+        "Carl Meyer"
+      ],
+      "type": "journal-article",
+      "publisher": "Internet Mathematics",
+      "volume": "1",
+      "issue": "3",
+      "page": "335-380",
+      "why_cited": "Deeper inside PageRank"
+    },
+    {
+      "key": "boldi2005damping",
+      "doi": "10.1145/1060745.1060827",
+      "verified": true,
+      "source": "crossref",
+      "title": "PageRank as a function of the damping factor",
+      "container": "Proceedings of the 14th international conference on World Wide Web  - WWW '05",
+      "year": 2005,
+      "authors": [
+        "Paolo Boldi",
+        "Massimo Santini",
+        "Sebastiano Vigna"
+      ],
+      "type": "proceedings-article",
+      "publisher": "ACM Press",
+      "volume": null,
+      "issue": null,
+      "page": "557",
+      "why_cited": "PageRank as a function of the damping factor"
+    },
+    {
+      "key": "sokolova2009measures",
+      "doi": "10.1016/j.ipm.2009.03.002",
+      "verified": true,
+      "source": "crossref",
+      "title": "A systematic analysis of performance measures for classification tasks",
+      "container": "Information Processing &amp; Management",
+      "year": 2009,
+      "authors": [
+        "Marina Sokolova",
+        "Guy Lapalme"
+      ],
+      "type": "journal-article",
+      "publisher": "Elsevier BV",
+      "volume": "45",
+      "issue": "4",
+      "page": "427-437",
+      "why_cited": "Systematic analysis of classification performance measures"
+    },
+    {
+      "key": "fawcett2006roc",
+      "doi": "10.1016/j.patrec.2005.10.010",
+      "verified": true,
+      "source": "crossref",
+      "title": "An introduction to ROC analysis",
+      "container": "Pattern Recognition Letters",
+      "year": 2006,
+      "authors": [
+        "Tom Fawcett"
+      ],
+      "type": "journal-article",
+      "publisher": "Elsevier BV",
+      "volume": "27",
+      "issue": "8",
+      "page": "861-874",
+      "why_cited": "Introduction to ROC analysis"
+    },
+    {
+      "key": "niculescu2005probabilities",
+      "doi": "10.1145/1102351.1102430",
+      "verified": true,
+      "source": "crossref",
+      "title": "Predicting good probabilities with supervised learning",
+      "container": "Proceedings of the 22nd international conference on Machine learning  - ICML '05",
+      "year": 2005,
+      "authors": [
+        "Alexandru Niculescu-Mizil",
+        "Rich Caruana"
+      ],
+      "type": "proceedings-article",
+      "publisher": "ACM Press",
+      "volume": null,
+      "issue": null,
+      "page": "625-632",
+      "why_cited": "Predicting good probabilities with supervised learning"
+    },
+    {
+      "key": "guo2017calibration",
+      "doi": "10.48550/arXiv.1706.04599",
+      "verified": true,
+      "source": "openalex",
+      "title": "On Calibration of Modern Neural Networks",
+      "container": "arXiv (Cornell University)",
+      "year": 2017,
+      "authors": [
+        "Chuan Guo",
+        "Geoff Pleiss",
+        "Yu Sun",
+        "Kilian Q. Weinberger"
+      ],
+      "type": "preprint",
+      "why_cited": "On calibration of modern neural networks"
+    },
+    {
+      "key": "wynants2020prediction",
+      "doi": "10.1136/bmj.m1328",
+      "verified": true,
+      "source": "crossref",
+      "title": "Prediction models for diagnosis and prognosis of covid-19: systematic review and critical appraisal",
+      "container": "BMJ",
+      "year": 2020,
+      "authors": [
+        "Laure Wynants",
+        "Ben Van Calster",
+        "Gary S Collins",
+        "Richard D Riley",
+        "Georg Heinze",
+        "Ewoud Schuit",
+        "Elena Albu",
+        "Banafsheh Arshi",
+        "Vanesa Bellou",
+        "Marc M J Bonten",
+        "Darren L Dahly",
+        "Johanna A Damen"
+      ],
+      "type": "journal-article",
+      "publisher": "BMJ",
+      "volume": null,
+      "issue": null,
+      "page": "m1328",
+      "why_cited": "The systematic review the extractor false-positived on"
+    },
+    {
+      "key": "peng2011reproducible",
+      "doi": "10.1126/science.1213847",
+      "verified": true,
+      "source": "crossref",
+      "title": "Reproducible Research in Computational Science",
+      "container": "Science",
+      "year": 2011,
+      "authors": [
+        "Roger D. Peng"
+      ],
+      "type": "journal-article",
+      "publisher": "American Association for the Advancement of Science (AAAS)",
+      "volume": "334",
+      "issue": "6060",
+      "page": "1226-1227",
+      "why_cited": "Reproducible research in computational science"
+    },
+    {
+      "key": "baker2016reproducibility",
+      "doi": "10.1038/533452a",
+      "verified": true,
+      "source": "crossref",
+      "title": "1,500 scientists lift the lid on reproducibility",
+      "container": "Nature",
+      "year": 2016,
+      "authors": [
+        "Monya Baker"
+      ],
+      "type": "journal-article",
+      "publisher": "Springer Science and Business Media LLC",
+      "volume": "533",
+      "issue": "7604",
+      "page": "452-454",
+      "why_cited": "1,500 scientists on reproducibility"
     }
   ],
   "unverified": []

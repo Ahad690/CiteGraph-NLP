@@ -746,6 +746,17 @@ because nothing in the repository recorded that the metrics were missing.
 Making recomputability an explicit requirement means a gap of that kind becomes
 detectable.
 
+The requirement follows Peng's argument that for computational work the
+reproducible-research standard, code and data published alongside the claims,
+is the minimum that makes a result checkable at all, since the analysis is the
+experiment [peng2011reproducible]. Baker's survey of 1,576 researchers puts
+the practical case: more than half had failed to reproduce another group's
+result and over 70% had failed to reproduce their own, with selective
+reporting and unavailable methods among the causes most often named
+[baker2016reproducibility]. Both point at the same remedy, which is why every
+number in Chapter 6 is produced by a committed script rather than transcribed
+from a run someone remembers doing.
+
 ## 3.4 Development Methodology
 
 ### 3.4.1 Process
@@ -809,16 +820,39 @@ the failure mode that most damages user trust.
 
 ### 3.5.3 Statistical treatment
 
-Proportions are reported with 95% Wilson score intervals. The Wilson interval
-is used rather than the normal approximation because the sample is small
-(n = 20 overall, n = 11 positives), where the normal approximation is
-unreliable and degenerates entirely at proportions of 0 or 1.
+Proportions are reported with 95% Wilson score intervals [wilson1927]. The
+Wilson interval is used rather than the normal approximation because the
+sample is small (n = 20 overall, n = 11 positives), where the normal
+approximation is unreliable and degenerates entirely at proportions of 0 or 1.
+Brown, Cai and DasGupta show that the normal approximation's coverage is
+erratic even at sample sizes far larger than this one, and recommend the
+Wilson interval as the default for small n [brown2001interval]. Agresti and
+Coull make the related point that the exact Clopper-Pearson interval, despite
+its name, is conservative rather than accurate, so exactness is not the
+property to optimise for here [agresti1998approximate].
 
 The intervals are wide, and Chapter 6 reports them alongside every point
 estimate rather than quoting point estimates alone. A recall of 1.000 on
 eleven positives is consistent with a true recall as low as roughly 0.74.
 
-### 3.5.4 Acknowledged limitations of the evaluation
+### 3.5.4 Annotation reliability, and what this evaluation does not establish
+
+The gold standard was annotated from abstract text by the project team.
+Because a single annotator produced it, no inter-annotator agreement statistic
+can be computed, and the conventional measures for the purpose, Cohen's kappa
+[cohen1960kappa] and the variants surveyed for computational linguistics by
+Artstein and Poesio [artstein2008kappa], are therefore unavailable.
+
+This is a real limitation rather than a formality. Hripcsak and Rothschild
+show that for information-retrieval-style tasks the F-measure approximates the
+chance-corrected agreement two annotators would reach, which means a
+single-annotator gold standard cannot separate the system's error from the
+annotator's [hripcsak2005agreement]. Where an annotation was a judgement call
+rather than a reading, Appendix D records the reasoning so that a second
+reader can disagree with a specific decision rather than with the set as a
+whole.
+
+### 3.5.5 Acknowledged limitations of the evaluation
 
 Four limitations are stated in advance because they bound every result in
 Chapter 6.
@@ -834,7 +868,7 @@ Chapter 6.
 - **Domain concentration.** The positives are biomedical. Performance on other
   literatures is not measured and should not be assumed.
 
-### 3.5.5 What is not evaluated
+### 3.5.6 What is not evaluated
 
 Two things the proposal listed are not evaluated, and are reported as gaps
 rather than passed over.
@@ -1272,10 +1306,28 @@ looking for origins, so age is rewarded. The weights are not empirically tuned,
 they were set by judgement and no sensitivity analysis was performed, which
 Section 7.3 records as a limitation.
 
+PageRank runs with NetworkX's default damping factor of 0.85
+[hagberg2008networkx], the value Brin and Page used [brin1998anatomy], and the
+choice is inherited rather than argued for. That is worth stating plainly,
+because the damping factor is not a neutral knob. Boldi, Santini and Vigna
+show that PageRank varies with it in ways that change the induced ranking, and
+that values approaching 1 make the ranking depend increasingly on the graph's
+dangling-node structure rather than on its link topology [boldi2005damping].
+Langville and Meyer give the same result from the linear-algebraic side: the
+damping factor governs the convergence rate and the sensitivity of the
+stationary vector, so it trades stability against fidelity to the raw link
+structure [langville2004deeper]. On a graph of at most 200 nodes assembled
+under a traversal budget, the dangling-node population is an artifact of where
+the traversal stopped rather than a property of the literature, which is
+exactly the regime those results warn about. No sensitivity analysis over the
+damping factor was run. Section 8.2 lists it as work the evaluation needs.
+
 ### 4.6.2 Citation path ranking
 
 Paths from the seed are scored by mean edge weight, multiplied path confidence,
-and a depth penalty of 1/√(length).
+and a depth penalty of 1/√(length). The penalty is a judgement rather than a
+derivation, chosen so that a long path of strong edges can still outrank a
+short path of weak ones without long paths dominating by accumulation alone.
 
 Path enumeration is the one component with combinatorial risk. A densely
 interlinked graph contains an astronomical number of simple paths, and the
@@ -2229,9 +2281,9 @@ sentence quoted verbatim so the label is auditable. Where no human study
 population is stated, the label is negative and correct behaviour is to extract
 nothing.
 
-The limitations stated in Section 3.5.4 apply throughout: single annotator who
-is also a system author, no inter-annotator agreement, twenty papers, abstracts
-only, biomedical concentration.
+The limitations stated in Sections 3.5.4 and 3.5.5 apply throughout: single
+annotator who is also a system author, no inter-annotator agreement,
+twenty papers, abstracts only, biomedical concentration.
 
 ## 6.2 Metadata Resolution
 
@@ -2302,6 +2354,23 @@ extracted. The confidence interval on accuracy is wide, [0.764, 0.991], and
 must be quoted with the point estimate. A recall of 1.000 on eleven positives
 is statistically consistent with a true recall substantially below 1.
 
+Precision, recall, specificity and F1 are reported together rather than
+singly, because each is blind to a different part of the table and the set is
+deliberately unbalanced at eleven positives to nine negatives. Sokolova and
+Lapalme's survey sets out which measure is insensitive to which kind of
+change, and specificity is included here precisely because precision and
+recall between them say nothing about the eight true negatives
+[sokolova2009measures].
+
+These are all threshold-dependent measures: they describe the single operating
+point the extractor currently sits at, not its behaviour across the range of
+confidence thresholds a user might filter on. A threshold-free treatment of
+the kind Fawcett describes would be the more informative evaluation
+[fawcett2006roc], and it is not reported here for a concrete reason rather
+than an oversight: Section 6.4.4 shows the confidence score does not separate
+correct from incorrect extractions, so sweeping a threshold over it would
+describe noise.
+
 This answers the first half of **RQ1**: pattern-based extraction detects the
 presence of a reported population reliably enough to drive edge weighting, with
 the sample-size caveat above.
@@ -2351,8 +2420,12 @@ argument for the supervised approach discussed in Section 8.2.
 
 ### 6.4.4 The false positive, and confidence calibration
 
-The one false positive is Wynants et al., *BMJ* 2020, a systematic review of
-prediction models. The system extracted **27** with confidence **0.90**.
+The one false positive is Wynants et al., *BMJ* 2020, a living systematic
+review of covid-19 prediction models [wynants2020prediction]. The system
+extracted **27** with confidence **0.90**. The number is real and prominent in
+the abstract; it is the count of *prediction models reviewed*, not of
+participants, and nothing in the surface form distinguishes it from a study
+population. Section 6.10 dissects this case.
 
 This exposes a calibration failure that matters more than the single error:
 
@@ -2365,8 +2438,25 @@ This exposes a calibration failure that matters more than the single error:
 is a genuine weakness in a system whose stated purpose is to surface
 uncertainty. Confidence currently reflects *which pattern matched*, not *how
 likely the match is to be right*, and a user filtering on high confidence would
-retain the errors along with the correct results. Section 8.2 proposes
-calibration against held-out data as the remedy.
+retain the errors along with the correct results.
+
+The distinction being failed here is the one between a confidence score and a
+calibrated probability. A calibrated score is one where, of the cases assigned
+0.9, about 90% are correct; Niculescu-Mizil and Caruana show that many learning
+methods produce scores that rank well but are badly calibrated in exactly this
+sense, and that a post-hoc mapping fitted on held-out data usually repairs them
+[niculescu2005probabilities]. Guo and colleagues later found the same failure
+in modern neural networks, along with the more useful observation that
+miscalibration is largely independent of accuracy: a system can be accurate and
+confidently wrong at the same time [guo2017calibration]. That is precisely the
+shape of the result in the table above, where detection is strong and the
+confidence attached to it is uninformative.
+
+The remedy those results point to is available here and was not applied:
+fitting a calibration map from the extractor's raw score to observed
+correctness requires held-out annotated data, and with twenty papers there is
+not enough to both fit and evaluate one. Section 8.2 records it as the first
+thing a larger gold standard would make possible.
 
 ## 6.5 Citation graph construction
 
@@ -3018,7 +3108,25 @@ Snapshotting the gold-standard records so the evaluation does not depend on live
 APIs (§7.3.3), making results exactly reproducible and allowing regression
 detection when extraction logic changes.
 
-### 8.2.8 Citation context and sentiment
+### 8.2.8 Parameter sensitivity analysis
+
+Several numbers in the system were set by judgement and never varied: the
+PageRank damping factor of 0.85 inherited from the library default
+(§4.6.1), the weights 0.5/0.3/0.2 combining PageRank, age and evidence, the
+weighting constants α = 0.75 and β = 0.25, and the path-length penalty of
+1/√(length). None has been swept.
+
+The damping factor is the one with published reason to expect sensitivity.
+Boldi, Santini and Vigna show the induced ranking changes with it, and that
+the dependence grows with the proportion of dangling nodes
+[boldi2005damping]. In a graph capped at 200 papers, every node at the
+traversal frontier is dangling by construction, so the proportion is large and
+determined by where the budget ran out rather than by the literature. Re-running
+the rankings across a grid of damping values and reporting the rank correlation
+between them would establish whether the foundational-paper ordering is a
+property of the evidence or of the parameter, and it needs no new data.
+
+### 8.2.9 Citation context and sentiment
 
 Garfield's original caveat (§2.1.1): a citation may be critical rather than
 supportive. Classifying citation context would let the graph distinguish
@@ -4136,91 +4244,136 @@ fallback) by `scripts/verify_references.py` before being cited. Entries
 that failed to resolve were removed rather than cited from memory; see
 Section 6.7 for the three identifiers this process corrected.
 
-All 29 entries resolve as of the verification run.
+All 44 entries resolve as of the verification run.
 
-**[1]** `beltagy2019scibert`. Iz Beltagy, Kyle Lo, and Arman Cohan. "SciBERT: A Pretrained Language Model for Scientific Text." *Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP)*, 2019. DOI: [10.18653/v1/D19-1371](https://doi.org/10.18653/v1/D19-1371)
+**[1]** `agresti1998approximate`. Alan Agresti, and Brent A. Coull. "Approximate is Better than “Exact” for Interval Estimation of Binomial Proportions." *The American Statistician*, 1998. DOI: [10.1080/00031305.1998.10480550](https://doi.org/10.1080/00031305.1998.10480550)
+  <br/>*Cited for:* Approximate beats exact for binomial intervals
+
+**[2]** `artstein2008kappa`. Ron Artstein, and Massimo Poesio. "Inter-Coder Agreement for Computational Linguistics." *Computational Linguistics*, 2008. DOI: [10.1162/coli.07-034-r2](https://doi.org/10.1162/coli.07-034-r2)
+  <br/>*Cited for:* Inter-coder agreement for computational linguistics
+
+**[3]** `baker2016reproducibility`. Monya Baker. "1,500 scientists lift the lid on reproducibility." *Nature*, 2016. DOI: [10.1038/533452a](https://doi.org/10.1038/533452a)
+  <br/>*Cited for:* 1,500 scientists on reproducibility
+
+**[4]** `beltagy2019scibert`. Iz Beltagy, Kyle Lo, and Arman Cohan. "SciBERT: A Pretrained Language Model for Scientific Text." *Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP)*, 2019. DOI: [10.18653/v1/D19-1371](https://doi.org/10.18653/v1/D19-1371)
   <br/>*Cited for:* SciBERT
 
-**[2]** `brin1998anatomy`. Sergey Brin, and Lawrence Page. "The anatomy of a large-scale hypertextual Web search engine." *Computer Networks and ISDN Systems*, 1998. DOI: [10.1016/S0169-7552(98)00110-X](https://doi.org/10.1016/S0169-7552(98)00110-X)
+**[5]** `boldi2005damping`. Paolo Boldi, Massimo Santini, and Sebastiano Vigna. "PageRank as a function of the damping factor." *Proceedings of the 14th international conference on World Wide Web  - WWW '05*, 2005. DOI: [10.1145/1060745.1060827](https://doi.org/10.1145/1060745.1060827)
+  <br/>*Cited for:* PageRank as a function of the damping factor
+
+**[6]** `brin1998anatomy`. Sergey Brin, and Lawrence Page. "The anatomy of a large-scale hypertextual Web search engine." *Computer Networks and ISDN Systems*, 1998. DOI: [10.1016/S0169-7552(98)00110-X](https://doi.org/10.1016/S0169-7552(98)00110-X)
   <br/>*Cited for:* Anatomy of a large-scale hypertextual search engine
 
-**[3]** `button2013power`. Katherine S. Button et al.. "Power failure: why small sample size undermines the reliability of neuroscience." *Nature Reviews Neuroscience*, 2013. DOI: [10.1038/nrn3475](https://doi.org/10.1038/nrn3475)
+**[7]** `brown2001interval`. Lawrence D. Brown, T. Tony Cai, and Anirban DasGupta. "Interval Estimation for a Binomial Proportion." *Statistical Science*, 2001. DOI: [10.1214/ss/1009213286](https://doi.org/10.1214/ss/1009213286)
+  <br/>*Cited for:* Interval estimation for a binomial proportion
+
+**[8]** `button2013power`. Katherine S. Button et al.. "Power failure: why small sample size undermines the reliability of neuroscience." *Nature Reviews Neuroscience*, 2013. DOI: [10.1038/nrn3475](https://doi.org/10.1038/nrn3475)
   <br/>*Cited for:* Small sample size undermines reliability
 
-**[4]** `chen2007cocitation`. Chaomei Chen. "CiteSpace II: Detecting and visualizing emerging trends and transient patterns in scientific literature." *Journal of the American Society for Information Science and Technology*, 2005. DOI: [10.1002/asi.20317](https://doi.org/10.1002/asi.20317)
+**[9]** `chen2007cocitation`. Chaomei Chen. "CiteSpace II: Detecting and visualizing emerging trends and transient patterns in scientific literature." *Journal of the American Society for Information Science and Technology*, 2005. DOI: [10.1002/asi.20317](https://doi.org/10.1002/asi.20317)
   <br/>*Cited for:* CiteSpace / co-citation visual analytics
 
-**[5]** `chen2007gems`. P. Chen, Haoxuan Xie, Sergei Maslov, and S. Redner. "Finding scientific gems with Google’s PageRank algorithm." *Journal of Informetrics*, 2006. DOI: [10.1016/j.joi.2006.06.001](https://doi.org/10.1016/j.joi.2006.06.001)
+**[10]** `chen2007gems`. P. Chen, H. Xie, S. Maslov, and S. Redner. "Finding scientific gems with Google’s PageRank algorithm." *Journal of Informetrics*, 2007. DOI: [10.1016/j.joi.2006.06.001](https://doi.org/10.1016/j.joi.2006.06.001)
   <br/>*Cited for:* Finding scientific gems with PageRank on a citation network
 
-**[6]** `europepmc2015`. Anon.. "Europe PMC: a full-text literature database for the life sciences and platform for innovation." *Nucleic Acids Research*, 2014. DOI: [10.1093/nar/gku1061](https://doi.org/10.1093/nar/gku1061)
+**[11]** `cohen1960kappa`. Jacob Cohen. "A Coefficient of Agreement for Nominal Scales." *Educational and Psychological Measurement*, 1960. DOI: [10.1177/001316446002000104](https://doi.org/10.1177/001316446002000104)
+  <br/>*Cited for:* Cohen's kappa
+
+**[12]** `europepmc2015`. Anon.. "Europe PMC: a full-text literature database for the life sciences and platform for innovation." *Nucleic Acids Research*, 2014. DOI: [10.1093/nar/gku1061](https://doi.org/10.1093/nar/gku1061)
   <br/>*Cited for:* Europe PMC full-text literature database
 
-**[7]** `garfield1955`. Eugene Garfield. "Citation Indexes for Science." *Science*, 1955. DOI: [10.1126/science.122.3159.108](https://doi.org/10.1126/science.122.3159.108)
+**[13]** `fawcett2006roc`. Tom Fawcett. "An introduction to ROC analysis." *Pattern Recognition Letters*, 2006. DOI: [10.1016/j.patrec.2005.10.010](https://doi.org/10.1016/j.patrec.2005.10.010)
+  <br/>*Cited for:* Introduction to ROC analysis
+
+**[14]** `garfield1955`. Eugene Garfield. "Citation Indexes for Science." *Science*, 1955. DOI: [10.1126/science.122.3159.108](https://doi.org/10.1126/science.122.3159.108)
   <br/>*Cited for:* Citation indexing as a tool for science
 
-**[8]** `hagberg2008networkx`. Aric A. Hagberg, Daniel A. Schult, and Pieter J. Swart. "Exploring Network Structure, Dynamics, and Function using NetworkX." *Proceedings of the Python in Science Conference*, 2008. DOI: [10.25080/TCWV9851](https://doi.org/10.25080/TCWV9851)
+**[15]** `guo2017calibration`. Chuan Guo, Geoff Pleiss, Yu Sun, and Kilian Q. Weinberger. "On Calibration of Modern Neural Networks." *arXiv (Cornell University)*, 2017. DOI: [10.48550/arXiv.1706.04599](https://doi.org/10.48550/arXiv.1706.04599)
+  <br/>*Cited for:* On calibration of modern neural networks
+
+**[16]** `hagberg2008networkx`. Aric A. Hagberg, Daniel A. Schult, and Pieter J. Swart. "Exploring Network Structure, Dynamics, and Function using NetworkX." *Proceedings of the Python in Science Conference*, 2008. DOI: [10.25080/TCWV9851](https://doi.org/10.25080/TCWV9851)
   <br/>*Cited for:* NetworkX
 
-**[9]** `hendricks2020crossref`. Ginny Hendricks, Dominika Tkaczyk, Jennifer Lin, and Patricia Feeney. "Crossref: The sustainable source of community-owned scholarly metadata." *Quantitative Science Studies*, 2020. DOI: [10.1162/qss_a_00022](https://doi.org/10.1162/qss_a_00022)
+**[17]** `hendricks2020crossref`. Ginny Hendricks, Dominika Tkaczyk, Jennifer Lin, and Patricia Feeney. "Crossref: The sustainable source of community-owned scholarly metadata." *Quantitative Science Studies*, 2020. DOI: [10.1162/qss_a_00022](https://doi.org/10.1162/qss_a_00022)
   <br/>*Cited for:* Crossref as scholarly infrastructure
 
-**[10]** `higgins2011cochrane`. J. P. T. Higgins et al.. "The Cochrane Collaboration's tool for assessing risk of bias in randomised trials." *BMJ*, 2011. DOI: [10.1136/bmj.d5928](https://doi.org/10.1136/bmj.d5928)
+**[18]** `higgins2011cochrane`. J. P. T. Higgins et al.. "The Cochrane Collaboration's tool for assessing risk of bias in randomised trials." *BMJ*, 2011. DOI: [10.1136/bmj.d5928](https://doi.org/10.1136/bmj.d5928)
   <br/>*Cited for:* Cochrane risk of bias tool
 
-**[11]** `hirsch2005hindex`. J. E. Hirsch. "An index to quantify an individual's scientific research output." *Proceedings of the National Academy of Sciences*, 2005. DOI: [10.1073/pnas.0507655102](https://doi.org/10.1073/pnas.0507655102)
+**[19]** `hirsch2005hindex`. J. E. Hirsch. "An index to quantify an individual's scientific research output." *Proceedings of the National Academy of Sciences*, 2005. DOI: [10.1073/pnas.0507655102](https://doi.org/10.1073/pnas.0507655102)
   <br/>*Cited for:* h-index
 
-**[12]** `ioannidis2005why`. John P. A. Ioannidis. "Why Most Published Research Findings Are False." *PLoS Medicine*, 2005. DOI: [10.1371/journal.pmed.0020124](https://doi.org/10.1371/journal.pmed.0020124)
+**[20]** `hripcsak2005agreement`. G. Hripcsak. "Agreement, the F-Measure, and Reliability in Information Retrieval." *Journal of the American Medical Informatics Association*, 2005. DOI: [10.1197/jamia.m1733](https://doi.org/10.1197/jamia.m1733)
+  <br/>*Cited for:* Agreement, F-measure and reliability in IR
+
+**[21]** `ioannidis2005why`. John P. A. Ioannidis. "Why Most Published Research Findings Are False." *PLoS Medicine*, 2005. DOI: [10.1371/journal.pmed.0020124](https://doi.org/10.1371/journal.pmed.0020124)
   <br/>*Cited for:* Why most published research findings are false
 
-**[13]** `jin2018pico`. Di Jin, and Peter Szolovits. "PICO Element Detection in Medical Text via Long Short-Term Memory Neural Networks." *Proceedings of the BioNLP 2018 workshop*, 2018. DOI: [10.18653/v1/W18-2308](https://doi.org/10.18653/v1/W18-2308)
+**[22]** `jin2018pico`. Di Jin, and Peter Szolovits. "PICO Element Detection in Medical Text via Long Short-Term Memory Neural Networks." *Proceedings of the BioNLP 2018 workshop*, 2018. DOI: [10.18653/v1/W18-2308](https://doi.org/10.18653/v1/W18-2308)
   <br/>*Cited for:* PICO element detection
 
-**[14]** `kim2003genia`. JD Kim, Tomoko Ohta, Yuka Tateisi, and J Tsujii. "GENIA corpus—a semantically annotated corpus for bio-textmining." *Bioinformatics*, 2003. DOI: [10.1093/bioinformatics/btg1023](https://doi.org/10.1093/bioinformatics/btg1023)
+**[23]** `kim2003genia`. J.-D. Kim, T. Ohta, Y. Tateisi, and J. Tsujii. "GENIA corpus—a semantically annotated corpus for bio-textmining." *Bioinformatics*, 2003. DOI: [10.1093/bioinformatics/btg1023](https://doi.org/10.1093/bioinformatics/btg1023)
   <br/>*Cited for:* GENIA corpus for biomedical IE
 
-**[15]** `lee2020biobert`. Jinhyuk Lee et al.. "BioBERT: a pre-trained biomedical language representation model for biomedical text mining." *Bioinformatics*, 2019. DOI: [10.1093/bioinformatics/btz682](https://doi.org/10.1093/bioinformatics/btz682)
+**[24]** `langville2004deeper`. Amy Langville, and Carl Meyer. "Deeper Inside PageRank." *Internet Mathematics*, 2004. DOI: [10.1080/15427951.2004.10129091](https://doi.org/10.1080/15427951.2004.10129091)
+  <br/>*Cited for:* Deeper inside PageRank
+
+**[25]** `lee2020biobert`. Jinhyuk Lee et al.. "BioBERT: a pre-trained biomedical language representation model for biomedical text mining." *Bioinformatics*, 2019. DOI: [10.1093/bioinformatics/btz682](https://doi.org/10.1093/bioinformatics/btz682)
   <br/>*Cited for:* BioBERT
 
-**[16]** `lopez2009grobid`. Patrice Lopez. "GROBID: Combining Automatic Bibliographic Data Recognition and Term Extraction for Scholarship Publications." *Lecture Notes in Computer Science*, 2009. DOI: [10.1007/978-3-642-04346-8_62](https://doi.org/10.1007/978-3-642-04346-8_62)
+**[26]** `lopez2009grobid`. Patrice Lopez. "GROBID: Combining Automatic Bibliographic Data Recognition and Term Extraction for Scholarship Publications." *Lecture Notes in Computer Science*, 2009. DOI: [10.1007/978-3-642-04346-8_62](https://doi.org/10.1007/978-3-642-04346-8_62)
   <br/>*Cited for:* GROBID
 
-**[17]** `marshall2016robotreviewer`. Iain J Marshall, Joël Kuiper, and Byron C Wallace. "RobotReviewer: evaluation of a system for automatically assessing bias in clinical trials." *Journal of the American Medical Informatics Association*, 2015. DOI: [10.1093/jamia/ocv044](https://doi.org/10.1093/jamia/ocv044)
+**[27]** `marshall2016robotreviewer`. Iain J Marshall, Joël Kuiper, and Byron C Wallace. "RobotReviewer: evaluation of a system for automatically assessing bias in clinical trials." *Journal of the American Medical Informatics Association*, 2015. DOI: [10.1093/jamia/ocv044](https://doi.org/10.1093/jamia/ocv044)
   <br/>*Cited for:* RobotReviewer: automatic risk-of-bias assessment
 
-**[18]** `marshall2020trialstreamer`. Iain Marshall et al.. "Trialstreamer: A living, automatically updated database of clinical trial reports." *Journal of the American Medical Informatics Association*, 2020. DOI: [10.1093/jamia/ocaa163](https://doi.org/10.1093/jamia/ocaa163)
+**[28]** `marshall2020trialstreamer`. Iain J Marshall et al.. "Trialstreamer: A living, automatically updated database of clinical trial reports." *Journal of the American Medical Informatics Association*, 2020. DOI: [10.1093/jamia/ocaa163](https://doi.org/10.1093/jamia/ocaa163)
   <br/>*Cited for:* Trialstreamer: auto-updated RCT database
 
-**[19]** `martin2021oadoi`. Heather Piwowar et al.. "The state of OA: a large-scale analysis of the prevalence and impact of Open Access articles." *PeerJ*, 2018. DOI: [10.7717/peerj.4375](https://doi.org/10.7717/peerj.4375)
+**[29]** `martin2021oadoi`. Heather Piwowar et al.. "The state of OA: a large-scale analysis of the prevalence and impact of Open Access articles." *PeerJ*, 2018. DOI: [10.7717/peerj.4375](https://doi.org/10.7717/peerj.4375)
   <br/>*Cited for:* Unpaywall / open access state
 
-**[20]** `moher2009prisma`. David Moher, Alessandro Liberati, Jennifer Tetzlaff, and Douglas G. Altman. "Preferred Reporting Items for Systematic Reviews and Meta-Analyses: The PRISMA Statement." *PLoS Medicine*, 2009. DOI: [10.1371/journal.pmed.1000097](https://doi.org/10.1371/journal.pmed.1000097)
+**[30]** `moher2009prisma`. David Moher, Alessandro Liberati, Jennifer Tetzlaff, and Douglas G. Altman. "Preferred Reporting Items for Systematic Reviews and Meta-Analyses: The PRISMA Statement." *PLoS Medicine*, 2009. DOI: [10.1371/journal.pmed.1000097](https://doi.org/10.1371/journal.pmed.1000097)
   <br/>*Cited for:* PRISMA reporting guideline
 
-**[21]** `neumann2019scispacy`. Mark Neumann, Daniel King, Iz Beltagy, and Waleed Ammar. "ScispaCy: Fast and Robust Models for Biomedical Natural Language Processing." *Proceedings of the 18th BioNLP Workshop and Shared Task*, 2019. DOI: [10.18653/v1/W19-5034](https://doi.org/10.18653/v1/W19-5034)
+**[31]** `neumann2019scispacy`. Mark Neumann, Daniel King, Iz Beltagy, and Waleed Ammar. "ScispaCy: Fast and Robust Models for Biomedical Natural Language Processing." *Proceedings of the 18th BioNLP Workshop and Shared Task*, 2019. DOI: [10.18653/v1/W19-5034](https://doi.org/10.18653/v1/W19-5034)
   <br/>*Cited for:* ScispaCy biomedical NLP pipeline
 
-**[22]** `newman2001structure`. M. E. J. Newman. "The structure of scientific collaboration networks." *Proceedings of the National Academy of Sciences*, 2001. DOI: [10.1073/pnas.98.2.404](https://doi.org/10.1073/pnas.98.2.404)
+**[32]** `newman2001structure`. M. E. J. Newman. "The structure of scientific collaboration networks." *Proceedings of the National Academy of Sciences*, 2001. DOI: [10.1073/pnas.98.2.404](https://doi.org/10.1073/pnas.98.2.404)
   <br/>*Cited for:* Structure of scientific collaboration networks
 
-**[23]** `nye2018ebmnlp`. Benjamin Nye et al.. "A Corpus with Multi-Level Annotations of Patients, Interventions and Outcomes to Support Language Processing for Medical Literature." *Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)*, 2018. DOI: [10.18653/v1/P18-1019](https://doi.org/10.18653/v1/P18-1019)
+**[33]** `niculescu2005probabilities`. Alexandru Niculescu-Mizil, and Rich Caruana. "Predicting good probabilities with supervised learning." *Proceedings of the 22nd international conference on Machine learning  - ICML '05*, 2005. DOI: [10.1145/1102351.1102430](https://doi.org/10.1145/1102351.1102430)
+  <br/>*Cited for:* Predicting good probabilities with supervised learning
+
+**[34]** `nye2018ebmnlp`. Benjamin Nye et al.. "A Corpus with Multi-Level Annotations of Patients, Interventions and Outcomes to Support Language Processing for Medical Literature." *Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)*, 2018. DOI: [10.18653/v1/P18-1019](https://doi.org/10.18653/v1/P18-1019)
   <br/>*Cited for:* EBM-NLP corpus: PICO spans in abstracts
 
-**[24]** `priem2022openalex`. Jason R Priem et al.. "OpenAlex Snapshot." *arXiv (Cornell University)*, 2022. DOI: [10.48550/arXiv.2205.01833](https://doi.org/10.48550/arXiv.2205.01833)
+**[35]** `peng2011reproducible`. Roger D. Peng. "Reproducible Research in Computational Science." *Science*, 2011. DOI: [10.1126/science.1213847](https://doi.org/10.1126/science.1213847)
+  <br/>*Cited for:* Reproducible research in computational science
+
+**[36]** `priem2022openalex`. Jason R Priem et al.. "OpenAlex Snapshot." *arXiv (Cornell University)*, 2022. DOI: [10.48550/arXiv.2205.01833](https://doi.org/10.48550/arXiv.2205.01833)
   <br/>*Cited for:* OpenAlex open scholarly catalogue
 
-**[25]** `radicchi2008universality`. Filippo Radicchi, Santo Fortunato, and Claudio Castellano. "Universality of citation distributions: Toward an objective measure of scientific impact." *Proceedings of the National Academy of Sciences*, 2008. DOI: [10.1073/pnas.0806977105](https://doi.org/10.1073/pnas.0806977105)
+**[37]** `radicchi2008universality`. Filippo Radicchi, Santo Fortunato, and Claudio Castellano. "Universality of citation distributions: Toward an objective measure of scientific impact." *Proceedings of the National Academy of Sciences*, 2008. DOI: [10.1073/pnas.0806977105](https://doi.org/10.1073/pnas.0806977105)
   <br/>*Cited for:* Universality of citation distributions
 
-**[26]** `redner1998citation`. S. Redner. "How popular is your paper? An empirical study of the citation distribution." *The European Physical Journal B*, 1998. DOI: [10.1007/s100510050359](https://doi.org/10.1007/s100510050359)
+**[38]** `redner1998citation`. S. Redner. "How popular is your paper? An empirical study of the citation distribution." *The European Physical Journal B*, 1998. DOI: [10.1007/s100510050359](https://doi.org/10.1007/s100510050359)
   <br/>*Cited for:* Citation distribution statistics
 
-**[27]** `walker2007citerank`. Dylan Walker, Huafeng Xie, Koon-Kiu Yan, and Sergei Maslov. "Ranking scientific publications using a model of network traffic." *Journal of Statistical Mechanics: Theory and Experiment*, 2007. DOI: [10.1088/1742-5468/2007/06/P06010](https://doi.org/10.1088/1742-5468/2007/06/P06010)
+**[39]** `sokolova2009measures`. Marina Sokolova, and Guy Lapalme. "A systematic analysis of performance measures for classification tasks." *Information Processing &amp; Management*, 2009. DOI: [10.1016/j.ipm.2009.03.002](https://doi.org/10.1016/j.ipm.2009.03.002)
+  <br/>*Cited for:* Systematic analysis of classification performance measures
+
+**[40]** `walker2007citerank`. Dylan Walker, Huafeng Xie, Koon-Kiu Yan, and Sergei Maslov. "Ranking scientific publications using a model of network traffic." *Journal of Statistical Mechanics: Theory and Experiment*, 2007. DOI: [10.1088/1742-5468/2007/06/P06010](https://doi.org/10.1088/1742-5468/2007/06/P06010)
   <br/>*Cited for:* CiteRank: finding scientific gems
 
-**[28]** `waltman2016review`. Ludo Waltman. "A review of the literature on citation impact indicators." *Journal of Informetrics*, 2016. DOI: [10.1016/j.joi.2016.02.007](https://doi.org/10.1016/j.joi.2016.02.007)
+**[41]** `waltman2016review`. Ludo Waltman. "A review of the literature on citation impact indicators." *Journal of Informetrics*, 2016. DOI: [10.1016/j.joi.2016.02.007](https://doi.org/10.1016/j.joi.2016.02.007)
   <br/>*Cited for:* Review of citation impact indicators
 
-**[29]** `wang2020mag`. Kuansan Wang, Zhihong Shen, Chiyuan Huang, Chieh-Han Wu, Yuxiao Dong, and Anshul Kanakia. "Microsoft Academic Graph: When experts are not enough." *Quantitative Science Studies*, 2020. DOI: [10.1162/qss_a_00021](https://doi.org/10.1162/qss_a_00021)
+**[42]** `wang2020mag`. Kuansan Wang, Zhihong Shen, Chiyuan Huang, Chieh-Han Wu, Yuxiao Dong, and Anshul Kanakia. "Microsoft Academic Graph: When experts are not enough." *Quantitative Science Studies*, 2020. DOI: [10.1162/qss_a_00021](https://doi.org/10.1162/qss_a_00021)
   <br/>*Cited for:* Microsoft Academic Graph
+
+**[43]** `wilson1927`. Edwin B. Wilson. "Probable Inference, the Law of Succession, and Statistical Inference." *Journal of the American Statistical Association*, 1927. DOI: [10.1080/01621459.1927.10502953](https://doi.org/10.1080/01621459.1927.10502953)
+  <br/>*Cited for:* Wilson score interval
+
+**[44]** `wynants2020prediction`. Laure Wynants et al.. "Prediction models for diagnosis and prognosis of covid-19: systematic review and critical appraisal." *BMJ*, 2020. DOI: [10.1136/bmj.m1328](https://doi.org/10.1136/bmj.m1328)
+  <br/>*Cited for:* The systematic review the extractor false-positived on

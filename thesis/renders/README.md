@@ -13,9 +13,9 @@ PDF converted from the Word file.
 
 | File | Pages | Page numbers | Body type | Character |
 |------|-------|--------------|-----------|-----------|
-| `1-current-as-committed.pdf` | 108 | **no** | Times New Roman 12pt | Pandoc's default web styling, printed |
-| `2-academic-serif.pdf` | 119 | yes | Times New Roman 11.5pt | Conventional university thesis |
-| `3-modern-report.pdf` | 113 | yes | Cambria 11pt | Technical report |
+| `1-current-as-committed.pdf` | 110 | **no** | Times New Roman 12pt | Pandoc's default web styling, printed |
+| `2-academic-serif.pdf` | 122 | yes | Times New Roman 11.5pt | Conventional university thesis |
+| `3-modern-report.pdf` | 119 | yes | Cambria 11pt | Technical report |
 
 **1 — current.** What is committed in `thesis/CiteGraph-NLP-Thesis.pdf`. It is
 Pandoc's browser stylesheet sent to a printer: ragged-right text, no page
@@ -26,7 +26,7 @@ efficient.
 **2 — academic.** Justified with hyphenation, a 30mm left margin for binding,
 page number centred in the footer, and the current chapter named in the top
 right. Code drops to 9pt, tables to 9.5pt. The longest of the three: the
-binding margin and the larger leading cost about eleven pages against variant
+binding margin and the larger leading cost about twelve pages against variant
 1, which is the usual trade for looking like a submitted thesis.
 
 **3 — report.** Sans-serif headings in the same navy as the generated figures,

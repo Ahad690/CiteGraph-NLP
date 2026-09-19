@@ -55,9 +55,9 @@ sentence quoted verbatim so the label is auditable. Where no human study
 population is stated, the label is negative and correct behaviour is to extract
 nothing.
 
-The limitations stated in Section 3.5.4 apply throughout: single annotator who
-is also a system author, no inter-annotator agreement, twenty papers, abstracts
-only, biomedical concentration.
+The limitations stated in Sections 3.5.4 and 3.5.5 apply throughout: single
+annotator who is also a system author, no inter-annotator agreement,
+twenty papers, abstracts only, biomedical concentration.
 
 ## 6.2 Metadata Resolution
 
@@ -128,6 +128,23 @@ extracted. The confidence interval on accuracy is wide, [0.764, 0.991], and
 must be quoted with the point estimate. A recall of 1.000 on eleven positives
 is statistically consistent with a true recall substantially below 1.
 
+Precision, recall, specificity and F1 are reported together rather than
+singly, because each is blind to a different part of the table and the set is
+deliberately unbalanced at eleven positives to nine negatives. Sokolova and
+Lapalme's survey sets out which measure is insensitive to which kind of
+change, and specificity is included here precisely because precision and
+recall between them say nothing about the eight true negatives
+[sokolova2009measures].
+
+These are all threshold-dependent measures: they describe the single operating
+point the extractor currently sits at, not its behaviour across the range of
+confidence thresholds a user might filter on. A threshold-free treatment of
+the kind Fawcett describes would be the more informative evaluation
+[fawcett2006roc], and it is not reported here for a concrete reason rather
+than an oversight: Section 6.4.4 shows the confidence score does not separate
+correct from incorrect extractions, so sweeping a threshold over it would
+describe noise.
+
 This answers the first half of **RQ1**: pattern-based extraction detects the
 presence of a reported population reliably enough to drive edge weighting, with
 the sample-size caveat above.
@@ -177,8 +194,12 @@ argument for the supervised approach discussed in Section 8.2.
 
 ### 6.4.4 The false positive, and confidence calibration
 
-The one false positive is Wynants et al., *BMJ* 2020, a systematic review of
-prediction models. The system extracted **27** with confidence **0.90**.
+The one false positive is Wynants et al., *BMJ* 2020, a living systematic
+review of covid-19 prediction models [wynants2020prediction]. The system
+extracted **27** with confidence **0.90**. The number is real and prominent in
+the abstract; it is the count of *prediction models reviewed*, not of
+participants, and nothing in the surface form distinguishes it from a study
+population. Section 6.10 dissects this case.
 
 This exposes a calibration failure that matters more than the single error:
 
@@ -191,8 +212,25 @@ This exposes a calibration failure that matters more than the single error:
 is a genuine weakness in a system whose stated purpose is to surface
 uncertainty. Confidence currently reflects *which pattern matched*, not *how
 likely the match is to be right*, and a user filtering on high confidence would
-retain the errors along with the correct results. Section 8.2 proposes
-calibration against held-out data as the remedy.
+retain the errors along with the correct results.
+
+The distinction being failed here is the one between a confidence score and a
+calibrated probability. A calibrated score is one where, of the cases assigned
+0.9, about 90% are correct; Niculescu-Mizil and Caruana show that many learning
+methods produce scores that rank well but are badly calibrated in exactly this
+sense, and that a post-hoc mapping fitted on held-out data usually repairs them
+[niculescu2005probabilities]. Guo and colleagues later found the same failure
+in modern neural networks, along with the more useful observation that
+miscalibration is largely independent of accuracy: a system can be accurate and
+confidently wrong at the same time [guo2017calibration]. That is precisely the
+shape of the result in the table above, where detection is strong and the
+confidence attached to it is uninformative.
+
+The remedy those results point to is available here and was not applied:
+fitting a calibration map from the extractor's raw score to observed
+correctness requires held-out annotated data, and with twenty papers there is
+not enough to both fit and evaluate one. Section 8.2 records it as the first
+thing a larger gold standard would make possible.
 
 ## 6.5 Citation graph construction
 
