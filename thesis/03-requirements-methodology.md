@@ -192,5 +192,3 @@ merges performed and verifying no duplicate survives in the output, but no
 gold standard of known duplicate pairs was constructed, so precision of the
 merge decision is unmeasured. A merge that incorrectly collapses two distinct
 papers would not be detected by the present measurement.
-
----

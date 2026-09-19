@@ -24,7 +24,9 @@ Gold populations span 41 to 43,548 subjects, median 1,099.
 Three patterns are visible.
 
 **Randomised trials are the easy case, and the system is built for them.** Five
-of five correct, with the highest mean confidence (0.96). RCT abstracts follow a reporting convention that surface patterns capture well: a single headline number introduced by *randomised*, *assigned* or *enrolled*. This is
+of five correct, with the highest mean confidence (0.96). RCT abstracts follow
+a reporting convention that surface patterns capture well: a single headline
+number introduced by *randomised*, *assigned* or *enrolled*. This is
 unsurprising given that the pattern set was written with trial phrasing in
 mind, and it should temper any generalisation from the headline F1.
 
@@ -46,7 +48,7 @@ The systematic-review row is the most informative line in the table. It is the
 only design where the system was wrong *and* confident, and it is the design
 whose abstracts most resemble clinical reports without describing a cohort.
 
-## 6.10 The Confidence Calibration Failure in Detail
+## 6.10 The confidence calibration failure in detail
 
 Section 6.4.4 reported that mean confidence was 0.91 when extraction was
 correct and 0.90 when it was wrong. The design breakdown explains why: there is
@@ -111,9 +113,11 @@ bears on how a user should read a sparse graph: low density may indicate an
 interdisciplinary or recent seed rather than a thin literature, and the system
 currently offers no signal to tell them apart.
 
-The runtime difference follows directly from density. Fewer edges means fewer neighbours to resolve, which reinforces the finding in Section 6.6.1 that cost is driven by the number of external lookups rather than by graph computation.
+The runtime difference follows directly from density. Fewer edges means fewer
+neighbours to resolve, which reinforces the finding in Section 6.6.1 that cost
+is driven by the number of external lookups rather than by graph computation.
 
-## 6.12 What the Abstract Backfill Changed, Stage by Stage
+## 6.12 What the abstract backfill changed, stage by stage
 
 The effect of the Europe PMC backfill is worth tracing through the pipeline,
 because it illustrates how an upstream data gap presents as a downstream model
@@ -159,5 +163,3 @@ second data source. The second intervention is far cheaper, one additional API
 call per run against a rewrite of the ignore-matching logic, and would not have
 been identified without separating "no text" from "extraction failed" in the
 measurement. Section 7.1.1 draws the general lesson.
-
----

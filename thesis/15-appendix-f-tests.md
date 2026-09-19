@@ -88,5 +88,3 @@ tests, listed so the evidence base is complete.
 | Duplicate merging | Title-key collision check over produced graphs | §6.5 |
 | Reference resolution | Every DOI resolved against Crossref/OpenAlex | §6.7 |
 | Deployment isolation | Container port confirmed bound to loopback | §5.9 |
-
----

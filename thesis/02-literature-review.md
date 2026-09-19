@@ -12,7 +12,7 @@ given in Appendix E. Three candidate references were discarded during that
 process because the identifiers initially assigned to them resolved to
 different papers; this is reported in Section 6.7 as a methodological note.
 
-## 2.1 Citation Indexing and Bibliometric Indicators
+## 2.1 Citation indexing and bibliometric indicators
 
 ### 2.1.1 The citation index
 
@@ -52,7 +52,7 @@ advantaging older work, because the target is the origin of a line of research
 rather than its most popular recent summary. Whether this succeeds is examined
 in Section 6.5, and Section 7.3 notes that no formal relevance study was run.
 
-## 2.2 Structure and Dynamics of Citation Networks
+## 2.2 Structure and dynamics of citation networks
 
 ### 2.2.1 Empirical distribution of citations
 
@@ -117,7 +117,7 @@ visually and interactively rather than reduced to a ranking. It differs in
 unit of analysis: CiteSpace works from a corpus supplied by the user, typically
 a search result set, whereas CiteGraph-NLP expands outward from a single seed.
 
-## 2.3 Scholarly Data Infrastructure
+## 2.3 Scholarly data infrastructure
 
 The feasibility of this project rests entirely on the availability of open
 citation data. Four sources are relevant.
@@ -151,7 +151,7 @@ literature. Its relevance is to the full-text extension discussed in
 Section 8.2: any move from abstracts to full text must first determine which
 articles are legally retrievable.
 
-## 2.4 Biomedical Information Extraction
+## 2.4 Biomedical information extraction
 
 ### 2.4.1 Annotated corpora
 
@@ -238,7 +238,7 @@ and the system must not be presented as appraising quality. Section 4.7
 describes how this caution is surfaced in the interface, and the generated
 analysis reports carry an explicit statement to that effect.
 
-## 2.6 Synthesis and Research Gap
+## 2.6 Synthesis and research gap
 
 The reviewed literature supports four observations.
 
@@ -265,5 +265,3 @@ how well it works, not a new method. Second, this thesis does not demonstrate
 that evidence-weighted ranking is *better* than unweighted ranking, no
 comparative experiment was performed, and Section 7.3 states this as the
 principal unaddressed question.
-
----

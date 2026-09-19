@@ -15,7 +15,9 @@ pip install -r requirements.txt
 cp .env.example .env          # then set OPENALEX_EMAIL
 ```
 
-Setting `OPENALEX_EMAIL` is not optional in practice. OpenAlex serves identified callers from a faster "polite pool"; without it, request latency, which Section 6.6 shows dominates runtime, is materially worse.
+Setting `OPENALEX_EMAIL` is not optional in practice. OpenAlex serves
+identified callers from a faster "polite pool"; without it, request latency,
+which Section 6.6 shows dominates runtime, is materially worse.
 
 ## C.2 Test suite
 
@@ -148,5 +150,3 @@ on what the providers hold at query time.
 The gold-standard labels are fixed and committed, so the extraction metrics in
 Section 6.4 are stable provided the abstracts remain retrievable. Section 8.2.7
 proposes snapshotting the corpus to remove this dependency entirely.
-
----

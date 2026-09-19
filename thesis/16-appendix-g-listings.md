@@ -264,5 +264,3 @@ def wilson_interval(successes: int, trials: int, z: float = 1.96):
                    + z * z / (4 * trials * trials)) ** 0.5) / denominator
     return (max(0.0, centre - margin), min(1.0, centre + margin))
 ```
-
----

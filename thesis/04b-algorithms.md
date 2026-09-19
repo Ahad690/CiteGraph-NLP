@@ -4,7 +4,7 @@ This chapter states the five core algorithms precisely enough to be
 reimplemented. Each is given as pseudocode with its complexity, its failure
 modes, and a note on the design decisions that are not obvious from the code.
 
-## 4.8 Algorithm 1: Metadata Merge
+## 4.8 Algorithm 1: metadata merge
 
 ### 4.8.1 Problem
 
@@ -58,7 +58,7 @@ rewards two providers *returning* a record, not two providers *agreeing* on its
 contents. A stronger formulation would compare the fields themselves and reduce
 confidence on disagreement. This is not implemented.
 
-## 4.9 Algorithm 2: Level-Synchronous Citation Traversal
+## 4.9 Algorithm 2: level-Synchronous citation traversal
 
 ### 4.9.1 Problem
 
@@ -191,7 +191,7 @@ Let *N* be `max_papers` and *F* the mean out-degree per expanded paper.
 | Same work under two DOIs with near-identical titles | Title-prefix match with year agreement |
 | A heavily cited seed | Forward results are sorted by citation count and capped |
 
-## 4.10 Algorithm 3: Population Candidate Extraction
+## 4.10 Algorithm 3: population candidate extraction
 
 ### 4.10.1 Specification
 
@@ -233,9 +233,15 @@ by spaCy sentence segmentation rather than by matching.
 
 ### 4.10.3 The span-versus-sentence decision
 
-Lines 8–15 encode the single most consequential correction made to this algorithm. The original implementation evaluated the ignore patterns against the *whole sentence* and skipped every candidate in it on a match. Because `IGNORE_PATTERNS` contains `\b20\d{2}\b`, and clinical abstracts mention a year in most sentences, the rule discarded the very numbers it existed to protect. Section 5.5 gives the measurement. Evaluating per span preserves the intent, a year is never read as a population, without the collateral loss.
+Lines 8–15 encode the single most consequential correction made to this
+algorithm. The original implementation evaluated the ignore patterns against
+the *whole sentence* and skipped every candidate in it on a match. Because
+`IGNORE_PATTERNS` contains `\b20\d{2}\b`, and clinical abstracts mention a year
+in most sentences, the rule discarded the very numbers it existed to protect.
+Section 5.5 gives the measurement. Evaluating per span preserves the intent, a
+year is never read as a population, without the collateral loss.
 
-## 4.11 Algorithm 4: Population Resolution
+## 4.11 Algorithm 4: population resolution
 
 ### 4.11.1 Specification
 
@@ -281,7 +287,7 @@ about*, a subgroup count matched by a high-priority pattern outranks the cohort
 total matched by a lower-priority one. Position in the abstract, and the
 relationship between competing values, are both unused signals.
 
-## 4.12 Algorithm 5: Bounded Path Ranking
+## 4.12 Algorithm 5: bounded path ranking
 
 ### 4.12.1 Problem
 
@@ -331,7 +337,12 @@ SCORE_PATH(path):
 
 ### 4.12.3 Complexity
 
-The replacement is O(*P*) in the number of simple paths within the cutoff, with O(*top_n*) memory. The original was O(*V* · *P*): `all_simple_paths` was called once per target vertex, and each call re-explored the entire reachable subgraph to depth 4, yielding only the paths terminating at that target. It also materialised a result dictionary, including a title lookup per node, for every path before sorting and discarding all but ten.
+The replacement is O(*P*) in the number of simple paths within the cutoff, with
+O(*top_n*) memory. The original was O(*V* · *P*): `all_simple_paths` was called
+once per target vertex, and each call re-explored the entire reachable subgraph
+to depth 4, yielding only the paths terminating at that target. It also
+materialised a result dictionary, including a title lookup per node, for every
+path before sorting and discarding all but ten.
 
 Measured on layered synthetic graphs (Section 6.6.4), the redesign is 126× to
 434× faster, with the gap widening as the graph grows, and returns an identical
@@ -342,5 +353,3 @@ optimisation. A densely interlinked citation graph can contain an astronomical
 number of simple paths; without a bound, one pathological input hangs the run.
 When the cap triggers it is logged, so a truncated ranking is never presented
 as exhaustive.
-
----

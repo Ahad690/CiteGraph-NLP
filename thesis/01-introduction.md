@@ -191,5 +191,3 @@ results for each module, performance characterisation, and failure analysis.
 catalogues every divergence between the proposal and the delivered system.
 
 **Chapter 8** concludes and sets out future work.
-
----

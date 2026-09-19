@@ -85,7 +85,14 @@ with no citing works. An edge weight of 0.0 silently rewritten to 1.0 by
 Python's `or` still yields a ranking. In each case the system produced a
 defensible-looking answer to the wrong question.
 
-What surfaced them was not more testing but *measurement against known quantities*: comparing the number of nodes retrieved against the number of references the provider reported, comparing extracted populations against hand-read abstracts, timing each stage. Notably, the evaluation plan that would have caught most of these was specified in the project proposal from the start and left unimplemented, the empty `evaluation/` directory was itself the strongest early warning available, and nothing in the repository made its emptiness visible.
+What surfaced them was not more testing but *measurement against known
+quantities*: comparing the number of nodes retrieved against the number of
+references the provider reported, comparing extracted populations against
+hand-read abstracts, timing each stage. Notably, the evaluation plan that would
+have caught most of these was specified in the project proposal from the start
+and left unimplemented, the empty `evaluation/` directory was itself the
+strongest early warning available, and nothing in the repository made its
+emptiness visible.
 
 ## 7.3 Threats to Validity
 
@@ -163,7 +170,7 @@ trials. The identity aliasing described in Section 4.4.2 solves the easier
 adjacent problem, duplicate *records* of one paper, not multiple papers of one
 study.
 
-## 7.5 Known Open Issues
+## 7.5 Known open issues
 
 Issues present in the delivered system and not resolved:
 
@@ -178,7 +185,7 @@ Issues present in the delivered system and not resolved:
 5. **Runs at `max_total_papers = 200` take about 3.5 minutes**, exceeding
    NFR-1's 60-second target.
 
-## 7.6 Ethical and Legal Considerations
+## 7.6 Ethical and legal considerations
 
 All data is retrieved from public APIs under their published terms. The
 OpenAlex polite-pool convention is honoured by sending a contact address. No
@@ -194,5 +201,3 @@ of them is weaker than it appears. Second, **entrenchment of visibility**: any
 citation-based ranking amplifies already-visible work, and the age term here
 does not correct for the systematic under-citation of research from
 under-resourced institutions and non-English literatures.
-
----

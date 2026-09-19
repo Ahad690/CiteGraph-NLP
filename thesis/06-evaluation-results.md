@@ -162,7 +162,13 @@ categories. The four errors:
 | Huang et al. 2020 | `TOTAL_ANALYZED` | `TOTAL_ENROLLED` |
 | Verity et al. 2020 | `SAMPLE_SIZE_GENERIC` | `TOTAL_ANALYZED` |
 
-All four are *adjacent-category* confusions among quantities that are often numerically equal, a trial that randomises 4,744 and analyses 4,744 differs only in framing. The first error has a traceable cause: the phrase "A total of 43,548 participants underwent randomization" matches a generic `a total of N` pattern that is typed `SAMPLE_SIZE_GENERIC`, and that pattern outranked the randomisation-specific one. This is a pattern-priority defect, not an inherent limit.
+All four are *adjacent-category* confusions among quantities that are often
+numerically equal, a trial that randomises 4,744 and analyses 4,744 differs
+only in framing. The first error has a traceable cause: the phrase "A total of
+43,548 participants underwent randomization" matches a generic `a total of N`
+pattern that is typed `SAMPLE_SIZE_GENERIC`, and that pattern outranked the
+randomisation-specific one. This is a pattern-priority defect, not an inherent
+limit.
 
 The practical impact on the system is smaller than the number suggests: the
 weighting formula uses the *value*, not the type. Type accuracy affects the
@@ -188,7 +194,7 @@ likely the match is to be right*, and a user filtering on high confidence would
 retain the errors along with the correct results. Section 8.2 proposes
 calibration against held-out data as the remedy.
 
-## 6.5 Citation Graph Construction
+## 6.5 Citation graph construction
 
 Three traversals at `max_papers = 40`, backward depth 2, forward depth 1:
 
@@ -296,7 +302,7 @@ identical top-ten (verified by comparing path sets and scores against the
 exhaustive computation). The speed-up widens with size because the original was
 O(nodes × paths) and the replacement is O(paths).
 
-## 6.7 Methodological Note: Reference Verification
+## 6.7 Methodological note: reference verification
 
 The reference list was verified programmatically: every candidate DOI was
 resolved against Crossref, with OpenAlex as fallback, and the returned title
@@ -320,7 +326,7 @@ and the errors are invisible without verification, since a plausible DOI looks
 exactly like a correct one. All twenty-nine entries in the final bibliography
 resolve.
 
-## 6.8 Summary of Results Against Objectives
+## 6.8 Summary of Results against objectives
 
 | Objective | Status | Evidence |
 |-----------|--------|----------|
@@ -339,5 +345,3 @@ are the honest findings of the evaluation: confidence scores do not discriminate
 correct from incorrect extractions (6.4.4), and the ranking, while producing
 defensible output on inspection, has not been validated against human judgement
 (6.5).
-
----

@@ -68,7 +68,13 @@ weights each citation edge by a normalised population score scaled by extraction
 confidence, and ranks probable foundational papers using PageRank over the
 weighted graph.
 
-The contribution is not a new ranking algorithm. PageRank on citation networks is long established [chen2007gems; walker2007citerank]. It is a working, measured pipeline that makes the *uncertainty* of automated evidence extraction visible to the user: every extracted population carries a confidence score and a status of `resolved`, `ambiguous` or `missing`, and edges whose evidence could not be established fall back to a uniform structural weight rather than silently disappearing.
+The contribution is not a new ranking algorithm. PageRank on citation networks
+is long established [chen2007gems; walker2007citerank]. It is a working,
+measured pipeline that makes the *uncertainty* of automated evidence extraction
+visible to the user: every extracted population carries a confidence score and
+a status of `resolved`, `ambiguous` or `missing`, and edges whose evidence
+could not be established fall back to a uniform structural weight rather than
+silently disappearing.
 
 The system was evaluated against a 20-paper gold standard annotated from
 abstract text, spanning randomised trials, cohort studies, case series,
@@ -101,7 +107,14 @@ biomedical NLP, PageRank, evidence synthesis, scholarly APIs
 
 ## Table of Contents
 
-1. **Introduction**, motivation, problem statement, objectives, scope, contributions 2. **Literature Review**, citation analysis, scholarly infrastructure, biomedical information extraction, evidence appraisal 3. **Requirements and Methodology**, requirements capture, development process, evaluation strategy 4. **System Design and Architecture**, layered architecture, data model, algorithms 5. **Implementation**, pipeline stages, provider integration, engineering defects and their resolution 6. **Evaluation and Results**, gold standard, measured results, performance, failure analysis 7. **Discussion**, interpretation, threats to validity, divergence from the proposal 8. **Conclusion and Future Work**
+1. **Introduction**: motivation, problem statement, objectives, scope, contributions
+2. **Literature Review**: citation analysis, scholarly infrastructure, biomedical information extraction, evidence appraisal
+3. **Requirements and Methodology**: requirements capture, development process, evaluation strategy
+4. **System Design and Architecture**: layered architecture, data model, algorithms
+5. **Implementation**: pipeline stages, provider integration, engineering defects and their resolution
+6. **Evaluation and Results**: gold standard, measured results, performance, failure analysis
+7. **Discussion**: interpretation, threats to validity, divergence from the proposal
+8. **Conclusion and Future Work**
 
 **Appendices**
 
@@ -133,5 +146,3 @@ biomedical NLP, PageRank, evidence synthesis, scholarly APIs
 | SPA | Single-Page Application |
 | SSRF | Server-Side Request Forgery |
 | TLS | Transport Layer Security |
-
----

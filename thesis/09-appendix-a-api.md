@@ -87,5 +87,3 @@ All exports return a file with the correct `Content-Type` and a `Content-Disposi
 Both CSV exports are written with Python's `csv` module, so commas, quotes and
 newlines inside titles and journal names are escaped correctly, and carry a
 UTF-8 byte-order mark so spreadsheet software renders accented author names.
-
----

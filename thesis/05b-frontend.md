@@ -40,7 +40,7 @@ the system's headline output, but the population evidence is what the ranking
 *rests on*, and a reader who wants to judge the ranking must be able to inspect
 the evidence independently of it.
 
-## 5.12 The Submission Flow
+## 5.12 The submission flow
 
 `/start` accepts any of the five input types. Two decisions in this screen
 proved important.
@@ -64,7 +64,10 @@ where Section 6.4.4 shows it currently overstates its case.
 
 ### 5.13.1 Status before number
 
-Every extracted population is displayed with its status, `resolved`, `ambiguous` or `missing`, adjacent to the value, not in a tooltip or a detail panel. The three states are visually distinct. A number presented without its status invites the reader to treat an ambiguous extraction as a settled fact.
+Every extracted population is displayed with its status, `resolved`,
+`ambiguous` or `missing`, adjacent to the value, not in a tooltip or a detail
+panel. The three states are visually distinct. A number presented without its
+status invites the reader to treat an ambiguous extraction as a settled fact.
 
 ### 5.13.2 The supporting sentence is reachable
 
@@ -141,5 +144,3 @@ what that means for the weights, rather than presenting an effectively
 unweighted ranking as though it were evidence-weighted. This is the same
 honesty requirement as Section 5.13.3, applied to the artifact a reader is most
 likely to circulate.
-
----

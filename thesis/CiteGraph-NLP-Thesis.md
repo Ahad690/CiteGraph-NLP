@@ -68,7 +68,13 @@ weights each citation edge by a normalised population score scaled by extraction
 confidence, and ranks probable foundational papers using PageRank over the
 weighted graph.
 
-The contribution is not a new ranking algorithm. PageRank on citation networks is long established [chen2007gems; walker2007citerank]. It is a working, measured pipeline that makes the *uncertainty* of automated evidence extraction visible to the user: every extracted population carries a confidence score and a status of `resolved`, `ambiguous` or `missing`, and edges whose evidence could not be established fall back to a uniform structural weight rather than silently disappearing.
+The contribution is not a new ranking algorithm. PageRank on citation networks
+is long established [chen2007gems; walker2007citerank]. It is a working,
+measured pipeline that makes the *uncertainty* of automated evidence extraction
+visible to the user: every extracted population carries a confidence score and
+a status of `resolved`, `ambiguous` or `missing`, and edges whose evidence
+could not be established fall back to a uniform structural weight rather than
+silently disappearing.
 
 The system was evaluated against a 20-paper gold standard annotated from
 abstract text, spanning randomised trials, cohort studies, case series,
@@ -101,7 +107,14 @@ biomedical NLP, PageRank, evidence synthesis, scholarly APIs
 
 ## Table of Contents
 
-1. **Introduction**, motivation, problem statement, objectives, scope, contributions 2. **Literature Review**, citation analysis, scholarly infrastructure, biomedical information extraction, evidence appraisal 3. **Requirements and Methodology**, requirements capture, development process, evaluation strategy 4. **System Design and Architecture**, layered architecture, data model, algorithms 5. **Implementation**, pipeline stages, provider integration, engineering defects and their resolution 6. **Evaluation and Results**, gold standard, measured results, performance, failure analysis 7. **Discussion**, interpretation, threats to validity, divergence from the proposal 8. **Conclusion and Future Work**
+1. **Introduction**: motivation, problem statement, objectives, scope, contributions
+2. **Literature Review**: citation analysis, scholarly infrastructure, biomedical information extraction, evidence appraisal
+3. **Requirements and Methodology**: requirements capture, development process, evaluation strategy
+4. **System Design and Architecture**: layered architecture, data model, algorithms
+5. **Implementation**: pipeline stages, provider integration, engineering defects and their resolution
+6. **Evaluation and Results**: gold standard, measured results, performance, failure analysis
+7. **Discussion**: interpretation, threats to validity, divergence from the proposal
+8. **Conclusion and Future Work**
 
 **Appendices**
 
@@ -133,8 +146,6 @@ biomedical NLP, PageRank, evidence synthesis, scholarly APIs
 | SPA | Single-Page Application |
 | SSRF | Server-Side Request Forgery |
 | TLS | Transport Layer Security |
-
----
 
 \newpage
 
@@ -332,8 +343,6 @@ catalogues every divergence between the proposal and the delivered system.
 
 **Chapter 8** concludes and sets out future work.
 
----
-
 \newpage
 
 # Chapter 2: Literature Review
@@ -350,7 +359,7 @@ given in Appendix E. Three candidate references were discarded during that
 process because the identifiers initially assigned to them resolved to
 different papers; this is reported in Section 6.7 as a methodological note.
 
-## 2.1 Citation Indexing and Bibliometric Indicators
+## 2.1 Citation indexing and bibliometric indicators
 
 ### 2.1.1 The citation index
 
@@ -390,7 +399,7 @@ advantaging older work, because the target is the origin of a line of research
 rather than its most popular recent summary. Whether this succeeds is examined
 in Section 6.5, and Section 7.3 notes that no formal relevance study was run.
 
-## 2.2 Structure and Dynamics of Citation Networks
+## 2.2 Structure and dynamics of citation networks
 
 ### 2.2.1 Empirical distribution of citations
 
@@ -455,7 +464,7 @@ visually and interactively rather than reduced to a ranking. It differs in
 unit of analysis: CiteSpace works from a corpus supplied by the user, typically
 a search result set, whereas CiteGraph-NLP expands outward from a single seed.
 
-## 2.3 Scholarly Data Infrastructure
+## 2.3 Scholarly data infrastructure
 
 The feasibility of this project rests entirely on the availability of open
 citation data. Four sources are relevant.
@@ -489,7 +498,7 @@ literature. Its relevance is to the full-text extension discussed in
 Section 8.2: any move from abstracts to full text must first determine which
 articles are legally retrievable.
 
-## 2.4 Biomedical Information Extraction
+## 2.4 Biomedical information extraction
 
 ### 2.4.1 Annotated corpora
 
@@ -576,7 +585,7 @@ and the system must not be presented as appraising quality. Section 4.7
 describes how this caution is surfaced in the interface, and the generated
 analysis reports carry an explicit statement to that effect.
 
-## 2.6 Synthesis and Research Gap
+## 2.6 Synthesis and research gap
 
 The reviewed literature supports four observations.
 
@@ -603,8 +612,6 @@ how well it works, not a new method. Second, this thesis does not demonstrate
 that evidence-weighted ranking is *better* than unweighted ranking, no
 comparative experiment was performed, and Section 7.3 states this as the
 principal unaddressed question.
-
----
 
 \newpage
 
@@ -803,8 +810,6 @@ gold standard of known duplicate pairs was constructed, so precision of the
 merge decision is unmeasured. A merge that incorrectly collapses two distinct
 papers would not be detected by the present measurement.
 
----
-
 \newpage
 
 # Chapter 3 (continued): Project Management
@@ -910,14 +915,15 @@ The evaluation plan existed from the proposal. Deferring it deferred all the
 information it would have produced.
 
 **Prefer measurements over assertions for pipelines.** A test that a stage
-returns the right *shape* is cheap and weak. A measurement compares a stage's output against a quantity known independently: how many references the provider reported, or what a human read in the abstract. That costs more to build and is far stronger.
+returns the right *shape* is cheap and weak. A measurement compares a stage's
+output against a quantity known independently: how many references the provider
+reported, or what a human read in the abstract. That costs more to build and is
+far stronger.
 
 **Treat silence as suspicious.** Every defect in Chapter 5 was silent: a
 warning-level log, an HTTP 200 with an empty result, a falsy value coerced to a
 default. A pipeline stage that never reports anything is not necessarily a stage
 that never has anything to report.
-
----
 
 \newpage
 
@@ -1228,8 +1234,6 @@ The generated Markdown report states plainly when no population evidence was
 found and what that implies for the weights, rather than presenting an
 unweighted ranking as though it were evidence-weighted.
 
----
-
 \newpage
 
 # Chapter 4 (continued): Algorithm Specifications
@@ -1238,7 +1242,7 @@ This chapter states the five core algorithms precisely enough to be
 reimplemented. Each is given as pseudocode with its complexity, its failure
 modes, and a note on the design decisions that are not obvious from the code.
 
-## 4.8 Algorithm 1: Metadata Merge
+## 4.8 Algorithm 1: metadata merge
 
 ### 4.8.1 Problem
 
@@ -1292,7 +1296,7 @@ rewards two providers *returning* a record, not two providers *agreeing* on its
 contents. A stronger formulation would compare the fields themselves and reduce
 confidence on disagreement. This is not implemented.
 
-## 4.9 Algorithm 2: Level-Synchronous Citation Traversal
+## 4.9 Algorithm 2: level-Synchronous citation traversal
 
 ### 4.9.1 Problem
 
@@ -1425,7 +1429,7 @@ Let *N* be `max_papers` and *F* the mean out-degree per expanded paper.
 | Same work under two DOIs with near-identical titles | Title-prefix match with year agreement |
 | A heavily cited seed | Forward results are sorted by citation count and capped |
 
-## 4.10 Algorithm 3: Population Candidate Extraction
+## 4.10 Algorithm 3: population candidate extraction
 
 ### 4.10.1 Specification
 
@@ -1467,9 +1471,15 @@ by spaCy sentence segmentation rather than by matching.
 
 ### 4.10.3 The span-versus-sentence decision
 
-Lines 8–15 encode the single most consequential correction made to this algorithm. The original implementation evaluated the ignore patterns against the *whole sentence* and skipped every candidate in it on a match. Because `IGNORE_PATTERNS` contains `\b20\d{2}\b`, and clinical abstracts mention a year in most sentences, the rule discarded the very numbers it existed to protect. Section 5.5 gives the measurement. Evaluating per span preserves the intent, a year is never read as a population, without the collateral loss.
+Lines 8–15 encode the single most consequential correction made to this
+algorithm. The original implementation evaluated the ignore patterns against
+the *whole sentence* and skipped every candidate in it on a match. Because
+`IGNORE_PATTERNS` contains `\b20\d{2}\b`, and clinical abstracts mention a year
+in most sentences, the rule discarded the very numbers it existed to protect.
+Section 5.5 gives the measurement. Evaluating per span preserves the intent, a
+year is never read as a population, without the collateral loss.
 
-## 4.11 Algorithm 4: Population Resolution
+## 4.11 Algorithm 4: population resolution
 
 ### 4.11.1 Specification
 
@@ -1515,7 +1525,7 @@ about*, a subgroup count matched by a high-priority pattern outranks the cohort
 total matched by a lower-priority one. Position in the abstract, and the
 relationship between competing values, are both unused signals.
 
-## 4.12 Algorithm 5: Bounded Path Ranking
+## 4.12 Algorithm 5: bounded path ranking
 
 ### 4.12.1 Problem
 
@@ -1565,7 +1575,12 @@ SCORE_PATH(path):
 
 ### 4.12.3 Complexity
 
-The replacement is O(*P*) in the number of simple paths within the cutoff, with O(*top_n*) memory. The original was O(*V* · *P*): `all_simple_paths` was called once per target vertex, and each call re-explored the entire reachable subgraph to depth 4, yielding only the paths terminating at that target. It also materialised a result dictionary, including a title lookup per node, for every path before sorting and discarding all but ten.
+The replacement is O(*P*) in the number of simple paths within the cutoff, with
+O(*top_n*) memory. The original was O(*V* · *P*): `all_simple_paths` was called
+once per target vertex, and each call re-explored the entire reachable subgraph
+to depth 4, yielding only the paths terminating at that target. It also
+materialised a result dictionary, including a title lookup per node, for every
+path before sorting and discarding all but ten.
 
 Measured on layered synthetic graphs (Section 6.6.4), the redesign is 126× to
 434× faster, with the gap widening as the graph grows, and returns an identical
@@ -1576,8 +1591,6 @@ optimisation. A densely interlinked citation graph can contain an astronomical
 number of simple paths; without a bound, one pathological input hangs the run.
 When the cap triggers it is logged, so a truncated ranking is never presented
 as exhaustive.
-
----
 
 \newpage
 
@@ -1617,9 +1630,12 @@ populations, weight edges, build graph, run analytics. Each stage is a separate
 module; the orchestrator holds no domain logic beyond sequencing and the
 assembly of warnings.
 
-Runs execute as background tasks. A `POST` returns a run identifier immediately, and the client polls. This is necessary because runs take tens of seconds to minutes, Section 6.6 characterises the distribution, which far exceeds a reasonable HTTP timeout.
+Runs execute as background tasks. A `POST` returns a run identifier
+immediately, and the client polls. This is necessary because runs take tens of
+seconds to minutes, Section 6.6 characterises the distribution, which far
+exceeds a reasonable HTTP timeout.
 
-## 5.3 Defect 1: Traversal Discarding the Majority of Every Graph
+## 5.3 Defect 1: traversal discarding the majority of every graph
 
 ### 5.3.1 Symptom
 
@@ -1687,7 +1703,7 @@ seed to a work identifier before filtering.
 | Edges with a resolved endpoint | 262 with dangling | 163, none dangling |
 | Runtime, 100-paper run | 273 s | 55 s |
 
-## 5.4 Defect 2: A Single Null Field Discarding Batches of Fifty
+## 5.4 Defect 2: a single null field discarding batches of fifty
 
 ### 5.4.1 Symptom
 
@@ -1730,7 +1746,7 @@ A secondary effect was discovered at the same time: because batch failures
 forced a fallback to per-paper resolution, the run had been taking 209 s. After
 the fix the same run took 12 s.
 
-## 5.5 Defect 3: Ignore Rules Discarding the Numbers They Protect
+## 5.5 Defect 3: ignore rules discarding the numbers they protect
 
 ### 5.5.1 Symptom
 
@@ -1767,10 +1783,16 @@ Ignore patterns are now matched per *span*. A candidate is rejected only when
 the captured number itself falls inside an ignored span. A year is still never
 read as a population; a count standing beside a year survives.
 
-Separately, the pattern set assumed randomised-trial phrasing. "We analyzed data on the first 425 confirmed cases" matched nothing, because no pattern covered *cases*. Patterns were added for the phrasings observational papers use, *a total of N*, *N confirmed cases*, *N subjects*, *N consecutive patients*, *included/recruited/studied N*, *data on N*, along with patterns for `SCREENED`, `COMPLETERS`, `ARM_SIZE` and `FOLLOWUP_COUNT`, four semantic types the model defined but which no pattern could previously emit. 
+Separately, the pattern set assumed randomised-trial phrasing. "We analyzed
+data on the first 425 confirmed cases" matched nothing, because no pattern
+covered *cases*. Patterns were added for the phrasings observational papers
+use, *a total of N*, *N confirmed cases*, *N subjects*, *N consecutive
+patients*, *included/recruited/studied N*, *data on N*, along with patterns for
+`SCREENED`, `COMPLETERS`, `ARM_SIZE` and `FOLLOWUP_COUNT`, four semantic types
+the model defined but which no pattern could previously emit.
 | Measure (40-paper graph) | Before | After | |--------------------------|-------:|------:| | Papers with extracted evidence | 7 | 15 | | Of those with an abstract | 7/29 | 15/29 | | High confidence (≥ 0.8) | 3 | 10 |
 
-## 5.6 Defect 4: Edge Weights Collapsing to Zero
+## 5.6 Defect 4: edge weights collapsing to zero
 
 ### 5.6.1 Symptom
 
@@ -1800,7 +1822,10 @@ survived. The graph builder contained:
 weight=edge.final_weight or 1.0
 ```
 
-In Python, `0.0 or 1.0` evaluates to `1.0`. Every zeroed weight was silently replaced by 1.0, and PageRank ran **unweighted**. The system's central claim, evidence-weighted citation analysis, was not operating, and the fallback that concealed it was an accident of truthiness rather than a designed behaviour.
+In Python, `0.0 or 1.0` evaluates to `1.0`. Every zeroed weight was silently
+replaced by 1.0, and PageRank ran **unweighted**. The system's central claim,
+evidence-weighted citation analysis, was not operating, and the fallback that
+concealed it was an accident of truthiness rather than a designed behaviour.
 
 ### 5.6.3 Resolution
 
@@ -1818,7 +1843,7 @@ falls back only on a genuine `None`, so a real zero can no longer be disguised.
 Evidence still outranks absence, larger samples outrank smaller, and low
 confidence is penalised, but nothing collapses to zero.
 
-## 5.7 Defect 5: Server-Side Request Forgery in URL Input
+## 5.7 Defect 5: server-Side request forgery in URL input
 
 Accepting an article URL requires fetching it when no identifier can be parsed
 from the URL text. The implementation fetched any URL that had a scheme and a
@@ -1833,7 +1858,10 @@ listener received 1 request
 resolver returned: query_type='title' value='Internal Service Banner v2.4'
 ```
 
-The system could be directed at loopback, link-local (cloud metadata) or private addresses, and the fetched page's `citation_title` was forwarded to Crossref and Europe PMC as a search term, a narrow but real exfiltration channel.
+The system could be directed at loopback, link-local (cloud metadata) or
+private addresses, and the fetched page's `citation_title` was forwarded to
+Crossref and Europe PMC as a search term, a narrow but real exfiltration
+channel.
 
 The resolver now rejects any URL whose host resolves to a private, loopback,
 link-local, reserved, multicast or unspecified address, and follows redirects
@@ -1845,13 +1873,19 @@ includes `/`, so matching against a URL path ran past the end of the DOI into
 the publisher's view segment, yielding `10.3389/fcomp.2024.1387354/full` and
 failing the run. Trailing view segments are now trimmed.
 
-## 5.8 Defect 6: Exports Returning JSON Envelopes
+## 5.8 Defect 6: exports returning JSON envelopes
 
 The frontend saved export responses directly to disk as `citegraph-<id>.csv`,
 but the backend returned `{"csv": "..."}`. Users received a `.csv` file
 containing a JSON envelope with the whole table escaped onto one line.
 
-All exports now return the file itself with the correct `Content-Type` and a `Content-Disposition` filename. Both CSV exports are written with the `csv` module, so a comma, quote or newline in a title or journal can no longer break a row, the previous hand-rolled formatting never escaped the journal field at all, and carry a UTF-8 byte-order mark so spreadsheet software renders accented author names correctly. An edge-list export and a GraphML export were added; the frontend had offered GraphML as a format although no such route existed.
+All exports now return the file itself with the correct `Content-Type` and a
+`Content-Disposition` filename. Both CSV exports are written with the `csv`
+module, so a comma, quote or newline in a title or journal can no longer break
+a row, the previous hand-rolled formatting never escaped the journal field at
+all, and carry a UTF-8 byte-order mark so spreadsheet software renders accented
+author names correctly. An edge-list export and a GraphML export were added;
+the frontend had offered GraphML as a format although no such route existed.
 
 ## 5.9 Deployment
 
@@ -1873,7 +1907,7 @@ bypassing nginx and TLS, on a host shared with three other projects. It now
 binds `127.0.0.1` explicitly and the deployment fails if the port is found on a
 public interface.
 
-## 5.10 Discussion: Why These Defects Survived
+## 5.10 Discussion: why these defects survived
 
 Six defects reached a system that passed its tests, and four of them produced
 output that looked correct. Three properties of the failures explain this.
@@ -1895,8 +1929,6 @@ The methodological conclusion is that for a system whose output is a ranked
 list, correctness cannot be established by testing that the pipeline runs. It
 requires measurement against known quantities, which is what Chapter 6 reports,
 and what the project proposal had specified from the outset.
-
----
 
 \newpage
 
@@ -1942,7 +1974,7 @@ the system's headline output, but the population evidence is what the ranking
 *rests on*, and a reader who wants to judge the ranking must be able to inspect
 the evidence independently of it.
 
-## 5.12 The Submission Flow
+## 5.12 The submission flow
 
 `/start` accepts any of the five input types. Two decisions in this screen
 proved important.
@@ -1966,7 +1998,10 @@ where Section 6.4.4 shows it currently overstates its case.
 
 ### 5.13.1 Status before number
 
-Every extracted population is displayed with its status, `resolved`, `ambiguous` or `missing`, adjacent to the value, not in a tooltip or a detail panel. The three states are visually distinct. A number presented without its status invites the reader to treat an ambiguous extraction as a settled fact.
+Every extracted population is displayed with its status, `resolved`,
+`ambiguous` or `missing`, adjacent to the value, not in a tooltip or a detail
+panel. The three states are visually distinct. A number presented without its
+status invites the reader to treat an ambiguous extraction as a settled fact.
 
 ### 5.13.2 The supporting sentence is reachable
 
@@ -2043,8 +2078,6 @@ what that means for the weights, rather than presenting an effectively
 unweighted ranking as though it were evidence-weighted. This is the same
 honesty requirement as Section 5.13.3, applied to the artifact a reader is most
 likely to circulate.
-
----
 
 \newpage
 
@@ -2212,7 +2245,13 @@ categories. The four errors:
 | Huang et al. 2020 | `TOTAL_ANALYZED` | `TOTAL_ENROLLED` |
 | Verity et al. 2020 | `SAMPLE_SIZE_GENERIC` | `TOTAL_ANALYZED` |
 
-All four are *adjacent-category* confusions among quantities that are often numerically equal, a trial that randomises 4,744 and analyses 4,744 differs only in framing. The first error has a traceable cause: the phrase "A total of 43,548 participants underwent randomization" matches a generic `a total of N` pattern that is typed `SAMPLE_SIZE_GENERIC`, and that pattern outranked the randomisation-specific one. This is a pattern-priority defect, not an inherent limit.
+All four are *adjacent-category* confusions among quantities that are often
+numerically equal, a trial that randomises 4,744 and analyses 4,744 differs
+only in framing. The first error has a traceable cause: the phrase "A total of
+43,548 participants underwent randomization" matches a generic `a total of N`
+pattern that is typed `SAMPLE_SIZE_GENERIC`, and that pattern outranked the
+randomisation-specific one. This is a pattern-priority defect, not an inherent
+limit.
 
 The practical impact on the system is smaller than the number suggests: the
 weighting formula uses the *value*, not the type. Type accuracy affects the
@@ -2238,7 +2277,7 @@ likely the match is to be right*, and a user filtering on high confidence would
 retain the errors along with the correct results. Section 8.2 proposes
 calibration against held-out data as the remedy.
 
-## 6.5 Citation Graph Construction
+## 6.5 Citation graph construction
 
 Three traversals at `max_papers = 40`, backward depth 2, forward depth 1:
 
@@ -2346,7 +2385,7 @@ identical top-ten (verified by comparing path sets and scores against the
 exhaustive computation). The speed-up widens with size because the original was
 O(nodes × paths) and the replacement is O(paths).
 
-## 6.7 Methodological Note: Reference Verification
+## 6.7 Methodological note: reference verification
 
 The reference list was verified programmatically: every candidate DOI was
 resolved against Crossref, with OpenAlex as fallback, and the returned title
@@ -2370,7 +2409,7 @@ and the errors are invisible without verification, since a plausible DOI looks
 exactly like a correct one. All twenty-nine entries in the final bibliography
 resolve.
 
-## 6.8 Summary of Results Against Objectives
+## 6.8 Summary of Results against objectives
 
 | Objective | Status | Evidence |
 |-----------|--------|----------|
@@ -2389,8 +2428,6 @@ are the honest findings of the evaluation: confidence scores do not discriminate
 correct from incorrect extractions (6.4.4), and the ranking, while producing
 defensible output on inspection, has not been validated against human judgement
 (6.5).
-
----
 
 \newpage
 
@@ -2420,7 +2457,9 @@ Gold populations span 41 to 43,548 subjects, median 1,099.
 Three patterns are visible.
 
 **Randomised trials are the easy case, and the system is built for them.** Five
-of five correct, with the highest mean confidence (0.96). RCT abstracts follow a reporting convention that surface patterns capture well: a single headline number introduced by *randomised*, *assigned* or *enrolled*. This is
+of five correct, with the highest mean confidence (0.96). RCT abstracts follow
+a reporting convention that surface patterns capture well: a single headline
+number introduced by *randomised*, *assigned* or *enrolled*. This is
 unsurprising given that the pattern set was written with trial phrasing in
 mind, and it should temper any generalisation from the headline F1.
 
@@ -2442,7 +2481,7 @@ The systematic-review row is the most informative line in the table. It is the
 only design where the system was wrong *and* confident, and it is the design
 whose abstracts most resemble clinical reports without describing a cohort.
 
-## 6.10 The Confidence Calibration Failure in Detail
+## 6.10 The confidence calibration failure in detail
 
 Section 6.4.4 reported that mean confidence was 0.91 when extraction was
 correct and 0.90 when it was wrong. The design breakdown explains why: there is
@@ -2507,9 +2546,11 @@ bears on how a user should read a sparse graph: low density may indicate an
 interdisciplinary or recent seed rather than a thin literature, and the system
 currently offers no signal to tell them apart.
 
-The runtime difference follows directly from density. Fewer edges means fewer neighbours to resolve, which reinforces the finding in Section 6.6.1 that cost is driven by the number of external lookups rather than by graph computation.
+The runtime difference follows directly from density. Fewer edges means fewer
+neighbours to resolve, which reinforces the finding in Section 6.6.1 that cost
+is driven by the number of external lookups rather than by graph computation.
 
-## 6.12 What the Abstract Backfill Changed, Stage by Stage
+## 6.12 What the abstract backfill changed, stage by stage
 
 The effect of the Europe PMC backfill is worth tracing through the pipeline,
 because it illustrates how an upstream data gap presents as a downstream model
@@ -2555,8 +2596,6 @@ second data source. The second intervention is far cheaper, one additional API
 call per run against a rewrite of the ignore-matching logic, and would not have
 been identified without separating "no text" from "extraction failed" in the
 measurement. Section 7.1.1 draws the general lesson.
-
----
 
 \newpage
 
@@ -2647,7 +2686,14 @@ with no citing works. An edge weight of 0.0 silently rewritten to 1.0 by
 Python's `or` still yields a ranking. In each case the system produced a
 defensible-looking answer to the wrong question.
 
-What surfaced them was not more testing but *measurement against known quantities*: comparing the number of nodes retrieved against the number of references the provider reported, comparing extracted populations against hand-read abstracts, timing each stage. Notably, the evaluation plan that would have caught most of these was specified in the project proposal from the start and left unimplemented, the empty `evaluation/` directory was itself the strongest early warning available, and nothing in the repository made its emptiness visible.
+What surfaced them was not more testing but *measurement against known
+quantities*: comparing the number of nodes retrieved against the number of
+references the provider reported, comparing extracted populations against
+hand-read abstracts, timing each stage. Notably, the evaluation plan that would
+have caught most of these was specified in the project proposal from the start
+and left unimplemented, the empty `evaluation/` directory was itself the
+strongest early warning available, and nothing in the repository made its
+emptiness visible.
 
 ## 7.3 Threats to Validity
 
@@ -2725,7 +2771,7 @@ trials. The identity aliasing described in Section 4.4.2 solves the easier
 adjacent problem, duplicate *records* of one paper, not multiple papers of one
 study.
 
-## 7.5 Known Open Issues
+## 7.5 Known open issues
 
 Issues present in the delivered system and not resolved:
 
@@ -2740,7 +2786,7 @@ Issues present in the delivered system and not resolved:
 5. **Runs at `max_total_papers = 200` take about 3.5 minutes**, exceeding
    NFR-1's 60-second target.
 
-## 7.6 Ethical and Legal Considerations
+## 7.6 Ethical and legal considerations
 
 All data is retrieved from public APIs under their published terms. The
 OpenAlex polite-pool convention is honoured by sending a contact address. No
@@ -2756,8 +2802,6 @@ of them is weaker than it appears. Second, **entrenchment of visibility**: any
 citation-based ranking amplifies already-visible work, and the age term here
 does not correct for the systematic under-citation of research from
 under-resourced institutions and non-English literatures.
-
----
 
 \newpage
 
@@ -2909,8 +2953,6 @@ to the engineering; it was the part of the engineering that had been deferred,
 and deferring it is what allowed the defects to persist. That is the finding the
 authors would carry into another project.
 
----
-
 \newpage
 
 # Appendix A: API Reference
@@ -3003,8 +3045,6 @@ Both CSV exports are written with Python's `csv` module, so commas, quotes and
 newlines inside titles and journal names are escaped correctly, and carry a
 UTF-8 byte-order mark so spreadsheet software renders accented author names.
 
----
-
 \newpage
 
 # Appendix B: Configuration Reference
@@ -3089,8 +3129,6 @@ Not environment-configurable; changing them requires a code edit.
 | `CitationTraversal.MIN_TITLE_KEY_LENGTH` | 25 | Shortest title eligible for prefix matching |
 | `GraphAnalytics.MAX_PATHS_EXAMINED` | 50,000 | Safety cap on path enumeration (§6.6.4) |
 
----
-
 \newpage
 
 # Appendix C: Reproducing the Results
@@ -3110,7 +3148,9 @@ pip install -r requirements.txt
 cp .env.example .env          # then set OPENALEX_EMAIL
 ```
 
-Setting `OPENALEX_EMAIL` is not optional in practice. OpenAlex serves identified callers from a faster "polite pool"; without it, request latency, which Section 6.6 shows dominates runtime, is materially worse.
+Setting `OPENALEX_EMAIL` is not optional in practice. OpenAlex serves
+identified callers from a faster "polite pool"; without it, request latency,
+which Section 6.6 shows dominates runtime, is materially worse.
 
 ## C.2 Test suite
 
@@ -3243,8 +3283,6 @@ on what the providers hold at query time.
 The gold-standard labels are fixed and committed, so the extraction metrics in
 Section 6.4 are stable provided the abstracts remain retrievable. Section 8.2.7
 proposes snapshotting the corpus to remove this dependency entirely.
-
----
 
 \newpage
 
@@ -3502,8 +3540,6 @@ Listed for completeness; discussed in Section 7.4.
 | RQ3 | Defensible evidence-weighted ranking? | §6.5 | **Unproven**, plausible output, no relevance study, no baseline comparison |
 | RQ4 | Fast enough, and what dominates? | §6.6 | Yes, 19 s mean; 63% network I/O, 2.5% analytics |
 
----
-
 \newpage
 
 # Appendix F: Test Suite and Verification Inventory
@@ -3596,8 +3632,6 @@ tests, listed so the evidence base is complete.
 | Duplicate merging | Title-key collision check over produced graphs | §6.5 |
 | Reference resolution | Every DOI resolved against Crossref/OpenAlex | §6.7 |
 | Deployment isolation | Container port confirmed bound to loopback | §5.9 |
-
----
 
 \newpage
 
@@ -3867,8 +3901,6 @@ def wilson_interval(successes: int, trials: int, z: float = 1.96):
                    + z * z / (4 * trials * trials)) ** 0.5) / denominator
     return (max(0.0, centre - margin), min(1.0, centre + margin))
 ```
-
----
 
 \newpage
 

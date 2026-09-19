@@ -72,5 +72,3 @@ Listed for completeness; discussed in Section 7.4.
 | RQ2 | Does text availability constrain more than accuracy? | §6.3 | Yes, 28% of papers lacked abstracts; all recoverable from a second provider |
 | RQ3 | Defensible evidence-weighted ranking? | §6.5 | **Unproven**, plausible output, no relevance study, no baseline comparison |
 | RQ4 | Fast enough, and what dominates? | §6.6 | Yes, 19 s mean; 63% network I/O, 2.5% analytics |
-
----

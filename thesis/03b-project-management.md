@@ -101,11 +101,12 @@ The evaluation plan existed from the proposal. Deferring it deferred all the
 information it would have produced.
 
 **Prefer measurements over assertions for pipelines.** A test that a stage
-returns the right *shape* is cheap and weak. A measurement compares a stage's output against a quantity known independently: how many references the provider reported, or what a human read in the abstract. That costs more to build and is far stronger.
+returns the right *shape* is cheap and weak. A measurement compares a stage's
+output against a quantity known independently: how many references the provider
+reported, or what a human read in the abstract. That costs more to build and is
+far stronger.
 
 **Treat silence as suspicious.** Every defect in Chapter 5 was silent: a
 warning-level log, an HTTP 200 with an empty result, a falsy value coerced to a
 default. A pipeline stage that never reports anything is not necessarily a stage
 that never has anything to report.
-
----

@@ -145,5 +145,3 @@ directory until the thesis was drafted. The measurement was not an afterthought
 to the engineering; it was the part of the engineering that had been deferred,
 and deferring it is what allowed the defects to persist. That is the finding the
 authors would carry into another project.
-
----

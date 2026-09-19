@@ -304,5 +304,3 @@ leaving the user to guess.
 The generated Markdown report states plainly when no population evidence was
 found and what that implies for the weights, rather than presenting an
 unweighted ranking as though it were evidence-weighted.
-
----

@@ -79,5 +79,3 @@ Not environment-configurable; changing them requires a code edit.
 | `CitationTraversal.TITLE_KEY_PREFIX` | 80 | Title prefix length for duplicate detection |
 | `CitationTraversal.MIN_TITLE_KEY_LENGTH` | 25 | Shortest title eligible for prefix matching |
 | `GraphAnalytics.MAX_PATHS_EXAMINED` | 50,000 | Safety cap on path enumeration (§6.6.4) |
-
----
