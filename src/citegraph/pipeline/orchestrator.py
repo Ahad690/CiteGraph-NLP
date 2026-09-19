@@ -7,7 +7,7 @@ from citegraph.models.paper import PaperQuery, Paper
 from citegraph.models.study import Study
 from citegraph.models.run import RunResult
 from citegraph.input.normalizer import InputNormalizer
-from citegraph.metadata.resolver import MetadataResolver
+from citegraph.metadata.resolver import MetadataResolver, doi_is_dead
 from citegraph.nlp.population_extractor import PopulationExtractor
 from citegraph.nlp.population_resolver import PopulationResolver
 from citegraph.citations.retriever import CitationRetriever
@@ -118,6 +118,16 @@ class PipelineOrchestrator:
         # Surface what the traversal had to work around, so a sparse graph can
         # be explained (few citations vs. records merged vs. lookups that failed).
         warnings = list(traversal.warnings)
+        # Anything the seed resolution wanted to say: a title that matched
+        # weakly, or providers that disagreed about which paper it meant.
+        warnings.extend(getattr(self.metadata_resolver, "warnings", []))
+        if seed_paper.doi and await doi_is_dead(seed_paper.doi):
+            warnings.append(
+                f"The seed paper's DOI ({seed_paper.doi}) is registered but its "
+                "landing page returns 404. The metadata is real; the link is "
+                "broken at the publisher. This happens with mirror and preprint "
+                "records that duplicate a well-known title."
+            )
         without_text = sum(1 for p in traversal.papers.values() if not p.abstract)
         if abstracts_recovered:
             warnings.append(

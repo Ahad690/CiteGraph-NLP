@@ -13,7 +13,7 @@ from httpx import ASGITransport
 
 from citegraph.api.main import app
 from citegraph.api.routes import store, task_manager
-from citegraph.models.paper import Paper
+from citegraph.models.paper import Paper, PaperQuery
 from citegraph.models.citation import CitationEdge
 from citegraph.models.population import PopulationResolution
 from citegraph.models.run import RunResult
@@ -574,11 +574,29 @@ class TestStartRun:
         })
         assert response.status_code == 422
 
-    async def test_start_run_missing_query_type(self, client):
+    async def test_start_run_missing_query_type_is_auto_detected(self, client):
+        """Omitting query_type is not an error: the shape of the value decides.
+
+        This used to assert 422. Making the user classify their own identifier
+        was a question the string already answers, so an absent query_type now
+        means "auto" and a DOI-shaped value resolves to query_type "doi".
+        """
         response = await client.post("/api/runs", json={
             "value": SAMPLE_DOI,
         })
-        assert response.status_code == 422
+        assert response.status_code == 200
+        assert response.json()["run_id"]
+
+    async def test_auto_detection_covers_every_identifier_shape(self, client):
+        for value, expected in [
+            (SAMPLE_DOI, "doi"),
+            ("https://doi.org/10.1234/abcd", "url"),
+            ("PMC1234567", "pmcid"),
+            ("31234567", "pmid"),
+            ("Attention Is All You Need", "title"),
+        ]:
+            query = PaperQuery(value=value)
+            assert query.query_type == expected, f"{value!r} -> {query.query_type}"
 
     async def test_start_run_invalid_query_type(self, client):
         response = await client.post("/api/runs", json={

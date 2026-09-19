@@ -7,6 +7,7 @@ from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponen
 from citegraph.providers.base import (
     MetadataProvider,
     ProviderResult,
+    _best_title_match,
     get_shared_client,
     is_transient_error,
 )
@@ -23,6 +24,8 @@ class OpenAlexProvider:
     # OpenAlex allows up to 50 ids per OR-filter and 50 results per page.
     BATCH_SIZE = 50
     MAX_FORWARD_CITATIONS = 200
+    # Candidates pulled before re-ranking a title search by title similarity.
+    TITLE_SEARCH_CANDIDATES = 25
     WORK_FIELDS = (
         "id,doi,ids,display_name,authorships,publication_year,"
         "primary_location,abstract_inverted_index"
@@ -51,17 +54,49 @@ class OpenAlexProvider:
 
     async def resolve(self, query: PaperQuery) -> ProviderResult:
         try:
-            oa_id = IdCanonicalizer.to_openalex_id(query.value)
-            if oa_id:
-                data = await self._get(f"/works/{oa_id}", {})
-            else:
-                return ProviderResult(error=f"Unsupported or malformed ID for OpenAlex: {query.value}")
+            if query.query_type == "title":
+                return await self._resolve_by_title(query.value)
 
+            oa_id = IdCanonicalizer.to_openalex_id(query.value)
+            if not oa_id:
+                return ProviderResult(
+                    error=f"Not an identifier OpenAlex can look up: {query.value}"
+                )
+            data = await self._get(f"/works/{oa_id}", {})
             paper = self._map_to_paper(data)
             return ProviderResult(paper=paper, raw_data=data)
         except Exception as e:
             logger.error(f"OpenAlex resolution failed: {e}")
             return ProviderResult(error=str(e))
+
+    async def _resolve_by_title(self, title: str) -> ProviderResult:
+        """Search by title and return the best-matching work.
+
+        OpenAlex ranks by its own relevance score, which for a famous title
+        puts near-duplicate and mirror records alongside the real one. The
+        first hit is therefore not taken on trust: candidates are re-ranked by
+        how closely their title matches what was asked for, and citation count
+        breaks ties among equally good matches.
+        """
+        page = await self._get("/works", {
+            "search": title,
+            "per-page": self.TITLE_SEARCH_CANDIDATES,
+            "select": "id,doi,display_name,title,publication_year,cited_by_count,"
+                      "authorships,primary_location,abstract_inverted_index,ids",
+        })
+        results = (page or {}).get("results") or []
+        if not results:
+            return ProviderResult(error="No OpenAlex results for that title")
+
+        best, score = _best_title_match(
+            title, results, lambda w: w.get("display_name") or w.get("title")
+        )
+        if best is None:
+            return ProviderResult(error="No OpenAlex result resembled that title")
+
+        paper = self._map_to_paper(best)
+        return ProviderResult(paper=paper, raw_data=best,
+                              match_score=score, candidates_considered=len(results))
 
     @staticmethod
     def openalex_id_of(data: dict[str, Any]) -> str:

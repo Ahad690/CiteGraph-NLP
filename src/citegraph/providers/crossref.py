@@ -1,12 +1,14 @@
 import httpx
 import logging
-from typing import Any
+from typing import Any, Optional
 from datetime import datetime
 from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
 
 from citegraph.providers.base import (
     MetadataProvider,
     ProviderResult,
+    TITLE_SEARCH_CANDIDATES,
+    _best_title_match,
     get_shared_client,
     is_transient_error,
 )
@@ -41,11 +43,38 @@ class CrossrefProvider:
                 data = await self._get(f"/works/{query.value}", {})
                 work_data = data.get("message", {})
             elif query.query_type == "title":
-                results = await self._get("/works", {"query.title": query.value, "rows": 1})
+                # rows=1 with items[0] taken on trust was how a search for
+                # "Attention Is All You Need" returned a 2025 mirror record
+                # whose DOI 404s: Crossref's relevance ranking put a cluster of
+                # same-titled duplicates above the paper the user meant. Pull a
+                # pool and re-rank it on title similarity instead.
+                results = await self._get(
+                    "/works",
+                    {"query.title": query.value, "rows": TITLE_SEARCH_CANDIDATES,
+                     "select": "DOI,title,author,issued,container-title,abstract,is-referenced-by-count"},
+                )
                 items = (results.get("message") or {}).get("items") or []
                 if not items:
                     return ProviderResult(error="No results found for title")
-                work_data = items[0]
+
+                def _title_of(item: dict) -> Optional[str]:
+                    titles = item.get("title") or []
+                    return titles[0] if titles else None
+
+                def _cited_by(item: dict) -> int:
+                    return item.get("is-referenced-by-count") or 0
+
+                best, score = _best_title_match(
+                    query.value, items, _title_of, cited_by=_cited_by
+                )
+                if best is None:
+                    return ProviderResult(
+                        error="No Crossref result resembled that title"
+                    )
+                paper = self._map_to_paper(best)
+                return ProviderResult(paper=paper, raw_data=best,
+                                      match_score=score,
+                                      candidates_considered=len(items))
             else:
                 return ProviderResult(error=f"Unsupported query type for Crossref: {query.query_type}")
 

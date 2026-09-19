@@ -1,6 +1,15 @@
 import re
 from typing import Optional
 
+# A DOI is a "10." prefix, a registrant code, "/", then a suffix. Anchored, so
+# a title or a URL cannot satisfy it.
+DOI_RE = re.compile(r"10\.\d{4,9}/\S+")
+# OpenAlex work ids are W followed by digits.
+OPENALEX_WORK_RE = re.compile(r"W\d+")
+PMCID_RE = re.compile(r"PMC\d+")
+PMID_RE = re.compile(r"\d{1,9}")
+
+
 class IdCanonicalizer:
     # Path segments publishers append after the DOI in an article URL
     # (frontiersin.org/.../10.3389/fcomp.2024.1387354/full).
@@ -77,22 +86,77 @@ class IdCanonicalizer:
 
     @staticmethod
     def to_openalex_id(paper_id: str) -> str:
-        """Format an ID specifically for OpenAlex API calls."""
+        """Format an ID for OpenAlex's /works/{id} endpoint.
+
+        Returns "" for anything that is not a recognised identifier. This used
+        to fall through to `return cid`, which meant a title or a URL was sent
+        as a path segment: a search for "Attention Is All You Need" became
+        GET /works/Attention%20Is%20All%20You%20Need, and an IEEE article URL
+        became GET /works/https://ieeexplore.ieee.org/document/4812104. Both
+        404, so OpenAlex contributed nothing to either lookup while appearing
+        in the logs as a provider failure rather than as a caller error.
+        """
         cid = IdCanonicalizer.canonicalize(paper_id)
         if not cid:
             return ""
-            
-        if cid.startswith("W"):
+
+        if OPENALEX_WORK_RE.fullmatch(cid):
             return cid
-        if cid.startswith("PMC"):
+        if cid.startswith("PMC") and cid[3:].isdigit():
             return f"pmcid:{cid}"
         if cid.isdigit():
             return f"pmid:{cid}"
-        if "/" in cid and (cid.startswith("10.") or cid[0].isdigit()):
+        if DOI_RE.fullmatch(cid):
             return f"doi:{cid}"
-        
-        # If it's a raw DOI without prefix
-        if cid.startswith("10."):
-            return f"doi:{cid}"
-            
-        return cid
+
+        return ""
+
+
+def detect_query_type(value: str) -> str:
+    """Work out what kind of identifier a user pasted.
+
+    Exists so the dashboard does not have to ask. Every branch is a shape a
+    person can actually type, and the order matters: a DOI embedded in a URL
+    should be recognised as a URL so the URL resolver gets a chance to strip
+    publisher view segments, while a bare DOI should not.
+
+    Returns one of "doi", "pmid", "pmcid", "url", "title". Falls back to
+    "title" because free text is the only input with no distinguishing shape,
+    so anything unrecognised is better searched than rejected.
+    """
+    if not value:
+        return "title"
+    text = value.strip()
+    if not text:
+        return "title"
+
+    lowered = text.lower()
+
+    # A URL, including the doi.org form. Checked first: a publisher URL often
+    # contains a DOI, and the URL resolver knows how to extract it.
+    if lowered.startswith(("http://", "https://", "www.")):
+        return "url"
+
+    # PMC identifiers, with or without the prefix people copy from Europe PMC.
+    if PMCID_RE.fullmatch(text.upper().replace("PMCID:", "").strip()):
+        return "pmcid"
+
+    # "doi:10.xxxx/yyy" and bare "10.xxxx/yyy".
+    candidate = text
+    for prefix in ("doi:", "doi "):
+        if lowered.startswith(prefix):
+            candidate = text[len(prefix):].strip()
+            break
+    if DOI_RE.fullmatch(candidate):
+        return "doi"
+
+    # "PMID: 12345678" and a bare run of digits.
+    digits = text.upper().replace("PMID:", "").strip()
+    if PMID_RE.fullmatch(digits):
+        return "pmid"
+
+    # An OpenAlex work id resolves through the DOI path in the providers.
+    if OPENALEX_WORK_RE.fullmatch(text.upper()):
+        return "doi"
+
+    return "title"

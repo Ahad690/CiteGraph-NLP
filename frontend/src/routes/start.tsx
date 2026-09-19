@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { getActiveRunId, startRun } from "@/lib/api";
-import { Sparkles, ArrowRight, Loader2, Sliders, FileText, Globe, Key, AlertCircle } from "lucide-react";
+import { Sparkles, ArrowRight, Loader2, Sliders, FileText, Globe, Key, AlertCircle, Wand2 } from "lucide-react";
+import { detectQueryType, QUERY_TYPE_LABELS, type QueryType } from "@/lib/detectQueryType";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/start")({
@@ -14,7 +15,10 @@ function Index() {
   const [ready, setReady] = useState(false);
 
   // Form states
-  const [queryType, setQueryType] = useState<"doi" | "pmid" | "pmcid" | "title" | "url">("doi");
+  // The identifier type is worked out from what is typed. `override` is null
+  // unless the user disagrees with the detection, which keeps the common path
+  // to one field while leaving an escape hatch for the odd case.
+  const [override, setOverride] = useState<QueryType | null>(null);
   const [value, setValue] = useState("");
   const [backwardDepth, setBackwardDepth] = useState(2);
   const [forwardDepth, setForwardDepth] = useState(1);
@@ -27,6 +31,9 @@ function Index() {
     setRunId(getActiveRunId());
     setReady(true);
   }, []);
+
+  const detected = detectQueryType(value);
+  const queryType: QueryType = override ?? detected;
 
   if (!ready) return null;
 
@@ -41,7 +48,7 @@ function Index() {
     
     try {
       const response = await startRun({
-        query_type: queryType,
+        query_type: override ?? "auto",
         value: value.trim(),
         backward_depth: backwardDepth,
         forward_depth: forwardDepth,
@@ -60,36 +67,6 @@ function Index() {
       toast.error(err.message || "Failed to start analysis");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const getPlaceholder = () => {
-    switch (queryType) {
-      case "doi":
-        return "e.g. 10.1016/j.cell.2023.01.001";
-      case "pmid":
-        return "e.g. 34567890 (NCBI PubMed ID)";
-      case "pmcid":
-        return "e.g. PMC8012345 (PubMed Central ID)";
-      case "title":
-        return "e.g. Attention Is All You Need";
-      case "url":
-        return "e.g. https://pubmed.ncbi.nlm.nih.gov/34567890/";
-    }
-  };
-
-  const getHelpText = () => {
-    switch (queryType) {
-      case "doi":
-        return "Digital Object Identifier starting with 10.";
-      case "pmid":
-        return "PubMed identifier (numeric)";
-      case "pmcid":
-        return "PubMed Central identifier (starts with PMC)";
-      case "title":
-        return "Exact paper title or major keywords (min 5 chars)";
-      case "url":
-        return "Link to NCBI PubMed, PMC, or DOI redirector page";
     }
   };
 
@@ -116,18 +93,42 @@ function Index() {
         {/* Main interactive form card */}
         <div className="glass rounded-3xl p-6 md:p-8 shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Query Type Tabs */}
-            <div>
-              <label className="block text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">
-                Select Input Identifier Type
-              </label>
+            {/* Identifier type, detected from the input. The manual list
+                stays available but collapsed, because it is needed rarely. */}
+            {value.trim() && (
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo/10 border border-indigo/25 text-[11px] font-semibold uppercase tracking-wider text-indigo">
+                  <Wand2 className="h-3 w-3" />
+                  {override ? "Set to" : "Detected"}: {QUERY_TYPE_LABELS[queryType].label}
+                </span>
+                {override ? (
+                  <button
+                    type="button"
+                    onClick={() => setOverride(null)}
+                    className="text-[11px] text-text-muted hover:text-text-secondary underline underline-offset-2 cursor-pointer"
+                  >
+                    detect automatically
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setOverride(detected)}
+                    className="text-[11px] text-text-muted hover:text-text-secondary underline underline-offset-2 cursor-pointer"
+                  >
+                    not right? choose manually
+                  </button>
+                )}
+              </div>
+            )}
+
+            {override && (
               <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 bg-surface-strong/60 p-1.5 rounded-2xl border border-border/80">
                 {(["doi", "pmid", "pmcid", "title", "url"] as const).map((type) => (
                   <button
                     key={type}
                     type="button"
                     onClick={() => {
-                      setQueryType(type);
+                      setOverride(type);
                       setError(null);
                     }}
                     className={`py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all duration-150 cursor-pointer ${
@@ -140,12 +141,12 @@ function Index() {
                   </button>
                 ))}
               </div>
-            </div>
+            )}
 
             {/* Main input field */}
             <div className="space-y-2">
               <label htmlFor="value" className="block text-xs font-semibold text-text-muted uppercase tracking-wider">
-                Seed Identifier Value
+                Paper to start from
               </label>
               <div className="relative">
                 <input
@@ -156,7 +157,7 @@ function Index() {
                     setValue(e.target.value);
                     if (error) setError(null);
                   }}
-                  placeholder={getPlaceholder()}
+                  placeholder="DOI, PubMed ID, PMC ID, URL or paper title"
                   disabled={loading}
                   className={`w-full px-4 py-3.5 pl-11 rounded-2xl bg-surface-strong/60 border text-sm text-text-primary placeholder:text-text-disabled outline-none transition-all duration-200 ${
                     error ? "border-rose focus:ring-1 focus:ring-rose/40" : "border-border/80 focus:border-border-strong focus:ring-1 focus:ring-indigo/40"
@@ -166,7 +167,11 @@ function Index() {
                   {queryType === "url" ? <Globe className="h-4.5 w-4.5" /> : queryType === "title" ? <FileText className="h-4.5 w-4.5" /> : <Key className="h-4.5 w-4.5" />}
                 </div>
               </div>
-              <p className="text-[11px] text-text-muted pl-1">{getHelpText()}</p>
+              <p className="text-[11px] text-text-muted pl-1">
+                {value.trim()
+                  ? QUERY_TYPE_LABELS[queryType].hint
+                  : "Paste anything that identifies the paper. The format is worked out for you."}
+              </p>
             </div>
 
             {/* Error Message */}

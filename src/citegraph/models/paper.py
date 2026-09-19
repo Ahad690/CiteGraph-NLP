@@ -32,18 +32,28 @@ def _validate_pdf_path(raw: str) -> str:
     return str(resolved)
 
 class PaperQuery(BaseModel):
-    query_type: Literal["doi", "pmid", "pmcid", "title", "url"]
+    # "auto" is resolved to a concrete type by the validator below, so nothing
+    # downstream of construction ever sees it.
+    query_type: Literal["doi", "pmid", "pmcid", "title", "url", "auto"] = "auto"
     value: str
     pdf_path: str | None = None
 
     @model_validator(mode='after')
     def validate_query(self) -> 'PaperQuery':
         v = self.value.strip()
-        q_type = self.query_type
-        
+
         if not v:
             raise ValueError("Query value cannot be empty")
-            
+
+        # Work out the type from the shape of the input when the caller did not
+        # state one. Asking a user to classify their own identifier is a
+        # question the string already answers.
+        if self.query_type == "auto":
+            from citegraph.utils.ids import detect_query_type
+            self.query_type = detect_query_type(v)
+
+        q_type = self.query_type
+
         # Canonicalize DOI, PMID, and PMCID before regex matching
         if q_type in ("doi", "pmid", "pmcid"):
             from citegraph.utils.ids import IdCanonicalizer

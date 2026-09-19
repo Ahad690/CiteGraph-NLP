@@ -1,4 +1,6 @@
 import asyncio
+import re
+
 import httpx
 from typing import Protocol, Any, Optional
 from pydantic import BaseModel, Field
@@ -55,6 +57,71 @@ class ProviderResult(BaseModel):
     paper: Optional[Paper] = None
     raw_data: dict[str, Any] = Field(default_factory=dict)
     error: Optional[str] = None
+    # Set only by a title search. How closely the returned title matched what
+    # was asked for, and how many candidates that choice was made from, so a
+    # weak match can be reported to the user rather than presented as a
+    # lookup.
+    match_score: Optional[float] = None
+    candidates_considered: Optional[int] = None
+
+
+def title_tokens(value: Optional[str]) -> set[str]:
+    """Lowercased alphanumeric tokens, for comparing titles across providers."""
+    if not value:
+        return set()
+    return set(re.sub(r"[^a-z0-9 ]", " ", value.lower()).split())
+
+
+def title_similarity(a: Optional[str], b: Optional[str]) -> float:
+    """Jaccard overlap of title tokens, 0.0 to 1.0.
+
+    Token-level rather than character-level because provider titles differ by
+    subtitle, casing and punctuation rather than by typos.
+    """
+    ta, tb = title_tokens(a), title_tokens(b)
+    if not ta or not tb:
+        return 0.0
+    return len(ta & tb) / len(ta | tb)
+
+
+# A title search below this similarity is reported as no match rather than
+# returned. Jaccard on tokens, so "Attention Is All You Need" against
+# "Channel Attention Is All You Need for Video" scores 0.55 and is rejected.
+MIN_TITLE_MATCH = 0.6
+# How many candidates to pull before re-ranking.
+TITLE_SEARCH_CANDIDATES = 25
+
+
+def _best_title_match(wanted: str, candidates: list, get_title,
+                      cited_by=None, min_score: float = MIN_TITLE_MATCH):
+    """Pick the candidate whose title best matches `wanted`.
+
+    Returns (candidate, score), or (None, 0.0) when nothing clears min_score.
+    A provider's own relevance ranking is not trusted on its own: searching a
+    famous title returns a cluster of mirror and duplicate records, and the one
+    the provider ranks first is not reliably the one the user meant.
+
+    `cited_by` reads a citation count off a candidate and breaks ties among
+    equally good title matches, preferring the record the literature actually
+    points at. Providers name that field differently, so the caller supplies
+    the accessor.
+    """
+    scored = []
+    for candidate in candidates:
+        score = title_similarity(wanted, get_title(candidate))
+        if score >= min_score:
+            cites = 0
+            if cited_by is not None:
+                try:
+                    cites = int(cited_by(candidate) or 0)
+                except (TypeError, ValueError):
+                    cites = 0
+            scored.append((round(score, 3), cites, score, candidate))
+    if not scored:
+        return None, 0.0
+    scored.sort(key=lambda row: (row[0], row[1]), reverse=True)
+    best = scored[0]
+    return best[3], best[2]
 
 class MetadataProvider(Protocol):
     name: str

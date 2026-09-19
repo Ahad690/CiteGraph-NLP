@@ -44,7 +44,9 @@ export class ApiError extends Error {
 }
 
 export interface StartRunParams {
-  query_type: "doi" | "pmid" | "pmcid" | "title" | "url";
+  // "auto" lets the server detect the format from the value, which is what
+  // the start form sends unless the user has overridden it.
+  query_type: "doi" | "pmid" | "pmcid" | "title" | "url" | "auto";
   value: string;
   backward_depth?: number;
   forward_depth?: number;

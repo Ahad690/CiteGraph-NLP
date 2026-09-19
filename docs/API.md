@@ -62,12 +62,17 @@ which is well past any reasonable HTTP timeout.
 
 | Field | Type | Default | Notes |
 |-------|------|---------|-------|
-| `query_type` | string | required | `doi`, `pmid`, `pmcid`, `title` or `url` |
+| `query_type` | string | `auto` | `auto`, `doi`, `pmid`, `pmcid`, `title` or `url` |
 | `value` | string | required | the identifier itself |
 | `pdf_path` | string | `null` | optional local PDF, must sit under the uploads directory |
 | `backward_depth` | int | `2` | how far to follow references, clamped to 0–3 |
 | `forward_depth` | int | `1` | how far to follow citing works, clamped to 0–2 |
 | `max_total_papers` | int | `100` | hard ceiling on graph size, clamped to 1–200 |
+
+`auto` is the default and works out the type from the shape of the value, so
+a caller can post just a value. It is resolved to a concrete type when the
+request model is constructed, and the run record stores the concrete type.
+Send an explicit type only to override the detection.
 
 Validation per `query_type`:
 
