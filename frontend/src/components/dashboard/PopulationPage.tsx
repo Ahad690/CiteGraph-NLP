@@ -32,6 +32,10 @@ export function PopulationPage({ run }: { run: RunResult }) {
     run.population_resolutions.forEach((r) => { c[r.status as string] = (c[r.status as string] || 0) + 1; });
     return c;
   }, [run]);
+  const missingWithoutAbstract = run.population_resolutions.filter(
+    (resolution) => resolution.status === "missing" && !getPaperById(run.papers, resolution.paper_id)?.abstract
+  ).length;
+  const recoveredFromFullText = run.papers.filter((paper) => paper.provenance?.population_full_text).length;
 
   return (
     <div className="space-y-5">
@@ -51,12 +55,12 @@ export function PopulationPage({ run }: { run: RunResult }) {
         })}
       </div>
 
-      {run.status === "completed" && run.population_resolutions.length > 0 && counts.missing === run.population_resolutions.length && (
+      {run.status === "completed" && counts.missing > 0 && (
         <div role="note" className="rounded-2xl bg-amber/10 border border-amber/30 p-4 text-sm text-amber flex items-start gap-3">
           <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
           <div>
-            <div className="font-semibold">No population values extracted</div>
-            <p className="mt-1">Extraction currently targets biomedical sample-size language in available abstracts. Technical papers may use datasets or benchmarks instead, which are not yet supported. Missing values can also mean an abstract was unavailable or its wording did not match; they do not prove a paper has no evidence.</p>
+            <div className="font-semibold">Population coverage: {counts.missing} of {run.population_resolutions.length} missing</div>
+            <p className="mt-1">Of these, {missingWithoutAbstract} have no abstract and {counts.missing - missingWithoutAbstract} have an abstract but no matched population value. Available open-access Methods and Results sections are also searched{recoveredFromFullText > 0 ? `, recovering ${recoveredFromFullText} paper(s) in this run` : ""}. Technical datasets and benchmarks are not yet supported; missing does not prove a paper has no evidence.</p>
           </div>
         </div>
       )}

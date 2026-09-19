@@ -22,7 +22,7 @@ case report.
 
 **Short pitch:** CiteGraph-NLP resolves a DOI, PMID, PMCID, title or URL
 against OpenAlex, Crossref and Europe PMC, traverses references and citing
-works breadth-first, reads study population sizes out of abstracts with a
+works breadth-first, reads study population sizes from abstracts and available open-access study sections with a
 pattern-based extraction pipeline, weights every citation edge by that
 evidence scaled by extraction confidence, and ranks probable foundational
 papers with PageRank over the weighted graph. Every extracted population
@@ -111,8 +111,8 @@ CiteGraph-NLP starts from a research paper identifier and builds a structured ci
 1. **Input Normalization** — Canonicalize identifiers (DOI/PMID/PMCID/OpenAlex ID)
 2. **Metadata Resolution** — Query OpenAlex, Crossref, and EuropePMC in parallel, merge results
 3. **Citation Traversal** — Level-by-level BFS over backward references and forward citations, with batched metadata lookups. Records describing the same work under different identifiers are merged before the paper budget is applied, so deduplication never costs graph slots
-4. **Abstract Backfill** — Papers with no OpenAlex abstract are topped up from Europe PMC in one batched query; population evidence can only be read from text
-5. **Population Extraction** — Regex-based extraction of sample sizes from abstracts with semantic classification
+4. **Abstract Backfill** — Papers with no OpenAlex abstract are topped up from Europe PMC in batched queries
+5. **Population Extraction** — Regex-based extraction from abstracts; when no population is found, try open-access Europe PMC Methods/Results full text for papers with a PMCID or a DOI linked to one
 6. **Population Resolution** — Select best N_eff candidate per paper using confidence and type priority scoring
 7. **Edge Weighting** — Weight citation edges by normalized population evidence + journal score + confidence
 8. **Graph Analytics** — PageRank-based foundational paper ranking and citation path ranking

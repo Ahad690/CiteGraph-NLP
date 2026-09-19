@@ -1,6 +1,7 @@
 import httpx
 import logging
 import re
+from xml.etree import ElementTree
 from typing import Any, Optional
 from datetime import datetime
 from citegraph.providers.base import MetadataProvider, ProviderResult, get_shared_client
@@ -30,6 +31,47 @@ def _quote_term(value: str) -> str:
     """
     escaped = value.replace("\\", "\\\\").replace('"', '\\"')
     return f'"{escaped}"'
+
+
+def _local_name(tag: str) -> str:
+    return tag.rsplit("}", 1)[-1]
+
+
+def _full_text_sections(xml: bytes) -> list[tuple[str, str]]:
+    """Read study sections from JATS without pulling in references or tables."""
+    root = ElementTree.fromstring(xml)
+    body = next((node for node in root.iter() if _local_name(node.tag) == "body"), None)
+    if body is None:
+        return []
+
+    sections: list[tuple[str, str]] = []
+
+    def visit(section: ElementTree.Element, inherited: str | None = None) -> None:
+        title = next((" ".join(child.itertext()) for child in section if _local_name(child.tag) == "title"), "")
+        heading = " ".join(title.lower().split())
+        if re.search(r"\b(introduction|discussion|conclusions?|references?)\b", heading):
+            return
+        if re.search(r"\b(results?|findings?|outcomes?)\b", heading):
+            label = "results"
+        elif inherited != "results" and re.search(r"\b(methods?|methodology|materials?|patients?|participants?|subjects?|study design|recruitment|cohort|population)\b", heading):
+            label = "methods"
+        else:
+            label = inherited
+
+        if label:
+            for child in section:
+                if _local_name(child.tag) == "p":
+                    paragraph = " ".join(" ".join(child.itertext()).split())
+                    if paragraph:
+                        sections.append((label, paragraph))
+        for child in section:
+            if _local_name(child.tag) == "sec":
+                visit(child, label)
+
+    for child in body:
+        if _local_name(child.tag) == "sec":
+            visit(child)
+    return sections
 
 
 class EuropePMCProvider:
@@ -165,6 +207,48 @@ class EuropePMCProvider:
     # DOIs per search request. Europe PMC accepts an OR-joined query; keeping
     # the batch modest keeps the URL well inside server limits.
     ABSTRACT_BATCH_SIZE = 25
+
+    async def find_open_access_pmcids_by_doi(self, dois: list[str]) -> dict[str, str]:
+        wanted = list(dict.fromkeys(
+            doi for raw in dois if (doi := IdCanonicalizer.canonicalize(raw)).startswith("10.")
+        ))
+        pmcids: dict[str, str] = {}
+        client = await get_shared_client()
+        for index in range(0, len(wanted), self.ABSTRACT_BATCH_SIZE):
+            chunk = wanted[index:index + self.ABSTRACT_BATCH_SIZE]
+            query = "(" + " OR ".join(f'DOI:"{_escape_query_value(doi)}"' for doi in chunk) + ") AND OPEN_ACCESS:Y"
+            try:
+                response = await client.get(
+                    f"{self.base_url}/search",
+                    params={"query": query, "format": "json", "resultType": "lite", "pageSize": self.ABSTRACT_BATCH_SIZE * 2},
+                )
+                response.raise_for_status()
+                for item in ((response.json().get("resultList") or {}).get("result") or []):
+                    doi = IdCanonicalizer.canonicalize(item.get("doi") or "")
+                    pmcid = IdCanonicalizer.canonicalize(item.get("pmcid") or "")
+                    if doi in chunk and re.fullmatch(r"PMC\d+", pmcid, re.IGNORECASE):
+                        pmcids[doi] = pmcid.upper()
+            except Exception as error:
+                logger.warning("Europe PMC open-access lookup failed for %d DOIs: %s", len(chunk), error)
+        return pmcids
+
+    async def get_full_text_sections(self, pmcid: str) -> list[tuple[str, str]]:
+        pmcid = IdCanonicalizer.canonicalize(pmcid or "").upper()
+        if not re.fullmatch(r"PMC\d+", pmcid):
+            return []
+        try:
+            client = await get_shared_client()
+            response = await client.get(f"{self.base_url}/{pmcid}/fullTextXML")
+            if response.status_code == 404:
+                return []
+            response.raise_for_status()
+            if len(response.content) > 5_000_000:
+                logger.warning("Europe PMC full text too large for %s", pmcid)
+                return []
+            return _full_text_sections(response.content)
+        except (httpx.HTTPError, ElementTree.ParseError) as error:
+            logger.warning("Europe PMC full text unavailable for %s: %s", pmcid, error)
+            return []
 
     async def get_abstracts_by_doi(self, dois: list[str]) -> dict[str, str]:
         """Fetch abstracts for many DOIs at once.

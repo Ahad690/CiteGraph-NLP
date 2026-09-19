@@ -10,7 +10,7 @@ CiteGraph-NLP is a system that takes a single research paper (identified by DOI,
 
 1. Resolves its metadata from multiple scholarly APIs
 2. Traverses its citation network backward and forward
-3. Extracts study population sizes from paper abstracts using NLP
+3. Extracts study population sizes from abstracts, then available open-access Methods/Results text when needed
 4. Builds a weighted citation knowledge graph
 5. Ranks the most probable **foundational papers** behind the research idea
 
@@ -136,7 +136,7 @@ The citation retriever queries all providers in parallel for each paper, then me
 
 ### Stage 4: Population Extraction
 
-This is the NLP core of the system. The `PopulationExtractor` processes each paper's abstract to find candidate study population sizes.
+This is the NLP core of the system. The `PopulationExtractor` processes each paper's abstract first. If no population is found, the pipeline tries available open-access Europe PMC Methods and Results text, without treating references or tables as study prose.
 
 #### Extraction Method: Regex Pattern Matching
 
@@ -321,7 +321,7 @@ This means the system never pretends it found "the" foundational paper with cert
 
 ## 7. Limitations & Honest Assessment
 
-1. **No full-text extraction**: Only abstracts are processed. Methods sections (which contain the richest population data) are only accessible via GROBID/PDF parsing, which is optional infrastructure.
+1. **Limited full-text coverage**: Abstracts are processed first; when they yield no population, open-access Europe PMC Methods/Results XML is tried. Non-open-access articles and papers without a matched PMCID still lack full-text extraction; GROBID/PDF parsing is not wired into this pipeline.
 2. **Regex-based NLP**: The population extractor uses pattern matching, not machine learning classifiers. This misses unusual phrasings and non-English text.
 3. **Citation database gaps**: No scholarly database has complete citation coverage. OpenAlex is the most comprehensive but still misses some edges.
 4. **No cross-study linking**: Population resolutions are per-paper. The system doesn't link the same clinical trial across multiple papers.

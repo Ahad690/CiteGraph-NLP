@@ -196,7 +196,7 @@ For a quick test, the defaults are fine. For deeper exploration, increase backwa
 The system will:
 1. Resolve the paper's metadata from OpenAlex, Crossref, and Europe PMC
 2. Traverse the citation graph backward and forward
-3. Extract population sizes from each paper's abstract
+3. Extract population sizes from abstracts, then available open-access Methods/Results text when needed
 4. Calculate evidence-weighted citation edges
 5. Rank probable foundational papers
 
@@ -442,9 +442,10 @@ Check the backend terminal for errors. Common causes:
 
 ### "No population evidence" for a paper
 
-This means the regex patterns couldn't find population numbers in the abstract. This is expected for:
+This means the regex patterns couldn't find population numbers in the abstract or available open-access Methods/Results text. This is expected for:
 - Review papers (no original study population)
 - Papers without abstracts in the metadata
+- Papers without accessible open-access full text
 - Papers using unusual phrasing for sample sizes
 
 ### spaCy model not found
