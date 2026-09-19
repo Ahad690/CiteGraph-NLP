@@ -58,8 +58,7 @@ jobs:
         run: |
           set -euo pipefail
           tar -czf /tmp/citegraph-backend.tar.gz \
-            src requirements.txt Dockerfile .dockerignore .env.example \
-            scripts/add_citegraph_route.py
+            src requirements.txt Dockerfile .dockerignore .env.example
 
       - name: Upload Backend Bundle
         run: |
@@ -141,87 +140,31 @@ jobs:
           curl -fsS "http://127.0.0.1:${PORT}/health" >/dev/null
 
           # Fail the deploy if the port ended up reachable on a public address.
-          if ss -ltn "sport = :${PORT}" | grep -qE '0\.0\.0\.0:|\[::\]:'; then
-            echo "ERROR: ${PORT} is published on a public interface, not loopback."
+          published_binding=$(docker port "$CONTAINER_NAME" 8000/tcp)
+          if [ "$published_binding" != "${BIND_ADDR}:${PORT}" ]; then
+            echo "ERROR: unexpected Docker binding: $published_binding"
             exit 1
           fi
           docker ps --filter "name=$CONTAINER_NAME" --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
           docker logs "$CONTAINER_NAME" --tail 20 2>&1
 
-          # --- Add /citegraph route to Nginx (idempotent, with rollback) ---
-          # Clean stray backups in sites-enabled (Nginx loads them too).
-          # Log each deleted file for observability.
-          find /etc/nginx/sites-enabled/ -maxdepth 1 \
-               \( -name '*.bak.*' -o -name '*.bak.disabled' \) \
-               -print -delete 2>/dev/null || true
-
-          # Find the active config in either sites-enabled/ or conf.d/.
-          NGINX_CONF=$(grep -rl 'hetzner-api' \
-                          /etc/nginx/sites-enabled/ \
-                          /etc/nginx/conf.d/ \
-                          2>/dev/null | grep -v '\.bak' | head -1 || true)
-          if [ -z "$NGINX_CONF" ] || [ ! -f "$NGINX_CONF" ]; then
-            echo "ERROR: No Nginx config containing 'hetzner-api' found in sites-enabled/ or conf.d/" >&2
+          PROXY_DOMAIN="citegraph-api.penora.us"
+          NGINX_CONF="/etc/nginx/sites-enabled/${PROXY_DOMAIN}"
+          if [ ! -f "$NGINX_CONF" ]; then
+            echo "ERROR: Missing Nginx site: $NGINX_CONF" >&2
             exit 1
           fi
-          echo "Found active config: $NGINX_CONF"
-
-          # Bounded backup retention: timestamped backups in /etc/nginx/backups,
-          # keep at most the 10 most recent.
-          mkdir -p /etc/nginx/backups
-          BACKUP_PATH="/etc/nginx/backups/$(basename "$NGINX_CONF").bak.$(date +%s)"
-          cp "$NGINX_CONF" "$BACKUP_PATH"
-          echo "Backed up to $BACKUP_PATH"
-          ls -1t /etc/nginx/backups/*.bak.* 2>/dev/null \
-            | tail -n +11 \
-            | xargs -r rm -v
-
-          # Remove leftover legacy include file from earlier failed attempts.
-          rm -f /etc/nginx/citegraph-proxy.conf
-
-          # Edit a temp copy so an aborted script never leaves a broken active config.
-          TMP_CONF="$(mktemp)"
-          cp "$NGINX_CONF" "$TMP_CONF"
-
-          # Run the route-insertion helper against the temp copy.
-          if ! python3 "$REMOTE_DIR/scripts/add_citegraph_route.py" "$TMP_CONF"; then
-            rc=$?
-            echo "ERROR: add_citegraph_route.py failed (exit=$rc); active config left untouched." >&2
-            rm -f "$TMP_CONF"
-            exit "$rc"
-          fi
-
-          # Print just the citegraph block we added — not the whole file — for safe CI logs.
-          echo "--- inserted /citegraph/ block ---"
-          grep -n -A 7 'location /citegraph/' "$TMP_CONF" || true
-          echo "----------------------------------"
-
-          # Swap atomically: replace the live config, run nginx -t, restore on failure.
-          cp "$TMP_CONF" "$NGINX_CONF"
-          rm -f "$TMP_CONF"
-          if ! nginx -t; then
-            echo "ERROR: nginx -t rejected the new config; restoring backup $BACKUP_PATH" >&2
-            cp "$BACKUP_PATH" "$NGINX_CONF"
-            nginx -t  # confirm the restore parses
+          if ! grep -Eq "^[[:space:]]*proxy_pass[[:space:]]+http://127\\.0\\.0\\.1:${PORT}/?;" "$NGINX_CONF"; then
+            echo "ERROR: Nginx upstream does not match backend port ${PORT}" >&2
             exit 1
           fi
-          systemctl reload nginx
-          echo "Nginx reloaded with /citegraph/ route"
+          nginx -t
 
-          # Live smoke test: verify TLS termination + /citegraph proxying.
-          # Use --resolve so transient public DNS issues on the host do not
-          # cause false deploy failures.
-          PROXY_DOMAIN="hetzner-api.duckdns.org"
-          PROXY_HEALTH_URL="https://${PROXY_DOMAIN}/citegraph/health"
-          if ! curl -fsS --max-time 15 --retry 3 --retry-delay 2 \
-                --resolve "${PROXY_DOMAIN}:443:127.0.0.1" \
-                "$PROXY_HEALTH_URL" >/dev/null; then
-            echo "ERROR: post-deploy health check via HTTPS proxy failed; restoring backup" >&2
-            cp "$BACKUP_PATH" "$NGINX_CONF"
-            systemctl reload nginx || true
-            exit 1
-          fi
-          echo "Live HTTPS /citegraph/health check OK"
+          PROXY_HEALTH_URL="https://${PROXY_DOMAIN}/health"
+          curl -fsS --max-time 15 --retry 3 --retry-delay 2 \
+            --resolve "${PROXY_DOMAIN}:443:127.0.0.1" \
+            "$PROXY_HEALTH_URL" >/dev/null
+          echo "Live HTTPS /health check OK"
           EOF
 
       - name: Cleanup SSH Key
