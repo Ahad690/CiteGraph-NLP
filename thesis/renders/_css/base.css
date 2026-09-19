@@ -1,0 +1,74 @@
+/* Rules every variant needs. Each variant stylesheet is applied after this
+ * one and changes only typography and page furniture.
+ */
+
+/* Pandoc's default HTML template centres the body in a 36em column, which is
+ * a web rule. In print it fights the page margins, so it is cleared here and
+ * the @page margin becomes the only thing controlling the text block.
+ */
+body {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* render_thesis.py rewrites the assembler's \newpage marker to this div,
+ * because \newpage is raw LaTeX and the HTML writer drops it.
+ */
+.pagebreak {
+  break-before: page;
+}
+
+/* Keep a figure whole and its caption attached. The generated diagrams are
+ * large enough that WeasyPrint will otherwise split image from caption.
+ */
+figure {
+  break-inside: avoid;
+  text-align: center;
+}
+
+figure img {
+  max-width: 100%;
+  height: auto;
+}
+
+h1, h2, h3, h4 {
+  break-after: avoid;
+}
+
+thead {
+  break-after: avoid;
+}
+
+tr {
+  break-inside: avoid;
+}
+
+.frontmatter {
+  break-after: page;
+}
+
+.frontmatter img {
+  display: block;
+  margin: 0 auto 1.5em auto;
+}
+
+/* Wide tables and code blocks must not run off the page. */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Pandoc turns a lone image into a <figure> and promotes its alt text to a
+ * caption. That is what every chapter figure wants, and what the title page
+ * does not: it printed "National University of Technology" under the crest.
+ */
+.frontmatter figcaption {
+  display: none;
+}

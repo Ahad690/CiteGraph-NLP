@@ -2,10 +2,10 @@
 
 # CiteGraph-NLP: A Confidence-Aware System for Citation Lineage Analysis and Study-Scale Evidence Extraction
 
-**A thesis submitted in partial fulfilment of the requirements for the degree of**
+**A thesis submitted in partial fulfilment of the requirements for the degree of**  
 **Bachelor of Science in Artificial Intelligence**
 
-**Department of Computer Science**
+**Department of Computer Science**  
 **National University of Technology**
 
 ---

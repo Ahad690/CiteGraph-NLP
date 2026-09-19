@@ -63,3 +63,11 @@ tr {
   display: block;
   margin: 0 auto 1.5em auto;
 }
+
+/* Pandoc turns a lone image into a <figure> and promotes its alt text to a
+ * caption. That is what every chapter figure wants, and what the title page
+ * does not: it printed "National University of Technology" under the crest.
+ */
+.frontmatter figcaption {
+  display: none;
+}
