@@ -1,4 +1,4 @@
-import type { ExportFormat, RunResult } from "@/types/api";
+import type { ExportFormat, RunResult, TechnicalEvidence } from "@/types/api";
 import { mockRun } from "./mock";
 
 /** Resolve the API base URL with environment-aware validation.
@@ -84,6 +84,28 @@ export async function getRun(runId: string): Promise<RunResult> {
     throw new ApiError(`Request failed (${res.status})`, res.status);
   }
   return (await res.json()) as RunResult;
+}
+
+export interface TechnicalRecovery {
+  technical_evidence: TechnicalEvidence;
+  /** True when this call downloaded the arXiv PDF; false when nothing needed doing. */
+  fetched: boolean;
+  /** True once the PDF has been read for this paper, whether or not a count was found. */
+  checked: boolean;
+}
+
+/** Read one computer-science paper's arXiv PDF for a dataset count.
+ *  Called when the paper is opened rather than during the run: arXiv allows one
+ *  request every three seconds, so doing ten papers per run cost ~27 s. The
+ *  server saves the outcome, found or not, so this runs at most once per paper. */
+export async function recoverTechnicalEvidence(runId: string, paperId: string): Promise<TechnicalRecovery> {
+  const params = new URLSearchParams({ paper_id: paperId });
+  const res = await fetch(
+    `${API_BASE}/api/runs/${encodeURIComponent(runId)}/technical-evidence?${params}`,
+    { method: "POST", headers: { Accept: "application/json" } },
+  );
+  if (!res.ok) throw new ApiError(`Request failed (${res.status})`, res.status);
+  return (await res.json()) as TechnicalRecovery;
 }
 
 export async function downloadExport(runId: string, format: ExportFormat): Promise<void> {

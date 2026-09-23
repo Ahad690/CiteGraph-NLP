@@ -14,6 +14,7 @@ from citegraph.nlp.population_extractor import PopulationExtractor
 from citegraph.nlp.population_resolver import PopulationResolver
 from citegraph.nlp.technical_evidence import TechnicalEvidenceExtractor
 from citegraph.models.population import PopulationResolution
+from citegraph.models.technical_evidence import TechnicalEvidence
 from citegraph.citations.retriever import CitationRetriever
 from citegraph.providers.europe_pmc import EuropePMCProvider
 from citegraph.providers.arxiv_full_text import ArxivFullTextProvider
@@ -26,7 +27,6 @@ from citegraph.config import settings
 logger = logging.getLogger(__name__)
 
 class PipelineOrchestrator:
-    MAX_TECH_FULL_TEXT = 10
 
     def __init__(self):
         self.normalizer = InputNormalizer()
@@ -117,23 +117,28 @@ class PipelineOrchestrator:
                 resolutions[resolution_index] = replacement[2]
         return [candidate for item in by_paper.values() for candidate in item[1]], len(by_paper)
 
-    async def _recover_technical_from_full_text(self, papers: dict, evidence: list, seed_paper_id: str) -> int:
-        missing = [item for item in evidence if item.status == "missing" and papers[item.paper_id].arxiv_id]
-        missing.sort(key=lambda item: item.paper_id != seed_paper_id)
-        recovered_count = 0
-        for item in missing[:self.MAX_TECH_FULL_TEXT]:
-            paper = papers[item.paper_id]
-            body = await self.arxiv_full_text.get_dataset_sections(paper.arxiv_id)
-            if not body:
-                continue
-            recovered = self.technical_extractor.extract(paper.paper_id, body, section="full_text")
-            if recovered.status == "missing":
-                continue
-            item_index = evidence.index(item)
-            evidence[item_index] = recovered
-            paper.provenance["technical_full_text"] = {"provider": "arxiv", "arxiv_id": paper.arxiv_id}
-            recovered_count += 1
-        return recovered_count
+    async def recover_technical_from_full_text(self, paper: Paper) -> TechnicalEvidence | None:
+        """Read one computer-science paper's arXiv PDF for dataset counts.
+
+        Called when a user opens the paper, not during the run. arXiv asks for
+        one request every three seconds, so fetching up to ten PDFs inside the
+        run cost about 27 seconds, half of a typical computer-science run, and
+        what it found is only displayed: dataset counts feed no ranking and no
+        edge weight. Doing it for the one paper someone is looking at costs a
+        few seconds for that paper and nothing for everyone else.
+
+        Returns the recovered evidence, or None when the paper has no arXiv
+        PDF or the PDF states no dataset count.
+        """
+        if not paper.arxiv_id:
+            return None
+        body = await self.arxiv_full_text.get_dataset_sections(paper.arxiv_id)
+        if not body:
+            return None
+        recovered = self.technical_extractor.extract(paper.paper_id, body, section="full_text")
+        if recovered.status == "missing":
+            return None
+        return recovered
 
     async def run(self, query: PaperQuery, backward_depth: int = 2, forward_depth: int = 1, max_papers: int = 100, run_id: str = None) -> RunResult:
         run_id = run_id or str(uuid.uuid4())
@@ -188,21 +193,13 @@ class PipelineOrchestrator:
             res.study_id = study_id
             all_resolutions.append(res)
 
-        # The two full-text recoveries run together rather than one after the
-        # other. They call different providers and touch disjoint data (clinical
-        # resolutions versus computer-science evidence), and the arXiv one is
-        # bound by arXiv's one-request-per-3-seconds policy, so running them in
-        # sequence spent that wait doing nothing else. The seed link check rides
-        # along for the same reason.
-        (
-            (full_text_candidates, full_text_recovered),
-            technical_full_text_recovered,
-            seed_doi_dead,
-        ) = await asyncio.gather(
+        # Clinical full-text recovery stays in the run because what it finds
+        # changes edge weights and rankings. Computer-science dataset counts are
+        # display-only, so their arXiv lookup happens when a user opens the
+        # paper (recover_technical_from_full_text). The seed link check runs
+        # alongside rather than after.
+        (full_text_candidates, full_text_recovered), seed_doi_dead = await asyncio.gather(
             self._recover_from_full_text(traversal.papers, all_resolutions),
-            self._recover_technical_from_full_text(
-                traversal.papers, technical_evidence, seed_paper.paper_id
-            ),
             doi_is_dead(seed_paper.doi),
         )
         all_candidates.extend(full_text_candidates)
@@ -231,6 +228,14 @@ class PipelineOrchestrator:
                 "broken at the publisher. This happens with mirror and preprint "
                 "records that duplicate a well-known title."
             )
+            # Also recorded on the paper, so the dashboard can mark the link
+            # itself. A warning on the overview page is easy to miss while the
+            # paper drawer shows the same DOI with a working-looking open button.
+            stored_seed = traversal.papers.get(seed_paper.paper_id, seed_paper)
+            stored_seed.provenance["doi_link"] = {
+                "status": "not_found",
+                "checked_at": datetime.utcnow().isoformat(),
+            }
         without_text = sum(1 for p in traversal.papers.values() if not p.abstract)
         if abstracts_recovered:
             warnings.append(
@@ -244,11 +249,10 @@ class PipelineOrchestrator:
             )
         if technical_evidence:
             warnings.append(
-                "Computer-science dataset counts come from abstracts or up to 10 linked arXiv PDFs; "
-                "they are not treated as clinical populations or used to weight citation rankings."
+                "Computer-science dataset counts come from abstracts. Open a paper to read its "
+                "arXiv PDF for a count the abstract does not state. They are not treated as "
+                "clinical populations or used to weight citation rankings."
             )
-        if technical_full_text_recovered:
-            warnings.append(f"Recovered dataset counts for {technical_full_text_recovered} paper(s) from arXiv full text.")
         if without_text:
             warnings.append(
                 f"{without_text} of {len(traversal.papers)} paper(s) have no abstract "

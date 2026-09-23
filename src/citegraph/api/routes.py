@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, BackgroundTasks, Response
 from pydantic import BaseModel, Field
 from typing import Dict, Literal, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 import logging
 import json
@@ -160,6 +160,70 @@ async def get_graph(run_id: str):
         })
         
     return {"nodes": nodes, "links": edges}
+
+# One lock per run for the read-modify-write below. The API runs as a single
+# uvicorn worker (Dockerfile CMD has no --workers), so an in-process lock is
+# enough to stop two papers opened at once from overwriting each other's update.
+_result_locks: dict[str, asyncio.Lock] = {}
+
+
+def _result_lock(run_id: str) -> asyncio.Lock:
+    lock = _result_locks.get(run_id)
+    if lock is None:
+        lock = _result_locks[run_id] = asyncio.Lock()
+    return lock
+
+
+@router.post("/runs/{run_id}/technical-evidence")
+async def recover_technical_evidence(run_id: str, paper_id: str):
+    """Read one computer-science paper's arXiv PDF for a dataset count.
+
+    The dashboard calls this when a user opens a paper whose abstract stated no
+    count. It used to happen inside every run for up to ten papers, which cost
+    about 27 seconds because arXiv allows one request every three seconds. The
+    outcome is saved into the run, found or not, so reopening the paper does not
+    fetch the PDF again.
+
+    `paper_id` is a query parameter rather than a path segment because paper
+    ids are usually DOIs, and DOIs contain slashes.
+    """
+    result = await _load_result(run_id)
+    paper = next((p for p in result.papers if p.paper_id == paper_id), None)
+    if paper is None:
+        raise HTTPException(status_code=404, detail="Paper not in this run")
+    current = next((t for t in result.technical_evidence if t.paper_id == paper_id), None)
+    if current is None:
+        raise HTTPException(status_code=404, detail="No dataset evidence is tracked for this paper")
+
+    already_checked = "technical_full_text" in paper.provenance
+    if current.status != "missing" or not paper.arxiv_id or already_checked:
+        return {"technical_evidence": current, "fetched": False,
+                "checked": already_checked}
+
+    recovered = await orchestrator.recover_technical_from_full_text(paper)
+    record = {
+        "provider": "arxiv",
+        "arxiv_id": paper.arxiv_id,
+        "found": recovered is not None,
+        "checked_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+    # Re-read inside the lock: another paper may have been updated while the
+    # PDF was downloading, and writing back the copy loaded above would undo it.
+    async with _result_lock(run_id):
+        latest = await _load_result(run_id)
+        for stored in latest.papers:
+            if stored.paper_id == paper_id:
+                stored.provenance["technical_full_text"] = record
+        if recovered is not None:
+            latest.technical_evidence = [
+                recovered if item.paper_id == paper_id else item
+                for item in latest.technical_evidence
+            ]
+        await store.save_result(run_id, latest)
+
+    return {"technical_evidence": recovered or current, "fetched": True, "checked": True}
+
 
 def _attachment(content: str, media_type: str, run_id: str, extension: str,
                 *, bom: bool = False) -> Response:

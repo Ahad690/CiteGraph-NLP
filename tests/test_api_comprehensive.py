@@ -1091,3 +1091,118 @@ class TestDatasetExport:
             client, run_id, {"running", "completed", "failed"}, timeout=20.0,
         )
         assert final["status"] in {"running", "completed", "failed"}
+
+
+class TestOnDemandTechnicalEvidence:
+    """arXiv dataset counts are fetched when a paper is opened, not per run.
+
+    Fetching them for up to ten papers inside every run cost about 27 seconds
+    (arXiv allows one request every three seconds) for evidence that is only
+    displayed, so the lookup moved behind this endpoint.
+    """
+
+    async def _seed_cs_run(self, run_id: str, *, status: str = "missing",
+                           arxiv_id: str | None = "1810.04805") -> RunResult:
+        from citegraph.models.technical_evidence import TechnicalEvidence
+
+        result = _build_completed_result(run_id)
+        paper = result.papers[0]
+        paper.research_domain = "computer_science"
+        paper.arxiv_id = arxiv_id
+        result.population_resolutions[0].status = "not_applicable"
+        result.population_resolutions[0].n_eff = None
+        result.technical_evidence = [TechnicalEvidence(
+            paper_id=paper.paper_id, status=status,
+            value=None if status == "missing" else 3_300_000,
+            explanation="No dataset count in the abstract.",
+        )]
+        await store.create_run(run_id)
+        await store.save_result(run_id, result)
+        return result
+
+    def _patch_recovery(self, monkeypatch, returns):
+        from citegraph.api import routes
+        calls = []
+
+        async def fake(paper):
+            calls.append(paper.paper_id)
+            return returns
+
+        monkeypatch.setattr(routes.orchestrator, "recover_technical_from_full_text", fake)
+        return calls
+
+    async def test_recovers_and_saves_into_the_run(self, client, monkeypatch):
+        from citegraph.models.technical_evidence import TechnicalEvidence
+
+        run_id = "on-demand-found"
+        await self._seed_cs_run(run_id)
+        found = TechnicalEvidence(
+            paper_id="P_SEED", status="resolved", kind="training_examples",
+            value=3_300_000, unit="words", confidence=0.8,
+            evidence="BooksCorpus (800M words)", section="full_text",
+            explanation="Stated in the pre-training data section.",
+        )
+        calls = self._patch_recovery(monkeypatch, found)
+
+        response = await client.post(
+            f"/api/runs/{run_id}/technical-evidence", params={"paper_id": "P_SEED"})
+        assert response.status_code == 200, response.text
+        body = response.json()
+        assert body["fetched"] is True
+        assert body["technical_evidence"]["value"] == 3_300_000
+        assert calls == ["P_SEED"]
+
+        stored = (await client.get(f"/api/runs/{run_id}")).json()
+        assert stored["technical_evidence"][0]["value"] == 3_300_000
+        record = stored["papers"][0]["provenance"]["technical_full_text"]
+        assert record["found"] is True and record["arxiv_id"] == "1810.04805"
+
+    async def test_reopening_does_not_fetch_again(self, client, monkeypatch):
+        """A miss is remembered too, so a PDF with no count is not refetched."""
+        run_id = "on-demand-miss"
+        await self._seed_cs_run(run_id)
+        calls = self._patch_recovery(monkeypatch, None)
+
+        first = await client.post(
+            f"/api/runs/{run_id}/technical-evidence", params={"paper_id": "P_SEED"})
+        second = await client.post(
+            f"/api/runs/{run_id}/technical-evidence", params={"paper_id": "P_SEED"})
+
+        assert first.json()["fetched"] is True
+        assert second.json() == {**second.json(), "fetched": False, "checked": True}
+        assert calls == ["P_SEED"], "the PDF must be fetched once, not on every open"
+        stored = (await client.get(f"/api/runs/{run_id}")).json()
+        assert stored["papers"][0]["provenance"]["technical_full_text"]["found"] is False
+
+    async def test_nothing_to_do_when_already_resolved_or_no_arxiv(self, client, monkeypatch):
+        calls = self._patch_recovery(monkeypatch, None)
+        await self._seed_cs_run("already-resolved", status="resolved")
+        await self._seed_cs_run("no-arxiv", arxiv_id=None)
+
+        for run_id in ("already-resolved", "no-arxiv"):
+            response = await client.post(
+                f"/api/runs/{run_id}/technical-evidence", params={"paper_id": "P_SEED"})
+            assert response.status_code == 200
+            assert response.json()["fetched"] is False
+        assert calls == []
+
+    async def test_unknown_paper_is_404(self, client, monkeypatch):
+        self._patch_recovery(monkeypatch, None)
+        await self._seed_cs_run("unknown-paper")
+        response = await client.post(
+            "/api/runs/unknown-paper/technical-evidence", params={"paper_id": "NOPE"})
+        assert response.status_code == 404
+
+    async def test_run_no_longer_fetches_arxiv(self):
+        """The run itself must not call arXiv; that was the 27-second cost."""
+        import ast
+        import inspect
+        import textwrap
+        from citegraph.pipeline.orchestrator import PipelineOrchestrator
+
+        # Walk the parsed method rather than its text, so a comment that names
+        # the on-demand function does not count as a call.
+        tree = ast.parse(textwrap.dedent(inspect.getsource(PipelineOrchestrator.run)))
+        used = {node.attr for node in ast.walk(tree) if isinstance(node, ast.Attribute)}
+        assert "recover_technical_from_full_text" not in used
+        assert "arxiv_full_text" not in used

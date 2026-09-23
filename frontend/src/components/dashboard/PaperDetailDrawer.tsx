@@ -1,9 +1,12 @@
-import { X, ExternalLink, Copy } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { X, ExternalLink, Copy, AlertTriangle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import type { Paper, RunResult } from "@/types/api";
 import { ConfidenceBadge } from "../ui-kit/ConfidenceBadge";
 import { RoleBadge } from "../ui-kit/RoleBadge";
 import { formatNumber, formatAuthors, getPopulationForPaper, getEdgesForPaper } from "@/lib/formatters";
+import { isBackendDemo, recoverTechnicalEvidence } from "@/lib/api";
 
 interface Props {
   paper: Paper | null;
@@ -11,13 +14,50 @@ interface Props {
   onClose: () => void;
 }
 
+interface FullTextRecord {
+  found?: boolean;
+}
+
 export function PaperDetailDrawer({ paper, run, onClose }: Props) {
+  const queryClient = useQueryClient();
+  const [readingFullText, setReadingFullText] = useState(false);
+
+  const technical = paper
+    ? run.technical_evidence.find((item) => item.paper_id === paper.paper_id)
+    : undefined;
+  const fullTextRecord = paper?.provenance?.technical_full_text as FullTextRecord | undefined;
+  // Read the arXiv PDF only for the paper being looked at, and only once: the
+  // server records the outcome, so a paper already checked is not fetched again.
+  const needsFullText =
+    !!paper && !!technical && technical.status === "missing" && !!paper.arxiv_id &&
+    !fullTextRecord && !isBackendDemo(run);
+
+  useEffect(() => {
+    if (!needsFullText || !paper) return;
+    let open = true;
+    setReadingFullText(true);
+    recoverTechnicalEvidence(run.run_id, paper.paper_id)
+      // Refresh even if the drawer has closed: the server saved the result
+      // either way, and every page reads dataset counts from the same run.
+      .then(() => queryClient.invalidateQueries({ queryKey: ["run", run.run_id] }))
+      .catch(() => {
+        if (open) toast.error("Could not read the arXiv PDF for this paper");
+      })
+      .finally(() => {
+        if (open) setReadingFullText(false);
+      });
+    return () => {
+      open = false;
+    };
+  }, [needsFullText, paper?.paper_id, run.run_id, queryClient]);
+
   if (!paper) return null;
   const isSeed = paper.paper_id === run.seed_paper_id;
   const isFoundational = run.ranked_foundational_papers.some((r) => r.paper_id === paper.paper_id);
   const population = getPopulationForPaper(run, paper.paper_id);
-  const technical = run.technical_evidence.find((item) => item.paper_id === paper.paper_id);
   const edges = getEdgesForPaper(run, paper.paper_id);
+  const doiLink = paper.provenance?.doi_link as { status?: string } | undefined;
+  const doiBroken = doiLink?.status === "not_found";
 
   const copy = (text: string, label: string) => {
     navigator.clipboard?.writeText(text)
@@ -72,9 +112,28 @@ export function PaperDetailDrawer({ paper, run, onClose }: Props) {
               <Row label="DOI" value={paper.doi} action={
                 <div className="flex gap-1">
                   <button onClick={() => copy(paper.doi!, "DOI")} className="h-7 w-7 grid place-items-center rounded-lg hover:bg-surface-hover" aria-label="Copy DOI"><Copy className="h-3.5 w-3.5" /></button>
-                  <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noreferrer" className="h-7 w-7 grid place-items-center rounded-lg hover:bg-surface-hover" aria-label="Open DOI"><ExternalLink className="h-3.5 w-3.5" /></a>
+                  <a
+                    href={`https://doi.org/${paper.doi}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={`h-7 w-7 grid place-items-center rounded-lg hover:bg-surface-hover ${doiBroken ? "text-rose" : ""}`}
+                    aria-label={doiBroken ? "Open DOI (the publisher page returns 404)" : "Open DOI"}
+                    title={doiBroken ? "The publisher page for this DOI returns 404" : undefined}
+                  >
+                    {doiBroken ? <AlertTriangle className="h-3.5 w-3.5" /> : <ExternalLink className="h-3.5 w-3.5" />}
+                  </a>
                 </div>
               } />
+            )}
+            {doiBroken && (
+              <div className="flex items-start gap-2 text-xs text-rose bg-rose/10 border border-rose/20 rounded-xl p-3">
+                <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+                <span>
+                  This DOI is registered, but its page at the publisher returns 404. The details
+                  above are real; the link is broken. Mirror and preprint copies of well-known
+                  papers often look like this, so check you have the paper you meant.
+                </span>
+              </div>
             )}
             {paper.pmid && <Row label="PMID" value={paper.pmid} />}
             {paper.pmcid && <Row label="PMCID" value={paper.pmcid} />}
@@ -88,6 +147,17 @@ export function PaperDetailDrawer({ paper, run, onClose }: Props) {
               {technical.section && <div className="text-xs text-text-muted">Source: {technical.section.replaceAll("_", " ")}</div>}
               {technical.evidence && <p className="text-xs text-text-secondary italic">"{technical.evidence}"</p>}
               <p className="text-xs text-text-muted">{technical.explanation}</p>
+              {readingFullText && (
+                <p className="flex items-center gap-2 text-xs text-text-secondary">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  Reading the arXiv PDF for a dataset count…
+                </p>
+              )}
+              {!readingFullText && fullTextRecord?.found === false && (
+                <p className="text-xs text-text-muted">
+                  The arXiv PDF was checked too; it does not state a dataset count either.
+                </p>
+              )}
             </div>
           )}
 

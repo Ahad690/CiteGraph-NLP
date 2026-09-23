@@ -158,11 +158,28 @@ async def test_pipeline_uses_arxiv_only_after_abstract_misses(monkeypatch):
         return "Training Data and Batching. We trained on 4.5 million sentence pairs."
 
     monkeypatch.setattr(pipeline.arxiv_full_text, "get_dataset_sections", get_sections)
-    evidence = [pipeline.technical_extractor.extract(paper.paper_id, paper.abstract)]
-    recovered = await pipeline._recover_technical_from_full_text({paper.paper_id: paper}, evidence, paper.paper_id)
+    from_abstract = pipeline.technical_extractor.extract(paper.paper_id, paper.abstract)
+    assert from_abstract.status == "missing", "the abstract states no count, so arXiv is needed"
 
-    assert recovered == 1
+    # Now called per paper when a user opens it, rather than for ten papers
+    # inside every run; the route records the outcome in provenance.
+    recovered = await pipeline.recover_technical_from_full_text(paper)
+
     assert calls == ["1706.03762"]
-    assert evidence[0].value == 4_500_000
-    assert evidence[0].section == "full_text"
-    assert paper.provenance["technical_full_text"]["arxiv_id"] == "1706.03762"
+    assert recovered is not None
+    assert recovered.value == 4_500_000
+    assert recovered.section == "full_text"
+
+
+async def test_full_text_recovery_skips_papers_without_arxiv(monkeypatch):
+    pipeline = PipelineOrchestrator()
+    calls = []
+
+    async def get_sections(arxiv_id):
+        calls.append(arxiv_id)
+        return "unused"
+
+    monkeypatch.setattr(pipeline.arxiv_full_text, "get_dataset_sections", get_sections)
+    paper = Paper(paper_id="no-arxiv", title="A paper", research_domain="computer_science")
+    assert await pipeline.recover_technical_from_full_text(paper) is None
+    assert calls == []
