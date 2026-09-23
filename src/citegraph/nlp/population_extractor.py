@@ -11,11 +11,22 @@ logger = logging.getLogger(__name__)
 
 class PopulationExtractor:
     def __init__(self):
-        try:
-            self.nlp = spacy.load("en_core_web_sm")
-        except:
-            logger.warning("spaCy model not found. Using basic sentence splitting.")
-            self.nlp = None
+        # Only sentence boundaries are used here; the patterns do the rest. This
+        # used to load en_core_web_sm and run its whole pipeline (tagger,
+        # dependency parser, entity recogniser) on every paragraph just to read
+        # doc.sents, which made extraction 62 of the 110 seconds of a 100-paper
+        # run. The rule-based sentencizer is 30x faster on full text and 20x on
+        # abstracts, and changed no gold-standard metric and no candidate across
+        # 146 full-text paragraphs when the two were compared side by side.
+        #
+        # It also needs no model download, which matters more than it sounds:
+        # the Docker image never installed en_core_web_sm, so production logged
+        # "spaCy model not found" once at startup and ran a regex fallback,
+        # while every evaluation ran the full model. Measured afterwards, all
+        # three splitters give identical gold metrics, but that was luck; now
+        # the evaluated code and the deployed code are the same code.
+        self.nlp = spacy.blank("en")
+        self.nlp.add_pipe("sentencizer")
 
     def extract_candidates(self, paper_id: str, text: str, section: str = "unknown") -> List[PopulationCandidate]:
         """Extract population size candidates from text."""
@@ -24,13 +35,7 @@ class PopulationExtractor:
 
         candidates = []
         
-        # Split into sentences
-        if self.nlp:
-            doc = self.nlp(text)
-            sentences = [sent.text for sent in doc.sents]
-        else:
-            # Fallback
-            sentences = re.split(r'(?<=[.!?])\s+', text)
+        sentences = [sent.text for sent in self.nlp(text).sents]
 
         for sentence in sentences:
             # Locate the spans that must not be read as population sizes (years,

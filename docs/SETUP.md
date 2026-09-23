@@ -62,17 +62,10 @@ The second line installs the project itself. Skip it and `import citegraph`
 fails, because the package lives under `src/` and nothing puts that on the
 path for you.
 
-Then the spaCy model, which is a separate download:
+There is no spaCy model to download. Extraction only needs sentence
+boundaries, and spaCy's rule-based splitter ships with spaCy itself.
 
-```bash
-python -m spacy download en_core_web_sm
-```
-
-The extractor falls back to plain sentence splitting when the model is
-missing and logs a warning rather than failing, so a run without it still
-produces results, just worse ones.
-
-All three steps at once:
+Both steps at once:
 
 ```bash
 make install
@@ -214,7 +207,7 @@ without thinking. Set `NEO4J_PASSWORD` before starting it.
 pytest -q
 ```
 
-102 tests, no network access required. If they pass, your install is sound.
+152 tests. If they pass, your install is sound.
 
 ---
 
@@ -222,10 +215,6 @@ pytest -q
 
 **`ModuleNotFoundError: citegraph`** — `pip install -e .` was skipped, or the
 virtual environment is not active. Check with `pip show citegraph-nlp`.
-
-**`spaCy model not found` in the log** — the model download was skipped. The
-run continues on plain sentence splitting, so expect weaker extraction until
-you install it.
 
 **Dashboard loads, every request fails** — open the browser console. A CORS
 error means `CORS_ORIGINS` does not list the dashboard's origin. A connection

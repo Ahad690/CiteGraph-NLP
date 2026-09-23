@@ -1565,7 +1565,7 @@ INPUT   paper_id, text, section
 OUTPUT  list of PopulationCandidate
 
  1  if text is empty then return []
- 2  sentences <- split(text)              # spaCy if available, else regex
+ 2  sentences <- split(text)              # spaCy rule-based sentencizer
  3  candidates <- []
  4
  5  for sentence in sentences do
@@ -1593,8 +1593,9 @@ OUTPUT  list of PopulationCandidate
 
 O(*S* · *P* · *L*) for *S* sentences, *P* patterns (20) and sentence length *L*.
 Linear in text length for a fixed pattern set. Measured at roughly 200 ms per
-abstract (Section 6.6.1), which is slow for regular expressions and is dominated
-by spaCy sentence segmentation rather than by matching.
+abstract (Section 6.6.1) while sentences were split by spaCy's full statistical
+pipeline, which dominated the cost; with the rule-based sentencizer it is about
+15 ms, with identical output (Section 6.6.5).
 
 ### 4.10.3 The span-versus-sentence decision
 
@@ -2565,6 +2566,48 @@ The redesign, one depth-limited DFS feeding a bounded heap, returns an
 identical top-ten (verified by comparing path sets and scores against the
 exhaustive computation). The speed-up widens with size because the original was
 O(nodes × paths) and the replacement is O(paths).
+
+### 6.6.5 Removing the extraction cost
+
+Section 6.6.1 identified population extraction as the first place local
+optimisation would pay. Adding full-text recovery later made that cost larger,
+because the extractor then ran over Methods and Results sections as well as
+abstracts. In an instrumented 100-paper run it accounted for 62 of 110 seconds.
+
+The cause was the sentence splitter, not the extraction. The patterns operate
+within a sentence, so the extractor needs sentence boundaries and nothing else,
+yet it loaded spaCy's `en_core_web_sm` and ran the whole pipeline (tagger,
+dependency parser, entity recogniser) on every paragraph in order to read
+`doc.sents`. Replacing it with spaCy's rule-based sentencizer was measured by
+`scripts/benchmark_sentence_splitting.py` on identical text: 20 gold abstracts
+and 146 full-text paragraphs (108,503 characters).
+
+| Splitter | Full text | Relative | Output |
+|----------|----------:|---------:|--------|
+| Full `en_core_web_sm` pipeline | 5.2–12.3 s | 1× | reference |
+| `senter` component only | 5.1–7.2 s | 0.7–2.4× | identical |
+| Rule-based sentencizer (adopted) | 0.4 s | 13–30× | identical |
+| Regular-expression fallback | 0.2 s | 24× | identical |
+
+Ranges are across two runs on the same machine (the fallback row is from
+one); the timings vary with load, the outputs never did. Every one of the 18 gold-standard metrics and every
+full-text candidate was unchanged, so the figures in Sections 6.3 and 6.4 stand.
+End-to-end, a 100-paper clinical run fell from 55–176 seconds across three runs
+to 34–43 seconds across two. The spread in the older figure is network
+variance, which is why the per-stage comparison on fixed text is the claim
+this section rests on.
+
+Instrumenting the deployment found something more important than the speed.
+The container image never installed `en_core_web_sm`, so production logged a
+single "model not found" warning at start-up and split sentences with the
+regular-expression fallback, while every evaluation in this chapter ran the
+full model. The deployed system was not the evaluated system. The last row of
+the table shows that the two happen to agree on every gold-standard case, so
+no reported result was affected, but that agreement was not known until it
+was measured. The adopted splitter needs no model download, so the evaluated
+code and the deployed code are now the same code by construction rather than
+by coincidence. It is the same lesson as Chapter 5: a fallback that logs a
+warning and carries on is a defect that passes every test.
 
 ## 6.7 Methodological note: reference verification
 

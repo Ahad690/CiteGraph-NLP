@@ -200,7 +200,7 @@ INPUT   paper_id, text, section
 OUTPUT  list of PopulationCandidate
 
  1  if text is empty then return []
- 2  sentences <- split(text)              # spaCy if available, else regex
+ 2  sentences <- split(text)              # spaCy rule-based sentencizer
  3  candidates <- []
  4
  5  for sentence in sentences do
@@ -228,8 +228,9 @@ OUTPUT  list of PopulationCandidate
 
 O(*S* · *P* · *L*) for *S* sentences, *P* patterns (20) and sentence length *L*.
 Linear in text length for a fixed pattern set. Measured at roughly 200 ms per
-abstract (Section 6.6.1), which is slow for regular expressions and is dominated
-by spaCy sentence segmentation rather than by matching.
+abstract (Section 6.6.1) while sentences were split by spaCy's full statistical
+pipeline, which dominated the cost; with the rule-based sentencizer it is about
+15 ms, with identical output (Section 6.6.5).
 
 ### 4.10.3 The span-versus-sentence decision
 

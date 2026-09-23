@@ -188,11 +188,24 @@ class PipelineOrchestrator:
             res.study_id = study_id
             all_resolutions.append(res)
 
-        full_text_candidates, full_text_recovered = await self._recover_from_full_text(traversal.papers, all_resolutions)
-        all_candidates.extend(full_text_candidates)
-        technical_full_text_recovered = await self._recover_technical_from_full_text(
-            traversal.papers, technical_evidence, seed_paper.paper_id
+        # The two full-text recoveries run together rather than one after the
+        # other. They call different providers and touch disjoint data (clinical
+        # resolutions versus computer-science evidence), and the arXiv one is
+        # bound by arXiv's one-request-per-3-seconds policy, so running them in
+        # sequence spent that wait doing nothing else. The seed link check rides
+        # along for the same reason.
+        (
+            (full_text_candidates, full_text_recovered),
+            technical_full_text_recovered,
+            seed_doi_dead,
+        ) = await asyncio.gather(
+            self._recover_from_full_text(traversal.papers, all_resolutions),
+            self._recover_technical_from_full_text(
+                traversal.papers, technical_evidence, seed_paper.paper_id
+            ),
+            doi_is_dead(seed_paper.doi),
         )
+        all_candidates.extend(full_text_candidates)
 
         # 5. Weighting
         ranking_resolutions = all_resolutions if seed_paper.research_domain not in ("computer_science", "nonclinical") else []
@@ -211,7 +224,7 @@ class PipelineOrchestrator:
         # Anything the seed resolution wanted to say: a title that matched
         # weakly, or providers that disagreed about which paper it meant.
         warnings.extend(getattr(self.metadata_resolver, "warnings", []))
-        if seed_paper.doi and await doi_is_dead(seed_paper.doi):
+        if seed_doi_dead:
             warnings.append(
                 f"The seed paper's DOI ({seed_paper.doi}) is registered but its "
                 "landing page returns 404. The metadata is real; the link is "

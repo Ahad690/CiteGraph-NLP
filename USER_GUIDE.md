@@ -60,12 +60,6 @@ npm install
 cd ..
 ```
 
-### Download spaCy language model (for sentence splitting)
-
-```bash
-python -m spacy download en_core_web_sm
-```
-
 ---
 
 ## 3. Configuration
@@ -447,13 +441,6 @@ This means the regex patterns couldn't find population numbers in the abstract o
 - Papers without abstracts in the metadata
 - Papers without accessible open-access full text
 - Papers using unusual phrasing for sample sizes
-
-### spaCy model not found
-
-```bash
-python -m spacy download en_core_web_sm
-```
-If spaCy is unavailable, the system falls back to regex-based sentence splitting (less accurate but functional).
 
 ### Port already in use
 

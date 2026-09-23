@@ -254,12 +254,12 @@ python -m venv .venv
 ```bash
 pip install -r requirements.txt
 pip install -e .
-python -m spacy download en_core_web_sm
 ```
 
 `pip install -e .` installs the project itself. Without it `import citegraph`
 fails, because the package lives under `src/` and nothing puts that directory
-on the path. `make install` runs all three.
+on the path. `make install` runs both. No spaCy model download is needed: the
+extractor uses spaCy's rule-based sentence splitter, which ships with spaCy.
 
 ### 3. Environment Configuration
 
