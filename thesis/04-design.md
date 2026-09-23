@@ -296,11 +296,34 @@ score = 0.5 · PageRank + 0.3 · year_score + 0.2 · evidence_score
 `year_score` rises with age, saturating at twenty years; `evidence_score` is the
 normalised population score scaled by population confidence.
 
-The age term is a deliberate inversion of the usual bibliometric bias. Citation
-counts favour recent, highly visible work [waltman2016review]; this system is
-looking for origins, so age is rewarded. The weights are not empirically tuned,
-they were set by judgement and no sensitivity analysis was performed, which
-Section 7.3 records as a limitation.
+The age term needs defending, because an examiner can fairly read it as
+circular. The case for it comes from the question the system asks. It is not
+ranking papers by general importance; it is asking where a line of work began,
+and in a graph grown outward from a single seed the origin of an idea is older
+than what descends from it. An age term encodes that expectation directly.
+
+The difficulty is that PageRank already carries the same preference. Citations
+point backwards in time, so rank flows towards older papers, and an older paper
+has also had longer to be cited. Mariani, Medo and Zhang show that raw PageRank
+is biased by age in exactly this way, and that rescaling each paper's score
+against papers of similar age recovers editorially selected milestone papers
+better than PageRank does [mariani2016milestone]; Vaccario and colleagues
+measure the same age bias, alongside a field bias, in a large citation network
+[vaccario2017bias], and citation indicators in general need normalising for
+both [waltman2016review]. Adding 0.3 · year_score on top of 0.5 · PageRank
+therefore counts age twice, and age has more influence on the final score than
+its 0.3 weight suggests.
+
+Two consequences follow. No result in this thesis is circular, because the
+foundational ranking is not scored against labelled papers (Section 3.5.6), so
+the concern is about how it may later be evaluated rather than about any figure
+reported here. And that evaluation has to control for age. A list of
+"foundational" papers compiled from reputation will skew old, and a ranking
+that rewards age will agree with it partly for that reason alone, so the fair
+test compares the ranking with and without the age term, against a
+time-rescaled PageRank baseline, and reports older and newer papers separately
+(Section 8.2.8). The weights themselves were set by judgement rather than
+tuned, which Section 7.3 records as a limitation.
 
 PageRank runs with NetworkX's default damping factor of 0.85
 [hagberg2008networkx], the value Brin and Page used [brin1998anatomy], and the

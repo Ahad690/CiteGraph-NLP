@@ -138,6 +138,14 @@ the rankings across a grid of damping values and reporting the rank correlation
 between them would establish whether the foundational-paper ordering is a
 property of the evidence or of the parameter, and it needs no new data.
 
+The age weight needs the same treatment for a different reason. Section 4.6.1
+explains that PageRank is itself biased towards older papers
+[mariani2016milestone; vaccario2017bias], so the explicit age term counts age a
+second time. Ranking with the age term removed, and against Mariani and
+colleagues' time-rescaled PageRank, would show how much of the "foundational"
+ordering is age alone. Any comparison against expert-chosen foundational papers
+should report older and newer papers separately, since those lists skew old.
+
 ### 8.2.9 Citation context and sentiment
 
 Garfield's original caveat (§2.1.1): a citation may be critical rather than

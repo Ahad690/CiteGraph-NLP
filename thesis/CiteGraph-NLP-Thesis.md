@@ -1300,11 +1300,34 @@ score = 0.5 · PageRank + 0.3 · year_score + 0.2 · evidence_score
 `year_score` rises with age, saturating at twenty years; `evidence_score` is the
 normalised population score scaled by population confidence.
 
-The age term is a deliberate inversion of the usual bibliometric bias. Citation
-counts favour recent, highly visible work [waltman2016review]; this system is
-looking for origins, so age is rewarded. The weights are not empirically tuned,
-they were set by judgement and no sensitivity analysis was performed, which
-Section 7.3 records as a limitation.
+The age term needs defending, because an examiner can fairly read it as
+circular. The case for it comes from the question the system asks. It is not
+ranking papers by general importance; it is asking where a line of work began,
+and in a graph grown outward from a single seed the origin of an idea is older
+than what descends from it. An age term encodes that expectation directly.
+
+The difficulty is that PageRank already carries the same preference. Citations
+point backwards in time, so rank flows towards older papers, and an older paper
+has also had longer to be cited. Mariani, Medo and Zhang show that raw PageRank
+is biased by age in exactly this way, and that rescaling each paper's score
+against papers of similar age recovers editorially selected milestone papers
+better than PageRank does [mariani2016milestone]; Vaccario and colleagues
+measure the same age bias, alongside a field bias, in a large citation network
+[vaccario2017bias], and citation indicators in general need normalising for
+both [waltman2016review]. Adding 0.3 · year_score on top of 0.5 · PageRank
+therefore counts age twice, and age has more influence on the final score than
+its 0.3 weight suggests.
+
+Two consequences follow. No result in this thesis is circular, because the
+foundational ranking is not scored against labelled papers (Section 3.5.6), so
+the concern is about how it may later be evaluated rather than about any figure
+reported here. And that evaluation has to control for age. A list of
+"foundational" papers compiled from reputation will skew old, and a ranking
+that rewards age will agree with it partly for that reason alone, so the fair
+test compares the ranking with and without the age term, against a
+time-rescaled PageRank baseline, and reports older and newer papers separately
+(Section 8.2.8). The weights themselves were set by judgement rather than
+tuned, which Section 7.3 records as a limitation.
 
 PageRank runs with NetworkX's default damping factor of 0.85
 [hagberg2008networkx], the value Brin and Page used [brin1998anatomy], and the
@@ -3169,6 +3192,14 @@ the rankings across a grid of damping values and reporting the rank correlation
 between them would establish whether the foundational-paper ordering is a
 property of the evidence or of the parameter, and it needs no new data.
 
+The age weight needs the same treatment for a different reason. Section 4.6.1
+explains that PageRank is itself biased towards older papers
+[mariani2016milestone; vaccario2017bias], so the explicit age term counts age a
+second time. Ranking with the age term removed, and against Mariani and
+colleagues' time-rescaled PageRank, would show how much of the "foundational"
+ordering is age alone. Any comparison against expert-chosen foundational papers
+should report older and newer papers separately, since those lists skew old.
+
 ### 8.2.9 Citation context and sentiment
 
 Garfield's original caveat (§2.1.1): a citation may be critical rather than
@@ -4287,7 +4318,7 @@ fallback) by `scripts/verify_references.py` before being cited. Entries
 that failed to resolve were removed rather than cited from memory; see
 Section 6.7 for the three identifiers this process corrected.
 
-All 44 entries resolve as of the verification run.
+All 46 entries resolve as of the verification run.
 
 **[1]** `agresti1998approximate`. Alan Agresti, and Brent A. Coull. "Approximate is Better than “Exact” for Interval Estimation of Binomial Proportions." *The American Statistician*, 1998. DOI: [10.1080/00031305.1998.10480550](https://doi.org/10.1080/00031305.1998.10480550)
   <br/>*Cited for:* Approximate beats exact for binomial intervals
@@ -4331,7 +4362,7 @@ All 44 entries resolve as of the verification run.
 **[14]** `garfield1955`. Eugene Garfield. "Citation Indexes for Science." *Science*, 1955. DOI: [10.1126/science.122.3159.108](https://doi.org/10.1126/science.122.3159.108)
   <br/>*Cited for:* Citation indexing as a tool for science
 
-**[15]** `guo2017calibration`. Chuan Guo, Geoff Pleiss, Yu Sun, and Kilian Q. Weinberger. "On Calibration of Modern Neural Networks." *arXiv (Cornell University)*, 2017. DOI: [10.48550/arXiv.1706.04599](https://doi.org/10.48550/arXiv.1706.04599)
+**[15]** `guo2017calibration`. Chuan Jun Guo, Geoff Pleiss, Yu Sun, and Kilian Q. Weinberger. "On Calibration of Modern Neural Networks." *arXiv (Cornell University)*, 2017. DOI: [10.48550/arXiv.1706.04599](https://doi.org/10.48550/arXiv.1706.04599)
   <br/>*Cited for:* On calibration of modern neural networks
 
 **[16]** `hagberg2008networkx`. Aric A. Hagberg, Daniel A. Schult, and Pieter J. Swart. "Exploring Network Structure, Dynamics, and Function using NetworkX." *Proceedings of the Python in Science Conference*, 2008. DOI: [10.25080/TCWV9851](https://doi.org/10.25080/TCWV9851)
@@ -4367,56 +4398,62 @@ All 44 entries resolve as of the verification run.
 **[26]** `lopez2009grobid`. Patrice Lopez. "GROBID: Combining Automatic Bibliographic Data Recognition and Term Extraction for Scholarship Publications." *Lecture Notes in Computer Science*, 2009. DOI: [10.1007/978-3-642-04346-8_62](https://doi.org/10.1007/978-3-642-04346-8_62)
   <br/>*Cited for:* GROBID
 
-**[27]** `marshall2016robotreviewer`. Iain J Marshall, Joël Kuiper, and Byron C Wallace. "RobotReviewer: evaluation of a system for automatically assessing bias in clinical trials." *Journal of the American Medical Informatics Association*, 2015. DOI: [10.1093/jamia/ocv044](https://doi.org/10.1093/jamia/ocv044)
+**[27]** `mariani2016milestone`. Manuel Sebastian Mariani, Matúš Medo, and Yi-Cheng Zhang. "Identification of milestone papers through time-balanced network centrality." *Journal of Informetrics*, 2016. DOI: [10.1016/j.joi.2016.10.005](https://doi.org/10.1016/j.joi.2016.10.005)
+  <br/>*Cited for:* Time-balanced centrality recovers milestone papers
+
+**[28]** `marshall2016robotreviewer`. Iain J Marshall, Joël Kuiper, and Byron C Wallace. "RobotReviewer: evaluation of a system for automatically assessing bias in clinical trials." *Journal of the American Medical Informatics Association*, 2015. DOI: [10.1093/jamia/ocv044](https://doi.org/10.1093/jamia/ocv044)
   <br/>*Cited for:* RobotReviewer: automatic risk-of-bias assessment
 
-**[28]** `marshall2020trialstreamer`. Iain J Marshall et al.. "Trialstreamer: A living, automatically updated database of clinical trial reports." *Journal of the American Medical Informatics Association*, 2020. DOI: [10.1093/jamia/ocaa163](https://doi.org/10.1093/jamia/ocaa163)
+**[29]** `marshall2020trialstreamer`. Iain J Marshall et al.. "Trialstreamer: A living, automatically updated database of clinical trial reports." *Journal of the American Medical Informatics Association*, 2020. DOI: [10.1093/jamia/ocaa163](https://doi.org/10.1093/jamia/ocaa163)
   <br/>*Cited for:* Trialstreamer: auto-updated RCT database
 
-**[29]** `martin2021oadoi`. Heather Piwowar et al.. "The state of OA: a large-scale analysis of the prevalence and impact of Open Access articles." *PeerJ*, 2018. DOI: [10.7717/peerj.4375](https://doi.org/10.7717/peerj.4375)
+**[30]** `martin2021oadoi`. Heather Piwowar et al.. "The state of OA: a large-scale analysis of the prevalence and impact of Open Access articles." *PeerJ*, 2018. DOI: [10.7717/peerj.4375](https://doi.org/10.7717/peerj.4375)
   <br/>*Cited for:* Unpaywall / open access state
 
-**[30]** `moher2009prisma`. David Moher, Alessandro Liberati, Jennifer Tetzlaff, and Douglas G. Altman. "Preferred Reporting Items for Systematic Reviews and Meta-Analyses: The PRISMA Statement." *PLoS Medicine*, 2009. DOI: [10.1371/journal.pmed.1000097](https://doi.org/10.1371/journal.pmed.1000097)
+**[31]** `moher2009prisma`. David Moher, Alessandro Liberati, Jennifer Tetzlaff, and Douglas G. Altman. "Preferred Reporting Items for Systematic Reviews and Meta-Analyses: The PRISMA Statement." *PLoS Medicine*, 2009. DOI: [10.1371/journal.pmed.1000097](https://doi.org/10.1371/journal.pmed.1000097)
   <br/>*Cited for:* PRISMA reporting guideline
 
-**[31]** `neumann2019scispacy`. Mark Neumann, Daniel King, Iz Beltagy, and Waleed Ammar. "ScispaCy: Fast and Robust Models for Biomedical Natural Language Processing." *Proceedings of the 18th BioNLP Workshop and Shared Task*, 2019. DOI: [10.18653/v1/W19-5034](https://doi.org/10.18653/v1/W19-5034)
+**[32]** `neumann2019scispacy`. Mark Neumann, Daniel King, Iz Beltagy, and Waleed Ammar. "ScispaCy: Fast and Robust Models for Biomedical Natural Language Processing." *Proceedings of the 18th BioNLP Workshop and Shared Task*, 2019. DOI: [10.18653/v1/W19-5034](https://doi.org/10.18653/v1/W19-5034)
   <br/>*Cited for:* ScispaCy biomedical NLP pipeline
 
-**[32]** `newman2001structure`. M. E. J. Newman. "The structure of scientific collaboration networks." *Proceedings of the National Academy of Sciences*, 2001. DOI: [10.1073/pnas.98.2.404](https://doi.org/10.1073/pnas.98.2.404)
+**[33]** `newman2001structure`. M. E. J. Newman. "The structure of scientific collaboration networks." *Proceedings of the National Academy of Sciences*, 2001. DOI: [10.1073/pnas.98.2.404](https://doi.org/10.1073/pnas.98.2.404)
   <br/>*Cited for:* Structure of scientific collaboration networks
 
-**[33]** `niculescu2005probabilities`. Alexandru Niculescu-Mizil, and Rich Caruana. "Predicting good probabilities with supervised learning." *Proceedings of the 22nd international conference on Machine learning  - ICML '05*, 2005. DOI: [10.1145/1102351.1102430](https://doi.org/10.1145/1102351.1102430)
+**[34]** `niculescu2005probabilities`. Alexandru Niculescu-Mizil, and Rich Caruana. "Predicting good probabilities with supervised learning." *Proceedings of the 22nd international conference on Machine learning  - ICML '05*, 2005. DOI: [10.1145/1102351.1102430](https://doi.org/10.1145/1102351.1102430)
   <br/>*Cited for:* Predicting good probabilities with supervised learning
 
-**[34]** `nye2018ebmnlp`. Benjamin Nye et al.. "A Corpus with Multi-Level Annotations of Patients, Interventions and Outcomes to Support Language Processing for Medical Literature." *Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)*, 2018. DOI: [10.18653/v1/P18-1019](https://doi.org/10.18653/v1/P18-1019)
+**[35]** `nye2018ebmnlp`. Benjamin Nye et al.. "A Corpus with Multi-Level Annotations of Patients, Interventions and Outcomes to Support Language Processing for Medical Literature." *Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)*, 2018. DOI: [10.18653/v1/P18-1019](https://doi.org/10.18653/v1/P18-1019)
   <br/>*Cited for:* EBM-NLP corpus: PICO spans in abstracts
 
-**[35]** `peng2011reproducible`. Roger D. Peng. "Reproducible Research in Computational Science." *Science*, 2011. DOI: [10.1126/science.1213847](https://doi.org/10.1126/science.1213847)
+**[36]** `peng2011reproducible`. Roger D. Peng. "Reproducible Research in Computational Science." *Science*, 2011. DOI: [10.1126/science.1213847](https://doi.org/10.1126/science.1213847)
   <br/>*Cited for:* Reproducible research in computational science
 
-**[36]** `priem2022openalex`. Jason R Priem et al.. "OpenAlex Snapshot." *arXiv (Cornell University)*, 2022. DOI: [10.48550/arXiv.2205.01833](https://doi.org/10.48550/arXiv.2205.01833)
+**[37]** `priem2022openalex`. Jason R Priem et al.. "OpenAlex Snapshot." *arXiv (Cornell University)*, 2022. DOI: [10.48550/arXiv.2205.01833](https://doi.org/10.48550/arXiv.2205.01833)
   <br/>*Cited for:* OpenAlex open scholarly catalogue
 
-**[37]** `radicchi2008universality`. Filippo Radicchi, Santo Fortunato, and Claudio Castellano. "Universality of citation distributions: Toward an objective measure of scientific impact." *Proceedings of the National Academy of Sciences*, 2008. DOI: [10.1073/pnas.0806977105](https://doi.org/10.1073/pnas.0806977105)
+**[38]** `radicchi2008universality`. Filippo Radicchi, Santo Fortunato, and Claudio Castellano. "Universality of citation distributions: Toward an objective measure of scientific impact." *Proceedings of the National Academy of Sciences*, 2008. DOI: [10.1073/pnas.0806977105](https://doi.org/10.1073/pnas.0806977105)
   <br/>*Cited for:* Universality of citation distributions
 
-**[38]** `redner1998citation`. S. Redner. "How popular is your paper? An empirical study of the citation distribution." *The European Physical Journal B*, 1998. DOI: [10.1007/s100510050359](https://doi.org/10.1007/s100510050359)
+**[39]** `redner1998citation`. S. Redner. "How popular is your paper? An empirical study of the citation distribution." *The European Physical Journal B*, 1998. DOI: [10.1007/s100510050359](https://doi.org/10.1007/s100510050359)
   <br/>*Cited for:* Citation distribution statistics
 
-**[39]** `sokolova2009measures`. Marina Sokolova, and Guy Lapalme. "A systematic analysis of performance measures for classification tasks." *Information Processing &amp; Management*, 2009. DOI: [10.1016/j.ipm.2009.03.002](https://doi.org/10.1016/j.ipm.2009.03.002)
+**[40]** `sokolova2009measures`. Marina Sokolova, and Guy Lapalme. "A systematic analysis of performance measures for classification tasks." *Information Processing &amp; Management*, 2009. DOI: [10.1016/j.ipm.2009.03.002](https://doi.org/10.1016/j.ipm.2009.03.002)
   <br/>*Cited for:* Systematic analysis of classification performance measures
 
-**[40]** `walker2007citerank`. Dylan Walker, Huafeng Xie, Koon-Kiu Yan, and Sergei Maslov. "Ranking scientific publications using a model of network traffic." *Journal of Statistical Mechanics: Theory and Experiment*, 2007. DOI: [10.1088/1742-5468/2007/06/P06010](https://doi.org/10.1088/1742-5468/2007/06/P06010)
+**[41]** `vaccario2017bias`. Giacomo Vaccario, Matúš Medo, Nicolas Wider, and Manuel Sebastian Mariani. "Quantifying and suppressing ranking bias in a large citation network." *Journal of Informetrics*, 2017. DOI: [10.1016/j.joi.2017.05.014](https://doi.org/10.1016/j.joi.2017.05.014)
+  <br/>*Cited for:* Age and field bias in citation-network rankings
+
+**[42]** `walker2007citerank`. Dylan Walker, Huafeng Xie, Koon-Kiu Yan, and Sergei Maslov. "Ranking scientific publications using a model of network traffic." *Journal of Statistical Mechanics: Theory and Experiment*, 2007. DOI: [10.1088/1742-5468/2007/06/P06010](https://doi.org/10.1088/1742-5468/2007/06/P06010)
   <br/>*Cited for:* CiteRank: finding scientific gems
 
-**[41]** `waltman2016review`. Ludo Waltman. "A review of the literature on citation impact indicators." *Journal of Informetrics*, 2016. DOI: [10.1016/j.joi.2016.02.007](https://doi.org/10.1016/j.joi.2016.02.007)
+**[43]** `waltman2016review`. Ludo Waltman. "A review of the literature on citation impact indicators." *Journal of Informetrics*, 2016. DOI: [10.1016/j.joi.2016.02.007](https://doi.org/10.1016/j.joi.2016.02.007)
   <br/>*Cited for:* Review of citation impact indicators
 
-**[42]** `wang2020mag`. Kuansan Wang, Zhihong Shen, Chiyuan Huang, Chieh-Han Wu, Yuxiao Dong, and Anshul Kanakia. "Microsoft Academic Graph: When experts are not enough." *Quantitative Science Studies*, 2020. DOI: [10.1162/qss_a_00021](https://doi.org/10.1162/qss_a_00021)
+**[44]** `wang2020mag`. Kuansan Wang, Zhihong Shen, Chiyuan Huang, Chieh-Han Wu, Yuxiao Dong, and Anshul Kanakia. "Microsoft Academic Graph: When experts are not enough." *Quantitative Science Studies*, 2020. DOI: [10.1162/qss_a_00021](https://doi.org/10.1162/qss_a_00021)
   <br/>*Cited for:* Microsoft Academic Graph
 
-**[43]** `wilson1927`. Edwin B. Wilson. "Probable Inference, the Law of Succession, and Statistical Inference." *Journal of the American Statistical Association*, 1927. DOI: [10.1080/01621459.1927.10502953](https://doi.org/10.1080/01621459.1927.10502953)
+**[45]** `wilson1927`. Edwin B. Wilson. "Probable Inference, the Law of Succession, and Statistical Inference." *Journal of the American Statistical Association*, 1927. DOI: [10.1080/01621459.1927.10502953](https://doi.org/10.1080/01621459.1927.10502953)
   <br/>*Cited for:* Wilson score interval
 
-**[44]** `wynants2020prediction`. Laure Wynants et al.. "Prediction models for diagnosis and prognosis of covid-19: systematic review and critical appraisal." *BMJ*, 2020. DOI: [10.1136/bmj.m1328](https://doi.org/10.1136/bmj.m1328)
+**[46]** `wynants2020prediction`. Laure Wynants et al.. "Prediction models for diagnosis and prognosis of covid-19: systematic review and critical appraisal." *BMJ*, 2020. DOI: [10.1136/bmj.m1328](https://doi.org/10.1136/bmj.m1328)
   <br/>*Cited for:* The systematic review the extractor false-positived on

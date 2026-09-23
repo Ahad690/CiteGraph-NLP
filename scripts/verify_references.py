@@ -68,6 +68,9 @@ CANDIDATES: list[tuple[str, str, str]] = [
     # --- PageRank parameters (Chapter 4) ---
     ("langville2004deeper", "10.1080/15427951.2004.10129091", "Deeper inside PageRank"),
     ("boldi2005damping", "10.1145/1060745.1060827", "PageRank as a function of the damping factor"),
+    # --- age bias in citation-network ranking (Chapter 4, 8) ---
+    ("mariani2016milestone", "10.1016/j.joi.2016.10.005", "Time-balanced centrality recovers milestone papers"),
+    ("vaccario2017bias", "10.1016/j.joi.2017.05.014", "Age and field bias in citation-network rankings"),
     # --- classification metrics (Chapter 6) ---
     ("sokolova2009measures", "10.1016/j.ipm.2009.03.002", "Systematic analysis of classification performance measures"),
     ("fawcett2006roc", "10.1016/j.patrec.2005.10.010", "Introduction to ROC analysis"),

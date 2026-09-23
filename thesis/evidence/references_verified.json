@@ -757,6 +757,47 @@
       "why_cited": "PageRank as a function of the damping factor"
     },
     {
+      "key": "mariani2016milestone",
+      "doi": "10.1016/j.joi.2016.10.005",
+      "verified": true,
+      "source": "crossref",
+      "title": "Identification of milestone papers through time-balanced network centrality",
+      "container": "Journal of Informetrics",
+      "year": 2016,
+      "authors": [
+        "Manuel Sebastian Mariani",
+        "Matúš Medo",
+        "Yi-Cheng Zhang"
+      ],
+      "type": "journal-article",
+      "publisher": "Elsevier BV",
+      "volume": "10",
+      "issue": "4",
+      "page": "1207-1223",
+      "why_cited": "Time-balanced centrality recovers milestone papers"
+    },
+    {
+      "key": "vaccario2017bias",
+      "doi": "10.1016/j.joi.2017.05.014",
+      "verified": true,
+      "source": "crossref",
+      "title": "Quantifying and suppressing ranking bias in a large citation network",
+      "container": "Journal of Informetrics",
+      "year": 2017,
+      "authors": [
+        "Giacomo Vaccario",
+        "Matúš Medo",
+        "Nicolas Wider",
+        "Manuel Sebastian Mariani"
+      ],
+      "type": "journal-article",
+      "publisher": "Elsevier BV",
+      "volume": "11",
+      "issue": "3",
+      "page": "766-782",
+      "why_cited": "Age and field bias in citation-network rankings"
+    },
+    {
       "key": "sokolova2009measures",
       "doi": "10.1016/j.ipm.2009.03.002",
       "verified": true,
@@ -821,7 +862,7 @@
       "container": "arXiv (Cornell University)",
       "year": 2017,
       "authors": [
-        "Chuan Guo",
+        "Chuan Jun Guo",
         "Geoff Pleiss",
         "Yu Sun",
         "Kilian Q. Weinberger"
