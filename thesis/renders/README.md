@@ -13,7 +13,7 @@ PDF converted from the Word file.
 
 | File | Pages | Page numbers | Body type | Character |
 |------|-------|--------------|-----------|-----------|
-| `1-current-as-committed.pdf` | 119 | **no** | Times New Roman 12pt | Pandoc's default web styling, printed |
+| `1-current-as-committed.pdf` | 120 | **no** | Times New Roman 12pt | Pandoc's default web styling, printed |
 | `2-academic-serif.pdf` | 131 | yes | Times New Roman 11.5pt | Conventional university thesis |
 | `3-modern-report.pdf` | 127 | yes | Cambria 11pt | Technical report |
 

@@ -25,7 +25,7 @@ which Section 6.6 shows dominates runtime, is materially worse.
 pytest -q
 ```
 
-Expected: **102 passed**. The suite mocks all HTTP at transport level with
+Expected: **200 passed**. The suite mocks all HTTP at transport level with
 `respx`, so it requires no network access and no API keys.
 
 ## C.3 Evaluation (Chapter 6)
@@ -69,6 +69,20 @@ Regenerates the reference list and the gold-standard appendix from the verified
 artifacts, then concatenates all chapters into
 `thesis/CiteGraph-NLP-Thesis.md`. The reference list is *generated*, not
 hand-maintained, so it cannot drift from the verification record.
+
+The rest of the thesis can drift, and `tests/test_the_thesis_does_not_drift.py`
+checks it with the rest of the suite. It compares the headline results with
+`thesis/evidence/`, the generated figures and the counts quoted from them with
+the source, and the assembled document, PDFs and quoted page and test counts
+with what is committed. It also keeps a ratchet: `scripts/thesis_baseline.json`
+records every section, figure and citation, and one may be removed only by
+rerunning
+
+```bash
+python scripts/rebaseline_thesis.py "why this changed"
+```
+
+which refuses to run without the reason.
 
 ## C.6 Regenerating the figures
 

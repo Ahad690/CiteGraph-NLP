@@ -1,0 +1,28 @@
+name: Tests
+
+# The whole suite, including tests/test_the_thesis_does_not_drift.py, which
+# checks the thesis against the code, the evidence files and the committed PDFs.
+# It installs requirements.txt rather than a minimal set because the drift
+# guard's test-count check only runs when every test file collects.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install --quiet -r requirements.txt
+
+      - name: pytest
+        run: python -m pytest -q

@@ -146,7 +146,12 @@ def build_gold_standard_appendix() -> str:
     return "\n".join(lines)
 
 
-def assemble() -> None:
+def assembled_text() -> tuple[str, list[str]]:
+    """The whole thesis as `assemble()` writes it, and any chapter file missing.
+
+    Kept separate so tests/test_the_thesis_does_not_drift.py can compare the
+    committed document with a fresh assembly without writing anything.
+    """
     parts = []
     missing = []
     for name in CHAPTERS:
@@ -155,8 +160,32 @@ def assemble() -> None:
             missing.append(name)
             continue
         parts.append(io.open(path, encoding="utf-8").read().rstrip())
+    return "\n\n\\newpage\n\n".join(parts) + "\n", missing
 
-    document = "\n\n\\newpage\n\n".join(parts) + "\n"
+
+CITATION = re.compile(r"\[((?:[a-z]+\d{4}[a-z0-9]*)(?:;\s*[a-z]+\d{4}[a-z0-9]*)*)\]")
+
+
+def inventory(document: str) -> dict[str, list[str]]:
+    """What the thesis contains that a careless edit could lose.
+
+    Sections are numbered headings (6.14.3, C.7) plus chapter and appendix
+    titles, figures are the numbers in bold caption labels, and citations are
+    the keys cited in the body. scripts/rebaseline_thesis.py records this; the
+    drift test checks nothing in the record has gone.
+    """
+    sections = set(re.findall(r"^#{2,4} ((?:\d+|[A-H])(?:\.\d+)+)\s", document, re.M))
+    sections |= set(re.findall(r"^# (Chapter \d+|Appendix [A-H])\b", document, re.M))
+    figures = set(re.findall(r"\*\*((?:Figure|Plate) [0-9A-H]+\.\d+)\*\*", document))
+    body = document.split("\n# References", 1)[0]
+    citations = {key.strip() for group in CITATION.findall(body) for key in group.split(";")}
+    return {name: sorted(values) for name, values in
+            (("sections", sections), ("figures", figures), ("citations", citations))}
+
+
+def assemble() -> None:
+    document, missing = assembled_text()
+    parts = document.count("\\newpage") + 1
     out = os.path.join(THESIS, "CiteGraph-NLP-Thesis.md")
     io.open(out, "w", encoding="utf-8").write(document)
 
@@ -168,7 +197,7 @@ def assemble() -> None:
     # produced 98 A4 pages, i.e. ~273 words/page rather than the ~450 a
     # prose-only document yields.
     est_pages = round(words / 273)
-    print(f"assembled {len(parts)} parts -> {out}")
+    print(f"assembled {parts} parts -> {out}")
     print(f"  words             : {words:,}")
     print(f"  table rows        : {table_rows:,}")
     print(f"  code fences       : {code_fences}")

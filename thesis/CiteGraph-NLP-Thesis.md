@@ -3706,7 +3706,7 @@ which Section 6.6 shows dominates runtime, is materially worse.
 pytest -q
 ```
 
-Expected: **102 passed**. The suite mocks all HTTP at transport level with
+Expected: **200 passed**. The suite mocks all HTTP at transport level with
 `respx`, so it requires no network access and no API keys.
 
 ## C.3 Evaluation (Chapter 6)
@@ -3750,6 +3750,20 @@ Regenerates the reference list and the gold-standard appendix from the verified
 artifacts, then concatenates all chapters into
 `thesis/CiteGraph-NLP-Thesis.md`. The reference list is *generated*, not
 hand-maintained, so it cannot drift from the verification record.
+
+The rest of the thesis can drift, and `tests/test_the_thesis_does_not_drift.py`
+checks it with the rest of the suite. It compares the headline results with
+`thesis/evidence/`, the generated figures and the counts quoted from them with
+the source, and the assembled document, PDFs and quoted page and test counts
+with what is committed. It also keeps a ratchet: `scripts/thesis_baseline.json`
+records every section, figure and citation, and one may be removed only by
+rerunning
+
+```bash
+python scripts/rebaseline_thesis.py "why this changed"
+```
+
+which refuses to run without the reason.
 
 ## C.6 Regenerating the figures
 
@@ -4115,21 +4129,27 @@ Listed for completeness; discussed in Section 7.4.
 
 ## F.1 Composition
 
-102 automated tests across eight files. All external HTTP is intercepted at
-transport level by `respx`, so the suite requires no network access and no API
-credentials, and completes in roughly 20–35 seconds.
+200 automated tests across thirteen files. All external HTTP is intercepted at
+transport level by `respx` or replaced with test doubles, so the suite requires
+no network access and no API credentials, and completes in roughly 15 to 40
+seconds.
 
 | File | Tests | Covers |
 |------|------:|--------|
-| `test_api_comprehensive.py` | 63 | Endpoints, validation, clamping, auth, CORS, exports, pipeline end-to-end with mocked providers |
+| `test_api_comprehensive.py` | 73 | Endpoints, validation, clamping, auth, CORS, exports, pipeline end-to-end with mocked providers |
+| `test_query_detection.py` | 34 | Identifier auto-detection and the title matching behind run ac66eb9e |
+| `test_flow_diagram.py` | 18 | Stage and layout rules of the flow-diagram reader (Section 6.14) |
+| `test_the_thesis_does_not_drift.py` | 18 | This thesis against its evidence, its figures, its PDFs and its baseline (Section C.5) |
+| `test_technical_evidence.py` | 12 | Research-field detection, arXiv links and dataset-size extraction |
 | `test_sqlite_store.py` | 8 | Persistence, lock retry policy, backoff jitter, error classification |
 | `test_add_citegraph_route.py` | 7 | Deployment route-insertion helper |
 | `test_population_patterns.py` | 6 | Extraction patterns and ignore-span behaviour |
+| `test_full_text_population.py` | 6 | The open-access full-text fallback of Section 5.2 |
 | `test_ranking.py` | 5 | Foundational scoring and path ranking |
 | `test_task_manager.py` | 5 | Background task lifecycle and shutdown semantics |
 | `test_url_resolver.py` | 5 | URL→identifier extraction, DOI view-segment trimming |
 | `test_input_normalizer.py` | 3 | Identifier canonicalisation |
-| **Total** | **102** | |
+| **Total** | **200** | |
 
 ## F.2 Regression tests added during evaluation
 
