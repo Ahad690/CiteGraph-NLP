@@ -29,6 +29,7 @@ dependencies = [
     "pytest",
     "pytest-asyncio",
     "respx",
+    "asgi-lifespan",
     "rich",
 ]
 

@@ -23,6 +23,7 @@ beautifulsoup4
 pytest
 pytest-asyncio
 respx
+asgi-lifespan>=2,<3
 rich
 
 # Reading participant-flow (CONSORT) diagrams, see src/citegraph/vision/.
