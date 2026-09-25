@@ -32,6 +32,7 @@ CHAPTERS = [
     "05b-frontend.md",
     "06-evaluation-results.md",
     "06b-extended-analysis.md",
+    "06c-flow-diagrams.md",
     "07-discussion.md",
     "08-conclusion.md",
     "09-appendix-a-api.md",

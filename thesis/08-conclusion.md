@@ -16,7 +16,10 @@ methods?** Partially. Detection achieved precision 0.917 and recall 1.000 (F1
 values were correct in 10 of 11 positive cases. But semantic type
 classification reached only 6 of 10, and, more seriously, the confidence scores
 attached to extractions do not discriminate correct from incorrect results
-(mean 0.91 when right, 0.90 when wrong). Extraction is good enough to drive
+(mean 0.91 when right, 0.90 when wrong). Typing improves sharply when the count
+is read from a trial's participant-flow diagram instead: on 42 held-out
+diagrams a vision reader was right on 61 of 69 stated counts where the text
+method was right on 2 (Section 6.14). Extraction is good enough to drive
 edge weighting; the uncertainty signalling around it is not yet trustworthy.
 
 **RQ2. What proportion of papers carry the text needed, and does availability
@@ -152,6 +155,15 @@ Garfield's original caveat (§2.1.1): a citation may be critical rather than
 supportive. Classifying citation context would let the graph distinguish
 support from refutation, a substantially harder problem, and the most
 speculative item here.
+
+### 8.2.10 Weight edges with diagram counts
+
+The flow-diagram reader of Section 6.14 runs on demand and its counts are shown
+beside the abstract extraction without changing any weight. Using them in the
+weighting needs a rule for the cases where the diagram and the abstract
+disagree, and a measurement of how often each is right when they do. The four
+held-out failure patterns listed in Section 6.14.5 should be fixed first and
+evaluated on a new set of diagrams, since they were found on this one.
 
 ## 8.3 Closing Remarks
 

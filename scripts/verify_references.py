@@ -71,6 +71,9 @@ CANDIDATES: list[tuple[str, str, str]] = [
     # --- age bias in citation-network ranking (Chapter 4, 8) ---
     ("mariani2016milestone", "10.1016/j.joi.2016.10.005", "Time-balanced centrality recovers milestone papers"),
     ("vaccario2017bias", "10.1016/j.joi.2017.05.014", "Age and field bias in citation-network rankings"),
+    # --- reading participant-flow diagrams (Section 6.14) ---
+    ("schulz2010consort", "10.1136/bmj.c332", "CONSORT 2010 statement and its flow diagram"),
+    ("du2020ppocr", "10.48550/arXiv.2009.09941", "PP-OCR, the recogniser RapidOCR exports"),
     # --- classification metrics (Chapter 6) ---
     ("sokolova2009measures", "10.1016/j.ipm.2009.03.002", "Systematic analysis of classification performance measures"),
     ("fawcett2006roc", "10.1016/j.patrec.2005.10.010", "Introduction to ROC analysis"),

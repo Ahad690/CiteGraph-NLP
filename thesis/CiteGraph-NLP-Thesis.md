@@ -85,7 +85,11 @@ whose abstracts contain large numbers that are *not* study populations.
 Population detection achieved precision 0.917, recall 1.000 and F1 0.957;
 exact sample-size values were correct for 10 of 11 positive cases; semantic type
 classification was correct for 6 of 10. Metadata resolution succeeded for 20 of
-20 papers. Three live citation traversals produced graphs with zero dangling
+20 papers. Because typing was the weakest result, a computer-vision reader was
+added for the CONSORT participant-flow diagrams that most trials publish, where
+a count's stage is fixed by the box it sits in. Frozen before a held-out set of
+42 diagrams was collected, it read 61 of 69 stated counts correctly against 2 of
+69 for the text method on the same papers. Three live citation traversals produced graphs with zero dangling
 edges and zero isolated nodes.
 
 The evaluation also exposes the system's limits honestly. Semantic type
@@ -160,6 +164,7 @@ full-scale plates the chapter figures are reduced from.
 | 4.3 | Data model, query to population |
 | 4.4 | Data model, population to run result |
 | 5.1 | Calls made by the pipeline orchestrator |
+| 6.1 | The flow-diagram reader on a CONSORT diagram |
 | H.1 | Combined data model, all seven entities |
 | H.2 | Complete class diagram |
 | H.3 | Complete call graph |
@@ -2874,6 +2879,206 @@ measurement. Section 7.1.1 draws the general lesson.
 
 \newpage
 
+# Chapter 6 (continued): Reading Participant-Flow Diagrams
+
+## 6.14 A computer-vision reader for CONSORT flow diagrams
+
+### 6.14.1 Why read the diagram
+
+The weakest measured result in this chapter is semantic typing: of ten
+correctly extracted population sizes, only six were labelled with the right
+stage (Section 6.4.3). Telling randomised from enrolled from analysed from
+surface patterns in an abstract is hard, because abstracts use the words
+loosely and often state one number for several stages.
+
+Most randomised trials report the same numbers a second time, in a form that
+removes the ambiguity. The CONSORT statement asks every trial to publish a
+participant-flow diagram showing how many people were assessed for
+eligibility, randomised, allocated to each arm, followed up and analysed
+[schulz2010consort]. In that diagram each count sits in a box, and the box's
+position in the flow states which stage it counts. Reading the stage from the
+layout, rather than guessing it from wording, is a computer-vision problem, and
+this section describes a reader for it and measures it against the text method
+on the same papers.
+
+Coverage was measured before any code was written. Of 60 open-access
+randomised trials from Europe PMC (2015 to 2024), 37 (62%) had a figure whose
+caption identifies it as a flow diagram; a second sample of 60 had 42 (70%).
+Every one of these images is retrievable from NCBI's public PMC Article
+Datasets bucket, the supported route for bulk reuse of open-access figures.
+
+### 6.14.2 Method
+
+The reader, `src/citegraph/vision/flow_diagram.py`, has six stages.
+
+1. **Text recognition.** RapidOCR, an ONNX export of the PP-OCR pipeline
+   [du2020ppocr], returns each text line with its position. It is a fixed
+   classifier rather than a generative model, so it cannot produce a number
+   that is not in the image, which matters when the numbers are the output.
+   Lines it is unsure of that contain a digit are cropped, enlarged three times
+   and recognised again without re-running detection. PMC stores figures at
+   about 700 pixels wide, where a four-arm diagram's text is 10 to 12 pixels
+   tall; this step turned "Anaal s((a4)" back into "Analysed (n=4)" in 57 ms.
+2. **Box detection.** Connector arrows touch the boxes they join, so the ink of
+   a whole flow chart is usually one connected shape, and each box's interior
+   is a hole in it. OpenCV finds those holes after adaptive thresholding, which
+   treats square, rounded and elliptical boxes alike and keeps boxes separate
+   even when an arrow runs into them.
+3. **Regions.** Each text line joins the smallest box around its centre. Lines
+   outside every box are clustered by proximity, because some diagrams draw no
+   boxes at all.
+4. **Counts.** Each count is paired with its label, in either of the two styles
+   diagrams use: "Analysed (n = 35)", where the label precedes the count, and
+   "96 Patients assessed for eligibility", where it follows.
+5. **Stages.** Labels are classified with CONSORT vocabulary. Exclusion terms
+   take precedence, so "Excluded from analysis (n = 3)" is not an analysed
+   count, and every count inside a box that opens with an exclusion is treated
+   as one of its listed reasons.
+6. **Layout.** A count whose own label names no stage takes one from the side
+   banner in its row or a heading directly above it. Arms in the same row are
+   summed unless one box already states their total, the analysis row must lie
+   below the allocated arms, and when no randomised count is printed the
+   allocation row supplies it.
+
+Figure 6.1 shows the reasoning on one diagram whose analysis boxes contain
+nothing but "N = 85".
+
+![**Figure 6.1** The reader on a development diagram from F1000Research
+(doi:10.12688/f1000research.147840.3, CC BY 4.0). Grey outlines are every box
+the detector found; coloured outlines are the boxes whose counts were used,
+tagged with the stage assigned. The arms say only "Control" and "Video" and
+the analysis boxes only "N = 85": their stages come from the side banners, and
+the randomised total of 178 from summing the allocation row, because the
+"Randomized" heading carries no count.](figures/flow_reader_example.png){width=78%}
+
+### 6.14.3 Evaluation protocol
+
+The reader was evaluated in three sets, and the order in which things were
+done is part of the result, so it is recorded in the commit history.
+
+| Set | Diagrams | Role | Seen by the designer before scoring? |
+|--------------------|---------:|---------------------------------|------------------------|
+| Development | 10 | rules written against these | yes |
+| Second development | 27 | first held-out, then demoted | yes, during annotation |
+| Held-out | 42 | the only basis for the decision | no |
+
+The answer key records, for each diagram, the screened, enrolled, randomised
+and analysed counts it states, with stages it leaves genuinely ambiguous marked
+unscored rather than guessed. It was written by reading each image before any
+reader code existed and committed at that point (commit `0aa6294`).
+
+The 27 diagrams first intended as a test set were annotated by the same person
+who then built the reader, so their result cannot count as held out. They were
+used as a second development set instead, and four general fixes came from
+their errors. Three further misses were deliberately left unfixed, because
+fixing them would have meant special-casing single diagrams, one of them a
+figure that misspells "analysis" as "amalysis".
+
+The reader was then frozen (commit `b12ce13`). Only afterwards were 42 new
+diagrams collected from the next page of the same search, sharing no paper
+with the first set, and their answer key was written and committed
+(`eb0e25a`) before the reader was run on any of them. The decision rule was
+stated in `scripts/evaluate_flow_diagrams.py` before that run: the reader ships
+only if, on held-out diagrams, it is right on at least 15 percentage points
+more of the stated enrolled, randomised and analysed counts than the text
+method, the difference holds under an exact McNemar test at p < 0.05, and it
+reports nothing for most figures that are not participant flows.
+
+The text method is the one the pipeline already uses: the pattern extractor of
+Section 4.10 over the same paper's abstract, taking the first candidate of each
+semantic type. Only stages a diagram states are scored, because an abstract
+saying "91 patients were enrolled" is not wrong merely because the diagram
+folds enrolment into randomisation. A lenient score is also reported, crediting
+the text method whenever the right number appears among its candidates under
+any label, which separates "not in the abstract" from "found but mislabelled".
+
+### 6.14.4 Results
+
+On the held-out set, counting the enrolled, randomised and analysed stages the
+diagrams state:
+
+| Method | Correct | 95% Wilson interval |
+|--------|--------:|--------------------|
+| Diagram reader | 61 / 69 (88%) | [0.79, 0.94] |
+| Text method, stage-typed | 2 / 69 (3%) | [0.01, 0.10] |
+| Text method, right number under any label | 26 / 69 (38%) | |
+
+Of the 61 disagreements between the two methods, the reader was right in 60
+and the text method in one (exact McNemar p < 0.0001). The reader reported
+nothing for both held-out figures that were not participant flows, and for all
+four such figures across the development sets. The rule is met.
+
+| Stage (held-out) | Reader | Text method |
+|------------------|-------:|------------:|
+| Screened | 25 / 31 (81%) | 2 / 31 (6%) |
+| Enrolled | 5 / 6 (83%) | 1 / 6 (17%) |
+| Randomised | 35 / 37 (95%) | 0 / 37 (0%) |
+| Analysed | 21 / 26 (81%) | 1 / 26 (4%) |
+
+The development sets agree: 18 of 18 on the first, and 50 of 53 on the second
+after its fixes (45 of 53 before them). The held-out figure is the lower of the
+three, which is the expected direction and the reason it is the one reported
+as the result.
+
+The lenient line is the more useful comparison for understanding the text
+method. The right number is present in the abstract for 38% of stated counts,
+yet correctly typed for 3%, so most of the gap is the typing problem of Section
+6.4.3 rather than missing information. The rest is that abstracts often state
+only one or two of the four counts a diagram gives.
+
+### 6.14.5 How it fails
+
+Seven of the eight held-out misses on the scored stages are abstentions: the
+reader reported nothing rather than a wrong number. In a tool meant to surface
+uncertainty, that is the preferable way to fail. The one wrong value summed two
+of three arms of an analysis row. Most misses trace to layouts the development
+sets did not contain:
+
+- a label above a bare number, with no "n =" ("Number randomised" over "43");
+- "Number of patient analyzed = 12", an equals sign without "n";
+- the count written before its label inside a box, "N=64 included in the
+  analysis";
+- stage words outside the CONSORT vocabulary, such as "Inclusion (N = 76)" and
+  a randomisation box labelled only "Random:".
+
+Each is a straightforward rule to add, but adding them now would repeat the
+problem this protocol was designed to avoid: they were found by looking at the
+held-out set, so their effect would have to be measured on another one.
+
+### 6.14.6 Cost, scope and limits
+
+Box detection takes about 10 ms; text recognition is the cost, a median of
+4.9 s and at most 11 s per diagram on the development machine, with no GPU. That
+is too slow to run for every trial in a 100-paper graph, so the reader is not
+part of a run. The dashboard offers it on a trial's detail panel, the server
+reads one diagram at a time in a worker thread so the API stays responsive, and
+the result is stored with the run so a diagram is never read twice. Its counts
+are shown beside the abstract extraction, not substituted for it, so a run's
+edge weights and rankings remain the ones it was computed with. Feeding
+diagram counts into the weighting is the natural next step, once the choice
+between a diagram and an abstract that disagree has a principled rule.
+
+The limits are specific:
+
+- **Open access only.** The reader depends on open-access figures; about two
+  thirds of the sampled open-access trials had a detectable diagram, and
+  closed-access trials have none available.
+- **The answer keys were written by the AI assistant used to build the system,**
+  by reading each image. They are committed with a note on every non-obvious
+  decision, but they have not yet been checked by a second, human annotator,
+  and the results in this section should be read as provisional until a team
+  member has spot-checked them against the images. Section 3.5.4's concern about
+  single-annotator gold standards applies here with extra force.
+- **Units.** Cluster trials randomise clinics or schools and analyse people.
+  The reader reports what each box says and does not reconcile units, so its
+  randomised and analysed counts for such a trial can refer to different
+  things, exactly as the diagram does.
+- **Scale of the evidence.** 42 held-out diagrams give 69 scored decision
+  counts. The interval on the reader's accuracy is correspondingly wide, from
+  79% to 94%, though it does not approach the text method's.
+
+\newpage
+
 # Chapter 7: Discussion
 
 ## 7.1 Interpretation of Results
@@ -3098,7 +3303,10 @@ methods?** Partially. Detection achieved precision 0.917 and recall 1.000 (F1
 values were correct in 10 of 11 positive cases. But semantic type
 classification reached only 6 of 10, and, more seriously, the confidence scores
 attached to extractions do not discriminate correct from incorrect results
-(mean 0.91 when right, 0.90 when wrong). Extraction is good enough to drive
+(mean 0.91 when right, 0.90 when wrong). Typing improves sharply when the count
+is read from a trial's participant-flow diagram instead: on 42 held-out
+diagrams a vision reader was right on 61 of 69 stated counts where the text
+method was right on 2 (Section 6.14). Extraction is good enough to drive
 edge weighting; the uncertainty signalling around it is not yet trustworthy.
 
 **RQ2. What proportion of papers carry the text needed, and does availability
@@ -3234,6 +3442,15 @@ Garfield's original caveat (§2.1.1): a citation may be critical rather than
 supportive. Classifying citation context would let the graph distinguish
 support from refutation, a substantially harder problem, and the most
 speculative item here.
+
+### 8.2.10 Weight edges with diagram counts
+
+The flow-diagram reader of Section 6.14 runs on demand and its counts are shown
+beside the abstract extraction without changing any weight. Using them in the
+weighting needs a rule for the cases where the diagram and the abstract
+disagree, and a measurement of how often each is right when they do. The four
+held-out failure patterns listed in Section 6.14.5 should be fixed first and
+evaluated on a new set of diagrams, since they were found on this one.
 
 ## 8.3 Closing Remarks
 
@@ -4346,7 +4563,7 @@ fallback) by `scripts/verify_references.py` before being cited. Entries
 that failed to resolve were removed rather than cited from memory; see
 Section 6.7 for the three identifiers this process corrected.
 
-All 46 entries resolve as of the verification run.
+All 48 entries resolve as of the verification run.
 
 **[1]** `agresti1998approximate`. Alan Agresti, and Brent A. Coull. "Approximate is Better than “Exact” for Interval Estimation of Binomial Proportions." *The American Statistician*, 1998. DOI: [10.1080/00031305.1998.10480550](https://doi.org/10.1080/00031305.1998.10480550)
   <br/>*Cited for:* Approximate beats exact for binomial intervals
@@ -4381,107 +4598,113 @@ All 46 entries resolve as of the verification run.
 **[11]** `cohen1960kappa`. Jacob Cohen. "A Coefficient of Agreement for Nominal Scales." *Educational and Psychological Measurement*, 1960. DOI: [10.1177/001316446002000104](https://doi.org/10.1177/001316446002000104)
   <br/>*Cited for:* Cohen's kappa
 
-**[12]** `europepmc2015`. Anon.. "Europe PMC: a full-text literature database for the life sciences and platform for innovation." *Nucleic Acids Research*, 2014. DOI: [10.1093/nar/gku1061](https://doi.org/10.1093/nar/gku1061)
+**[12]** `du2020ppocr`. Yuning Du et al.. "PP-OCR: A Practical Ultra Lightweight OCR System." *arXiv (Cornell University)*, 2020. DOI: [10.48550/arXiv.2009.09941](https://doi.org/10.48550/arXiv.2009.09941)
+  <br/>*Cited for:* PP-OCR, the recogniser RapidOCR exports
+
+**[13]** `europepmc2015`. Anon.. "Europe PMC: a full-text literature database for the life sciences and platform for innovation." *Nucleic Acids Research*, 2014. DOI: [10.1093/nar/gku1061](https://doi.org/10.1093/nar/gku1061)
   <br/>*Cited for:* Europe PMC full-text literature database
 
-**[13]** `fawcett2006roc`. Tom Fawcett. "An introduction to ROC analysis." *Pattern Recognition Letters*, 2006. DOI: [10.1016/j.patrec.2005.10.010](https://doi.org/10.1016/j.patrec.2005.10.010)
+**[14]** `fawcett2006roc`. Tom Fawcett. "An introduction to ROC analysis." *Pattern Recognition Letters*, 2006. DOI: [10.1016/j.patrec.2005.10.010](https://doi.org/10.1016/j.patrec.2005.10.010)
   <br/>*Cited for:* Introduction to ROC analysis
 
-**[14]** `garfield1955`. Eugene Garfield. "Citation Indexes for Science." *Science*, 1955. DOI: [10.1126/science.122.3159.108](https://doi.org/10.1126/science.122.3159.108)
+**[15]** `garfield1955`. Eugene Garfield. "Citation Indexes for Science." *Science*, 1955. DOI: [10.1126/science.122.3159.108](https://doi.org/10.1126/science.122.3159.108)
   <br/>*Cited for:* Citation indexing as a tool for science
 
-**[15]** `guo2017calibration`. Chuan Jun Guo, Geoff Pleiss, Yu Sun, and Kilian Q. Weinberger. "On Calibration of Modern Neural Networks." *arXiv (Cornell University)*, 2017. DOI: [10.48550/arXiv.1706.04599](https://doi.org/10.48550/arXiv.1706.04599)
+**[16]** `guo2017calibration`. Chuan Jun Guo, Geoff Pleiss, Yu Sun, and Kilian Q. Weinberger. "On Calibration of Modern Neural Networks." *arXiv (Cornell University)*, 2017. DOI: [10.48550/arXiv.1706.04599](https://doi.org/10.48550/arXiv.1706.04599)
   <br/>*Cited for:* On calibration of modern neural networks
 
-**[16]** `hagberg2008networkx`. Aric A. Hagberg, Daniel A. Schult, and Pieter J. Swart. "Exploring Network Structure, Dynamics, and Function using NetworkX." *Proceedings of the Python in Science Conference*, 2008. DOI: [10.25080/TCWV9851](https://doi.org/10.25080/TCWV9851)
+**[17]** `hagberg2008networkx`. Aric A. Hagberg, Daniel A. Schult, and Pieter J. Swart. "Exploring Network Structure, Dynamics, and Function using NetworkX." *Proceedings of the Python in Science Conference*, 2008. DOI: [10.25080/TCWV9851](https://doi.org/10.25080/TCWV9851)
   <br/>*Cited for:* NetworkX
 
-**[17]** `hendricks2020crossref`. Ginny Hendricks, Dominika Tkaczyk, Jennifer Lin, and Patricia Feeney. "Crossref: The sustainable source of community-owned scholarly metadata." *Quantitative Science Studies*, 2020. DOI: [10.1162/qss_a_00022](https://doi.org/10.1162/qss_a_00022)
+**[18]** `hendricks2020crossref`. Ginny Hendricks, Dominika Tkaczyk, Jennifer Lin, and Patricia Feeney. "Crossref: The sustainable source of community-owned scholarly metadata." *Quantitative Science Studies*, 2020. DOI: [10.1162/qss_a_00022](https://doi.org/10.1162/qss_a_00022)
   <br/>*Cited for:* Crossref as scholarly infrastructure
 
-**[18]** `higgins2011cochrane`. J. P. T. Higgins et al.. "The Cochrane Collaboration's tool for assessing risk of bias in randomised trials." *BMJ*, 2011. DOI: [10.1136/bmj.d5928](https://doi.org/10.1136/bmj.d5928)
+**[19]** `higgins2011cochrane`. J. P. T. Higgins et al.. "The Cochrane Collaboration's tool for assessing risk of bias in randomised trials." *BMJ*, 2011. DOI: [10.1136/bmj.d5928](https://doi.org/10.1136/bmj.d5928)
   <br/>*Cited for:* Cochrane risk of bias tool
 
-**[19]** `hirsch2005hindex`. J. E. Hirsch. "An index to quantify an individual's scientific research output." *Proceedings of the National Academy of Sciences*, 2005. DOI: [10.1073/pnas.0507655102](https://doi.org/10.1073/pnas.0507655102)
+**[20]** `hirsch2005hindex`. J. E. Hirsch. "An index to quantify an individual's scientific research output." *Proceedings of the National Academy of Sciences*, 2005. DOI: [10.1073/pnas.0507655102](https://doi.org/10.1073/pnas.0507655102)
   <br/>*Cited for:* h-index
 
-**[20]** `hripcsak2005agreement`. G. Hripcsak. "Agreement, the F-Measure, and Reliability in Information Retrieval." *Journal of the American Medical Informatics Association*, 2005. DOI: [10.1197/jamia.m1733](https://doi.org/10.1197/jamia.m1733)
+**[21]** `hripcsak2005agreement`. G. Hripcsak. "Agreement, the F-Measure, and Reliability in Information Retrieval." *Journal of the American Medical Informatics Association*, 2005. DOI: [10.1197/jamia.m1733](https://doi.org/10.1197/jamia.m1733)
   <br/>*Cited for:* Agreement, F-measure and reliability in IR
 
-**[21]** `ioannidis2005why`. John P. A. Ioannidis. "Why Most Published Research Findings Are False." *PLoS Medicine*, 2005. DOI: [10.1371/journal.pmed.0020124](https://doi.org/10.1371/journal.pmed.0020124)
+**[22]** `ioannidis2005why`. John P. A. Ioannidis. "Why Most Published Research Findings Are False." *PLoS Medicine*, 2005. DOI: [10.1371/journal.pmed.0020124](https://doi.org/10.1371/journal.pmed.0020124)
   <br/>*Cited for:* Why most published research findings are false
 
-**[22]** `jin2018pico`. Di Jin, and Peter Szolovits. "PICO Element Detection in Medical Text via Long Short-Term Memory Neural Networks." *Proceedings of the BioNLP 2018 workshop*, 2018. DOI: [10.18653/v1/W18-2308](https://doi.org/10.18653/v1/W18-2308)
+**[23]** `jin2018pico`. Di Jin, and Peter Szolovits. "PICO Element Detection in Medical Text via Long Short-Term Memory Neural Networks." *Proceedings of the BioNLP 2018 workshop*, 2018. DOI: [10.18653/v1/W18-2308](https://doi.org/10.18653/v1/W18-2308)
   <br/>*Cited for:* PICO element detection
 
-**[23]** `kim2003genia`. J.-D. Kim, T. Ohta, Y. Tateisi, and J. Tsujii. "GENIA corpus—a semantically annotated corpus for bio-textmining." *Bioinformatics*, 2003. DOI: [10.1093/bioinformatics/btg1023](https://doi.org/10.1093/bioinformatics/btg1023)
+**[24]** `kim2003genia`. J.-D. Kim, T. Ohta, Y. Tateisi, and J. Tsujii. "GENIA corpus—a semantically annotated corpus for bio-textmining." *Bioinformatics*, 2003. DOI: [10.1093/bioinformatics/btg1023](https://doi.org/10.1093/bioinformatics/btg1023)
   <br/>*Cited for:* GENIA corpus for biomedical IE
 
-**[24]** `langville2004deeper`. Amy Langville, and Carl Meyer. "Deeper Inside PageRank." *Internet Mathematics*, 2004. DOI: [10.1080/15427951.2004.10129091](https://doi.org/10.1080/15427951.2004.10129091)
+**[25]** `langville2004deeper`. Amy Langville, and Carl Meyer. "Deeper Inside PageRank." *Internet Mathematics*, 2004. DOI: [10.1080/15427951.2004.10129091](https://doi.org/10.1080/15427951.2004.10129091)
   <br/>*Cited for:* Deeper inside PageRank
 
-**[25]** `lee2020biobert`. Jinhyuk Lee et al.. "BioBERT: a pre-trained biomedical language representation model for biomedical text mining." *Bioinformatics*, 2019. DOI: [10.1093/bioinformatics/btz682](https://doi.org/10.1093/bioinformatics/btz682)
+**[26]** `lee2020biobert`. Jinhyuk Lee et al.. "BioBERT: a pre-trained biomedical language representation model for biomedical text mining." *Bioinformatics*, 2019. DOI: [10.1093/bioinformatics/btz682](https://doi.org/10.1093/bioinformatics/btz682)
   <br/>*Cited for:* BioBERT
 
-**[26]** `lopez2009grobid`. Patrice Lopez. "GROBID: Combining Automatic Bibliographic Data Recognition and Term Extraction for Scholarship Publications." *Lecture Notes in Computer Science*, 2009. DOI: [10.1007/978-3-642-04346-8_62](https://doi.org/10.1007/978-3-642-04346-8_62)
+**[27]** `lopez2009grobid`. Patrice Lopez. "GROBID: Combining Automatic Bibliographic Data Recognition and Term Extraction for Scholarship Publications." *Lecture Notes in Computer Science*, 2009. DOI: [10.1007/978-3-642-04346-8_62](https://doi.org/10.1007/978-3-642-04346-8_62)
   <br/>*Cited for:* GROBID
 
-**[27]** `mariani2016milestone`. Manuel Sebastian Mariani, Matúš Medo, and Yi-Cheng Zhang. "Identification of milestone papers through time-balanced network centrality." *Journal of Informetrics*, 2016. DOI: [10.1016/j.joi.2016.10.005](https://doi.org/10.1016/j.joi.2016.10.005)
+**[28]** `mariani2016milestone`. Manuel Sebastian Mariani, Matúš Medo, and Yi-Cheng Zhang. "Identification of milestone papers through time-balanced network centrality." *Journal of Informetrics*, 2016. DOI: [10.1016/j.joi.2016.10.005](https://doi.org/10.1016/j.joi.2016.10.005)
   <br/>*Cited for:* Time-balanced centrality recovers milestone papers
 
-**[28]** `marshall2016robotreviewer`. Iain J Marshall, Joël Kuiper, and Byron C Wallace. "RobotReviewer: evaluation of a system for automatically assessing bias in clinical trials." *Journal of the American Medical Informatics Association*, 2015. DOI: [10.1093/jamia/ocv044](https://doi.org/10.1093/jamia/ocv044)
+**[29]** `marshall2016robotreviewer`. Iain J Marshall, Joël Kuiper, and Byron C Wallace. "RobotReviewer: evaluation of a system for automatically assessing bias in clinical trials." *Journal of the American Medical Informatics Association*, 2015. DOI: [10.1093/jamia/ocv044](https://doi.org/10.1093/jamia/ocv044)
   <br/>*Cited for:* RobotReviewer: automatic risk-of-bias assessment
 
-**[29]** `marshall2020trialstreamer`. Iain J Marshall et al.. "Trialstreamer: A living, automatically updated database of clinical trial reports." *Journal of the American Medical Informatics Association*, 2020. DOI: [10.1093/jamia/ocaa163](https://doi.org/10.1093/jamia/ocaa163)
+**[30]** `marshall2020trialstreamer`. Iain J Marshall et al.. "Trialstreamer: A living, automatically updated database of clinical trial reports." *Journal of the American Medical Informatics Association*, 2020. DOI: [10.1093/jamia/ocaa163](https://doi.org/10.1093/jamia/ocaa163)
   <br/>*Cited for:* Trialstreamer: auto-updated RCT database
 
-**[30]** `martin2021oadoi`. Heather Piwowar et al.. "The state of OA: a large-scale analysis of the prevalence and impact of Open Access articles." *PeerJ*, 2018. DOI: [10.7717/peerj.4375](https://doi.org/10.7717/peerj.4375)
+**[31]** `martin2021oadoi`. Heather Piwowar et al.. "The state of OA: a large-scale analysis of the prevalence and impact of Open Access articles." *PeerJ*, 2018. DOI: [10.7717/peerj.4375](https://doi.org/10.7717/peerj.4375)
   <br/>*Cited for:* Unpaywall / open access state
 
-**[31]** `moher2009prisma`. David Moher, Alessandro Liberati, Jennifer Tetzlaff, and Douglas G. Altman. "Preferred Reporting Items for Systematic Reviews and Meta-Analyses: The PRISMA Statement." *PLoS Medicine*, 2009. DOI: [10.1371/journal.pmed.1000097](https://doi.org/10.1371/journal.pmed.1000097)
+**[32]** `moher2009prisma`. David Moher, Alessandro Liberati, Jennifer Tetzlaff, and Douglas G. Altman. "Preferred Reporting Items for Systematic Reviews and Meta-Analyses: The PRISMA Statement." *PLoS Medicine*, 2009. DOI: [10.1371/journal.pmed.1000097](https://doi.org/10.1371/journal.pmed.1000097)
   <br/>*Cited for:* PRISMA reporting guideline
 
-**[32]** `neumann2019scispacy`. Mark Neumann, Daniel King, Iz Beltagy, and Waleed Ammar. "ScispaCy: Fast and Robust Models for Biomedical Natural Language Processing." *Proceedings of the 18th BioNLP Workshop and Shared Task*, 2019. DOI: [10.18653/v1/W19-5034](https://doi.org/10.18653/v1/W19-5034)
+**[33]** `neumann2019scispacy`. Mark Neumann, Daniel King, Iz Beltagy, and Waleed Ammar. "ScispaCy: Fast and Robust Models for Biomedical Natural Language Processing." *Proceedings of the 18th BioNLP Workshop and Shared Task*, 2019. DOI: [10.18653/v1/W19-5034](https://doi.org/10.18653/v1/W19-5034)
   <br/>*Cited for:* ScispaCy biomedical NLP pipeline
 
-**[33]** `newman2001structure`. M. E. J. Newman. "The structure of scientific collaboration networks." *Proceedings of the National Academy of Sciences*, 2001. DOI: [10.1073/pnas.98.2.404](https://doi.org/10.1073/pnas.98.2.404)
+**[34]** `newman2001structure`. M. E. J. Newman. "The structure of scientific collaboration networks." *Proceedings of the National Academy of Sciences*, 2001. DOI: [10.1073/pnas.98.2.404](https://doi.org/10.1073/pnas.98.2.404)
   <br/>*Cited for:* Structure of scientific collaboration networks
 
-**[34]** `niculescu2005probabilities`. Alexandru Niculescu-Mizil, and Rich Caruana. "Predicting good probabilities with supervised learning." *Proceedings of the 22nd international conference on Machine learning  - ICML '05*, 2005. DOI: [10.1145/1102351.1102430](https://doi.org/10.1145/1102351.1102430)
+**[35]** `niculescu2005probabilities`. Alexandru Niculescu-Mizil, and Rich Caruana. "Predicting good probabilities with supervised learning." *Proceedings of the 22nd international conference on Machine learning  - ICML '05*, 2005. DOI: [10.1145/1102351.1102430](https://doi.org/10.1145/1102351.1102430)
   <br/>*Cited for:* Predicting good probabilities with supervised learning
 
-**[35]** `nye2018ebmnlp`. Benjamin Nye et al.. "A Corpus with Multi-Level Annotations of Patients, Interventions and Outcomes to Support Language Processing for Medical Literature." *Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)*, 2018. DOI: [10.18653/v1/P18-1019](https://doi.org/10.18653/v1/P18-1019)
+**[36]** `nye2018ebmnlp`. Benjamin Nye et al.. "A Corpus with Multi-Level Annotations of Patients, Interventions and Outcomes to Support Language Processing for Medical Literature." *Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)*, 2018. DOI: [10.18653/v1/P18-1019](https://doi.org/10.18653/v1/P18-1019)
   <br/>*Cited for:* EBM-NLP corpus: PICO spans in abstracts
 
-**[36]** `peng2011reproducible`. Roger D. Peng. "Reproducible Research in Computational Science." *Science*, 2011. DOI: [10.1126/science.1213847](https://doi.org/10.1126/science.1213847)
+**[37]** `peng2011reproducible`. Roger D. Peng. "Reproducible Research in Computational Science." *Science*, 2011. DOI: [10.1126/science.1213847](https://doi.org/10.1126/science.1213847)
   <br/>*Cited for:* Reproducible research in computational science
 
-**[37]** `priem2022openalex`. Jason R Priem et al.. "OpenAlex Snapshot." *arXiv (Cornell University)*, 2022. DOI: [10.48550/arXiv.2205.01833](https://doi.org/10.48550/arXiv.2205.01833)
+**[38]** `priem2022openalex`. Jason R Priem et al.. "OpenAlex Snapshot." *arXiv (Cornell University)*, 2022. DOI: [10.48550/arXiv.2205.01833](https://doi.org/10.48550/arXiv.2205.01833)
   <br/>*Cited for:* OpenAlex open scholarly catalogue
 
-**[38]** `radicchi2008universality`. Filippo Radicchi, Santo Fortunato, and Claudio Castellano. "Universality of citation distributions: Toward an objective measure of scientific impact." *Proceedings of the National Academy of Sciences*, 2008. DOI: [10.1073/pnas.0806977105](https://doi.org/10.1073/pnas.0806977105)
+**[39]** `radicchi2008universality`. Filippo Radicchi, Santo Fortunato, and Claudio Castellano. "Universality of citation distributions: Toward an objective measure of scientific impact." *Proceedings of the National Academy of Sciences*, 2008. DOI: [10.1073/pnas.0806977105](https://doi.org/10.1073/pnas.0806977105)
   <br/>*Cited for:* Universality of citation distributions
 
-**[39]** `redner1998citation`. S. Redner. "How popular is your paper? An empirical study of the citation distribution." *The European Physical Journal B*, 1998. DOI: [10.1007/s100510050359](https://doi.org/10.1007/s100510050359)
+**[40]** `redner1998citation`. S. Redner. "How popular is your paper? An empirical study of the citation distribution." *The European Physical Journal B*, 1998. DOI: [10.1007/s100510050359](https://doi.org/10.1007/s100510050359)
   <br/>*Cited for:* Citation distribution statistics
 
-**[40]** `sokolova2009measures`. Marina Sokolova, and Guy Lapalme. "A systematic analysis of performance measures for classification tasks." *Information Processing &amp; Management*, 2009. DOI: [10.1016/j.ipm.2009.03.002](https://doi.org/10.1016/j.ipm.2009.03.002)
+**[41]** `schulz2010consort`. K. F Schulz, D. G Altman, and D. Moher. "CONSORT 2010 Statement: updated guidelines for reporting parallel group randomised trials." *BMJ*, 2010. DOI: [10.1136/bmj.c332](https://doi.org/10.1136/bmj.c332)
+  <br/>*Cited for:* CONSORT 2010 statement and its flow diagram
+
+**[42]** `sokolova2009measures`. Marina Sokolova, and Guy Lapalme. "A systematic analysis of performance measures for classification tasks." *Information Processing &amp; Management*, 2009. DOI: [10.1016/j.ipm.2009.03.002](https://doi.org/10.1016/j.ipm.2009.03.002)
   <br/>*Cited for:* Systematic analysis of classification performance measures
 
-**[41]** `vaccario2017bias`. Giacomo Vaccario, Matúš Medo, Nicolas Wider, and Manuel Sebastian Mariani. "Quantifying and suppressing ranking bias in a large citation network." *Journal of Informetrics*, 2017. DOI: [10.1016/j.joi.2017.05.014](https://doi.org/10.1016/j.joi.2017.05.014)
+**[43]** `vaccario2017bias`. Giacomo Vaccario, Matúš Medo, Nicolas Wider, and Manuel Sebastian Mariani. "Quantifying and suppressing ranking bias in a large citation network." *Journal of Informetrics*, 2017. DOI: [10.1016/j.joi.2017.05.014](https://doi.org/10.1016/j.joi.2017.05.014)
   <br/>*Cited for:* Age and field bias in citation-network rankings
 
-**[42]** `walker2007citerank`. Dylan Walker, Huafeng Xie, Koon-Kiu Yan, and Sergei Maslov. "Ranking scientific publications using a model of network traffic." *Journal of Statistical Mechanics: Theory and Experiment*, 2007. DOI: [10.1088/1742-5468/2007/06/P06010](https://doi.org/10.1088/1742-5468/2007/06/P06010)
+**[44]** `walker2007citerank`. Dylan Walker, Huafeng Xie, Koon-Kiu Yan, and Sergei Maslov. "Ranking scientific publications using a model of network traffic." *Journal of Statistical Mechanics: Theory and Experiment*, 2007. DOI: [10.1088/1742-5468/2007/06/P06010](https://doi.org/10.1088/1742-5468/2007/06/P06010)
   <br/>*Cited for:* CiteRank: finding scientific gems
 
-**[43]** `waltman2016review`. Ludo Waltman. "A review of the literature on citation impact indicators." *Journal of Informetrics*, 2016. DOI: [10.1016/j.joi.2016.02.007](https://doi.org/10.1016/j.joi.2016.02.007)
+**[45]** `waltman2016review`. Ludo Waltman. "A review of the literature on citation impact indicators." *Journal of Informetrics*, 2016. DOI: [10.1016/j.joi.2016.02.007](https://doi.org/10.1016/j.joi.2016.02.007)
   <br/>*Cited for:* Review of citation impact indicators
 
-**[44]** `wang2020mag`. Kuansan Wang, Zhihong Shen, Chiyuan Huang, Chieh-Han Wu, Yuxiao Dong, and Anshul Kanakia. "Microsoft Academic Graph: When experts are not enough." *Quantitative Science Studies*, 2020. DOI: [10.1162/qss_a_00021](https://doi.org/10.1162/qss_a_00021)
+**[46]** `wang2020mag`. Kuansan Wang, Zhihong Shen, Chiyuan Huang, Chieh-Han Wu, Yuxiao Dong, and Anshul Kanakia. "Microsoft Academic Graph: When experts are not enough." *Quantitative Science Studies*, 2020. DOI: [10.1162/qss_a_00021](https://doi.org/10.1162/qss_a_00021)
   <br/>*Cited for:* Microsoft Academic Graph
 
-**[45]** `wilson1927`. Edwin B. Wilson. "Probable Inference, the Law of Succession, and Statistical Inference." *Journal of the American Statistical Association*, 1927. DOI: [10.1080/01621459.1927.10502953](https://doi.org/10.1080/01621459.1927.10502953)
+**[47]** `wilson1927`. Edwin B. Wilson. "Probable Inference, the Law of Succession, and Statistical Inference." *Journal of the American Statistical Association*, 1927. DOI: [10.1080/01621459.1927.10502953](https://doi.org/10.1080/01621459.1927.10502953)
   <br/>*Cited for:* Wilson score interval
 
-**[46]** `wynants2020prediction`. Laure Wynants et al.. "Prediction models for diagnosis and prognosis of covid-19: systematic review and critical appraisal." *BMJ*, 2020. DOI: [10.1136/bmj.m1328](https://doi.org/10.1136/bmj.m1328)
+**[48]** `wynants2020prediction`. Laure Wynants et al.. "Prediction models for diagnosis and prognosis of covid-19: systematic review and critical appraisal." *BMJ*, 2020. DOI: [10.1136/bmj.m1328](https://doi.org/10.1136/bmj.m1328)
   <br/>*Cited for:* The systematic review the extractor false-positived on

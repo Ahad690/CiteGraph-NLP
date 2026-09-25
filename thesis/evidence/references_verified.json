@@ -798,6 +798,51 @@
       "why_cited": "Age and field bias in citation-network rankings"
     },
     {
+      "key": "schulz2010consort",
+      "doi": "10.1136/bmj.c332",
+      "verified": true,
+      "source": "crossref",
+      "title": "CONSORT 2010 Statement: updated guidelines for reporting parallel group randomised trials",
+      "container": "BMJ",
+      "year": 2010,
+      "authors": [
+        "K. F Schulz",
+        "D. G Altman",
+        "D. Moher",
+        ""
+      ],
+      "type": "journal-article",
+      "publisher": "BMJ",
+      "volume": "340",
+      "issue": "mar23 1",
+      "page": "c332-c332",
+      "why_cited": "CONSORT 2010 statement and its flow diagram"
+    },
+    {
+      "key": "du2020ppocr",
+      "doi": "10.48550/arXiv.2009.09941",
+      "verified": true,
+      "source": "openalex",
+      "title": "PP-OCR: A Practical Ultra Lightweight OCR System",
+      "container": "arXiv (Cornell University)",
+      "year": 2020,
+      "authors": [
+        "Yuning Du",
+        "Chenxia Li",
+        "Ruoyu Guo",
+        "Xiaoting Yin",
+        "Weiwei Liu",
+        "Jun Zhou",
+        "Yifan Bai",
+        "Zilin Yu",
+        "Yehua Yang",
+        "Qingqing Dang",
+        "Haoshuang Wang"
+      ],
+      "type": "preprint",
+      "why_cited": "PP-OCR, the recogniser RapidOCR exports"
+    },
+    {
       "key": "sokolova2009measures",
       "doi": "10.1016/j.ipm.2009.03.002",
       "verified": true,
