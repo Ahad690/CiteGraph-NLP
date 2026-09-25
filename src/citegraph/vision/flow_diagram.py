@@ -49,7 +49,7 @@ EXCLUSION = re.compile(
 SCREENED = re.compile(
     r"assess\w*\s+for\s+(pre-?)?eligib|\bscreen\w*|\beligib\w*|\bapplied\b", re.I)
 ENROLLED = re.compile(
-    r"\benrol\w*|\bincluded\b|\brecruit(ed|ment)\b|"
+    r"\benrol\w*|\bincluded\b(?!\s+in\s+(the\s+)?(\w+\s+)?analy)|\brecruit(ed|ment)\b|"
     r"\b(met|meet|meeting|fulfill?ing|fulfilled)\s+(the\s+)?(\w+\s+)?inclusion", re.I)
 RANDOMISED = re.compile(r"\brandomi[sz]\w*|\brandomly\b", re.I)
 ANALYSED = re.compile(r"\banaly\w*", re.I)
@@ -64,7 +64,10 @@ HEADING_STAGE = [
 ]
 
 N_COUNT = re.compile(r"\b[nN]\s*[=:]\s*(\d[\d,]*)")
-LEADING_COUNT = re.compile(r"^\W*(\d[\d,]*)\s+(?=[A-Za-z])")
+# A leading count is followed by its label on the same line ("96 Patients
+# assessed") or stands alone on the line above it ("336" over "Women were
+# assessed for eligibility").
+LEADING_COUNT = re.compile(r"^\W*(\d[\d,]*)(?:\s+(?=[A-Za-z])|\s*$)")
 BULLETS = re.compile(r"^[\s•◆♦▪►➢➤\-–*·]+")
 
 
@@ -349,7 +352,20 @@ def _to_int(raw: str) -> Optional[int]:
 
 
 def _counts(region: Region) -> list[Count]:
-    """Pair every count in a region with the words that label it."""
+    """Pair every count in a region with the words that label it.
+
+    A box that opens with an exclusion lists reasons for it, so every count in
+    it is an exclusion, even a reason worded without an exclusion term such as
+    "Emergency intubation before randomization (n = 4)".
+    """
+    counts = _raw_counts(region)
+    if counts and counts[0].stages == {"excluded"}:
+        for count in counts:
+            count.stages = {"excluded"}
+    return counts
+
+
+def _raw_counts(region: Region) -> list[Count]:
     lines = [BULLETS.sub("", line) for line in region.text_lines()]
     text = " ".join(lines)
     counts: list[Count] = []
@@ -477,9 +493,14 @@ def _aggregate(counts: list[Count]) -> FlowReading:
         # first allocation row defines the arms: a later box such as
         # "Sub-group (n = 20)" also matches the allocation vocabulary and would
         # otherwise stretch the span out to that side panel.
-        arms = _rows(allocated)[0]
-        span = (min(c.region.x0 for c in arms), max(c.region.x1 for c in arms))
-        analysed = [c for c in analysed if min(span[1], c.region.x1) - max(span[0], c.region.x0) > 0]
+        # A single central box ("Allocation (n = 46)", or "Randomized 3 schools
+        # to 3 arms") is a total, not the arms; taking its width as the span
+        # cut off every arm but the middle one.
+        arm_rows = [row for row in _rows(allocated) if len({id(c.region) for c in row}) >= 2]
+        if arm_rows:
+            arms = arm_rows[0]
+            span = (min(c.region.x0 for c in arms), max(c.region.x1 for c in arms))
+            analysed = [c for c in analysed if min(span[1], c.region.x1) - max(span[0], c.region.x0) > 0]
     analysed_rows = _rows(analysed)
     if analysed_rows:
         row = _first_per_region(analysed_rows[-1])  # the final analysis row
