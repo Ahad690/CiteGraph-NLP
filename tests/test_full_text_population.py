@@ -1,4 +1,5 @@
 import pytest
+import httpx
 
 from citegraph.config import settings
 from citegraph.models.paper import Paper
@@ -51,7 +52,7 @@ async def test_only_missing_abstract_extractions_use_full_text(monkeypatch):
     pipeline = PipelineOrchestrator()
     fetched = []
 
-    async def find_pmcids(dois):
+    async def find_pmcids(dois, on_failure=None):
         assert dois == ["10.1234/missing"]
         return {"10.1234/missing": "PMC1234567"}
 
@@ -80,3 +81,56 @@ async def test_only_missing_abstract_extractions_use_full_text(monkeypatch):
     assert {candidate.value for candidate in candidates} == {240, 220}
     assert all(candidate.section in {"methods", "results"} for candidate in candidates)
     assert papers["missing"].provenance["population_full_text"]["pmcid"] == "PMC1234567"
+
+
+@pytest.fixture
+def no_retry_wait(monkeypatch):
+    """Keep the real retry policy but skip the backoff sleep in tests."""
+    import tenacity
+    monkeypatch.setattr(EuropePMCProvider._get.retry, "wait", tenacity.wait_none())
+
+
+async def test_transient_503_is_retried_not_lost(respx_mock, no_retry_wait):
+    """A single 503 used to drop the whole batch.
+
+    Measured on one fixed set of 98 DOIs, four identical lookups returned 64,
+    65, 62 and 84 abstracts, and one lost 12 PMCIDs to a single 503. That is
+    why the same graph recovered 6, 11 and 9 populations on three runs.
+    """
+    provider = EuropePMCProvider()
+    search = respx_mock.get(f"{provider.base_url}/search").mock(side_effect=[
+        httpx.Response(503),
+        httpx.Response(200, json={"resultList": {"result": [
+            {"doi": "10.1234/example", "pmcid": "PMC1234567"},
+        ]}}),
+    ])
+    lost = []
+
+    found = await provider.find_open_access_pmcids_by_doi(["10.1234/example"], on_failure=lost.append)
+
+    assert found == {"10.1234/example": "PMC1234567"}
+    assert search.call_count == 2
+    assert lost == []
+
+
+async def test_batch_still_failing_after_retries_is_reported(respx_mock, no_retry_wait):
+    """Give up after the retries, but say how many papers were affected."""
+    provider = EuropePMCProvider()
+    search = respx_mock.get(f"{provider.base_url}/search").respond(503)
+    lost = []
+
+    abstracts = await provider.get_abstracts_by_doi(
+        ["10.1234/a", "10.1234/b"], on_failure=lost.append)
+
+    assert abstracts == {}
+    assert search.call_count == 3, "three attempts, the same policy as OpenAlex and Crossref"
+    assert lost == [2]
+
+
+async def test_not_found_is_not_retried(respx_mock, no_retry_wait):
+    """A 404 means Europe PMC does not hold the paper; asking again cannot help."""
+    provider = EuropePMCProvider()
+    full_text = respx_mock.get(f"{provider.base_url}/PMC1234567/fullTextXML").respond(404)
+
+    assert await provider.get_full_text_sections("PMC1234567") == []
+    assert full_text.call_count == 1

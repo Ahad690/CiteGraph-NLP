@@ -40,7 +40,7 @@ class PipelineOrchestrator:
         self.weight_calc = WeightCalculator()
         self.graph_builder = GraphBuilder()
 
-    async def _backfill_abstracts(self, papers: dict) -> int:
+    async def _backfill_abstracts(self, papers: dict, lost: list[int] | None = None) -> int:
         """Fill in abstracts Europe PMC has but OpenAlex does not.
 
         Returns the number recovered. One batched search covers the whole set,
@@ -54,7 +54,9 @@ class PipelineOrchestrator:
             return 0
 
         try:
-            found = await self.europe_pmc.get_abstracts_by_doi([p.doi for p in needing])
+            found = await self.europe_pmc.get_abstracts_by_doi(
+                [p.doi for p in needing], on_failure=lost.append if lost is not None else None,
+            )
         except Exception as e:
             logger.warning("Abstract backfill failed: %s", e)
             return 0
@@ -73,13 +75,16 @@ class PipelineOrchestrator:
             )
         return recovered
 
-    async def _recover_from_full_text(self, papers: dict, resolutions: list) -> tuple[list, int]:
+    async def _recover_from_full_text(
+        self, papers: dict, resolutions: list, lost: list[int] | None = None,
+    ) -> tuple[list, int]:
         missing = [papers[resolution.paper_id] for resolution in resolutions if resolution.status == "missing"]
         if not missing or not settings.enable_europe_pmc:
             return [], 0
 
         doi_to_pmcid = await self.europe_pmc.find_open_access_pmcids_by_doi(
-            [paper.doi for paper in missing if paper.doi and not paper.pmcid]
+            [paper.doi for paper in missing if paper.doi and not paper.pmcid],
+            on_failure=lost.append if lost is not None else None,
         )
         semaphore = asyncio.Semaphore(5)
 
@@ -157,7 +162,11 @@ class PipelineOrchestrator:
         # 3b. Backfill abstracts. Population evidence can only be extracted from
         # text, and OpenAlex carries no abstract for a sizeable share of works,
         # so those papers would report "missing" purely for lack of input.
-        abstracts_recovered = await self._backfill_abstracts(traversal.papers)
+        # Europe PMC lookups that still fail after retrying are counted here and
+        # reported, because a lost batch otherwise looks exactly like papers
+        # that have no abstract or no open-access copy.
+        europe_pmc_lost: list[int] = []
+        abstracts_recovered = await self._backfill_abstracts(traversal.papers, europe_pmc_lost)
 
         # 4. Population Extraction for all papers
         all_candidates = []
@@ -199,7 +208,7 @@ class PipelineOrchestrator:
         # paper (recover_technical_from_full_text). The seed link check runs
         # alongside rather than after.
         (full_text_candidates, full_text_recovered), seed_doi_dead = await asyncio.gather(
-            self._recover_from_full_text(traversal.papers, all_resolutions),
+            self._recover_from_full_text(traversal.papers, all_resolutions, europe_pmc_lost),
             doi_is_dead(seed_paper.doi),
         )
         all_candidates.extend(full_text_candidates)
@@ -236,6 +245,12 @@ class PipelineOrchestrator:
                 "status": "not_found",
                 "checked_at": datetime.utcnow().isoformat(),
             }
+        if europe_pmc_lost:
+            warnings.append(
+                f"Europe PMC did not answer for {sum(europe_pmc_lost)} paper lookup(s) even "
+                "after retrying, so some abstracts or open-access full texts may be missing "
+                "from this run. Running it again usually fills them in."
+            )
         without_text = sum(1 for p in traversal.papers.values() if not p.abstract)
         if abstracts_recovered:
             warnings.append(

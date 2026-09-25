@@ -382,6 +382,34 @@ code and the deployed code are now the same code by construction rather than
 by coincidence. It is the same lesson as Chapter 5: a fallback that logs a
 warning and carries on is a defect that passes every test.
 
+### 6.6.6 Run-to-run consistency
+
+Running the same seed repeatedly produced the same graph, 100 papers and 206
+edges every time, but not the same evidence: full-text recovery found
+populations for 6, 11 and then 9 papers. The cause was Europe PMC, which answers
+HTTP 503 intermittently, and a provider that sent every request once and
+dropped a whole batch of 25 DOIs on any error. Measured on one fixed set of 98
+DOIs, four identical abstract lookups returned 64, 65, 62 and 84 abstracts, and
+one open-access lookup lost 12 PMCIDs to a single 503.
+
+Europe PMC calls now retry transient failures under the same policy as the
+other providers (three attempts, exponential backoff, and no retry of a 404,
+which means the paper is not held). A batch that still fails is reported in the
+run's warnings rather than treated as papers with no abstract.
+
+| Measure (same input, repeated) | Before | After |
+|--------------------------------|-------:|------:|
+| Abstracts returned, 98 DOIs | 62–84 over 4 tries | 84 on all 5 |
+| Open-access PMCIDs found | lost a batch of 12 once | 45 on all 5 |
+| Populations recovered from full text | 6, 11, 9 | 9, 9, 9 |
+
+The gold-standard evaluation was not affected: all 20 papers had an abstract
+after backfill (Section 6.2), so no figure in this chapter changes. The
+practical effect was on the graphs users see, where a typical run had been
+receiving about 20 fewer abstracts than Europe PMC holds. Consistency has a
+cost: when Europe PMC is struggling, a run now waits for it rather than
+finishing early with less data.
+
 ## 6.7 Methodological note: reference verification
 
 The reference list was verified programmatically: every candidate DOI was

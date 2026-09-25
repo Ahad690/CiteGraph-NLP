@@ -2,9 +2,17 @@ import httpx
 import logging
 import re
 from xml.etree import ElementTree
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 from datetime import datetime
-from citegraph.providers.base import MetadataProvider, ProviderResult, get_shared_client
+from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
+
+from citegraph.providers.base import (
+    RETRYABLE_STATUS_CODES,
+    MetadataProvider,
+    ProviderResult,
+    get_shared_client,
+    is_transient_error,
+)
 from citegraph.models.paper import Paper, PaperQuery
 from citegraph.models.citation import CitationEdge
 from citegraph.utils.ids import IdCanonicalizer
@@ -165,8 +173,7 @@ class EuropePMCProvider:
             if not search_query:
                 return ProviderResult(error=f"Unsupported Europe PMC query type: {query.query_type}")
                 
-            client = await get_shared_client()
-            response = await client.get(
+            response = await self._get(
                 f"{self.base_url}/search",
                 params={"query": search_query, "format": "json", "resultType": "core"}
             )
@@ -204,21 +211,54 @@ class EuropePMCProvider:
             provenance={"europe_pmc": {"retrieved_at": datetime.utcnow().isoformat()}}
         )
 
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        retry=retry_if_exception(is_transient_error),
+        reraise=True,
+    )
+    async def _get(self, url: str, params: dict[str, Any] | None = None) -> httpx.Response:
+        """GET with the same retry policy as the OpenAlex and Crossref providers.
+
+        Europe PMC answers 503 intermittently. Measured on one fixed set of 98
+        DOIs, four identical abstract lookups returned 64, 65, 62 and 84
+        abstracts, and one open-access lookup lost a whole batch of 12 PMCIDs to
+        a single 503. Every call here used to go straight to the client with no
+        retry, so a transient fault became missing data, and the same graph
+        recovered 6, 11 and 9 populations from full text on three runs.
+
+        Only transient statuses raise inside this helper, so they are retried;
+        anything else is returned for the caller to handle as before, which
+        keeps a 404 meaning "not held" rather than "failed".
+        """
+        client = await get_shared_client()
+        response = await client.get(url, params=params)
+        if response.status_code in RETRYABLE_STATUS_CODES:
+            response.raise_for_status()
+        return response
+
     # DOIs per search request. Europe PMC accepts an OR-joined query; keeping
     # the batch modest keeps the URL well inside server limits.
     ABSTRACT_BATCH_SIZE = 25
 
-    async def find_open_access_pmcids_by_doi(self, dois: list[str]) -> dict[str, str]:
+    async def find_open_access_pmcids_by_doi(
+        self, dois: list[str], on_failure: Callable[[int], None] | None = None,
+    ) -> dict[str, str]:
+        """Map DOIs to open-access PMCIDs, one search per batch.
+
+        `on_failure` is called with the batch size for any batch still failing
+        after retries, so the caller can report the gap instead of treating
+        those papers as having no open-access copy.
+        """
         wanted = list(dict.fromkeys(
             doi for raw in dois if (doi := IdCanonicalizer.canonicalize(raw)).startswith("10.")
         ))
         pmcids: dict[str, str] = {}
-        client = await get_shared_client()
         for index in range(0, len(wanted), self.ABSTRACT_BATCH_SIZE):
             chunk = wanted[index:index + self.ABSTRACT_BATCH_SIZE]
             query = "(" + " OR ".join(f'DOI:"{_escape_query_value(doi)}"' for doi in chunk) + ") AND OPEN_ACCESS:Y"
             try:
-                response = await client.get(
+                response = await self._get(
                     f"{self.base_url}/search",
                     params={"query": query, "format": "json", "resultType": "lite", "pageSize": self.ABSTRACT_BATCH_SIZE * 2},
                 )
@@ -230,6 +270,8 @@ class EuropePMCProvider:
                         pmcids[doi] = pmcid.upper()
             except Exception as error:
                 logger.warning("Europe PMC open-access lookup failed for %d DOIs: %s", len(chunk), error)
+                if on_failure is not None:
+                    on_failure(len(chunk))
         return pmcids
 
     async def get_full_text_sections(self, pmcid: str) -> list[tuple[str, str]]:
@@ -237,8 +279,7 @@ class EuropePMCProvider:
         if not re.fullmatch(r"PMC\d+", pmcid):
             return []
         try:
-            client = await get_shared_client()
-            response = await client.get(f"{self.base_url}/{pmcid}/fullTextXML")
+            response = await self._get(f"{self.base_url}/{pmcid}/fullTextXML")
             if response.status_code == 404:
                 return []
             response.raise_for_status()
@@ -250,7 +291,9 @@ class EuropePMCProvider:
             logger.warning("Europe PMC full text unavailable for %s: %s", pmcid, error)
             return []
 
-    async def get_abstracts_by_doi(self, dois: list[str]) -> dict[str, str]:
+    async def get_abstracts_by_doi(
+        self, dois: list[str], on_failure: Callable[[int], None] | None = None,
+    ) -> dict[str, str]:
         """Fetch abstracts for many DOIs at once.
 
         OpenAlex has no abstract for a sizeable share of works (28% of a typical
@@ -265,12 +308,11 @@ class EuropePMCProvider:
                 wanted.append(doi)
 
         abstracts: dict[str, str] = {}
-        client = await get_shared_client()
         for i in range(0, len(wanted), self.ABSTRACT_BATCH_SIZE):
             chunk = wanted[i:i + self.ABSTRACT_BATCH_SIZE]
             query = " OR ".join(f'DOI:"{_escape_query_value(d)}"' for d in chunk)
             try:
-                response = await client.get(
+                response = await self._get(
                     f"{self.base_url}/search",
                     params={
                         "query": query,
@@ -283,6 +325,8 @@ class EuropePMCProvider:
                 data = response.json()
             except Exception as e:
                 logger.warning("Europe PMC abstract batch failed for %d DOIs: %s", len(chunk), e)
+                if on_failure is not None:
+                    on_failure(len(chunk))
                 continue
 
             for item in ((data.get("resultList") or {}).get("result") or []):
