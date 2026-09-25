@@ -225,6 +225,65 @@ async def recover_technical_evidence(run_id: str, paper_id: str):
     return {"technical_evidence": recovered or current, "fetched": True, "checked": True}
 
 
+# One diagram at a time. Reading one is about five seconds of CPU on a box
+# shared with four other services, and several opened at once would slow all of
+# them without finishing any sooner.
+_diagram_gate = asyncio.Semaphore(1)
+
+
+@router.post("/runs/{run_id}/flow-diagram")
+async def read_paper_flow_diagram(run_id: str, paper_id: str):
+    """Read a trial's CONSORT participant-flow diagram for its stage counts.
+
+    Returns screened, enrolled, randomised and analysed as the diagram states
+    them. On 42 held-out diagrams this was right for 61 of 69 stated enrolled,
+    randomised and analysed counts, against 2 of 69 for the abstract text method
+    (thesis Section 6.14). It runs when a user asks, not in the run, because it
+    is CPU-heavy, and the outcome is saved into the run so a paper is read once.
+
+    The counts are shown beside the text extraction rather than replacing it,
+    so a run's weights and rankings stay those it was computed with.
+    """
+    from citegraph.vision.figures import find_flow_diagram
+
+    result = await _load_result(run_id)
+    paper = next((p for p in result.papers if p.paper_id == paper_id), None)
+    if paper is None:
+        raise HTTPException(status_code=404, detail="Paper not in this run")
+    if "flow_diagram" in paper.provenance:
+        return {"flow_diagram": paper.provenance["flow_diagram"], "fetched": False}
+
+    pmcid = paper.pmcid
+    if not pmcid and paper.doi:
+        from citegraph.utils.ids import IdCanonicalizer
+        found = await orchestrator.europe_pmc.find_open_access_pmcids_by_doi([paper.doi])
+        pmcid = found.get(IdCanonicalizer.canonicalize(paper.doi))
+
+    record: dict = {"found": False, "pmcid": pmcid,
+                    "checked_at": datetime.now(timezone.utc).isoformat()}
+    figure = await find_flow_diagram(pmcid) if pmcid else None
+    if figure is not None:
+        from citegraph.vision.flow_diagram import read_flow_diagram
+        async with _diagram_gate:
+            reading = await asyncio.to_thread(read_flow_diagram, figure.image)
+        record.update({
+            "found": reading.is_flow,
+            "caption": figure.caption,
+            "image_source": figure.source,
+            **reading.as_dict(),
+            "evidence": reading.evidence,
+            "seconds": round(reading.seconds, 1),
+        })
+
+    async with _result_lock(run_id):
+        latest = await _load_result(run_id)
+        for stored in latest.papers:
+            if stored.paper_id == paper_id:
+                stored.provenance["flow_diagram"] = record
+        await store.save_result(run_id, latest)
+    return {"flow_diagram": record, "fetched": True}
+
+
 def _attachment(content: str, media_type: str, run_id: str, extension: str,
                 *, bom: bool = False) -> Response:
     """Return export content as a real downloadable file.

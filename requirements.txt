@@ -24,3 +24,11 @@ pytest
 pytest-asyncio
 respx
 rich
+
+# Reading participant-flow (CONSORT) diagrams, see src/citegraph/vision/.
+# RapidOCR is PP-OCR exported to ONNX: CPU only, no torch, models inside the
+# wheel. It declares opencv-python; the Dockerfile swaps that for the headless
+# build, which ships the same cv2 module without GUI libraries.
+rapidocr>=3.9,<4
+onnxruntime>=1.20,<2
+opencv-python-headless>=4.9,<5

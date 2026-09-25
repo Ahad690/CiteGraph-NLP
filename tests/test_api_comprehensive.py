@@ -1206,3 +1206,57 @@ class TestOnDemandTechnicalEvidence:
         used = {node.attr for node in ast.walk(tree) if isinstance(node, ast.Attribute)}
         assert "recover_technical_from_full_text" not in used
         assert "arxiv_full_text" not in used
+
+
+class TestFlowDiagramEndpoint:
+    """The reader runs on request, is saved into the run, and is not repeated."""
+
+    async def _seed(self, run_id):
+        result = _build_completed_result(run_id)
+        result.papers[0].pmcid = "PMC1234567"
+        await store.create_run(run_id)
+        await store.save_result(run_id, result)
+
+    def _patch(self, monkeypatch, figure):
+        from citegraph.vision import figures, flow_diagram
+        calls = []
+
+        async def fake_find(pmcid):
+            calls.append(pmcid)
+            return figure
+
+        def fake_read(image):
+            return flow_diagram.FlowReading(screened=150, randomised=137, analysed=137, seconds=4.2)
+
+        monkeypatch.setattr(figures, "find_flow_diagram", fake_find)
+        monkeypatch.setattr(flow_diagram, "read_flow_diagram", fake_read)
+        return calls
+
+    async def test_reads_and_saves_into_the_run(self, client, monkeypatch):
+        from citegraph.vision.figures import FlowFigure
+        await self._seed("flow-run")
+        calls = self._patch(monkeypatch, FlowFigure("PMC1234567", "CONSORT flow", b"img", "s3://x"))
+
+        response = await client.post("/api/runs/flow-run/flow-diagram", params={"paper_id": "P_SEED"})
+        assert response.status_code == 200, response.text
+        record = response.json()["flow_diagram"]
+        assert (record["found"], record["randomised"], record["analysed"]) == (True, 137, 137)
+
+        stored = (await client.get("/api/runs/flow-run")).json()
+        assert stored["papers"][0]["provenance"]["flow_diagram"]["screened"] == 150
+
+        again = await client.post("/api/runs/flow-run/flow-diagram", params={"paper_id": "P_SEED"})
+        assert again.json()["fetched"] is False
+        assert calls == ["PMC1234567"], "a diagram is read once per paper"
+
+    async def test_no_diagram_is_recorded_as_not_found(self, client, monkeypatch):
+        await self._seed("flow-none")
+        self._patch(monkeypatch, None)
+        response = await client.post("/api/runs/flow-none/flow-diagram", params={"paper_id": "P_SEED"})
+        assert response.json()["flow_diagram"]["found"] is False
+
+    async def test_unknown_paper_is_404(self, client, monkeypatch):
+        await self._seed("flow-404")
+        self._patch(monkeypatch, None)
+        response = await client.post("/api/runs/flow-404/flow-diagram", params={"paper_id": "NOPE"})
+        assert response.status_code == 404

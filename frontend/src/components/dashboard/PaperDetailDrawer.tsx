@@ -6,7 +6,14 @@ import type { Paper, RunResult } from "@/types/api";
 import { ConfidenceBadge } from "../ui-kit/ConfidenceBadge";
 import { RoleBadge } from "../ui-kit/RoleBadge";
 import { formatNumber, formatAuthors, getPopulationForPaper, getEdgesForPaper } from "@/lib/formatters";
-import { isBackendDemo, recoverTechnicalEvidence } from "@/lib/api";
+import { isBackendDemo, readFlowDiagram, recoverTechnicalEvidence, type FlowDiagramRecord } from "@/lib/api";
+
+const FLOW_STAGES = [
+  ["screened", "Screened"],
+  ["enrolled", "Enrolled"],
+  ["randomised", "Randomised"],
+  ["analysed", "Analysed"],
+] as const;
 
 interface Props {
   paper: Paper | null;
@@ -21,6 +28,7 @@ interface FullTextRecord {
 export function PaperDetailDrawer({ paper, run, onClose }: Props) {
   const queryClient = useQueryClient();
   const [readingFullText, setReadingFullText] = useState(false);
+  const [readingFlow, setReadingFlow] = useState(false);
 
   const technical = paper
     ? run.technical_evidence.find((item) => item.paper_id === paper.paper_id)
@@ -58,6 +66,21 @@ export function PaperDetailDrawer({ paper, run, onClose }: Props) {
   const edges = getEdgesForPaper(run, paper.paper_id);
   const doiLink = paper.provenance?.doi_link as { status?: string } | undefined;
   const doiBroken = doiLink?.status === "not_found";
+
+  // Clinical papers only: a computer-science paper has no participant flow.
+  const flow = paper.provenance?.flow_diagram as FlowDiagramRecord | undefined;
+  const canReadFlow = !technical && (!!paper.pmcid || !!paper.doi) && !isBackendDemo(run);
+  const readFlow = async () => {
+    setReadingFlow(true);
+    try {
+      await readFlowDiagram(run.run_id, paper.paper_id);
+      await queryClient.invalidateQueries({ queryKey: ["run", run.run_id] });
+    } catch {
+      toast.error("Could not read the flow diagram for this paper");
+    } finally {
+      setReadingFlow(false);
+    }
+  };
 
   const copy = (text: string, label: string) => {
     navigator.clipboard?.writeText(text)
@@ -171,6 +194,52 @@ export function PaperDetailDrawer({ paper, run, onClose }: Props) {
               {population.semantic_type && <div className="text-xs text-text-muted font-mono">{population.semantic_type}</div>}
               {population.evidence && <p className="text-xs text-text-secondary italic mt-2 leading-relaxed">"{population.evidence}"</p>}
               {population.explanation && <p className="text-xs text-text-muted mt-2">{population.explanation}</p>}
+            </div>
+          )}
+
+          {canReadFlow && (
+            <div className="rounded-2xl border border-border bg-surface-strong/50 p-4 space-y-3">
+              <div className="label-tiny">Participant-flow diagram</div>
+              {flow?.found ? (
+                <>
+                  <div className="grid grid-cols-4 gap-2">
+                    {FLOW_STAGES.map(([key, label]) => (
+                      <div key={key} className="rounded-lg bg-surface-hover/40 border border-border px-2 py-1.5">
+                        <div className="text-[10px] uppercase tracking-wider text-text-muted">{label}</div>
+                        <div className="text-sm font-semibold text-text-primary">{formatNumber(flow[key] ?? null)}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-text-muted">
+                    Read from the trial's CONSORT diagram, where each count's position in the flow
+                    says which stage it is. The abstract-based figure above is kept unchanged.
+                  </p>
+                  {flow.image_source && (
+                    <a href={flow.image_source} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs text-indigo hover:underline">
+                      View the diagram <ExternalLink className="h-3 w-3" />
+                    </a>
+                  )}
+                </>
+              ) : flow ? (
+                <p className="text-xs text-text-muted">
+                  No participant-flow diagram was found in this paper's open-access full text.
+                </p>
+              ) : (
+                <>
+                  <p className="text-xs text-text-muted">
+                    Many trials publish a CONSORT flow diagram stating how many were screened,
+                    randomised and analysed. Reading it takes about five seconds.
+                  </p>
+                  <button
+                    onClick={readFlow}
+                    disabled={readingFlow}
+                    className="w-full h-9 rounded-xl bg-surface-hover/60 border border-border hover:bg-surface-hover text-xs font-semibold text-text-primary disabled:opacity-60 inline-flex items-center justify-center gap-2"
+                  >
+                    {readingFlow && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                    {readingFlow ? "Reading the diagram…" : "Read the participant-flow diagram"}
+                  </button>
+                </>
+              )}
             </div>
           )}
 

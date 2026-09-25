@@ -202,3 +202,4 @@ thesis/figures/_dot/
 # Flow-diagram images for the vision tester. Licences vary per article, so
 # only the manifest (thesis/evidence/flow_diagrams/) is tracked.
 data/flow_diagrams/
+data/flow_diagrams_heldout/

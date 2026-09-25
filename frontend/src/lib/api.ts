@@ -108,6 +108,31 @@ export async function recoverTechnicalEvidence(runId: string, paperId: string): 
   return (await res.json()) as TechnicalRecovery;
 }
 
+export interface FlowDiagramRecord {
+  found: boolean;
+  pmcid?: string | null;
+  caption?: string;
+  image_source?: string;
+  screened?: number | null;
+  enrolled?: number | null;
+  randomised?: number | null;
+  analysed?: number | null;
+  seconds?: number;
+}
+
+/** Read a trial's CONSORT participant-flow diagram for its stage counts.
+ *  CPU-heavy (about 5 s on the server), so it runs only when asked; the server
+ *  saves the outcome into the run and never reads the same paper twice. */
+export async function readFlowDiagram(runId: string, paperId: string): Promise<FlowDiagramRecord> {
+  const params = new URLSearchParams({ paper_id: paperId });
+  const res = await fetch(
+    `${API_BASE}/api/runs/${encodeURIComponent(runId)}/flow-diagram?${params}`,
+    { method: "POST", headers: { Accept: "application/json" } },
+  );
+  if (!res.ok) throw new ApiError(`Request failed (${res.status})`, res.status);
+  return ((await res.json()) as { flow_diagram: FlowDiagramRecord }).flow_diagram;
+}
+
 export async function downloadExport(runId: string, format: ExportFormat): Promise<void> {
   const res = await fetch(`${API_BASE}/api/runs/${encodeURIComponent(runId)}/export/${format}`);
   if (!res.ok) throw new ApiError(`Export failed (${res.status})`, res.status);
