@@ -2,7 +2,7 @@
   "annotator": "Claude (AI assistant), reading each image, annotated before any reader code existed; to be spot-checked by the project team before the thesis cites results",
   "definitions": {
     "screened": "number assessed for eligibility or screened (top of the flow); null if the diagram gives no number",
-    "enrolled": "number stated as enrolled or included, when shown separately from screening and randomisation",
+    "enrolled": "number stated as enrolled, included, recruited, or as having met or fulfilled the inclusion criteria, when shown as its own stage; 'qualified' or 'eligible' alone count as screening, not enrolment",
     "randomised": "number randomised; if no randomised box, the sum of the allocated arms",
     "analysed": "total analysed in the first-listed (usually intention-to-treat) analysis, summed across arms",
     "is_participant_flow": "false when the figure is some other kind of flowchart with no participant counts",
@@ -139,10 +139,10 @@
       "split": "test",
       "is_participant_flow": true,
       "screened": 579,
-      "enrolled": null,
+      "enrolled": 550,
       "randomised": 185,
       "analysed": 185,
-      "notes": "'Referred (n=1529)' sits above 'Consented and screened (n=579)'; 'Passed run-in and randomised (n=185)'; single pooled analysis box."
+      "notes": "'Referred (n=1529)' sits above 'Consented and screened (n=579)'; 'Passed run-in and randomised (n=185)'; single pooled analysis box. Enrolled set to 550 ('Met screening inclusion criteria') for consistency with the enrolled rule, corrected before any reader existed."
     },
     "PMC11687045": {
       "split": "test",
@@ -289,10 +289,10 @@
       "split": "dev",
       "is_participant_flow": true,
       "screened": null,
-      "enrolled": 103,
+      "enrolled": null,
       "randomised": 103,
       "analysed": null,
-      "notes": "No randomised box; groups 52+51 so randomised = sum of arms; top box is the participating cohort; no analysis counts."
+      "notes": "No randomised box; groups 52+51 so randomised = sum of arms; top box is the participating cohort; no analysis counts. Enrolled corrected to null: 'completed an entrance exam' is not enrolment under the definition (dev set)."
     },
     "PMC11681668": {
       "split": "dev",
