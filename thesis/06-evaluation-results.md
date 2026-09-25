@@ -57,7 +57,7 @@ nothing.
 
 The limitations stated in Sections 3.5.4 and 3.5.5 apply throughout: single
 annotator who is also a system author, no inter-annotator agreement,
-twenty papers, abstracts only, biomedical concentration.
+twenty papers annotated from abstracts only, biomedical concentration.
 
 ## 6.2 Metadata Resolution
 

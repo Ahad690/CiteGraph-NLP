@@ -45,19 +45,19 @@ font size and its total width, and enlarging the font enlarges the boxes by
 the same proportion. Narrowing the graph is therefore the only lever
 available.
 
-**Collapsing modules to packages** (Figure 4.1). The raw output has 46 module
-nodes and 83 import edges, and at page width its labels render at roughly
-three points. Collapsing each module to its package leaves 13 nodes and 38
+**Collapsing modules to packages** (Figure 4.1). The raw output has 52 module
+nodes and 94 import edges, and at page width its labels render at roughly
+three points. Collapsing each module to its package leaves 14 nodes and 40
 edges, and carries the discarded detail as edge thickness rather than losing
 it.
 
 **Filtering unrelated classes** (Figure 4.2). `pyreverse` draws every class it
-finds, including the 15 that take part in no association or inheritance
-relationship. Those 15 occupy a full column of the canvas and contribute no
+finds, including the 19 that take part in no association or inheritance
+relationship. Those 19 occupy a full column of the canvas and contribute no
 structure, so they are dropped from the chapter figure. Plate H.2 below
 retains them.
 
-**Splitting the data model** (Figures 4.3 and 4.4). Seven entities carrying 63
+**Splitting the data model** (Figures 4.3 and 4.4). Seven entities carrying 67
 fields do not fit one page at a readable size in any orientation. The chapter
 uses two overlapping views, one per half of the pipeline, with `Paper`,
 `Study` and `PopulationResolution` appearing in both because they are the
@@ -82,7 +82,7 @@ loss.](figures/classes_full.svg){width=100%}
 
 \newpage
 
-![**Plate H.3** The complete call graph from `code2flow`: 105 functions and
+![**Plate H.3** The complete call graph from `code2flow`: 144 functions and
 every call between them, grouped by file and class. Figure 5.1 is the subgraph
 reachable from `PipelineOrchestrator.run()` within two
 levels.](figures/callgraph_full.svg){width=88%}

@@ -126,9 +126,12 @@ citations to depth 2. Three metadata providers: OpenAlex, Crossref, Europe PMC.
 
 **Explicitly out of scope.**
 
-- *Full-text parsing.* The project proposal specified GROBID [lopez2009grobid]
-  for PDF structure extraction. This was not implemented. The system reads
-  abstracts only. Section 7.4 discusses the consequence.
+- *General full-text parsing.* The project proposal specified GROBID
+  [lopez2009grobid] for PDF structure extraction. This was not implemented.
+  Extraction runs on abstracts, with one narrow fallback: when an abstract
+  states no population and Europe PMC holds the paper as open access, the
+  Methods and Results sections of its structured XML are read instead
+  (Section 5.2). Section 7.4 discusses the consequence.
 - *Exhaustive citation retrieval.* A heavily cited paper may have tens of
   thousands of citing works; the system samples the most-cited subset within
   its paper budget. It does not claim completeness.

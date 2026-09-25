@@ -39,7 +39,7 @@ back by the dashboard and the export endpoints.
 ```
 
 ![**Figure 4.1** Inter-package dependencies, produced by running `pyreverse`
-over `src/citegraph` and collapsing its 46 module nodes to the 13 packages
+over `src/citegraph` and collapsing its 52 module nodes to the 14 packages
 they belong to. Each arrow stands for one or more imports and is drawn
 thicker the more imports it carries. The heaviest arrows run downward into
 `models`, which holds the Pydantic types every other package
@@ -49,13 +49,15 @@ The figure is generated rather than drawn, so it shows what the code imports
 rather than what the design intended. Two properties are worth reading off it.
 Nothing below `pipeline` imports anything above it, so the layering claimed in
 Section 4.1.1 holds in the import graph and not only in prose. And `providers`
-is reached from `citations`, `metadata` and `pipeline` but reaches back to
-nothing except `models` and `config`, which is what makes the Europe PMC
+is reached from `api`, `citations`, `metadata`, `pipeline` and `vision` but
+reaches back only to `models`, `config` and `utils`, which is what makes the
+Europe PMC
 backfill of Section 4.4.3 a local change.
 
 ![**Figure 4.2** Object composition among the classes that participate in a
-relationship, from `pyreverse` with the 15 unrelated classes removed.
-`PipelineOrchestrator` composes eight collaborators, one per stage; edge
+relationship, from `pyreverse` with the 19 unrelated classes removed.
+`PipelineOrchestrator` composes ten collaborators, the stage modules and the
+two providers it calls directly; edge
 labels are the attribute names the orchestrator stores them
 under.](figures/classes_core.svg){width=95%}
 

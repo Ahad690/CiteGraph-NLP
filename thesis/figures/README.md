@@ -17,7 +17,7 @@ Needs `pylint` (which supplies `pyreverse`), `code2flow`, and the Graphviz
 
 | Figure | Subject | File | Derived from |
 |--------|---------|------|--------------|
-| **4.1** | Inter-package dependencies | `architecture_packages.svg` | `pyreverse`, 46 modules collapsed to 13 packages |
+| **4.1** | Inter-package dependencies | `architecture_packages.svg` | `pyreverse`, 52 modules collapsed to 14 packages |
 | **4.2** | Object composition | `classes_core.svg` | `pyreverse -k`, connected classes only |
 | **4.3** | Data model, query to population | `datamodel_extraction.svg` | Pydantic `model_fields` introspection |
 | **4.4** | Data model, population to result | `datamodel_graph.svg` | Pydantic `model_fields` introspection |

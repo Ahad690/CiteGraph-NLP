@@ -97,8 +97,10 @@ accuracy of 60% shows that distinguishing *randomised* from *enrolled* from
 *analysed* is not solved by surface patterns. A systematic review produced a
 confident false positive. Twenty-eight per cent of papers in a typical graph
 carry no abstract in the primary metadata source at all, and a second provider
-had to be queried to recover them. Full-text parsing, specified in the project
-proposal, was not implemented; the system reads abstracts only.
+had to be queried to recover them. The PDF parsing specified in the project
+proposal was not built. The system extracts from abstracts and reads
+open-access full text only as a fallback, when an abstract states no
+population, and that fallback has not been scored against a gold standard.
 
 **Keywords:** citation analysis, knowledge graphs, information extraction,
 biomedical NLP, PageRank, evidence synthesis, scholarly APIs

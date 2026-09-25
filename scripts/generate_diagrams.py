@@ -15,9 +15,9 @@ Three post-processing steps exist because the raw tool output is unreadable at
 A4 width. Legibility at a fixed page width depends only on the ratio of font
 size to graph width, so the only way to make a figure readable is to narrow it:
 
-  collapse   46 module nodes become 13 package nodes, with each edge weighted
+  collapse   52 module nodes become 14 package nodes, with each edge weighted
              by the number of imports it stands for
-  filter     the 18 classes that take part in a relationship are kept and the
+  filter     the 22 classes that take part in a relationship are kept and the
              ones pyreverse draws floating are dropped
   relayout   rankdir=LR turns a 2435pt-wide strip into an 827pt portrait block
 
@@ -206,7 +206,7 @@ def _models() -> dict:
 def data_model(names: tuple = (), rankdir: str = "LR") -> str:
     """Render an ER view over `names`, or over every entity when empty.
 
-    Seven entities carrying 63 fields will not fit one page legibly, so the
+    Seven entities carrying 67 fields will not fit one page legibly, so the
     chapter uses two views that each cover one half of the pipeline and the
     appendix carries the combined plate.
     """

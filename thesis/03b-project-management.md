@@ -58,7 +58,7 @@ Risks identified during planning, with what actually happened.
 |------|--------------------|---------|
 | Scholarly APIs rate-limit or block the client | Honour polite-pool conventions; identify the caller | Did not materialise. Polite-pool identification also improved latency (§C.1) |
 | Reference-list coverage is incomplete | Query several providers and merge | **Materialised, worse than expected.** Crossref holds no reference list for many works; the mitigation was necessary rather than precautionary (§5.3) |
-| Full-text access is legally constrained | Restrict to abstracts | Materialised as predicted by the feasibility study; abstract-only scope adopted from the outset |
+| Full-text access is legally constrained | Restrict to abstracts | Materialised as predicted by the feasibility study; abstract-only scope adopted from the outset, with a fallback to open-access XML full text added later (§5.2) |
 | Population extraction is too inaccurate to be useful | Pattern-based approach with confidence scoring | Partially materialised: detection is strong, **type classification and confidence calibration are not** (§6.4) |
 | A single provider becomes unavailable | Provider toggles; degrade rather than abort | Not triggered in practice; the degradation path is implemented and tested |
 | Graph algorithms do not scale | Bound the graph size | Over-mitigated. Analytics are 2.5% of runtime (§6.6.1); the real cost was network I/O |

@@ -97,8 +97,10 @@ accuracy of 60% shows that distinguishing *randomised* from *enrolled* from
 *analysed* is not solved by surface patterns. A systematic review produced a
 confident false positive. Twenty-eight per cent of papers in a typical graph
 carry no abstract in the primary metadata source at all, and a second provider
-had to be queried to recover them. Full-text parsing, specified in the project
-proposal, was not implemented; the system reads abstracts only.
+had to be queried to recover them. The PDF parsing specified in the project
+proposal was not built. The system extracts from abstracts and reads
+open-access full text only as a fallback, when an abstract states no
+population, and that fallback has not been scored against a gold standard.
 
 **Keywords:** citation analysis, knowledge graphs, information extraction,
 biomedical NLP, PageRank, evidence synthesis, scholarly APIs
@@ -322,9 +324,12 @@ citations to depth 2. Three metadata providers: OpenAlex, Crossref, Europe PMC.
 
 **Explicitly out of scope.**
 
-- *Full-text parsing.* The project proposal specified GROBID [lopez2009grobid]
-  for PDF structure extraction. This was not implemented. The system reads
-  abstracts only. Section 7.4 discusses the consequence.
+- *General full-text parsing.* The project proposal specified GROBID
+  [lopez2009grobid] for PDF structure extraction. This was not implemented.
+  Extraction runs on abstracts, with one narrow fallback: when an abstract
+  states no population and Europe PMC holds the paper as open access, the
+  Methods and Results sections of its structured XML are read instead
+  (Section 5.2). Section 7.4 discusses the consequence.
 - *Exhaustive citation retrieval.* A heavily cited paper may have tens of
   thousands of citing works; the system samples the most-cited subset within
   its paper budget. It does not claim completeness.
@@ -676,8 +681,9 @@ judged the difficulty of each independently. Its conclusion on full-text
 parsing was the decisive one: obtaining legal full text at scale is gated by
 open-access status rather than by parsing capability, and a pipeline that
 depends on full text will fail for a large fraction of inputs regardless of how
-good its parser is. The delivered system reads abstracts only, and Chapter 6
-quantifies what that costs.
+good its parser is. The delivered system therefore extracts from abstracts,
+turning to full text only where Europe PMC holds it openly as structured XML
+(Section 5.2), and Chapter 6 quantifies what that costs.
 
 ## 3.2 Functional Requirements
 
@@ -867,9 +873,11 @@ Chapter 6.
   This is the most serious limitation; Section 7.3 discusses it.
 - **Small sample.** Twenty papers, eleven positive. Interval estimates are
   correspondingly wide.
-- **Abstracts only.** Sample sizes stated solely in a full-text Methods section
-  are out of scope. This matches what the pipeline reads, so the evaluation is
-  fair to the system as built, but it does not measure the task in general.
+- **Abstracts only.** The gold standard is annotated from abstracts, so sample
+  sizes stated solely in a Methods section are out of scope. The evaluation is
+  fair to the abstract extractor but does not measure the task in general, and
+  it does not measure the pipeline's open-access full-text fallback (Section
+  5.2) at all.
 - **Domain concentration.** The positives are biomedical. Performance on other
   literatures is not measured and should not be assumed.
 
@@ -951,7 +959,7 @@ Risks identified during planning, with what actually happened.
 |------|--------------------|---------|
 | Scholarly APIs rate-limit or block the client | Honour polite-pool conventions; identify the caller | Did not materialise. Polite-pool identification also improved latency (§C.1) |
 | Reference-list coverage is incomplete | Query several providers and merge | **Materialised, worse than expected.** Crossref holds no reference list for many works; the mitigation was necessary rather than precautionary (§5.3) |
-| Full-text access is legally constrained | Restrict to abstracts | Materialised as predicted by the feasibility study; abstract-only scope adopted from the outset |
+| Full-text access is legally constrained | Restrict to abstracts | Materialised as predicted by the feasibility study; abstract-only scope adopted from the outset, with a fallback to open-access XML full text added later (§5.2) |
 | Population extraction is too inaccurate to be useful | Pattern-based approach with confidence scoring | Partially materialised: detection is strong, **type classification and confidence calibration are not** (§6.4) |
 | A single provider becomes unavailable | Provider toggles; degrade rather than abort | Not triggered in practice; the degradation path is implemented and tested |
 | Graph algorithms do not scale | Bound the graph size | Over-mitigated. Analytics are 2.5% of runtime (§6.6.1); the real cost was network I/O |
@@ -1048,7 +1056,7 @@ back by the dashboard and the export endpoints.
 ```
 
 ![**Figure 4.1** Inter-package dependencies, produced by running `pyreverse`
-over `src/citegraph` and collapsing its 46 module nodes to the 13 packages
+over `src/citegraph` and collapsing its 52 module nodes to the 14 packages
 they belong to. Each arrow stands for one or more imports and is drawn
 thicker the more imports it carries. The heaviest arrows run downward into
 `models`, which holds the Pydantic types every other package
@@ -1058,13 +1066,15 @@ The figure is generated rather than drawn, so it shows what the code imports
 rather than what the design intended. Two properties are worth reading off it.
 Nothing below `pipeline` imports anything above it, so the layering claimed in
 Section 4.1.1 holds in the import graph and not only in prose. And `providers`
-is reached from `citations`, `metadata` and `pipeline` but reaches back to
-nothing except `models` and `config`, which is what makes the Europe PMC
+is reached from `api`, `citations`, `metadata`, `pipeline` and `vision` but
+reaches back only to `models`, `config` and `utils`, which is what makes the
+Europe PMC
 backfill of Section 4.4.3 a local change.
 
 ![**Figure 4.2** Object composition among the classes that participate in a
-relationship, from `pyreverse` with the 15 unrelated classes removed.
-`PipelineOrchestrator` composes eight collaborators, one per stage; edge
+relationship, from `pyreverse` with the 19 unrelated classes removed.
+`PipelineOrchestrator` composes ten collaborators, the stage modules and the
+two providers it calls directly; edge
 labels are the attribute names the orchestrator stores them
 under.](figures/classes_core.svg){width=95%}
 
@@ -1780,11 +1790,23 @@ for 2.5% of runtime. Neo4j appears in the configuration but is not implemented.
 
 ## 5.2 Pipeline Orchestration
 
-The orchestrator executes nine stages in sequence: normalise input, resolve
+The orchestrator executes ten stages in sequence: normalise input, resolve
 seed, traverse citations, backfill abstracts, extract populations, resolve
-populations, weight edges, build graph, run analytics. Each stage is a separate
-module; the orchestrator holds no domain logic beyond sequencing and the
-assembly of warnings.
+populations, recover populations from full text, weight edges, build graph, run
+analytics. Each stage is a separate module; the orchestrator holds no domain
+logic beyond sequencing and the assembly of warnings.
+
+The full-text stage runs only for papers whose abstract gave no population. For
+each one that Europe PMC holds as open access, it fetches the article's JATS
+XML, keeps the sections headed as Methods or Results, and runs the same
+extractor over them, capped at 250,000 characters a paper. A candidate is kept
+only when its sentence contains a participant term such as *patients*,
+*randomised* or *enrolled*. In the repeated 100-paper run of Section 6.6.6 this
+stage supplied a population for 9 papers. It has unit tests, but unlike
+abstract extraction it has not been scored against a gold standard. Two
+further readers, one for dataset sizes in computer-science papers on arXiv and
+the flow-diagram reader of Section 6.14, run only when a user asks for them
+from the dashboard, so neither is part of a run.
 
 ![**Figure 5.1** Calls made by `PipelineOrchestrator.run()`, traced by
 `code2flow` over the source and cut two levels below the entry point. Node
@@ -1797,10 +1819,11 @@ turn sit at the right.](figures/callgraph_pipeline.svg){width=62%}
 Reading the figure against the stage list above shows one structural property
 worth stating: `run()` calls each stage directly and no stage calls another.
 Sequencing lives in one function, so a stage can be reordered or removed by
-editing `run()` alone. The single exception is `_backfill_abstracts()`, which
-`run()` delegates to and which in turn calls the Europe PMC provider; it was
-added as a separate method rather than inline because it is the one stage that
-is skipped entirely when every abstract is already present.
+editing `run()` alone. The two exceptions are `_backfill_abstracts()` and
+`_recover_from_full_text()`, which `run()` delegates to and which in turn call
+the Europe PMC provider. Both are separate methods rather than inline code
+because both are conditional: the first is skipped when every abstract is
+present, the second when every paper already has a population.
 
 Runs execute as background tasks. A `POST` returns a run identifier
 immediately, and the client polls. This is necessary because runs take tens of
@@ -2312,7 +2335,7 @@ nothing.
 
 The limitations stated in Sections 3.5.4 and 3.5.5 apply throughout: single
 annotator who is also a system author, no inter-annotator agreement,
-twenty papers, abstracts only, biomedical concentration.
+twenty papers annotated from abstracts only, biomedical concentration.
 
 ## 6.2 Metadata Resolution
 
@@ -3234,7 +3257,7 @@ are listed here rather than omitted.
 
 | Specified | Delivered | Consequence |
 |-----------|-----------|-------------|
-| GROBID full-text PDF parsing | Configuration flags only; no implementation | Extraction is abstract-only. Sample sizes stated only in Methods are unreachable. This is the largest functional shortfall. |
+| GROBID full-text PDF parsing | Configuration flags only; no implementation | Extraction reads abstracts, and full text only for open-access papers in Europe PMC whose abstract gave no population. For every other paper a sample size stated only in Methods is unreachable, and the fallback itself is unmeasured. This is the largest functional shortfall. |
 | Neo4j study-aware graph store | NetworkX in-memory | No practical consequence at 200 nodes; §6.6 supports the choice |
 | Study-aware knowledge graph | One-to-one paper→study mapping, `dedupe_confidence` hardcoded to 0.8 | Papers reporting the same trial are counted as independent evidence |
 | Streamlit dashboard | Not implemented; React SPA delivered instead | None, the React dashboard supersedes it |
@@ -3270,9 +3293,11 @@ Issues present in the delivered system and not resolved:
 
 All data is retrieved from public APIs under their published terms. The
 OpenAlex polite-pool convention is honoured by sending a contact address. No
-paywalled content is retrieved or redistributed, which is a consequence of the
-abstract-only scope: the legal question that made full text difficult is the
-same one that keeps the system within bounds.
+paywalled content is retrieved or redistributed. The only full text the
+system reads is Europe PMC's open-access subset and arXiv preprints, and the
+only figures are flow diagrams from the PMC open-access collection, which it
+reads for their counts but does not republish. Restricting every source to open
+access is what keeps the system within bounds.
 
 Two risks deserve statement. First, **misplaced authority**: a ranked list
 presented by software invites more confidence than a heuristic deserves. The
@@ -3346,7 +3371,8 @@ specified and what had been left unimplemented.
 The system's honest standing is therefore this. It is a working prototype that
 demonstrates the *feasibility* of evidence-weighted citation analysis and
 characterises its constraints with measured evidence. It is not a validated
-instrument for evidence appraisal, it does not read full text, and its
+instrument for evidence appraisal, it reads full text only as an unmeasured
+fallback for open-access papers, and its
 uncertainty signalling is weaker than its interface implies.
 
 ## 8.2 Future Work
@@ -3391,10 +3417,14 @@ provides.
 ### 8.2.5 Full-text extraction
 
 The largest functional gap against the proposal (§7.4). Sample sizes often
-appear only in a Methods section. Europe PMC provides open-access full text,
-and GROBID [lopez2009grobid] is already anticipated in the configuration.
-Unpaywall [martin2021oadoi] would determine which articles are legally
-retrievable, keeping the system within the bounds §7.6 describes.
+appear only in a Methods section. The pipeline already reads the Methods and
+Results of open-access papers in Europe PMC when their abstract states no
+population, but that fallback has never been scored. The first step is to add
+papers whose population appears only in the full text to the gold standard and
+measure it. Beyond Europe PMC, GROBID [lopez2009grobid] is anticipated in the
+configuration for PDFs, and Unpaywall [martin2021oadoi] would determine which
+of them are legally retrievable, keeping the system within the bounds §7.6
+describes.
 
 ### 8.2.6 Study-level deduplication
 
@@ -3623,7 +3653,7 @@ recommends 100 or below: 200 takes around 3.5 minutes and exceeds NFR-1.
 |---------|----------|---------|-------|
 | `data_dir` | `DATA_DIR` | `./data` | |
 | `sqlite_path` | `SQLITE_PATH` | `./data/cache/citegraph.sqlite` | Run persistence |
-| `enable_grobid` | `ENABLE_GROBID` | `true` | **Flag only; no PDF parsing is implemented** (§7.4) |
+| `enable_grobid` | `ENABLE_GROBID` | `true` | **Flag only; GROBID is never called** (§7.4) |
 | `grobid_url` | `GROBID_URL` | `http://localhost:8070` | Unused |
 | `enable_neo4j` | `ENABLE_NEO4J` | `false` | **Flag only; no Neo4j integration is implemented** |
 | `neo4j_uri` / `neo4j_user` | n/a | n/a | Unused |
@@ -4490,19 +4520,19 @@ font size and its total width, and enlarging the font enlarges the boxes by
 the same proportion. Narrowing the graph is therefore the only lever
 available.
 
-**Collapsing modules to packages** (Figure 4.1). The raw output has 46 module
-nodes and 83 import edges, and at page width its labels render at roughly
-three points. Collapsing each module to its package leaves 13 nodes and 38
+**Collapsing modules to packages** (Figure 4.1). The raw output has 52 module
+nodes and 94 import edges, and at page width its labels render at roughly
+three points. Collapsing each module to its package leaves 14 nodes and 40
 edges, and carries the discarded detail as edge thickness rather than losing
 it.
 
 **Filtering unrelated classes** (Figure 4.2). `pyreverse` draws every class it
-finds, including the 15 that take part in no association or inheritance
-relationship. Those 15 occupy a full column of the canvas and contribute no
+finds, including the 19 that take part in no association or inheritance
+relationship. Those 19 occupy a full column of the canvas and contribute no
 structure, so they are dropped from the chapter figure. Plate H.2 below
 retains them.
 
-**Splitting the data model** (Figures 4.3 and 4.4). Seven entities carrying 63
+**Splitting the data model** (Figures 4.3 and 4.4). Seven entities carrying 67
 fields do not fit one page at a readable size in any orientation. The chapter
 uses two overlapping views, one per half of the pipeline, with `Paper`,
 `Study` and `PopulationResolution` appearing in both because they are the
@@ -4527,7 +4557,7 @@ loss.](figures/classes_full.svg){width=100%}
 
 \newpage
 
-![**Plate H.3** The complete call graph from `code2flow`: 105 functions and
+![**Plate H.3** The complete call graph from `code2flow`: 144 functions and
 every call between them, grouped by file and class. Figure 5.1 is the subgraph
 reachable from `PipelineOrchestrator.run()` within two
 levels.](figures/callgraph_full.svg){width=88%}

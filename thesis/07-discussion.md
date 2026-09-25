@@ -153,7 +153,7 @@ are listed here rather than omitted.
 
 | Specified | Delivered | Consequence |
 |-----------|-----------|-------------|
-| GROBID full-text PDF parsing | Configuration flags only; no implementation | Extraction is abstract-only. Sample sizes stated only in Methods are unreachable. This is the largest functional shortfall. |
+| GROBID full-text PDF parsing | Configuration flags only; no implementation | Extraction reads abstracts, and full text only for open-access papers in Europe PMC whose abstract gave no population. For every other paper a sample size stated only in Methods is unreachable, and the fallback itself is unmeasured. This is the largest functional shortfall. |
 | Neo4j study-aware graph store | NetworkX in-memory | No practical consequence at 200 nodes; §6.6 supports the choice |
 | Study-aware knowledge graph | One-to-one paper→study mapping, `dedupe_confidence` hardcoded to 0.8 | Papers reporting the same trial are counted as independent evidence |
 | Streamlit dashboard | Not implemented; React SPA delivered instead | None, the React dashboard supersedes it |
@@ -189,9 +189,11 @@ Issues present in the delivered system and not resolved:
 
 All data is retrieved from public APIs under their published terms. The
 OpenAlex polite-pool convention is honoured by sending a contact address. No
-paywalled content is retrieved or redistributed, which is a consequence of the
-abstract-only scope: the legal question that made full text difficult is the
-same one that keeps the system within bounds.
+paywalled content is retrieved or redistributed. The only full text the
+system reads is Europe PMC's open-access subset and arXiv preprints, and the
+only figures are flow diagrams from the PMC open-access collection, which it
+reads for their counts but does not republish. Restricting every source to open
+access is what keeps the system within bounds.
 
 Two risks deserve statement. First, **misplaced authority**: a ranked list
 presented by software invites more confidence than a heuristic deserves. The

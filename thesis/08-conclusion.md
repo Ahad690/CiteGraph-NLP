@@ -59,7 +59,8 @@ specified and what had been left unimplemented.
 The system's honest standing is therefore this. It is a working prototype that
 demonstrates the *feasibility* of evidence-weighted citation analysis and
 characterises its constraints with measured evidence. It is not a validated
-instrument for evidence appraisal, it does not read full text, and its
+instrument for evidence appraisal, it reads full text only as an unmeasured
+fallback for open-access papers, and its
 uncertainty signalling is weaker than its interface implies.
 
 ## 8.2 Future Work
@@ -104,10 +105,14 @@ provides.
 ### 8.2.5 Full-text extraction
 
 The largest functional gap against the proposal (§7.4). Sample sizes often
-appear only in a Methods section. Europe PMC provides open-access full text,
-and GROBID [lopez2009grobid] is already anticipated in the configuration.
-Unpaywall [martin2021oadoi] would determine which articles are legally
-retrievable, keeping the system within the bounds §7.6 describes.
+appear only in a Methods section. The pipeline already reads the Methods and
+Results of open-access papers in Europe PMC when their abstract states no
+population, but that fallback has never been scored. The first step is to add
+papers whose population appears only in the full text to the gold standard and
+measure it. Beyond Europe PMC, GROBID [lopez2009grobid] is anticipated in the
+configuration for PDFs, and Unpaywall [martin2021oadoi] would determine which
+of them are legally retrievable, keeping the system within the bounds §7.6
+describes.
 
 ### 8.2.6 Study-level deduplication
 

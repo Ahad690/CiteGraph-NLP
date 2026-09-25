@@ -28,11 +28,23 @@ for 2.5% of runtime. Neo4j appears in the configuration but is not implemented.
 
 ## 5.2 Pipeline Orchestration
 
-The orchestrator executes nine stages in sequence: normalise input, resolve
+The orchestrator executes ten stages in sequence: normalise input, resolve
 seed, traverse citations, backfill abstracts, extract populations, resolve
-populations, weight edges, build graph, run analytics. Each stage is a separate
-module; the orchestrator holds no domain logic beyond sequencing and the
-assembly of warnings.
+populations, recover populations from full text, weight edges, build graph, run
+analytics. Each stage is a separate module; the orchestrator holds no domain
+logic beyond sequencing and the assembly of warnings.
+
+The full-text stage runs only for papers whose abstract gave no population. For
+each one that Europe PMC holds as open access, it fetches the article's JATS
+XML, keeps the sections headed as Methods or Results, and runs the same
+extractor over them, capped at 250,000 characters a paper. A candidate is kept
+only when its sentence contains a participant term such as *patients*,
+*randomised* or *enrolled*. In the repeated 100-paper run of Section 6.6.6 this
+stage supplied a population for 9 papers. It has unit tests, but unlike
+abstract extraction it has not been scored against a gold standard. Two
+further readers, one for dataset sizes in computer-science papers on arXiv and
+the flow-diagram reader of Section 6.14, run only when a user asks for them
+from the dashboard, so neither is part of a run.
 
 ![**Figure 5.1** Calls made by `PipelineOrchestrator.run()`, traced by
 `code2flow` over the source and cut two levels below the entry point. Node
@@ -45,10 +57,11 @@ turn sit at the right.](figures/callgraph_pipeline.svg){width=62%}
 Reading the figure against the stage list above shows one structural property
 worth stating: `run()` calls each stage directly and no stage calls another.
 Sequencing lives in one function, so a stage can be reordered or removed by
-editing `run()` alone. The single exception is `_backfill_abstracts()`, which
-`run()` delegates to and which in turn calls the Europe PMC provider; it was
-added as a separate method rather than inline because it is the one stage that
-is skipped entirely when every abstract is already present.
+editing `run()` alone. The two exceptions are `_backfill_abstracts()` and
+`_recover_from_full_text()`, which `run()` delegates to and which in turn call
+the Europe PMC provider. Both are separate methods rather than inline code
+because both are conditional: the first is skipped when every abstract is
+present, the second when every paper already has a population.
 
 Runs execute as background tasks. A `POST` returns a run identifier
 immediately, and the client polls. This is necessary because runs take tens of

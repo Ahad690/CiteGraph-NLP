@@ -14,8 +14,9 @@ judged the difficulty of each independently. Its conclusion on full-text
 parsing was the decisive one: obtaining legal full text at scale is gated by
 open-access status rather than by parsing capability, and a pipeline that
 depends on full text will fail for a large fraction of inputs regardless of how
-good its parser is. The delivered system reads abstracts only, and Chapter 6
-quantifies what that costs.
+good its parser is. The delivered system therefore extracts from abstracts,
+turning to full text only where Europe PMC holds it openly as structured XML
+(Section 5.2), and Chapter 6 quantifies what that costs.
 
 ## 3.2 Functional Requirements
 
@@ -205,9 +206,11 @@ Chapter 6.
   This is the most serious limitation; Section 7.3 discusses it.
 - **Small sample.** Twenty papers, eleven positive. Interval estimates are
   correspondingly wide.
-- **Abstracts only.** Sample sizes stated solely in a full-text Methods section
-  are out of scope. This matches what the pipeline reads, so the evaluation is
-  fair to the system as built, but it does not measure the task in general.
+- **Abstracts only.** The gold standard is annotated from abstracts, so sample
+  sizes stated solely in a Methods section are out of scope. The evaluation is
+  fair to the abstract extractor but does not measure the task in general, and
+  it does not measure the pipeline's open-access full-text fallback (Section
+  5.2) at all.
 - **Domain concentration.** The positives are biomedical. Performance on other
   literatures is not measured and should not be assumed.
 
