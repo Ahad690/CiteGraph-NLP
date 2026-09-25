@@ -1,0 +1,355 @@
+{
+  "annotator": "Claude (AI assistant), reading each image, annotated before any reader code existed; to be spot-checked by the project team before the thesis cites results",
+  "definitions": {
+    "screened": "number assessed for eligibility or screened (top of the flow); null if the diagram gives no number",
+    "enrolled": "number stated as enrolled or included, when shown separately from screening and randomisation",
+    "randomised": "number randomised; if no randomised box, the sum of the allocated arms",
+    "analysed": "total analysed in the first-listed (usually intention-to-treat) analysis, summed across arms",
+    "is_participant_flow": "false when the figure is some other kind of flowchart with no participant counts",
+    "unscored": "stages the diagram leaves genuinely ambiguous; excluded from scoring rather than guessed"
+  },
+  "papers": {
+    "PMC11605169": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": null,
+      "enrolled": null,
+      "randomised": 60,
+      "analysed": 60,
+      "notes": "Assessed-for-eligibility box has no number. ITT 30+30; per-protocol 26+25 listed second."
+    },
+    "PMC11663323": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": 50,
+      "enrolled": null,
+      "randomised": 46,
+      "analysed": 46,
+      "notes": "Also an 'Analysis (n=46)' label box beside the arms."
+    },
+    "PMC11667847": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": 150,
+      "enrolled": null,
+      "randomised": 137,
+      "analysed": 137,
+      "notes": "Italic n; 'Analyse (n=69)' and '(n=68)'."
+    },
+    "PMC11668074": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": 9108,
+      "enrolled": 3788,
+      "randomised": 3483,
+      "analysed": 2904,
+      "notes": "Non-standard registry flow; 'in total n=' phrasing; per-arm counts written as 'Brief n=1771, Longer n=1712'."
+    },
+    "PMC11669226": {
+      "split": "test",
+      "is_participant_flow": false,
+      "screened": null,
+      "enrolled": null,
+      "randomised": null,
+      "analysed": null,
+      "notes": "Teaching-procedure flowchart, no participant counts. Caption matched the filter; correct output is nothing."
+    },
+    "PMC11674074": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": null,
+      "enrolled": 221,
+      "randomised": 164,
+      "analysed": 161,
+      "notes": "Top box is 'Enrolled (n=221)'; single pooled analysis box 'n=161'; arms 81+83."
+    },
+    "PMC11674581": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": 180,
+      "enrolled": null,
+      "randomised": 180,
+      "analysed": 118,
+      "notes": "Three arms, 42+30+46. Panel (A) above is a timeline, not part of the flow."
+    },
+    "PMC11681246": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": 10,
+      "enrolled": null,
+      "randomised": 2,
+      "analysed": 34,
+      "notes": "Cluster trial: 10 hospitals screened, 2 clusters randomised, 16+18 health workers analysed. Units change mid-diagram."
+    },
+    "PMC11682177": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": 316,
+      "enrolled": null,
+      "randomised": 87,
+      "analysed": 59,
+      "notes": "Three arms, 'Analyzed patients' 14+26+19; 'Analyzed HD sessions' listed second."
+    },
+    "PMC11682309": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": 96,
+      "enrolled": null,
+      "randomised": 45,
+      "analysed": 35,
+      "notes": "Counts written as bold leading numbers, no 'n ='. Analysed = 'included in the analyses' 12+13+10."
+    },
+    "PMC11684146": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": 168,
+      "enrolled": 98,
+      "randomised": 76,
+      "analysed": 76,
+      "notes": "'Fulfilling the inclusion criteria (n=98)' under an 'Included' banner; analysis boxes read 'group analysis(n=38)'."
+    },
+    "PMC11685923": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": 18,
+      "enrolled": null,
+      "randomised": 15,
+      "analysed": 15,
+      "notes": "8+7."
+    },
+    "PMC11686115": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": 103,
+      "enrolled": 90,
+      "randomised": null,
+      "analysed": null,
+      "notes": "Inclusion flow with no randomisation: decision boxes excluding 13, 'Included subjects (n=90)'."
+    },
+    "PMC11686909": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": 48,
+      "enrolled": 20,
+      "randomised": 20,
+      "analysed": 74,
+      "notes": "Cluster trial in colleges: 48 assessed, 20 included, allocated 12+8 (only 8 randomly). Analysed 45+29 educators listed first; students 91+55 second. Units change."
+    },
+    "PMC11687014": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": 579,
+      "enrolled": null,
+      "randomised": 185,
+      "analysed": 185,
+      "notes": "'Referred (n=1529)' sits above 'Consented and screened (n=579)'; 'Passed run-in and randomised (n=185)'; single pooled analysis box."
+    },
+    "PMC11687045": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": 320,
+      "enrolled": null,
+      "randomised": 272,
+      "analysed": 259,
+      "notes": "'Baseline measurements and Randomised (n=272)'; 132+127. Two follow-up rows before analysis."
+    },
+    "PMC11700878": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": 120,
+      "enrolled": null,
+      "randomised": 82,
+      "analysed": 70,
+      "notes": "35+35; dose text with numbers inside allocation boxes."
+    },
+    "PMC11703737": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": 160,
+      "enrolled": 110,
+      "randomised": 110,
+      "analysed": null,
+      "notes": "Leading-number phrasing ('160 ... applied', '110 participants were randomly divided'). No analysis box; flow ends at completed follow-up 47+54, so analysed is not stated."
+    },
+    "PMC11722567": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": 336,
+      "enrolled": 260,
+      "randomised": null,
+      "analysed": null,
+      "notes": "Observational follow-up flow, leading-number phrasing, no randomisation and no analysis box (ends at 'Completed follow-up' 208)."
+    },
+    "PMC11722735": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": 3165,
+      "enrolled": 2842,
+      "randomised": 52,
+      "analysed": null,
+      "unscored": [
+        "analysed"
+      ],
+      "notes": "Cluster RCT: 52 facilities, randomised box has no n, arms 26+26 clusters. Dyads assessed 1540+1625, enrolled 1387+1455. Two analysis points (6-month 1039/1110, 12-month 140+142) with inconsistent labelling, so analysed is left unscored."
+    },
+    "PMC11722783": {
+      "split": "test",
+      "is_participant_flow": false,
+      "screened": null,
+      "enrolled": null,
+      "randomised": null,
+      "analysed": null,
+      "notes": "Study protocol timeline (days, sampling, supplementation), not a participant flow. Correct output is nothing."
+    },
+    "PMC11723007": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": 250,
+      "enrolled": null,
+      "randomised": 38,
+      "analysed": 33,
+      "notes": "No drawn boxes at all: floating text only. Crossover (19+19 allocated at time 1). Single pooled 'Analyzed (n = 33)'."
+    },
+    "PMC11723049": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": 41,
+      "enrolled": null,
+      "randomised": 12,
+      "analysed": 12,
+      "notes": "Crossover: 6+6 arms appear twice, so summing arms double-counts. 'Assessed for pre-eligibility n = 41', then on-campus screening 18 and 'Fully Qualified' 15. 'Final Statistical Analysis (n = 12)'."
+    },
+    "PMC11723090": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": 420,
+      "enrolled": 200,
+      "randomised": 200,
+      "analysed": 192,
+      "notes": "'Enrolled and randomized (n = 200)' is one box carrying two stages; 96+96."
+    },
+    "PMC11723122": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": 377,
+      "enrolled": null,
+      "randomised": 260,
+      "analysed": 81,
+      "notes": "'Eligible students (n=377)' at the top; 'Randomized students (n=260)'; 117 did not attend T0, so arms start at 78+65; repeated per-timepoint arm boxes; analysed 54+27 under 'Statistical analyses of data'."
+    },
+    "PMC11723218": {
+      "split": "test",
+      "is_participant_flow": false,
+      "screened": null,
+      "enrolled": null,
+      "randomised": null,
+      "analysed": null,
+      "unscored": [
+        "randomised"
+      ],
+      "notes": "Test-procedure diagram. It does show allocation (n=9)+(n=9) under 'Randomized Controlled', so a randomised figure of 18 is defensible and is left unscored; any screened, enrolled or analysed figure is wrong."
+    },
+    "PMC11723309": {
+      "split": "test",
+      "is_participant_flow": true,
+      "screened": 1214,
+      "enrolled": 69,
+      "randomised": 75,
+      "analysed": 69,
+      "notes": "'Randomized 3 schools to 3 arms (n=75)'; six refused; 'recruitment of MT children (n=69)'; arms 23+25+21; analysed 23+25+21."
+    },
+    "PMC11667880": {
+      "split": "dev",
+      "is_participant_flow": true,
+      "screened": 35,
+      "enrolled": 24,
+      "randomised": 24,
+      "analysed": 21,
+      "notes": "'Enrolled and randomized' with 'n=24' on the next line; analysed 11+10 in 'Completed training and analysied'."
+    },
+    "PMC11673372": {
+      "split": "dev",
+      "is_participant_flow": true,
+      "screened": 291,
+      "enrolled": null,
+      "randomised": 91,
+      "analysed": 63,
+      "notes": "31+32; several follow-up rows with 'Completed ... (n=)'."
+    },
+    "PMC11677392": {
+      "split": "dev",
+      "is_participant_flow": true,
+      "screened": 176,
+      "enrolled": null,
+      "randomised": 45,
+      "analysed": 32,
+      "notes": "Main flow 16+16; a secondary retrospective analysis panel on the right (32, 20, 8, 12) is a distractor."
+    },
+    "PMC11681664": {
+      "split": "dev",
+      "is_participant_flow": true,
+      "screened": null,
+      "enrolled": 103,
+      "randomised": 103,
+      "analysed": null,
+      "notes": "No randomised box; groups 52+51 so randomised = sum of arms; top box is the participating cohort; no analysis counts."
+    },
+    "PMC11681668": {
+      "split": "dev",
+      "is_participant_flow": true,
+      "screened": 30,
+      "enrolled": null,
+      "randomised": 12,
+      "analysed": 213,
+      "notes": "Cluster trial: centres screened 30, 12 chosen randomly; 115+115 mothers allocated; 'Analysed' repeats at every follow-up; the final Analysis row is 109+104."
+    },
+    "PMC11682648": {
+      "split": "dev",
+      "is_participant_flow": true,
+      "screened": 8,
+      "enrolled": null,
+      "randomised": 8,
+      "analysed": 11,
+      "notes": "Four arms of 2; transfers between arms, analysed 0+6+4+1."
+    },
+    "PMC11683512": {
+      "split": "dev",
+      "is_participant_flow": false,
+      "screened": null,
+      "enrolled": null,
+      "randomised": null,
+      "analysed": null,
+      "notes": "Numbered patient instructions, not a flow diagram."
+    },
+    "PMC11689596": {
+      "split": "dev",
+      "is_participant_flow": true,
+      "screened": null,
+      "enrolled": null,
+      "randomised": 80,
+      "analysed": 80,
+      "unscored": [
+        "screened"
+      ],
+      "notes": "Screened count is clipped in the image. Randomised box has no n; arms 40+40. Stray '0' above the intervention label."
+    },
+    "PMC11809628": {
+      "split": "dev",
+      "is_participant_flow": true,
+      "screened": 178,
+      "enrolled": null,
+      "randomised": 178,
+      "analysed": 170,
+      "notes": "Analysis boxes contain only 'N = 85'; the stage name is in the left-hand banner row. Randomised box has no n; arms 89+89. QR code in the corner."
+    },
+    "PMC11821620": {
+      "split": "dev",
+      "is_participant_flow": true,
+      "screened": 60,
+      "enrolled": null,
+      "randomised": 60,
+      "analysed": 60,
+      "notes": "30+30; bulleted 'Analysed (n = 30)'."
+    }
+  }
+}

@@ -198,3 +198,7 @@ thesis/figures/_dot/
 # tracked in full. Regenerate with scripts/render_variants.py.
 !thesis/renders/*.pdf
 !thesis/renders/*.docx
+
+# Flow-diagram images for the vision tester. Licences vary per article, so
+# only the manifest (thesis/evidence/flow_diagrams/) is tracked.
+data/flow_diagrams/
