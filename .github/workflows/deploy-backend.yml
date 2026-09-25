@@ -135,8 +135,20 @@ jobs:
             -v "${DATA_DIR}:/app/data" \
             "$IMAGE_NAME"
 
-          sleep 3
-          test "$(docker inspect -f '{{.State.Running}}' "$CONTAINER_NAME")" = "true"
+          # Poll rather than sleep a fixed time. The 8d609f3 deploy failed a
+          # check made 3 s after start, yet the container was serving /health
+          # shortly afterwards. A container that exits is still caught at once.
+          for attempt in $(seq 1 30); do
+            if curl -fsS "http://127.0.0.1:${PORT}/health" >/dev/null 2>&1; then
+              break
+            fi
+            if [ "$(docker inspect -f '{{.State.Running}}' "$CONTAINER_NAME")" != "true" ]; then
+              echo "ERROR: $CONTAINER_NAME exited during startup" >&2
+              docker logs "$CONTAINER_NAME" --tail 50 2>&1
+              exit 1
+            fi
+            sleep 2
+          done
           curl -fsS "http://127.0.0.1:${PORT}/health" >/dev/null
 
           # Fail the deploy if the port ended up reachable on a public address.
