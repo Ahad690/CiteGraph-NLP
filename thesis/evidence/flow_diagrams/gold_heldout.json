@@ -1,0 +1,411 @@
+{
+  "annotator": "Claude (AI assistant), reading each image after the reader was frozen (commit b12ce13) and before running it on these figures; to be spot-checked by the project team before the thesis cites results",
+  "definitions": {
+    "screened": "number assessed for eligibility or screened (top of the flow); null if the diagram gives no number",
+    "enrolled": "number stated as enrolled, included, recruited, or as having met or fulfilled the inclusion criteria, when shown as its own stage; 'qualified' or 'eligible' alone count as screening, not enrolment",
+    "randomised": "number randomised; if no randomised box, the sum of the allocated arms",
+    "analysed": "total analysed in the first-listed (usually intention-to-treat) analysis, summed across arms",
+    "is_participant_flow": "false when the figure is some other kind of flowchart with no participant counts",
+    "unscored": "stages the diagram leaves genuinely ambiguous; excluded from scoring rather than guessed"
+  },
+  "papers": {
+    "PMC11656893": {
+      "is_participant_flow": true,
+      "screened": 130,
+      "enrolled": null,
+      "randomised": 129,
+      "analysed": 124,
+      "notes": "65+59; banner row labels.",
+      "split": "heldout"
+    },
+    "PMC11656953": {
+      "is_participant_flow": true,
+      "screened": 110,
+      "enrolled": 76,
+      "randomised": 76,
+      "analysed": null,
+      "notes": "Screening N=110, Inclusion N=76 (included), Randomization N=76 in a diamond. Arms labelled Intent to treat sample 35+41 but never analysed; outcome assessed 33+36. Analysed left null under the strict definition.",
+      "split": "heldout"
+    },
+    "PMC11657229": {
+      "is_participant_flow": true,
+      "screened": null,
+      "enrolled": null,
+      "randomised": 130,
+      "analysed": 128,
+      "notes": "Randomized patients N=130 at the top; N=64 included in the analysis, twice.",
+      "split": "heldout"
+    },
+    "PMC11657266": {
+      "is_participant_flow": true,
+      "screened": 354,
+      "enrolled": null,
+      "randomised": 100,
+      "analysed": 100,
+      "notes": "50+50; typos Grounp, allicated.",
+      "split": "heldout"
+    },
+    "PMC11657332": {
+      "is_participant_flow": true,
+      "screened": 71,
+      "enrolled": null,
+      "randomised": 49,
+      "analysed": 48,
+      "notes": "Intention-to-treat analysis 24+24 listed first; per-protocol 24+24 second.",
+      "split": "heldout"
+    },
+    "PMC11657600": {
+      "is_participant_flow": true,
+      "screened": 334,
+      "enrolled": null,
+      "randomised": 43,
+      "analysed": null,
+      "notes": "Label above number, no n=: Number screened 334, approached 160, consented 61, randomised 43. Ends at Completed study 27, not analysed.",
+      "split": "heldout"
+    },
+    "PMC11657661": {
+      "is_participant_flow": true,
+      "screened": 33,
+      "enrolled": null,
+      "randomised": 24,
+      "analysed": 24,
+      "notes": "Three arms of 8.",
+      "split": "heldout"
+    },
+    "PMC11658635": {
+      "is_participant_flow": true,
+      "screened": 49,
+      "enrolled": null,
+      "randomised": 34,
+      "analysed": 34,
+      "notes": "17+17.",
+      "split": "heldout"
+    },
+    "PMC11660442": {
+      "is_participant_flow": true,
+      "screened": 250,
+      "enrolled": null,
+      "randomised": 207,
+      "analysed": 200,
+      "notes": "101+99.",
+      "split": "heldout"
+    },
+    "PMC11660494": {
+      "is_participant_flow": true,
+      "screened": 80,
+      "enrolled": null,
+      "randomised": 60,
+      "analysed": 60,
+      "notes": "Standard CONSORT template, 30+30.",
+      "split": "heldout"
+    },
+    "PMC11660854": {
+      "is_participant_flow": true,
+      "screened": 79,
+      "enrolled": null,
+      "randomised": 65,
+      "analysed": 50,
+      "notes": "25+25; both arms labelled Allocated to intervention.",
+      "split": "heldout"
+    },
+    "PMC11660996": {
+      "is_participant_flow": true,
+      "screened": 320,
+      "enrolled": null,
+      "randomised": 200,
+      "analysed": null,
+      "unscored": [
+        "analysed"
+      ],
+      "notes": "Four arms of 50 inside one allocation box. Analysis box gives two outcome-specific sets, pain n=175 and function n=172, so analysed is unscored.",
+      "split": "heldout"
+    },
+    "PMC11661032": {
+      "is_participant_flow": true,
+      "screened": 67,
+      "enrolled": null,
+      "randomised": 60,
+      "analysed": 60,
+      "notes": "Three arms of 20; single pooled Analyzed (n=60) at the bottom after a chain of procedure boxes; eyelid counts in between.",
+      "split": "heldout"
+    },
+    "PMC11662039": {
+      "is_participant_flow": true,
+      "screened": 175,
+      "enrolled": null,
+      "randomised": 113,
+      "analysed": null,
+      "notes": "Leading-number phrasing: 175 eligible patients were evaluated, 159 eligible patients, 113 randomized, 58 and 55 allocated. Ends at T2 assessment, no analysed stage.",
+      "split": "heldout"
+    },
+    "PMC11662462": {
+      "is_participant_flow": true,
+      "screened": null,
+      "enrolled": 700,
+      "randomised": 620,
+      "analysed": null,
+      "notes": "Leading-number phrasing. 700 enrolled patients at the top, 80 excluded, 620 fulfilled including criteria; randomisation box has no count, arms 310+310. Ends at embryo transfer counts, no analysed stage.",
+      "split": "heldout"
+    },
+    "PMC11662481": {
+      "is_participant_flow": true,
+      "screened": 256,
+      "enrolled": null,
+      "randomised": 236,
+      "analysed": 236,
+      "notes": "Eligible(n=256) counts as screening; typos Allcoation/Allcoated; analysis boxes put n on the line below; 118+118.",
+      "split": "heldout"
+    },
+    "PMC11662516": {
+      "is_participant_flow": true,
+      "screened": null,
+      "enrolled": 179,
+      "randomised": 71,
+      "analysed": null,
+      "unscored": [
+        "analysed"
+      ],
+      "notes": "Cluster trial: Randomised (n=71 GP practices) at the top. Included at baseline 91+88 patients inside the allocation boxes. Analysis boxes give practices first (22, 27) and patients second (84, 88), so analysed is unscored.",
+      "split": "heldout"
+    },
+    "PMC11662519": {
+      "is_participant_flow": false,
+      "screened": null,
+      "enrolled": null,
+      "randomised": null,
+      "analysed": null,
+      "notes": "Software control-flow chart for a device, not a participant flow.",
+      "split": "heldout"
+    },
+    "PMC11662604": {
+      "is_participant_flow": true,
+      "screened": 134,
+      "enrolled": null,
+      "randomised": 120,
+      "analysed": 120,
+      "notes": "Three arms of 40; Data analyzed (n=40).",
+      "split": "heldout"
+    },
+    "PMC11662774": {
+      "is_participant_flow": true,
+      "screened": 96,
+      "enrolled": null,
+      "randomised": 96,
+      "analysed": 93,
+      "notes": "46+47; Completed intervention and Completed follow-up banners.",
+      "split": "heldout"
+    },
+    "PMC11662799": {
+      "is_participant_flow": true,
+      "screened": 40,
+      "enrolled": 24,
+      "randomised": 24,
+      "analysed": 24,
+      "notes": "Recruited (n=24) then Included (n=24). No randomised count; arms 12+12. Analysis written as Number of patient analyzed = 12 (no n=), sites listed second.",
+      "split": "heldout"
+    },
+    "PMC11662846": {
+      "is_participant_flow": false,
+      "screened": null,
+      "enrolled": null,
+      "randomised": null,
+      "analysed": null,
+      "notes": "Teaching study procedure flow with no participant counts (only 1:1, 50%, questionnaire names).",
+      "split": "heldout"
+    },
+    "PMC11663356": {
+      "is_participant_flow": true,
+      "screened": null,
+      "enrolled": null,
+      "randomised": 414,
+      "analysed": 220,
+      "notes": "Randomized in 2010 to 2012 (n=414) at the top; long-term follow-up consent 402; three arms 169+97+136; analysed 95+54+71.",
+      "split": "heldout"
+    },
+    "PMC11663360": {
+      "is_participant_flow": true,
+      "screened": 108,
+      "enrolled": null,
+      "randomised": 96,
+      "analysed": 96,
+      "notes": "Leading-number phrasing: 108 Patients were assessed, 96 Underwent randomisation, 48 Analysed twice.",
+      "split": "heldout"
+    },
+    "PMC11664109": {
+      "is_participant_flow": true,
+      "screened": 94,
+      "enrolled": null,
+      "randomised": 78,
+      "analysed": 78,
+      "notes": "Included in intention-to-treat analysis 39+39 listed first; per-protocol 37+36 second.",
+      "split": "heldout"
+    },
+    "PMC11665077": {
+      "is_participant_flow": true,
+      "screened": 128,
+      "enrolled": null,
+      "randomised": 112,
+      "analysed": 96,
+      "notes": "Counts written Number = (128), (number =112), = 56 people, Analysis: 47 people; the randomisation box is labelled Random:; side banner Eligible. None uses n=.",
+      "split": "heldout"
+    },
+    "PMC11667255": {
+      "is_participant_flow": true,
+      "screened": 12,
+      "enrolled": null,
+      "randomised": 12,
+      "analysed": null,
+      "unscored": [
+        "enrolled"
+      ],
+      "notes": "Stepped-wedge cluster trial: Assessed for eligibility N=12 clusters, Randomized N=12 clusters, three sequences N=4. Below is a data table whose rows include Enrolled with presumptive TB, which is outcome data rather than trial enrolment, so enrolled is unscored.",
+      "split": "heldout"
+    },
+    "PMC11667321": {
+      "is_participant_flow": true,
+      "screened": 89,
+      "enrolled": null,
+      "randomised": 60,
+      "analysed": null,
+      "notes": "Registered at department (n=98) then Screened prior to eligibility (n=89) as the top screening stage, then Assessed for eligibility (n=69). Randomised (n=60), arms given only as received allocated intervention 20, 20, 19+1. Ends at 6-month follow-up, no analysis box.",
+      "split": "heldout"
+    },
+    "PMC11667339": {
+      "is_participant_flow": true,
+      "screened": null,
+      "enrolled": null,
+      "randomised": null,
+      "analysed": null,
+      "unscored": [
+        "randomised",
+        "analysed"
+      ],
+      "notes": "Cluster survey with separate baseline and follow-up samples around a Randomisation box with no count; counts written Approached: 1506 with percentages. Two analysed totals (1124 baseline, 1139 follow-up) and no allocated arms, so randomised and analysed are unscored.",
+      "split": "heldout"
+    },
+    "PMC11667481": {
+      "is_participant_flow": true,
+      "screened": 49,
+      "enrolled": null,
+      "randomised": 47,
+      "analysed": 45,
+      "notes": "23+22; stage banners run down the middle between the arms.",
+      "split": "heldout"
+    },
+    "PMC11667845": {
+      "is_participant_flow": true,
+      "screened": null,
+      "enrolled": null,
+      "randomised": 48,
+      "analysed": null,
+      "notes": "Top box is the student cohort N=48 with no screening or enrolment wording; Randomization box has no count, arms 24+24; Analysis box has no count.",
+      "split": "heldout"
+    },
+    "PMC11667984": {
+      "is_participant_flow": true,
+      "screened": 91,
+      "enrolled": null,
+      "randomised": 81,
+      "analysed": 81,
+      "notes": "Assessed for eligibility 91, then Eligible participants 84 (screening vocabulary, second); Week0: Randomly assigned (n = 81); three arms analysed 27 each.",
+      "split": "heldout"
+    },
+    "PMC11668315": {
+      "is_participant_flow": true,
+      "screened": null,
+      "enrolled": null,
+      "randomised": 50,
+      "analysed": 44,
+      "notes": "Assessed-for-eligibility box has no number; 22+22 analysed after 6 excluded post-randomisation.",
+      "split": "heldout"
+    },
+    "PMC11676100": {
+      "is_participant_flow": true,
+      "screened": 102,
+      "enrolled": null,
+      "randomised": 61,
+      "analysed": null,
+      "notes": "Ends at a Post-intervention row (ME n=21, TAU n=24) with no analysis stage.",
+      "split": "heldout"
+    },
+    "PMC11676177": {
+      "is_participant_flow": true,
+      "screened": 94,
+      "enrolled": null,
+      "randomised": 45,
+      "analysed": 42,
+      "notes": "Final row under an Analysis heading reads Control meal (n= 20) and UPF meal (n= 22), counted as analysed for consistency with dev PMC11809628.",
+      "split": "heldout"
+    },
+    "PMC11676743": {
+      "is_participant_flow": true,
+      "screened": null,
+      "enrolled": null,
+      "randomised": null,
+      "analysed": null,
+      "notes": "Counts written as words (Sixty-four patients, Sixty two patients), randomisation described in prose inside a box, no digit counts at any stage. Nothing is scored.",
+      "split": "heldout"
+    },
+    "PMC11677140": {
+      "is_participant_flow": true,
+      "screened": 20,
+      "enrolled": null,
+      "randomised": 17,
+      "analysed": 17,
+      "notes": "Analysed knees (n=8) and (n=9); Treated knees (8) without n inside allocation boxes.",
+      "split": "heldout"
+    },
+    "PMC11680048": {
+      "is_participant_flow": true,
+      "screened": 106,
+      "enrolled": 50,
+      "randomised": 50,
+      "analysed": 46,
+      "notes": "Eligible (n=79) is screening vocabulary, second; Enrolled and randomised (n=50) carries two stages; 24+22.",
+      "split": "heldout"
+    },
+    "PMC11685319": {
+      "is_participant_flow": true,
+      "screened": 30,
+      "enrolled": null,
+      "randomised": 30,
+      "analysed": 26,
+      "notes": "Figure error: second arm printed Allocated to intervention (n = 0) though it analyses 14; recorded as printed. Analyzed 12+14; italic n.",
+      "split": "heldout"
+    },
+    "PMC11701056": {
+      "is_participant_flow": true,
+      "screened": 126,
+      "enrolled": 126,
+      "randomised": null,
+      "analysed": null,
+      "unscored": [
+        "randomised",
+        "analysed"
+      ],
+      "notes": "Leading-number phrasing: 8 clusters and 126 eligible students, 126 students enrolled with informed consent. Cluster randomisation box has no count and the arms carry none either (first per-arm counts are pre-test 64+62), so randomised is unscored. Two analysis stages (126 at pre/post-test, 124 at retention), so analysed is unscored.",
+      "split": "heldout"
+    },
+    "PMC11706452": {
+      "is_participant_flow": true,
+      "screened": null,
+      "enrolled": null,
+      "randomised": 42432,
+      "analysed": null,
+      "unscored": [
+        "enrolled"
+      ],
+      "notes": "Registry policy trial, small text, counts written n: 21279. Women assigned to arms 21279+21153 = 42432 (the top box). Participated 7401+7318 and included in the follow up 7400+7316 are ambiguous as enrolment, so enrolled is unscored. No analysis stage.",
+      "split": "heldout"
+    },
+    "PMC11735114": {
+      "is_participant_flow": true,
+      "screened": 1842,
+      "enrolled": null,
+      "randomised": 471,
+      "analysed": 471,
+      "notes": "Leading-number phrasing at the top: 1842 Refugees screened, 520 eligible; Randomization (n = 471); Included in intent-to-treat analyses 185+286.",
+      "split": "heldout"
+    }
+  }
+}

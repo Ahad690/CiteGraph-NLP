@@ -121,12 +121,34 @@ async def collect_one(client: httpx.AsyncClient, hit: dict) -> dict | None:
 
 
 async def main() -> int:
+    import argparse
+    global MANIFEST, IMAGES, split_for
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--heldout", action="store_true",
+                        help="collect the next page of results as a held-out set, "
+                             "skipping every paper already in the first manifest")
+    args = parser.parse_args()
+    exclude: set[str] = set()
+    if args.heldout:
+        # Collected only after the reader was frozen, and annotated before it
+        # is run on them, so neither the code nor the answer key saw them.
+        with open(MANIFEST, encoding="utf-8") as fh:
+            exclude = {p["pmcid"] for p in json.load(fh)["papers"]}
+        MANIFEST = MANIFEST.replace("manifest.json", "manifest_heldout.json")
+        IMAGES = IMAGES + "_heldout"
+        split_for = lambda pmcid: "heldout"  # noqa: E731
+
     os.makedirs(os.path.dirname(MANIFEST), exist_ok=True)
     os.makedirs(IMAGES, exist_ok=True)
     async with httpx.AsyncClient(headers=HEADERS, timeout=60.0, follow_redirects=True) as client:
-        search = await client.get(f"{EUROPE_PMC}/search", params={
-            "query": QUERY, "format": "json", "pageSize": SAMPLE_SIZE, "resultType": "core"})
-        hits = search.json()["resultList"]["result"][:SAMPLE_SIZE]
+        params = {"query": QUERY, "format": "json", "pageSize": SAMPLE_SIZE,
+                  "resultType": "core", "cursorMark": "*"}
+        search = await client.get(f"{EUROPE_PMC}/search", params=params)
+        if args.heldout:
+            params["cursorMark"] = search.json()["nextCursorMark"]
+            search = await client.get(f"{EUROPE_PMC}/search", params=params)
+        hits = [h for h in search.json()["resultList"]["result"][:SAMPLE_SIZE]
+                if h.get("pmcid") not in exclude]
         gate = asyncio.Semaphore(4)
 
         async def guarded(hit):
