@@ -204,15 +204,18 @@ built the reader, so a second reading was obtained from models of a different
 family. Each figure went to the second reader in a new conversation with the
 written stage definitions and nothing else: no key, no notes and no reader
 output (`scripts/second_annotator.py`). Qwen read 40 figures before reaching
-its daily limit and ChatGPT read the remaining 38; one figure returned no
-answer in three attempts. The readings are pooled below and kept apart in the
-evidence files.
+its daily limit and ChatGPT read the remaining 39, so every figure has a second
+reading. One figure needed the attachment re-encoded: ChatGPT's upload took the
+JPEG and returned no reply, four times over, while Qwen read the same file and
+ChatGPT read the same figure as a PNG, which is the difference the script now
+acts on rather than recording a blank answer. The readings are pooled below and
+kept apart in the evidence files.
 
 | Second reader | Figures | Stage values | Agreed with the key |
 |---------------|--------:|-------------:|--------------------:|
 | Qwen | 40 | 153 | 135 (88%) |
-| ChatGPT | 38 | 148 | 140 (95%) |
-| Both | 78 | 301 | 275 (91%) |
+| ChatGPT | 39 | 152 | 144 (95%) |
+| Both | 79 | 305 | 279 (91%) |
 
 Each of the 26 disagreements was settled by looking at the image, and none
 showed a number in the key that the figure contradicts. Ten were the second
@@ -238,5 +241,5 @@ Two limits apply. The disagreements were settled by the annotator who wrote the
 key, so the adjudication is not independent; every decision is listed with its
 reason in `thesis/evidence/flow_diagrams/adjudication.json`, 26 entries a
 reviewer can check against the images. And the second reader is itself a
-model, one that invented plausible counts for 2 of the 78 figures, so agreement
+model, one that invented plausible counts for 2 of the 79 figures, so agreement
 with it is evidence about the key rather than a substitute for a human check.

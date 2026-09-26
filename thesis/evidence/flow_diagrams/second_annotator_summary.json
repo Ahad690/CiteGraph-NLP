@@ -1,16 +1,14 @@
 {
  "figures": 79,
- "read": 78,
- "unread": [
-  "PMC11821620"
- ],
- "values": 301,
- "agreed": 275,
+ "read": 79,
+ "unread": [],
+ "values": 305,
+ "agreed": 279,
  "by_provider": {
   "chatgpt": {
-   "figures": 38,
-   "values": 148,
-   "agreed": 140
+   "figures": 39,
+   "values": 152,
+   "agreed": 144
   },
   "qwen": {
    "figures": 40,

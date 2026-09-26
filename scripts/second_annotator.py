@@ -29,6 +29,7 @@ import json
 import re
 import socket
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -101,6 +102,22 @@ def _send(provider: str, message: str, image: Path, timeout: float = 900.0) -> d
     raise RuntimeError(f"Proxima is not listening on {PROXIMA_PORTS}: {last_error}")
 
 
+def _as_png(image: Path) -> Path | None:
+    """ChatGPT's web upload refuses some publisher JPEGs silently: it acknowledges
+    the send and never returns a reply, while the same file goes through Qwen and
+    the same figure re-encoded as PNG is read (PMC11821620). So a refused
+    attachment is retried once as a PNG. Returns None when Pillow is missing,
+    which leaves the call a failure rather than a wrong answer."""
+    try:
+        from PIL import Image
+    except ImportError:
+        return None
+    target = Path(tempfile.gettempdir()) / f"{image.stem}-png.png"
+    if not target.exists():
+        Image.open(image).convert("RGB").save(target)
+    return target
+
+
 def _parse(text: str) -> dict | None:
     blocks = re.findall(r"```(?:json)?\s*(\{.*?\})\s*```", text, re.S)
     for block in reversed(blocks):
@@ -164,9 +181,10 @@ def annotate(provider: str, limit: int | None, skip: list[str]) -> int:
         # so a failed call is retried after a pause. Three failures in a row
         # look like an expired login instead, and stop the run rather than
         # record 79 failures.
+        sent = image
         for attempt in range(1, RETRIES + 1):
             try:
-                reply = _send(provider, prompt, image)
+                reply = _send(provider, prompt, sent)
             except TimeoutError:
                 reply = {"success": False, "error": "no reply within the socket timeout"}
             answer = (reply.get("result") or {}).get("response") or ""
@@ -175,6 +193,22 @@ def annotate(provider: str, limit: int | None, skip: list[str]) -> int:
                 # recorded 19 of them as unparsable answers in under a minute.
                 print(f"  {pmcid}: {provider} daily limit reached, stopping: {answer.strip()}")
                 return 1
+            if reply.get("success") and not answer.strip():
+                # Proxima acknowledges the send ("result": ["sent"]) and no reply
+                # ever arrives, which it reports as a success. A call with no reply
+                # is a failed call, so it is retried rather than recorded as an
+                # answer, and a refused JPEG goes back up as a PNG.
+                if sent is image and image.suffix.lower() in (".jpg", ".jpeg") and _as_png(image):
+                    sent = _as_png(image)
+                    print(f"  {pmcid}: {provider} took the send but returned no reply; "
+                          f"retrying the attachment as a PNG ({sent.name})")
+                    continue
+                print(f"  {pmcid}: {provider} took the send but returned no reply "
+                      f"(attempt {attempt}/{RETRIES})")
+                if attempt == RETRIES:
+                    return 1
+                time.sleep(RETRY_PAUSE)
+                continue
             if reply.get("success"):
                 break
             print(f"  {pmcid}: Proxima error (attempt {attempt}/{RETRIES}): {reply.get('error')}")
@@ -195,7 +229,9 @@ def annotate(provider: str, limit: int | None, skip: list[str]) -> int:
             "thinking_used": reply.get("thinkingUsed"),
             "reply_fields": {k: v for k, v in reply.items() if k not in ("result", "requestId")}
                             | {"result": sorted((reply.get("result") or {}).keys())},
-            "attachments": reply.get("attachments"), "rejected": rejected, "response": text,
+            "attachments": reply.get("attachments"),
+            "image_sent": image.name if sent is image else sent.name, "rejected": rejected,
+            "response": text,
         }
         done.update({"annotator": PROVIDERS[provider]["label"] + ", blind to the answer key, "
                                   "one fresh conversation per figure", "prompt": PROMPT})

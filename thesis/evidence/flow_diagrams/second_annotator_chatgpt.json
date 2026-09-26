@@ -1150,20 +1150,35 @@
   },
   "PMC11821620": {
    "split": "dev",
-   "parsed": null,
-   "seconds": 6.6,
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 60,
+    "enrolled": null,
+    "randomised": 60,
+    "analysed": 60,
+    "unscored": [
+     "enrolled"
+    ],
+    "evidence": {
+     "screened": "Assessed for eligibility (n = 60)",
+     "randomised": "Randomized (n = 60)",
+     "analysed": "Analysed (n = 30) in control group; Analysed (n = 30) in intervention group"
+    }
+   },
+   "seconds": 19.4,
    "model": null,
    "thinking_used": null,
    "reply_fields": {
     "success": true,
     "provider": "chatgpt",
     "result": [
-     "sent"
+     "response"
     ]
    },
    "attachments": null,
-   "rejected": "no parsable JSON in the reply",
-   "response": ""
+   "image_sent": "PMC11821620_fpubh-12-1484210-g001-png.png",
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 60,\n  \"enrolled\": null,\n  \"randomised\": 60,\n  \"analysed\": 60,\n  \"unscored\": [\"enrolled\"],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n = 60)\",\n    \"randomised\": \"Randomized (n = 60)\",\n    \"analysed\": \"Analysed (n = 30) in control group; Analysed (n = 30) in intervention group\"\n  }\n}\n```"
   }
  },
  "annotator": "ChatGPT via Proxima (default GPT-5.6 Thinking, high effort), blind to the answer key, one fresh conversation per figure",
