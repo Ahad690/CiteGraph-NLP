@@ -84,7 +84,8 @@ done is part of the result, so it is recorded in the commit history.
 The answer key records, for each diagram, the screened, enrolled, randomised
 and analysed counts it states, with stages it leaves genuinely ambiguous marked
 unscored rather than guessed. It was written by reading each image before any
-reader code existed and committed at that point (commit `0aa6294`).
+reader code existed and committed at that point (commit `0aa6294`). Section
+6.14.7 reports a blind second reading of it.
 
 The 27 diagrams first intended as a test set were annotated by the same person
 who then built the reader, so their result cannot count as held out. They were
@@ -183,11 +184,11 @@ The limits are specific:
   thirds of the sampled open-access trials had a detectable diagram, and
   closed-access trials have none available.
 - **The answer keys were written by the AI assistant used to build the system,**
-  by reading each image. They are committed with a note on every non-obvious
-  decision, but they have not yet been checked by a second, human annotator,
-  and the results in this section should be read as provisional until a team
-  member has spot-checked them against the images. Section 3.5.4's concern about
-  single-annotator gold standards applies here with extra force.
+  by reading each image. A blind second reading by two other models (Section
+  6.14.7) found no number in them that the image contradicts, but no human has
+  checked them, and the disagreements were settled by the assistant that wrote
+  the keys. Section 3.5.4's concern about single-annotator gold standards
+  therefore still applies, in a narrower form.
 - **Units.** Cluster trials randomise clinics or schools and analyse people.
   The reader reports what each box says and does not reconcile units, so its
   randomised and analysed counts for such a trial can refer to different
@@ -195,3 +196,47 @@ The limits are specific:
 - **Scale of the evidence.** 42 held-out diagrams give 69 scored decision
   counts. The interval on the reader's accuracy is correspondingly wide, from
   79% to 94%, though it does not approach the text method's.
+
+### 6.14.7 A second, blind reading of the answer keys
+
+Every answer key above was written by one annotator, the AI assistant that
+built the reader, so a second reading was obtained from models of a different
+family. Each figure went to the second reader in a new conversation with the
+written stage definitions and nothing else: no key, no notes and no reader
+output (`scripts/second_annotator.py`). Qwen read 40 figures before reaching
+its daily limit and ChatGPT read the remaining 38; one figure returned no
+answer in three attempts. The readings are pooled below and kept apart in the
+evidence files.
+
+| Second reader | Figures | Stage values | Agreed with the key |
+|---------------|--------:|-------------:|--------------------:|
+| Qwen | 40 | 153 | 135 (88%) |
+| ChatGPT | 38 | 148 | 140 (95%) |
+| Both | 78 | 301 | 275 (91%) |
+
+Each of the 26 disagreements was settled by looking at the image, and none
+showed a number in the key that the figure contradicts. Ten were the second
+reader's errors. In two figures Qwen reported counts that appear nowhere in the
+image, 145, 100 and 98 for a diagram that prints 67, 60 and 60; in one it
+answered nothing although the upload had succeeded; and ChatGPT once added
+educators and students into a single total. The other sixteen are cases the
+definitions do not settle, and they recur in four forms: a top box that names a
+cohort without saying it was screened, a flow that ends at an assessment or
+follow-up rather than a stage labelled analysed, a cluster trial that
+randomises centres and counts people, and repeated analysis rows, where the
+definition's "first-listed analysis" gives 224 and the key took the final row,
+213. Those four forms, not misread numbers, are where the key needs a firmer
+rule.
+
+Setting the sixteen aside as unscored moves the reader's held-out result from
+61 of 69 to 59 of 67, with the text method right on 2 in both, and the second
+development set from 50 of 53 to 49 of 52. The conclusion of Section 6.14.4
+does not change. The result is still reported on the original key, because that
+key was committed before the reader saw the figures.
+
+Two limits apply. The disagreements were settled by the annotator who wrote the
+key, so the adjudication is not independent; every decision is listed with its
+reason in `thesis/evidence/flow_diagrams/adjudication.json`, 26 entries a
+reviewer can check against the images. And the second reader is itself a
+model, one that invented plausible counts for 2 of the 78 figures, so agreement
+with it is evidence about the key rather than a substitute for a human check.

@@ -2,7 +2,7 @@
 
 ## F.1 Composition
 
-200 automated tests across thirteen files. All external HTTP is intercepted at
+201 automated tests across thirteen files. All external HTTP is intercepted at
 transport level by `respx` or replaced with test doubles, so the suite requires
 no network access and no API credentials, and completes in roughly 15 to 40
 seconds.
@@ -12,7 +12,7 @@ seconds.
 | `test_api_comprehensive.py` | 73 | Endpoints, validation, clamping, auth, CORS, exports, pipeline end-to-end with mocked providers |
 | `test_query_detection.py` | 34 | Identifier auto-detection and the title matching behind run ac66eb9e |
 | `test_flow_diagram.py` | 18 | Stage and layout rules of the flow-diagram reader (Section 6.14) |
-| `test_the_thesis_does_not_drift.py` | 18 | This thesis against its evidence, its figures, its PDFs and its baseline (Section C.5) |
+| `test_the_thesis_does_not_drift.py` | 19 | This thesis against its evidence, its figures, its PDFs and its baseline (Section C.5) |
 | `test_technical_evidence.py` | 12 | Research-field detection, arXiv links and dataset-size extraction |
 | `test_sqlite_store.py` | 8 | Persistence, lock retry policy, backoff jitter, error classification |
 | `test_add_citegraph_route.py` | 7 | Deployment route-insertion helper |
@@ -22,7 +22,7 @@ seconds.
 | `test_task_manager.py` | 5 | Background task lifecycle and shutdown semantics |
 | `test_url_resolver.py` | 5 | URL→identifier extraction, DOI view-segment trimming |
 | `test_input_normalizer.py` | 3 | Identifier canonicalisation |
-| **Total** | **200** | |
+| **Total** | **201** | |
 
 ## F.2 Regression tests added during evaluation
 

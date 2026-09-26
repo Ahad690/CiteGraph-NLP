@@ -1,0 +1,51 @@
+{
+ "figures": 79,
+ "read": 78,
+ "unread": [
+  "PMC11821620"
+ ],
+ "values": 301,
+ "agreed": 275,
+ "by_provider": {
+  "chatgpt": {
+   "figures": 38,
+   "values": 148,
+   "agreed": 140
+  },
+  "qwen": {
+   "figures": 40,
+   "values": 153,
+   "agreed": 135
+  }
+ },
+ "disagreements": 26,
+ "second_annotator_errors": 10,
+ "ambiguous": 16,
+ "key_values_contradicted_by_the_image": 0,
+ "rescored": {
+  "heldout": {
+   "original_key": {
+    "vision": 61,
+    "text": 2,
+    "n": 69
+   },
+   "ambiguous_unscored": {
+    "vision": 59,
+    "text": 2,
+    "n": 67
+   }
+  },
+  "second_dev": {
+   "original_key": {
+    "vision": 50,
+    "text": 5,
+    "n": 53
+   },
+   "ambiguous_unscored": {
+    "vision": 49,
+    "text": 5,
+    "n": 52
+   }
+  }
+ }
+}

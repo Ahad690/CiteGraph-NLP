@@ -1,0 +1,1171 @@
+{
+ "annotations": {
+  "PMC11706452": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 42432,
+    "enrolled": null,
+    "randomised": 42432,
+    "analysed": null,
+    "unscored": [
+     "enrolled",
+     "analysed"
+    ],
+    "evidence": {
+     "screened": "Top box: \"Women 56-61 years of age in 2012.01.01-2014.5.31 and living in Stockholm N=42432\"",
+     "randomised": "Allocation boxes: \"Women assigned to Cytology arm n=21279\" and \"Women assigned to HPV arm n=21153\"",
+     "enrolled": "No single enrolment/recruited stage is printed; the figure instead shows arm-specific boxes \"Women included in the follow up N: 7400\" and \"Women included in the follow up N: 7316\"",
+     "analysed": "No box labelled analysed or giving a total analysed population is printed"
+    }
+   },
+   "seconds": 33.5,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 42432,\n  \"enrolled\": null,\n  \"randomised\": 42432,\n  \"analysed\": null,\n  \"unscored\": [\"enrolled\", \"analysed\"],\n  \"evidence\": {\n    \"screened\": \"Top box: \\\"Women 56-61 years of age in 2012.01.01-2014.5.31 and living in Stockholm N=42432\\\"\",\n    \"randomised\": \"Allocation boxes: \\\"Women assigned to Cytology arm n=21279\\\" and \\\"Women assigned to HPV arm n=21153\\\"\",\n    \"enrolled\": \"No single enrolment/recruited stage is printed; the figure instead shows arm-specific boxes \\\"Women included in the follow up N: 7400\\\" and \\\"Women included in the follow up N: 7316\\\"\",\n    \"analysed\": \"No box labelled analysed or giving a total analysed population is printed\"\n  }\n}\n```"
+  },
+  "PMC11735114": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 1842,
+    "enrolled": null,
+    "randomised": 471,
+    "analysed": 471,
+    "unscored": [],
+    "evidence": {
+     "screened": "1842 Refugees screened for eligibility via door-to-door visits",
+     "randomised": "Randomization (n = 471)",
+     "analysed": "Included in intent-to-treat analyses (n = 185); Included in intent-to-treat analyses (n = 286)"
+    }
+   },
+   "seconds": 13.0,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 1842,\n  \"enrolled\": null,\n  \"randomised\": 471,\n  \"analysed\": 471,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"1842 Refugees screened for eligibility via door-to-door visits\",\n    \"randomised\": \"Randomization (n = 471)\",\n    \"analysed\": \"Included in intent-to-treat analyses (n = 185); Included in intent-to-treat analyses (n = 286)\"\n  }\n}\n```"
+  },
+  "PMC11605169": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": null,
+    "enrolled": null,
+    "randomised": 60,
+    "analysed": 60,
+    "unscored": [
+     "screened",
+     "enrolled"
+    ],
+    "evidence": {
+     "randomised": "Randomized (n=60)",
+     "analysed": "Intention to treat analyzed (n=30)"
+    }
+   },
+   "seconds": 10.1,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": null,\n  \"enrolled\": null,\n  \"randomised\": 60,\n  \"analysed\": 60,\n  \"unscored\": [\"screened\", \"enrolled\"],\n  \"evidence\": {\n    \"randomised\": \"Randomized (n=60)\",\n    \"analysed\": \"Intention to treat analyzed (n=30)\" \n  }\n}\n```"
+  },
+  "PMC11663323": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 50,
+    "enrolled": null,
+    "randomised": 46,
+    "analysed": 46,
+    "unscored": [
+     "enrolled"
+    ],
+    "evidence": {
+     "screened": "Assessed for eligibility (n=50)",
+     "randomised": "Randomized (n=46)",
+     "analysed": "Analysis (n=46); Analysed (n=23) and Analysed (n=23)"
+    }
+   },
+   "seconds": 11.3,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 50,\n  \"enrolled\": null,\n  \"randomised\": 46,\n  \"analysed\": 46,\n  \"unscored\": [\"enrolled\"],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n=50)\",\n    \"randomised\": \"Randomized (n=46)\",\n    \"analysed\": \"Analysis (n=46); Analysed (n=23) and Analysed (n=23)\"\n  }\n}\n```"
+  },
+  "PMC11667847": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 150,
+    "enrolled": null,
+    "randomised": 137,
+    "analysed": 137,
+    "unscored": [
+     "enrolled"
+    ],
+    "evidence": {
+     "screened": "Assessed for eligibility (n=150)",
+     "randomised": "Randomized (n=137)",
+     "analysed": "Analyse (n=69) and Analyse (n=68)"
+    }
+   },
+   "seconds": 13.1,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 150,\n  \"enrolled\": null,\n  \"randomised\": 137,\n  \"analysed\": 137,\n  \"unscored\": [\"enrolled\"],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n=150)\",\n    \"randomised\": \"Randomized (n=137)\",\n    \"analysed\": \"Analyse (n=69) and Analyse (n=68)\"\n  }\n}\n```"
+  },
+  "PMC11667880": {
+   "split": "dev",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 35,
+    "enrolled": 24,
+    "randomised": 24,
+    "analysed": 21,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility volunteer trainees (n=35)",
+     "enrolled": "Enrolled and randomized n=24",
+     "randomised": "Enrolled and randomized n=24",
+     "analysed": "Completed training and analysed VR group n=11; Completed training and analysed control group n=10"
+    }
+   },
+   "seconds": 14.8,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 35,\n  \"enrolled\": 24,\n  \"randomised\": 24,\n  \"analysed\": 21,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility volunteer trainees (n=35)\",\n    \"enrolled\": \"Enrolled and randomized n=24\",\n    \"randomised\": \"Enrolled and randomized n=24\",\n    \"analysed\": \"Completed training and analysed VR group n=11; Completed training and analysed control group n=10\"\n  }\n}\n```"
+  },
+  "PMC11668074": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 9108,
+    "enrolled": 3788,
+    "randomised": 3483,
+    "analysed": 2904,
+    "unscored": [],
+    "evidence": {
+     "screened": "Potentially eligible patients in the study period, in total n=9108",
+     "enrolled": "Patients included and registered in the secure, web-based data collection system, in total n=3788",
+     "randomised": "Patients admitted to 16/17 institutions automatically randomized to either a brief or longer set of PROMs, in total n=3483; Brief n=1771, Longer n=1712",
+     "analysed": "Patients having sufficiently baseline PROM data to be enrolled and analysed in the current study, in total n=2904; Brief n=1455, Longer n=1449"
+    }
+   },
+   "seconds": 13.5,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 9108,\n  \"enrolled\": 3788,\n  \"randomised\": 3483,\n  \"analysed\": 2904,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Potentially eligible patients in the study period, in total n=9108\",\n    \"enrolled\": \"Patients included and registered in the secure, web-based data collection system, in total n=3788\",\n    \"randomised\": \"Patients admitted to 16/17 institutions automatically randomized to either a brief or longer set of PROMs, in total n=3483; Brief n=1771, Longer n=1712\",\n    \"analysed\": \"Patients having sufficiently baseline PROM data to be enrolled and analysed in the current study, in total n=2904; Brief n=1455, Longer n=1449\"\n  }\n}\n```"
+  },
+  "PMC11669226": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": false,
+    "screened": null,
+    "enrolled": null,
+    "randomised": null,
+    "analysed": null,
+    "unscored": [
+     "screened",
+     "enrolled",
+     "randomised",
+     "analysed"
+    ],
+    "evidence": {
+     "screened": "The top stage reads \"Training group\" with \"Traditional group (A)\" and \"Experimental group (B)\" but no participant number is printed.",
+     "enrolled": "No stage states enrolled, included, recruited, or met inclusion criteria with a number.",
+     "randomised": "No randomised box or randomisation number is printed.",
+     "analysed": "The final stage reads \"Statistical analysis\" but no analysed participant number is printed."
+    }
+   },
+   "seconds": 13.4,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": false,\n  \"screened\": null,\n  \"enrolled\": null,\n  \"randomised\": null,\n  \"analysed\": null,\n  \"unscored\": [\"screened\", \"enrolled\", \"randomised\", \"analysed\"],\n  \"evidence\": {\n    \"screened\": \"The top stage reads \\\"Training group\\\" with \\\"Traditional group (A)\\\" and \\\"Experimental group (B)\\\" but no participant number is printed.\",\n    \"enrolled\": \"No stage states enrolled, included, recruited, or met inclusion criteria with a number.\",\n    \"randomised\": \"No randomised box or randomisation number is printed.\",\n    \"analysed\": \"The final stage reads \\\"Statistical analysis\\\" but no analysed participant number is printed.\"\n  }\n}\n```"
+  },
+  "PMC11673372": {
+   "split": "dev",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 291,
+    "enrolled": null,
+    "randomised": 91,
+    "analysed": 63,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n=291)",
+     "randomised": "Randomized (n=91)",
+     "analysed": "Analyzed (n=31) and Analyzed (n=32)"
+    }
+   },
+   "seconds": 11.3,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 291,\n  \"enrolled\": null,\n  \"randomised\": 91,\n  \"analysed\": 63,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n=291)\",\n    \"randomised\": \"Randomized (n=91)\",\n    \"analysed\": \"Analyzed (n=31) and Analyzed (n=32)\"\n  }\n}\n```"
+  },
+  "PMC11674074": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": null,
+    "enrolled": 221,
+    "randomised": 164,
+    "analysed": 161,
+    "unscored": [],
+    "evidence": {
+     "enrolled": "Enrolled (n=221)",
+     "randomised": "Randomized (n=164)",
+     "analysed": "Analysis: n=161"
+    }
+   },
+   "seconds": 11.2,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": null,\n  \"enrolled\": 221,\n  \"randomised\": 164,\n  \"analysed\": 161,\n  \"unscored\": [],\n  \"evidence\": {\n    \"enrolled\": \"Enrolled (n=221)\",\n    \"randomised\": \"Randomized (n=164)\",\n    \"analysed\": \"Analysis: n=161\"\n  }\n}\n```"
+  },
+  "PMC11674581": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 180,
+    "enrolled": null,
+    "randomised": 180,
+    "analysed": 118,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n = 180)",
+     "randomised": "Randomized (n = 180)",
+     "analysed": "Analysed (n = 42); Analysed (n = 30); Analysed (n = 46)"
+    }
+   },
+   "seconds": 11.9,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 180,\n  \"enrolled\": null,\n  \"randomised\": 180,\n  \"analysed\": 118,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n = 180)\",\n    \"randomised\": \"Randomized (n = 180)\",\n    \"analysed\": \"Analysed (n = 42); Analysed (n = 30); Analysed (n = 46)\"\n  }\n}\n```"
+  },
+  "PMC11677392": {
+   "split": "dev",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 176,
+    "enrolled": null,
+    "randomised": 45,
+    "analysed": 32,
+    "unscored": [
+     "enrolled"
+    ],
+    "evidence": {
+     "screened": "Assessed for eligibility (n = 176)",
+     "randomised": "Randomized (n = 45)",
+     "analysed": "Analyzed (n = 16) in the placebo arm and Analyzed (n = 16) in the Muscle 5 arm"
+    }
+   },
+   "seconds": 11.3,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 176,\n  \"enrolled\": null,\n  \"randomised\": 45,\n  \"analysed\": 32,\n  \"unscored\": [\"enrolled\"],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n = 176)\",\n    \"randomised\": \"Randomized (n = 45)\",\n    \"analysed\": \"Analyzed (n = 16) in the placebo arm and Analyzed (n = 16) in the Muscle 5 arm\"\n  }\n}\n```"
+  },
+  "PMC11681246": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 10,
+    "enrolled": null,
+    "randomised": 2,
+    "analysed": 34,
+    "unscored": [
+     "enrolled"
+    ],
+    "evidence": {
+     "screened": "Assessed for eligibility: Government hospital in Lao PDR (n = 10)",
+     "randomised": "Randomized (n = 2)",
+     "analysed": "Analyzed (n = 16 HCPs) and Analyzed (n = 18 HCPs)"
+    }
+   },
+   "seconds": 13.5,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 10,\n  \"enrolled\": null,\n  \"randomised\": 2,\n  \"analysed\": 34,\n  \"unscored\": [\"enrolled\"],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility: Government hospital in Lao PDR (n = 10)\",\n    \"randomised\": \"Randomized (n = 2)\",\n    \"analysed\": \"Analyzed (n = 16 HCPs) and Analyzed (n = 18 HCPs)\"\n  }\n}\n```"
+  },
+  "PMC11681664": {
+   "split": "dev",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 103,
+    "enrolled": null,
+    "randomised": 103,
+    "analysed": null,
+    "unscored": [
+     "enrolled",
+     "analysed"
+    ],
+    "evidence": {
+     "screened": "The first-year nuclear medicine residents completed a standardized training entrance exam (n = 103)",
+     "randomised": "Experimental group (n = 52) and Control group (n = 51)",
+     "enrolled": "No stage labeled enrolled, included, recruited, or met/fulfilled inclusion criteria is printed",
+     "analysed": "No analysis-stage participant numbers are printed"
+    }
+   },
+   "seconds": 13.7,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 103,\n  \"enrolled\": null,\n  \"randomised\": 103,\n  \"analysed\": null,\n  \"unscored\": [\"enrolled\", \"analysed\"],\n  \"evidence\": {\n    \"screened\": \"The first-year nuclear medicine residents completed a standardized training entrance exam (n = 103)\",\n    \"randomised\": \"Experimental group (n = 52) and Control group (n = 51)\",\n    \"enrolled\": \"No stage labeled enrolled, included, recruited, or met/fulfilled inclusion criteria is printed\",\n    \"analysed\": \"No analysis-stage participant numbers are printed\"\n  }\n}\n```"
+  },
+  "PMC11681668": {
+   "split": "dev",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 30,
+    "enrolled": null,
+    "randomised": 230,
+    "analysed": 224,
+    "unscored": [],
+    "evidence": {
+     "screened": "Healthcare centers assessed for eligibility (n=30)",
+     "randomised": "Mothers in 6 healthcare centers allocated to intervention group (n=115)-Received allocated; Mothers in 6 healthcare centers allocated to control group (n=115)-Did not receive intervention",
+     "analysed": "Follow-up 1 (immediately after intervention): Analysed (n=111) and Analysed (n=113)"
+    }
+   },
+   "seconds": 14.5,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 30,\n  \"enrolled\": null,\n  \"randomised\": 230,\n  \"analysed\": 224,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Healthcare centers assessed for eligibility (n=30)\",\n    \"randomised\": \"Mothers in 6 healthcare centers allocated to intervention group (n=115)-Received allocated; Mothers in 6 healthcare centers allocated to control group (n=115)-Did not receive intervention\",\n    \"analysed\": \"Follow-up 1 (immediately after intervention): Analysed (n=111) and Analysed (n=113)\"\n  }\n}\n```"
+  },
+  "PMC11682177": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 316,
+    "enrolled": null,
+    "randomised": 87,
+    "analysed": 59,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n=316)",
+     "randomised": "Randomized (n=87)",
+     "analysed": "Analyzed patients (n=14); Analyzed patients (n=26); Analyzed patients (n=19)"
+    }
+   },
+   "seconds": 14.5,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 316,\n  \"enrolled\": null,\n  \"randomised\": 87,\n  \"analysed\": 59,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n=316)\",\n    \"randomised\": \"Randomized (n=87)\",\n    \"analysed\": \"Analyzed patients (n=14); Analyzed patients (n=26); Analyzed patients (n=19)\"\n  }\n}\n```"
+  },
+  "PMC11682309": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 96,
+    "enrolled": null,
+    "randomised": 45,
+    "analysed": 35,
+    "unscored": [],
+    "evidence": {
+     "screened": "96 Patients assessed for eligibility and signed informed consent form",
+     "randomised": "45 Randomized",
+     "analysed": "12 Completed treatment and were included in the analyses; 13 Completed treatment testing and were included in the analyses; 10 Completed treatment testing and were included in the analyses"
+    }
+   },
+   "seconds": 13.5,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 96,\n  \"enrolled\": null,\n  \"randomised\": 45,\n  \"analysed\": 35,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"96 Patients assessed for eligibility and signed informed consent form\",\n    \"randomised\": \"45 Randomized\",\n    \"analysed\": \"12 Completed treatment and were included in the analyses; 13 Completed treatment testing and were included in the analyses; 10 Completed treatment testing and were included in the analyses\"\n  }\n}\n```"
+  },
+  "PMC11682648": {
+   "split": "dev",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 8,
+    "enrolled": null,
+    "randomised": 8,
+    "analysed": 11,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n=8)",
+     "randomised": "Randomized (n=8)",
+     "analysed": "Analysed (n=0), Analysed (n=6), Analysed (n=4), Analysed (n=1)"
+    }
+   },
+   "seconds": 16.4,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 8,\n  \"enrolled\": null,\n  \"randomised\": 8,\n  \"analysed\": 11,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n=8)\",\n    \"randomised\": \"Randomized (n=8)\",\n    \"analysed\": \"Analysed (n=0), Analysed (n=6), Analysed (n=4), Analysed (n=1)\"\n  }\n}\n```"
+  },
+  "PMC11683512": {
+   "split": "dev",
+   "parsed": {
+    "is_participant_flow": false,
+    "screened": null,
+    "enrolled": null,
+    "randomised": null,
+    "analysed": null,
+    "unscored": [],
+    "evidence": {
+     "is_participant_flow": "Figure shows procedural instructions for nasal rinsing and gargling, not a participant flow diagram with participant counts."
+    }
+   },
+   "seconds": 13.9,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": false,\n  \"screened\": null,\n  \"enrolled\": null,\n  \"randomised\": null,\n  \"analysed\": null,\n  \"unscored\": [],\n  \"evidence\": {\n    \"is_participant_flow\": \"Figure shows procedural instructions for nasal rinsing and gargling, not a participant flow diagram with participant counts.\"\n  }\n}\n```"
+  },
+  "PMC11684146": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 168,
+    "enrolled": 98,
+    "randomised": 76,
+    "analysed": 76,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n=168)",
+     "enrolled": "Fulfilling the inclusion criteria (n=98)",
+     "randomised": "Randomized (n=76)",
+     "analysed": "Observation group analysis (n=38); Control group analysis (n=38)"
+    }
+   },
+   "seconds": 12.7,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 168,\n  \"enrolled\": 98,\n  \"randomised\": 76,\n  \"analysed\": 76,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n=168)\",\n    \"enrolled\": \"Fulfilling the inclusion criteria (n=98)\",\n    \"randomised\": \"Randomized (n=76)\",\n    \"analysed\": \"Observation group analysis (n=38); Control group analysis (n=38)\"\n  }\n}\n```"
+  },
+  "PMC11685923": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 18,
+    "enrolled": null,
+    "randomised": 15,
+    "analysed": 15,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n = 18)",
+     "randomised": "Randomized (n = 15)",
+     "analysed": "Analysed (n = 8) and Analysed (n = 7)"
+    }
+   },
+   "seconds": 11.0,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 18,\n  \"enrolled\": null,\n  \"randomised\": 15,\n  \"analysed\": 15,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n = 18)\",\n    \"randomised\": \"Randomized (n = 15)\",\n    \"analysed\": \"Analysed (n = 8) and Analysed (n = 7)\"\n  }\n}\n```"
+  },
+  "PMC11686115": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 103,
+    "enrolled": 90,
+    "randomised": null,
+    "analysed": null,
+    "unscored": [
+     "randomised",
+     "analysed"
+    ],
+    "evidence": {
+     "screened": "Prospective Screening 2021 to 2024 Subjects Undergoing CCTA Screening (n=103)",
+     "enrolled": "Included subjects (n=90)"
+    }
+   },
+   "seconds": 13.0,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 103,\n  \"enrolled\": 90,\n  \"randomised\": null,\n  \"analysed\": null,\n  \"unscored\": [\"randomised\", \"analysed\"],\n  \"evidence\": {\n    \"screened\": \"Prospective Screening 2021 to 2024 Subjects Undergoing CCTA Screening (n=103)\",\n    \"enrolled\": \"Included subjects (n=90)\"\n  }\n}\n```"
+  },
+  "PMC11686909": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 48,
+    "enrolled": 20,
+    "randomised": 20,
+    "analysed": 220,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n = 48 colleges)",
+     "enrolled": "Included (n = 20)",
+     "randomised": "Allocated to intervention (n = 12) and Allocated to control (n = 8)",
+     "analysed": "Analyzed (n = 45 educators, 91 students) and Analyzed (n = 29 educators, 55 students)"
+    }
+   },
+   "seconds": 24.5,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 48,\n  \"enrolled\": 20,\n  \"randomised\": 20,\n  \"analysed\": 220,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n = 48 colleges)\",\n    \"enrolled\": \"Included (n = 20)\",\n    \"randomised\": \"Allocated to intervention (n = 12) and Allocated to control (n = 8)\",\n    \"analysed\": \"Analyzed (n = 45 educators, 91 students) and Analyzed (n = 29 educators, 55 students)\"\n  }\n}\n```"
+  },
+  "PMC11687014": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 579,
+    "enrolled": 550,
+    "randomised": 185,
+    "analysed": 185,
+    "unscored": [],
+    "evidence": {
+     "screened": "Consented and screened (n=579)",
+     "enrolled": "Met screening inclusion criteria (n=550)",
+     "randomised": "Passed runin and randomised (n=185)",
+     "analysed": "Included in primary outcome analysis (n=185)"
+    }
+   },
+   "seconds": 14.6,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 579,\n  \"enrolled\": 550,\n  \"randomised\": 185,\n  \"analysed\": 185,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Consented and screened (n=579)\",\n    \"enrolled\": \"Met screening inclusion criteria (n=550)\",\n    \"randomised\": \"Passed runin and randomised (n=185)\",\n    \"analysed\": \"Included in primary outcome analysis (n=185)\"\n  }\n}\n```"
+  },
+  "PMC11687045": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 320,
+    "enrolled": null,
+    "randomised": 272,
+    "analysed": 259,
+    "unscored": [
+     "enrolled"
+    ],
+    "evidence": {
+     "screened": "Assessed for eligibility (n=320)",
+     "randomised": "Baseline measurements and Randomised (n=272)",
+     "analysed": "Analysed (n=132)Analysed (n=127)"
+    }
+   },
+   "seconds": 12.0,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 320,\n  \"enrolled\": null,\n  \"randomised\": 272,\n  \"analysed\": 259,\n  \"unscored\": [\"enrolled\"],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n=320)\",\n    \"randomised\": \"Baseline measurements and Randomised (n=272)\",\n    \"analysed\": \"Analysed (n=132)\" + \"Analysed (n=127)\"\n  }\n}\n```"
+  },
+  "PMC11689596": {
+   "split": "dev",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": null,
+    "enrolled": null,
+    "randomised": 80,
+    "analysed": 80,
+    "unscored": [
+     "screened",
+     "enrolled"
+    ],
+    "evidence": {
+     "screened": "Assessed for eligibility (number not visible/printed in the figure)",
+     "randomised": "Randomized (allocation shows Intervention Group (n=40) and Control Group (n=40))",
+     "analysed": "Analysed (n=40) in the intervention group and Analysed (n=40) in the control group"
+    }
+   },
+   "seconds": 13.2,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": null,\n  \"enrolled\": null,\n  \"randomised\": 80,\n  \"analysed\": 80,\n  \"unscored\": [\"screened\", \"enrolled\"],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (number not visible/printed in the figure)\",\n    \"randomised\": \"Randomized (allocation shows Intervention Group (n=40) and Control Group (n=40))\",\n    \"analysed\": \"Analysed (n=40) in the intervention group and Analysed (n=40) in the control group\"\n  }\n}\n```"
+  },
+  "PMC11700878": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 120,
+    "enrolled": null,
+    "randomised": 82,
+    "analysed": 70,
+    "unscored": [
+     "enrolled"
+    ],
+    "evidence": {
+     "screened": "Assessed for eligibility (n=120)",
+     "randomised": "Randomized (n=82)",
+     "analysed": "Analysed (n=35)"
+    }
+   },
+   "seconds": 15.4,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 120,\n  \"enrolled\": null,\n  \"randomised\": 82,\n  \"analysed\": 70,\n  \"unscored\": [\"enrolled\"],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n=120)\",\n    \"randomised\": \"Randomized (n=82)\",\n    \"analysed\": \"Analysed (n=35)\" \n  }\n}\n```"
+  },
+  "PMC11703737": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 160,
+    "enrolled": 110,
+    "randomised": 110,
+    "analysed": 101,
+    "unscored": [],
+    "evidence": {
+     "screened": "160 non-ICU healthcare professionals applied for participation",
+     "enrolled": "110 participants met the inclusion criteria",
+     "randomised": "110 participants were randomly divided into two groups",
+     "analysed": "47 participants completed post-intervention assessment (n = 47) and All participants completed post-intervention assessment (n = 54)"
+    }
+   },
+   "seconds": 18.8,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 160,\n  \"enrolled\": 110,\n  \"randomised\": 110,\n  \"analysed\": 101,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"160 non-ICU healthcare professionals applied for participation\",\n    \"enrolled\": \"110 participants met the inclusion criteria\",\n    \"randomised\": \"110 participants were randomly divided into two groups\",\n    \"analysed\": \"47 participants completed post-intervention assessment (n = 47) and All participants completed post-intervention assessment (n = 54)\"\n  }\n}\n```"
+  },
+  "PMC11722567": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 336,
+    "enrolled": 260,
+    "randomised": null,
+    "analysed": 208,
+    "unscored": [
+     "randomised"
+    ],
+    "evidence": {
+     "screened": "336 Women were assessed for eligibility",
+     "enrolled": "260 Women met the inclusion criteria for research",
+     "analysed": "208 Completed follow-up"
+    }
+   },
+   "seconds": 11.8,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 336,\n  \"enrolled\": 260,\n  \"randomised\": null,\n  \"analysed\": 208,\n  \"unscored\": [\"randomised\"],\n  \"evidence\": {\n    \"screened\": \"336 Women were assessed for eligibility\",\n    \"enrolled\": \"260 Women met the inclusion criteria for research\",\n    \"analysed\": \"208 Completed follow-up\"\n  }\n}\n```"
+  },
+  "PMC11722735": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 3165,
+    "enrolled": 2842,
+    "randomised": null,
+    "analysed": 2149,
+    "unscored": [
+     "randomised"
+    ],
+    "evidence": {
+     "screened": "Intervention Group: \"Infant/mother dyads assessed for eligibility (n = 1540)\"; Control Group: \"Infant/mother dyads assessed for eligibility (n = 1625)\"",
+     "enrolled": "Intervention Group: \"Enrolled (n = 1387)\"; Control Group: \"Enrolled (n = 1455)\"",
+     "randomised": "\"Randomized\" box has no participant number; arm labels show clusters (\"Intervention Group (n=26 clusters)\" and \"Control Group (n=26 clusters)\") rather than a clear participant randomised count",
+     "analysed": "Intervention Group: \"6 month visit data (n=1039)\"; Control Group: \"Data analyzed from 6 month visit (n=1110)\""
+    }
+   },
+   "seconds": 24.9,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 3165,\n  \"enrolled\": 2842,\n  \"randomised\": null,\n  \"analysed\": 2149,\n  \"unscored\": [\"randomised\"],\n  \"evidence\": {\n    \"screened\": \"Intervention Group: \\\"Infant/mother dyads assessed for eligibility (n = 1540)\\\"; Control Group: \\\"Infant/mother dyads assessed for eligibility (n = 1625)\\\"\",\n    \"enrolled\": \"Intervention Group: \\\"Enrolled (n = 1387)\\\"; Control Group: \\\"Enrolled (n = 1455)\\\"\",\n    \"randomised\": \"\\\"Randomized\\\" box has no participant number; arm labels show clusters (\\\"Intervention Group (n=26 clusters)\\\" and \\\"Control Group (n=26 clusters)\\\") rather than a clear participant randomised count\",\n    \"analysed\": \"Intervention Group: \\\"6 month visit data (n=1039)\\\"; Control Group: \\\"Data analyzed from 6 month visit (n=1110)\\\"\"\n  }\n}\n```"
+  },
+  "PMC11722783": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": false,
+    "screened": null,
+    "enrolled": null,
+    "randomised": null,
+    "analysed": null,
+    "unscored": [],
+    "evidence": {
+     "is_participant_flow": "The figure is a study schedule/timeline showing 'Monitoring Daily Dietary Intake', 'Performance testing', 'Blood sampling', and 'Supplementation with Protein/Placebo'; it does not show participant flow counts."
+    }
+   },
+   "seconds": 10.1,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": false,\n  \"screened\": null,\n  \"enrolled\": null,\n  \"randomised\": null,\n  \"analysed\": null,\n  \"unscored\": [],\n  \"evidence\": {\n    \"is_participant_flow\": \"The figure is a study schedule/timeline showing 'Monitoring Daily Dietary Intake', 'Performance testing', 'Blood sampling', and 'Supplementation with Protein/Placebo'; it does not show participant flow counts.\"\n  }\n}\n```"
+  },
+  "PMC11723007": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 250,
+    "enrolled": null,
+    "randomised": 38,
+    "analysed": 33,
+    "unscored": [
+     "enrolled"
+    ],
+    "evidence": {
+     "screened": "Assessed for eligibility (n = 250)",
+     "randomised": "Randomized (n = 38)",
+     "analysed": "Analyzed (n = 33)"
+    }
+   },
+   "seconds": 12.4,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 250,\n  \"enrolled\": null,\n  \"randomised\": 38,\n  \"analysed\": 33,\n  \"unscored\": [\"enrolled\"],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n = 250)\",\n    \"randomised\": \"Randomized (n = 38)\",\n    \"analysed\": \"Analyzed (n = 33)\"\n  }\n}\n```"
+  },
+  "PMC11723049": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 41,
+    "enrolled": null,
+    "randomised": 12,
+    "analysed": 12,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for pre-eligibility n = 41",
+     "randomised": "Randomized n = 12",
+     "analysed": "Final Statistical Analysis (n = 12)"
+    }
+   },
+   "seconds": 10.2,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 41,\n  \"enrolled\": null,\n  \"randomised\": 12,\n  \"analysed\": 12,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for pre-eligibility n = 41\",\n    \"randomised\": \"Randomized n = 12\",\n    \"analysed\": \"Final Statistical Analysis (n = 12)\"\n  }\n}\n```"
+  },
+  "PMC11723090": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 420,
+    "enrolled": 200,
+    "randomised": 200,
+    "analysed": 192,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n = 420)",
+     "enrolled": "Enrolled and randomized (n = 200)",
+     "randomised": "Enrolled and randomized (n = 200)",
+     "analysed": "Analyzed (n = 96) in the GCL1815 Group and Analyzed (n = 96) in the Placebo Group"
+    }
+   },
+   "seconds": 12.1,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 420,\n  \"enrolled\": 200,\n  \"randomised\": 200,\n  \"analysed\": 192,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n = 420)\",\n    \"enrolled\": \"Enrolled and randomized (n = 200)\",\n    \"randomised\": \"Enrolled and randomized (n = 200)\",\n    \"analysed\": \"Analyzed (n = 96) in the GCL1815 Group and Analyzed (n = 96) in the Placebo Group\"\n  }\n}\n```"
+  },
+  "PMC11723122": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 377,
+    "enrolled": null,
+    "randomised": 260,
+    "analysed": 81,
+    "unscored": [],
+    "evidence": {
+     "screened": "Eligible students (n=377) (adolescents diagnosed with obesity)",
+     "randomised": "Randomized students (n=260)",
+     "analysed": "Statistical analyses of data; CASN (n=54) and CON (n=27)"
+    }
+   },
+   "seconds": 11.0,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 377,\n  \"enrolled\": null,\n  \"randomised\": 260,\n  \"analysed\": 81,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Eligible students (n=377) (adolescents diagnosed with obesity)\",\n    \"randomised\": \"Randomized students (n=260)\",\n    \"analysed\": \"Statistical analyses of data; CASN (n=54) and CON (n=27)\"\n  }\n}\n```"
+  },
+  "PMC11723218": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": null,
+    "enrolled": null,
+    "randomised": 18,
+    "analysed": null,
+    "unscored": [
+     "screened",
+     "enrolled",
+     "analysed"
+    ],
+    "evidence": {
+     "randomised": "Randomized Controlled; 50 ml of beetroot juice concentrate (~6.2 mmol nitrate) (n=9); Placebo (n=9)"
+    }
+   },
+   "seconds": 12.0,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": null,\n  \"enrolled\": null,\n  \"randomised\": 18,\n  \"analysed\": null,\n  \"unscored\": [\"screened\", \"enrolled\", \"analysed\"],\n  \"evidence\": {\n    \"randomised\": \"Randomized Controlled; 50 ml of beetroot juice concentrate (~6.2 mmol nitrate) (n=9); Placebo (n=9)\"\n  }\n}\n```"
+  },
+  "PMC11723309": {
+   "split": "test",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 1214,
+    "enrolled": 69,
+    "randomised": 75,
+    "analysed": 69,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n=1214)",
+     "enrolled": "Baseline data collection, recruitment of MT children (n=69)",
+     "randomised": "Randomized 3 schools to 3 arms (n=75)",
+     "analysed": "Analyzed (n=23), Analyzed (n=25), Analyzed (n=21)"
+    }
+   },
+   "seconds": 13.3,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 1214,\n  \"enrolled\": 69,\n  \"randomised\": 75,\n  \"analysed\": 69,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n=1214)\",\n    \"enrolled\": \"Baseline data collection, recruitment of MT children (n=69)\",\n    \"randomised\": \"Randomized 3 schools to 3 arms (n=75)\",\n    \"analysed\": \"Analyzed (n=23), Analyzed (n=25), Analyzed (n=21)\"\n  }\n}\n```"
+  },
+  "PMC11809628": {
+   "split": "dev",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 178,
+    "enrolled": null,
+    "randomised": 178,
+    "analysed": 170,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assess for eligibility N = 178",
+     "randomised": "Randomized; Control N = 89 and Video N = 89",
+     "analysed": "Analysis boxes show N = 85 for Control and N = 85 for Video"
+    }
+   },
+   "seconds": 12.9,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": null,
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 178,\n  \"enrolled\": null,\n  \"randomised\": 178,\n  \"analysed\": 170,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assess for eligibility N = 178\",\n    \"randomised\": \"Randomized; Control N = 89 and Video N = 89\",\n    \"analysed\": \"Analysis boxes show N = 85 for Control and N = 85 for Video\"\n  }\n}\n```"
+  },
+  "PMC11821620": {
+   "split": "dev",
+   "parsed": null,
+   "seconds": 6.6,
+   "model": null,
+   "thinking_used": null,
+   "reply_fields": {
+    "success": true,
+    "provider": "chatgpt",
+    "result": [
+     "sent"
+    ]
+   },
+   "attachments": null,
+   "rejected": "no parsable JSON in the reply",
+   "response": ""
+  }
+ },
+ "annotator": "ChatGPT via Proxima (default GPT-5.6 Thinking, high effort), blind to the answer key, one fresh conversation per figure",
+ "prompt": "You are the second, independent annotator of a figure from a published randomised trial. Another annotator has already read it; you will not see their answers, and yours will be compared with theirs. Read the numbers printed in the attached figure and report them under the definitions below, as a careful human annotator would.\n\nReport only what the figure prints. If it gives no number for a stage, the answer is null. Do not use outside knowledge of the trial, and do not do arithmetic beyond what a definition asks for.\n\nDefinitions (use them exactly):\n{definitions}\n\nReply with a single fenced JSON block and nothing after it, in this shape:\n\n```json\n{{\n  \"is_participant_flow\": <true or false>,\n  \"screened\": <integer or null>,\n  \"enrolled\": <integer or null>,\n  \"randomised\": <integer or null>,\n  \"analysed\": <integer or null>,\n  \"unscored\": [<names of any stages the figure leaves genuinely ambiguous>],\n  \"evidence\": {{\"<stage>\": \"<the words and numbers printed in the figure that you used>\"}}\n}}\n```"
+}

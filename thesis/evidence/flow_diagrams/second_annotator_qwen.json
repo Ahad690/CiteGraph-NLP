@@ -1,0 +1,3104 @@
+{
+ "annotations": {
+  "PMC11656893": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 130,
+    "enrolled": null,
+    "randomised": 129,
+    "analysed": 124,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n=130)",
+     "randomised": "Randomized (n=129)",
+     "analysed": "Analysed (n=65) + Analysed (n=59) = 124"
+    }
+   },
+   "seconds": 31.2,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 130,\n  \"enrolled\": null,\n  \"randomised\": 129,\n  \"analysed\": 124,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n=130)\",\n    \"randomised\": \"Randomized (n=129)\",\n    \"analysed\": \"Analysed (n=65) + Analysed (n=59) = 124\"\n  }\n}\n```"
+  },
+  "PMC11656953": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 110,
+    "enrolled": 76,
+    "randomised": 76,
+    "analysed": 76,
+    "unscored": [],
+    "evidence": {
+     "screened": "Screening (N = 110)",
+     "enrolled": "Inclusion (N = 76)",
+     "randomised": "Randomization (N = 76)",
+     "analysed": "Intent to treat sample: Brief GPM (n = 35) and Intent to treat sample: TAU (n = 41); 35 + 41 = 76"
+    }
+   },
+   "seconds": 55.1,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 110,\n  \"enrolled\": 76,\n  \"randomised\": 76,\n  \"analysed\": 76,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Screening (N = 110)\",\n    \"enrolled\": \"Inclusion (N = 76)\",\n    \"randomised\": \"Randomization (N = 76)\",\n    \"analysed\": \"Intent to treat sample: Brief GPM (n = 35) and Intent to treat sample: TAU (n = 41); 35 + 41 = 76\"\n  }\n}\n```"
+  },
+  "PMC11657229": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": null,
+    "enrolled": null,
+    "randomised": 130,
+    "analysed": 128,
+    "unscored": [],
+    "evidence": {
+     "randomised": "Top box: 'Randomized patients N=130'; arms printed as 'Cryospray N=65' and 'Placebo Spray N=65' (consistent with 130)",
+     "analysed": "'N=64 included in the analysis' under Cryospray and 'N=64 included in the analysis' under Placebo Spray; 64 + 64 = 128",
+     "screened": "null - no screening or eligibility-assessment box is printed; the flow begins at 'Randomized patients N=130'",
+     "enrolled": "null - no separate enrolled/recruited/inclusion-criteria stage is printed; the only 'included' wording refers to inclusion in the analysis",
+     "withdrawals": "'1 patient withdrew consent' printed on each arm between allocation and analysis"
+    }
+   },
+   "seconds": 94.1,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "attachments": [
+    {
+     "name": "PMC11657229_12871_2024_2858_Fig1_HTML.jpg",
+     "id": "845e418f-4161-4b22-b4d0-c4a43943fb1f",
+     "type": "image",
+     "size": 20975
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": null,\n  \"enrolled\": null,\n  \"randomised\": 130,\n  \"analysed\": 128,\n  \"unscored\": [],\n  \"evidence\": {\n    \"randomised\": \"Top box: 'Randomized patients N=130'; arms printed as 'Cryospray N=65' and 'Placebo Spray N=65' (consistent with 130)\",\n    \"analysed\": \"'N=64 included in the analysis' under Cryospray and 'N=64 included in the analysis' under Placebo Spray; 64 + 64 = 128\",\n    \"screened\": \"null - no screening or eligibility-assessment box is printed; the flow begins at 'Randomized patients N=130'\",\n    \"enrolled\": \"null - no separate enrolled/recruited/inclusion-criteria stage is printed; the only 'included' wording refers to inclusion in the analysis\",\n    \"withdrawals\": \"'1 patient withdrew consent' printed on each arm between allocation and analysis\"\n  }\n}\n```"
+  },
+  "PMC11657266": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 354,
+    "enrolled": null,
+    "randomised": 100,
+    "analysed": 100,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility(n=354)",
+     "randomised": "Randomized(n=100)",
+     "analysed": "Group N: Analysed(n=50); Group D: Analysed(n=50); Excluded from analysis(n=0) in both arms"
+    }
+   },
+   "seconds": 26.0,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 354,\n  \"enrolled\": null,\n  \"randomised\": 100,\n  \"analysed\": 100,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility(n=354)\",\n    \"randomised\": \"Randomized(n=100)\",\n    \"analysed\": \"Group N: Analysed(n=50); Group D: Analysed(n=50); Excluded from analysis(n=0) in both arms\"\n  }\n}\n```"
+  },
+  "PMC11657332": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 71,
+    "enrolled": null,
+    "randomised": 49,
+    "analysed": 48,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n = 71)",
+     "enrolled": "Side heading 'Enrollment' only; no box prints a number for enrolled/included/recruited or met inclusion criteria",
+     "randomised": "Randomized (n = 49)",
+     "analysed": "Steroid arm: 'Intention-to-treat analysis (n = 24)'; placebo arm: 'Intention-to-treat analysis (n = 24)'; summed = 48"
+    }
+   },
+   "seconds": 58.0,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 71,\n  \"enrolled\": null,\n  \"randomised\": 49,\n  \"analysed\": 48,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n = 71)\",\n    \"enrolled\": \"Side heading 'Enrollment' only; no box prints a number for enrolled/included/recruited or met inclusion criteria\",\n    \"randomised\": \"Randomized (n = 49)\",\n    \"analysed\": \"Steroid arm: 'Intention-to-treat analysis (n = 24)'; placebo arm: 'Intention-to-treat analysis (n = 24)'; summed = 48\"\n  }\n}\n```"
+  },
+  "PMC11657600": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 334,
+    "enrolled": null,
+    "randomised": 43,
+    "analysed": null,
+    "unscored": [],
+    "evidence": {
+     "screened": "Top box: 'Number screened 334' (side box 'Not eligible 174')",
+     "enrolled": "No box is printed as enrolled, included, recruited, or having met/fulfilled inclusion criteria; the printed stages are 'Number screened 334', 'Number approached 160', 'Number consented 61', 'Number randomised 43'",
+     "randomised": "Box: 'Number randomised 43'; allocated arms printed as 'Standard HD 20' and 'Cooled HD 23'",
+     "analysed": "No analysis stage is printed; the final box prints 'Completed study 27' with 'Standard HD 12' and 'Cooled HD 15', and a side box lists losses ('6 didn't complete for COVID-19, 5 died, 4 consent withdrawn, 1 transplanted'), but none is labelled as analysed"
+    }
+   },
+   "seconds": 166.2,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "attachments": [
+    {
+     "name": "PMC11657600_12882_2024_3883_Fig1_HTML.jpg",
+     "id": "52e6bce9-397d-4e60-ae1a-8f4f3ea6d325",
+     "type": "image",
+     "size": 67921
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 334,\n  \"enrolled\": null,\n  \"randomised\": 43,\n  \"analysed\": null,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Top box: 'Number screened 334' (side box 'Not eligible 174')\",\n    \"enrolled\": \"No box is printed as enrolled, included, recruited, or having met/fulfilled inclusion criteria; the printed stages are 'Number screened 334', 'Number approached 160', 'Number consented 61', 'Number randomised 43'\",\n    \"randomised\": \"Box: 'Number randomised 43'; allocated arms printed as 'Standard HD 20' and 'Cooled HD 23'\",\n    \"analysed\": \"No analysis stage is printed; the final box prints 'Completed study 27' with 'Standard HD 12' and 'Cooled HD 15', and a side box lists losses ('6 didn't complete for COVID-19, 5 died, 4 consent withdrawn, 1 transplanted'), but none is labelled as analysed\"\n  }\n}\n```"
+  },
+  "PMC11657661": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 33,
+    "enrolled": null,
+    "randomised": 24,
+    "analysed": 24,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n = 33)",
+     "enrolled": "No separate enrolled/included/recruited stage printed; flow goes from 'Assessed for eligibility (n = 33)' via 'Excluded (n = 9)' straight to 'Randomized (n = 24)'",
+     "randomised": "Randomized (n = 24)",
+     "analysed": "Three arms each print 'Analyzed (n = 8)' (IMFG, AG, CG); 8 + 8 + 8 = 24"
+    }
+   },
+   "seconds": 34.8,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "9e5d841e-1174-49b4-b3ff-a268ecda0d3c",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 888,
+      "output_tokens": 979,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 442,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 1867,
+      "output_tokens_details": {
+       "reasoning_tokens": 771,
+       "text_tokens": 207
+      },
+      "image_tokens": 442
+     },
+     "phases": {
+      "thinking_summary": 6,
+      "answer": 61
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the provided flowchart data",
+       "thought": "I am carefully examining the figure to extract specific numerical values and their corresponding labels.\nI identify the total number of participants assessed for eligibility and break down the reasons for exclusion among those who were not included.\nThis step ensures accurate interpretation of the study's participant selection process before proceeding with further analysis."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11657661_12877_2024_5610_Fig1_HTML.jpg",
+      "id": "5bb832c1-805a-414e-aaf7-cbf1a88d4d9d",
+      "type": "image",
+      "size": 65537
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11657661_12877_2024_5610_Fig1_HTML.jpg",
+     "id": "5bb832c1-805a-414e-aaf7-cbf1a88d4d9d",
+     "type": "image",
+     "size": 65537
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 33,\n  \"enrolled\": null,\n  \"randomised\": 24,\n  \"analysed\": 24,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n = 33)\",\n    \"enrolled\": \"No separate enrolled/included/recruited stage printed; flow goes from 'Assessed for eligibility (n = 33)' via 'Excluded (n = 9)' straight to 'Randomized (n = 24)'\",\n    \"randomised\": \"Randomized (n = 24)\",\n    \"analysed\": \"Three arms each print 'Analyzed (n = 8)' (IMFG, AG, CG); 8 + 8 + 8 = 24\"\n  }\n}\n```"
+  },
+  "PMC11658635": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 49,
+    "enrolled": null,
+    "randomised": 34,
+    "analysed": 34,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n= 49)",
+     "enrolled": "Only the phase header 'Enrollment' is printed; no box states an enrolled/included/recruited number",
+     "randomised": "Randomized (n= 34)",
+     "analysed": "Left arm 'Analysed (n= 17)' plus right arm 'Analysed (n= 17)' = 34"
+    }
+   },
+   "seconds": 44.4,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "c7e9e4dd-0cf0-4238-ab2f-e91e3791eacf",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 862,
+      "output_tokens": 1895,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 416,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 2757,
+      "output_tokens_details": {
+       "reasoning_tokens": 1714,
+       "text_tokens": 180
+      },
+      "image_tokens": 416
+     },
+     "phases": {
+      "thinking_summary": 10,
+      "answer": 50
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the provided diagram to extract structured information",
+       "thought": "I am carefully examining the figure to identify and categorize its components. I am listing the distinct boxes present, such as headers and data points. I am noting specific details like enrollment numbers and exclusion criteria. This process ensures accurate extraction of the visual data for further processing."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11658635_pone.0314361.g001.jpg",
+      "id": "061bd6c8-56a7-4475-9927-b54556b84fbd",
+      "type": "image",
+      "size": 99553
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11658635_pone.0314361.g001.jpg",
+     "id": "061bd6c8-56a7-4475-9927-b54556b84fbd",
+     "type": "image",
+     "size": 99553
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 49,\n  \"enrolled\": null,\n  \"randomised\": 34,\n  \"analysed\": 34,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n= 49)\",\n    \"enrolled\": \"Only the phase header 'Enrollment' is printed; no box states an enrolled/included/recruited number\",\n    \"randomised\": \"Randomized (n= 34)\",\n    \"analysed\": \"Left arm 'Analysed (n= 17)' plus right arm 'Analysed (n= 17)' = 34\"\n  }\n}\n```"
+  },
+  "PMC11660442": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 250,
+    "enrolled": null,
+    "randomised": 207,
+    "analysed": 200,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n=250)",
+     "enrolled": "No separate stage prints an enrolled/included/recruited count; the grey side label 'Enrollment' carries no number (only 'Assessed for eligibility (n=250)' and 'Excluded (n=43)' appear under it)",
+     "randomised": "Randomized (n=207)",
+     "analysed": "Analysed(n=101) in the PC arm plus Analysed(n=99) in the NT arm = 200"
+    }
+   },
+   "seconds": 29.6,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "9605bada-3467-4d36-a9a3-536deb211a26",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 805,
+      "output_tokens": 1290,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 359,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 2095,
+      "output_tokens_details": {
+       "reasoning_tokens": 1078,
+       "text_tokens": 211
+      },
+      "image_tokens": 359
+     },
+     "phases": {
+      "thinking_summary": 7,
+      "answer": 61
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the flowchart structure to extract participant data.",
+       "thought": "I am carefully examining the top section of the figure to identify the initial number of individuals screened for eligibility.\nNext, I focus on the exclusion criteria box to categorize the reasons why participants were removed from the study.\nThis step-by-step breakdown allows me to accurately interpret the numerical data presented in the diagram."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11660442_12891_2024_8162_Fig1_HTML.jpg",
+      "id": "ebd842a5-fa04-46dd-932c-fcf50df34065",
+      "type": "image",
+      "size": 84576
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11660442_12891_2024_8162_Fig1_HTML.jpg",
+     "id": "ebd842a5-fa04-46dd-932c-fcf50df34065",
+     "type": "image",
+     "size": 84576
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 250,\n  \"enrolled\": null,\n  \"randomised\": 207,\n  \"analysed\": 200,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n=250)\",\n    \"enrolled\": \"No separate stage prints an enrolled/included/recruited count; the grey side label 'Enrollment' carries no number (only 'Assessed for eligibility (n=250)' and 'Excluded (n=43)' appear under it)\",\n    \"randomised\": \"Randomized (n=207)\",\n    \"analysed\": \"Analysed(n=101) in the PC arm plus Analysed(n=99) in the NT arm = 200\"\n  }\n}\n```"
+  },
+  "PMC11660494": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 80,
+    "enrolled": null,
+    "randomised": 60,
+    "analysed": 60,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n=80)",
+     "enrolled": "No box states enrolled, included, recruited, or met inclusion criteria as its own stage; 'Enrollment' appears only as a phase label beside the assessed-for-eligibility box",
+     "randomised": "Randomized (n=60)",
+     "analysed": "Intervention arm: 'Analysed (n=30)'; control arm: 'Analysed (n=30)'; sum = 60"
+    }
+   },
+   "seconds": 37.3,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "075c5872-4050-4912-ba0b-1aee85c5a32a",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 826,
+      "output_tokens": 1561,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 380,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 2387,
+      "output_tokens_details": {
+       "reasoning_tokens": 1365,
+       "text_tokens": 195
+      },
+      "image_tokens": 380
+     },
+     "phases": {
+      "thinking_summary": 8,
+      "answer": 58
+     },
+     "thinking": [
+      {
+       "title": "Analyze the provided visual content",
+       "thought": "I carefully examine the diagram to identify its structure and key components. I recognize it as a CONSORT 2010 flow diagram detailing participant progression. I note the initial assessment count and the exclusion criteria listed in the subsequent box. This systematic observation allows me to understand the study's participant flow accurately."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11660494_13019_2024_3186_Fig1_HTML.jpg",
+      "id": "ad381c90-13e0-4e54-bd6b-37cc8e05a34c",
+      "type": "image",
+      "size": 60831
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11660494_13019_2024_3186_Fig1_HTML.jpg",
+     "id": "ad381c90-13e0-4e54-bd6b-37cc8e05a34c",
+     "type": "image",
+     "size": 60831
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 80,\n  \"enrolled\": null,\n  \"randomised\": 60,\n  \"analysed\": 60,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n=80)\",\n    \"enrolled\": \"No box states enrolled, included, recruited, or met inclusion criteria as its own stage; 'Enrollment' appears only as a phase label beside the assessed-for-eligibility box\",\n    \"randomised\": \"Randomized (n=60)\",\n    \"analysed\": \"Intervention arm: 'Analysed (n=30)'; control arm: 'Analysed (n=30)'; sum = 60\"\n  }\n}\n```"
+  },
+  "PMC11660854": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 79,
+    "enrolled": null,
+    "randomised": 65,
+    "analysed": 50,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n= 79)",
+     "enrolled": "No separate enrolled stage with a number; 'Enrollment' appears only as a phase header",
+     "randomised": "Randomized (n= 65)",
+     "analysed": "Left arm 'Analysed (n= 25)' plus right arm 'Analysed (n= 25)' = 50"
+    }
+   },
+   "seconds": 35.7,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "c9fa218e-f4d1-498c-a59f-3e6127063638",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 826,
+      "output_tokens": 1359,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 380,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 2185,
+      "output_tokens_details": {
+       "reasoning_tokens": 1182,
+       "text_tokens": 176
+      },
+      "image_tokens": 380
+     },
+     "phases": {
+      "thinking_summary": 8,
+      "answer": 49
+     },
+     "thinking": [
+      {
+       "title": "Interpreting the provided text snippet",
+       "thought": "I am carefully examining the figure to extract specific data points regarding participant screening and exclusion. I identify the initial number of individuals assessed for eligibility and note the total count of those excluded from the study. I also analyze the detailed reasons for exclusion, such as failure to meet inclusion criteria or refusal to participate. This process ensures accurate extraction of statistical information for subsequent analysis."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11660854_12891_2024_8186_Fig1_HTML.jpg",
+      "id": "b992c1d9-50f1-46e1-ba42-3ae06af6cbf7",
+      "type": "image",
+      "size": 62833
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11660854_12891_2024_8186_Fig1_HTML.jpg",
+     "id": "b992c1d9-50f1-46e1-ba42-3ae06af6cbf7",
+     "type": "image",
+     "size": 62833
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 79,\n  \"enrolled\": null,\n  \"randomised\": 65,\n  \"analysed\": 50,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n= 79)\",\n    \"enrolled\": \"No separate enrolled stage with a number; 'Enrollment' appears only as a phase header\",\n    \"randomised\": \"Randomized (n= 65)\",\n    \"analysed\": \"Left arm 'Analysed (n= 25)' plus right arm 'Analysed (n= 25)' = 50\"\n  }\n}\n```"
+  },
+  "PMC11660996": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 320,
+    "enrolled": null,
+    "randomised": 200,
+    "analysed": 175,
+    "unscored": [],
+    "evidence": {
+     "screened": "Top box: 'Screened for eligibility (n=320)', with side box 'Excluded (n=120)'",
+     "enrolled": "No box states enrolled, included, recruited, or met inclusion criteria as its own stage; only the sidebar label 'Enrollment' spans the screened and randomised boxes",
+     "randomised": "Box: 'Randomised (n=200)'",
+     "analysed": "Analysis box: 'Secondary analyses for prediction of outcomes pain (n=175) and function (n=172)'; first-listed analysis is pain (n=175)"
+    }
+   },
+   "seconds": 94.2,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "1651865a-beed-4d70-a227-58ad31fcddb9",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 763,
+      "output_tokens": 3909,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 317,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 4672,
+      "output_tokens_details": {
+       "reasoning_tokens": 3683,
+       "text_tokens": 225
+      },
+      "image_tokens": 317
+     },
+     "phases": {
+      "thinking_summary": 18,
+      "answer": 66
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the provided figure to extract specific data points",
+       "thought": "I carefully examine the visual elements to identify key numerical values associated with each stage of the process. I note the total number of individuals screened and those excluded for various reasons. I also determine the count of participants who were randomized based on the labeled boxes. This systematic observation allows me to accurately interpret the flowchart's data."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11660996_12891_2024_8187_Fig1_HTML.jpg",
+      "id": "e36acbb2-013b-4466-a2a2-5b2354e5bd53",
+      "type": "image",
+      "size": 65094
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11660996_12891_2024_8187_Fig1_HTML.jpg",
+     "id": "e36acbb2-013b-4466-a2a2-5b2354e5bd53",
+     "type": "image",
+     "size": 65094
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 320,\n  \"enrolled\": null,\n  \"randomised\": 200,\n  \"analysed\": 175,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Top box: 'Screened for eligibility (n=320)', with side box 'Excluded (n=120)'\",\n    \"enrolled\": \"No box states enrolled, included, recruited, or met inclusion criteria as its own stage; only the sidebar label 'Enrollment' spans the screened and randomised boxes\",\n    \"randomised\": \"Box: 'Randomised (n=200)'\",\n    \"analysed\": \"Analysis box: 'Secondary analyses for prediction of outcomes pain (n=175) and function (n=172)'; first-listed analysis is pain (n=175)\"\n  }\n}\n```"
+  },
+  "PMC11661032": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 145,
+    "enrolled": null,
+    "randomised": 100,
+    "analysed": 98,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n=145)",
+     "randomised": "Randomized (n=100)",
+     "analysed": "Analyzed (n=98)"
+    }
+   },
+   "seconds": 34.0,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "34c4c364-db12-40f1-baa7-0c7428561ae2",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 1672,
+      "output_tokens": 1522,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 674,
+       "text_tokens": 998
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 3194,
+      "output_tokens_details": {
+       "reasoning_tokens": 1327,
+       "text_tokens": 194
+      },
+      "image_tokens": 674
+     },
+     "phases": {
+      "thinking_summary": 16,
+      "answer": 93
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the provided diagram to extract key data points",
+       "thought": "I am carefully examining the visual elements of the figure to identify and record specific information. I am focusing on the text within the boxes, particularly noting the initial assessment count and the reasons for exclusion. This process involves systematically parsing the details to ensure accurate understanding of the study's participant flow."
+      }
+     ],
+     "media": [],
+     "dropped": 58,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11661032_12886_2024_3799_Fig1_HTML.jpg",
+      "id": "a4c72f63-d148-43cb-b7f7-150851c36259",
+      "type": "image",
+      "size": 86200
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11661032_12886_2024_3799_Fig1_HTML.jpg",
+     "id": "a4c72f63-d148-43cb-b7f7-150851c36259",
+     "type": "image",
+     "size": 86200
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 145,\n  \"enrolled\": null,\n  \"randomised\": 100,\n  \"analysed\": 98,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n=145)\",\n    \"randomised\": \"Randomized (n=100)\",\n    \"analysed\": \"Analyzed (n=98)\"\n  }\n}\n```"
+  },
+  "PMC11662039": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 175,
+    "enrolled": null,
+    "randomised": 113,
+    "analysed": 107,
+    "unscored": [],
+    "evidence": {
+     "screened": "175 eligible patients were evaluated (top of flow); exclusions printed as 'Excluded(n=16) PSQI<=5'",
+     "enrolled": "No box states enrolled, included, or recruited; the only post-exclusion box prints '159 eligible patients', which is 'eligible' alone and therefore counts as screening, not enrolment",
+     "randomised": "'113 randomized' (consistent with arms '58 allocated to BA group.' + '55 allocated to UC group.')",
+     "analysed": "First-listed analysis wave: BA arm 'T1 assessment 56 complete questionnaires' + UC arm 'T1 assessment 51 complete questionnaires' = 107"
+    }
+   },
+   "seconds": 236.6,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "b05d224a-a8d4-4b3f-bc22-2af14386ba56",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 1068,
+      "output_tokens": 10213,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 622,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 11281,
+      "output_tokens_details": {
+       "reasoning_tokens": 9968,
+       "text_tokens": 244
+      },
+      "image_tokens": 622
+     },
+     "phases": {
+      "thinking_summary": 43,
+      "answer": 76
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the provided figure to extract patient screening data.",
+       "thought": "I am examining the top section which indicates that 175 patients were initially evaluated during the screening phase.\nI then note the exclusion criteria involving 16 patients with a PSQI score of five or less.\nFinally, I observe the resulting count of 159 eligible patients in the subsequent stage."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11662039_432_2024_6065_Fig1_HTML.jpg",
+      "id": "58679bc5-d134-4825-99a4-611d5aafaa8b",
+      "type": "image",
+      "size": 92547
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11662039_432_2024_6065_Fig1_HTML.jpg",
+     "id": "58679bc5-d134-4825-99a4-611d5aafaa8b",
+     "type": "image",
+     "size": 92547
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 175,\n  \"enrolled\": null,\n  \"randomised\": 113,\n  \"analysed\": 107,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"175 eligible patients were evaluated (top of flow); exclusions printed as 'Excluded(n=16) PSQI<=5'\",\n    \"enrolled\": \"No box states enrolled, included, or recruited; the only post-exclusion box prints '159 eligible patients', which is 'eligible' alone and therefore counts as screening, not enrolment\",\n    \"randomised\": \"'113 randomized' (consistent with arms '58 allocated to BA group.' + '55 allocated to UC group.')\",\n    \"analysed\": \"First-listed analysis wave: BA arm 'T1 assessment 56 complete questionnaires' + UC arm 'T1 assessment 51 complete questionnaires' = 107\"\n  }\n}\n```"
+  },
+  "PMC11662462": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 700,
+    "enrolled": 620,
+    "randomised": 620,
+    "analysed": null,
+    "unscored": [
+     "analysed"
+    ],
+    "evidence": {
+     "screened": "Top of flow: '700 enrolled patients', with '80 excluded patients due to: -gynecologic abnormality or disease, ...' showing these 700 were assessed for eligibility",
+     "enrolled": "'620 patients fulfilled including criteria.' shown as its own stage after the exclusions",
+     "randomised": "Box 'Day of oocyte retrieval Randomization' prints no number; allocated arms print 'Group A (n=310)' and 'Group B (n=310)', summed 310+310=620",
+     "analysed": "No analysis population is printed; the last boxes only report treatment disposition: '303 patients had fresh embryo transfer', '7 patients had no embryo transfer because of failed fertilization, failed embryo cleavage or embryo arrest', '301 patients had fresh embryo transfer', '9 patients had no embryo transfer because of failed fertilization, failed embryo cleavage or embryo arrest' - whether the analysis set is the randomised (620) or the transferred (604) patients is not stated"
+    }
+   },
+   "seconds": 253.8,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "55504018-ca83-4fd7-8cc6-1d68c88bdec4",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 1207,
+      "output_tokens": 11276,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 761,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 12483,
+      "output_tokens_details": {
+       "reasoning_tokens": 10949,
+       "text_tokens": 326
+      },
+      "image_tokens": 761
+     },
+     "phases": {
+      "thinking_summary": 48,
+      "answer": 104
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the provided figure to extract patient enrollment data.",
+       "thought": "I carefully examine the top section which indicates 700 enrolled patients.\nI then trace the branching paths to identify exclusions and final inclusion numbers.\nMy focus is on distinguishing between excluded cases and those meeting specific criteria."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11662462_12884_2024_7069_Fig1_HTML.jpg",
+      "id": "75988c33-ee2c-434d-a746-5a27255ca2a3",
+      "type": "image",
+      "size": 95600
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11662462_12884_2024_7069_Fig1_HTML.jpg",
+     "id": "75988c33-ee2c-434d-a746-5a27255ca2a3",
+     "type": "image",
+     "size": 95600
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 700,\n  \"enrolled\": 620,\n  \"randomised\": 620,\n  \"analysed\": null,\n  \"unscored\": [\"analysed\"],\n  \"evidence\": {\n    \"screened\": \"Top of flow: '700 enrolled patients', with '80 excluded patients due to: -gynecologic abnormality or disease, ...' showing these 700 were assessed for eligibility\",\n    \"enrolled\": \"'620 patients fulfilled including criteria.' shown as its own stage after the exclusions\",\n    \"randomised\": \"Box 'Day of oocyte retrieval Randomization' prints no number; allocated arms print 'Group A (n=310)' and 'Group B (n=310)', summed 310+310=620\",\n    \"analysed\": \"No analysis population is printed; the last boxes only report treatment disposition: '303 patients had fresh embryo transfer', '7 patients had no embryo transfer because of failed fertilization, failed embryo cleavage or embryo arrest', '301 patients had fresh embryo transfer', '9 patients had no embryo transfer because of failed fertilization, failed embryo cleavage or embryo arrest' - whether the analysis set is the randomised (620) or the transferred (604) patients is not stated\"\n  }\n}\n```"
+  },
+  "PMC11662481": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 256,
+    "enrolled": null,
+    "randomised": 236,
+    "analysed": 236,
+    "unscored": [],
+    "evidence": {
+     "screened": "Top box: 'Eligible(n=256)' — eligible alone counts as screening, not enrolment",
+     "enrolled": "No box states enrolled, included, recruited, or met inclusion criteria; the only top-stage number is 'Eligible(n=256)' beside the side label 'Enrollment'",
+     "randomised": "'Randomized(n=236)'",
+     "analysed": "'Analysed (n=118)' in Group EK plus 'Analysed (n=118)' in Group C = 236"
+    }
+   },
+   "seconds": 36.1,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "9faa2da4-9f3b-40e0-81ae-7af20da71b6b",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 1460,
+      "output_tokens": 1407,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 462,
+       "text_tokens": 998
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 2867,
+      "output_tokens_details": {
+       "reasoning_tokens": 1193,
+       "text_tokens": 213
+      },
+      "image_tokens": 462
+     },
+     "phases": {
+      "thinking_summary": 7,
+      "answer": 61
+     },
+     "thinking": [
+      {
+       "title": "Analyze the provided visual data to extract key statistical information.",
+       "thought": "I am carefully examining the figure to identify the enrollment stage and exclusion criteria.\nI note the total number of eligible participants and the specific reasons for their exclusion.\nThis process ensures accurate interpretation of the study's participant flow."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11662481_12871_2024_2864_Fig1_HTML.jpg",
+      "id": "d57edc10-e86f-40f5-9b7a-99daed0c25e3",
+      "type": "image",
+      "size": 60077
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11662481_12871_2024_2864_Fig1_HTML.jpg",
+     "id": "d57edc10-e86f-40f5-9b7a-99daed0c25e3",
+     "type": "image",
+     "size": 60077
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 256,\n  \"enrolled\": null,\n  \"randomised\": 236,\n  \"analysed\": 236,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Top box: 'Eligible(n=256)' — eligible alone counts as screening, not enrolment\",\n    \"enrolled\": \"No box states enrolled, included, recruited, or met inclusion criteria; the only top-stage number is 'Eligible(n=256)' beside the side label 'Enrollment'\",\n    \"randomised\": \"'Randomized(n=236)'\",\n    \"analysed\": \"'Analysed (n=118)' in Group EK plus 'Analysed (n=118)' in Group C = 236\"\n  }\n}\n```"
+  },
+  "PMC11662516": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": null,
+    "enrolled": null,
+    "randomised": 71,
+    "analysed": 172,
+    "unscored": [
+     "enrolled"
+    ],
+    "evidence": {
+     "screened": "Top of flow prints only 'Randomised (n=71 GP practices)' and 'Withdrawals before screening (n=12 GP practices)'; no number screened or assessed for eligibility is printed, so null.",
+     "enrolled": "Inclusion is printed only per arm inside the allocation boxes: 'Included at baseline: n=91 patients' (intervention) and 'Included at baseline: n=88 patients' (control); there is no single enrolment-stage number and the definitions do not sanction summing here, so the stage is left ambiguous rather than guessed.",
+     "randomised": "'Randomised (n=71 GP practices)'.",
+     "analysed": "'Included in analysis (n=22 GP practices, total no. of patients=84)' plus 'Analysed (n=27 GP practices, total no. of patients=88)'; summed across arms: 84 + 88 = 172 patients."
+    }
+   },
+   "seconds": 265.9,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "48b2a3de-472c-4d82-9aad-1d9ba6daee53",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 1567,
+      "output_tokens": 11519,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 569,
+       "text_tokens": 998
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 13086,
+      "output_tokens_details": {
+       "reasoning_tokens": 11226,
+       "text_tokens": 292
+      },
+      "image_tokens": 569
+     },
+     "phases": {
+      "thinking_summary": 50,
+      "answer": 87
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the provided figure to extract its structural components.",
+       "thought": "I am carefully examining the visual elements to identify key sections such as enrollment and allocation details.\nMy focus is on recognizing specific data points like the number of randomized practices and withdrawals.\nThis process allows me to accurately interpret the flowchart's hierarchy and content for the user."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11662516_12904_2024_1623_Fig1_HTML.jpg",
+      "id": "adc9dbab-fd7e-44a7-99a2-bf4de100ee3e",
+      "type": "image",
+      "size": 121253
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11662516_12904_2024_1623_Fig1_HTML.jpg",
+     "id": "adc9dbab-fd7e-44a7-99a2-bf4de100ee3e",
+     "type": "image",
+     "size": 121253
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": null,\n  \"enrolled\": null,\n  \"randomised\": 71,\n  \"analysed\": 172,\n  \"unscored\": [\"enrolled\"],\n  \"evidence\": {\n    \"screened\": \"Top of flow prints only 'Randomised (n=71 GP practices)' and 'Withdrawals before screening (n=12 GP practices)'; no number screened or assessed for eligibility is printed, so null.\",\n    \"enrolled\": \"Inclusion is printed only per arm inside the allocation boxes: 'Included at baseline: n=91 patients' (intervention) and 'Included at baseline: n=88 patients' (control); there is no single enrolment-stage number and the definitions do not sanction summing here, so the stage is left ambiguous rather than guessed.\",\n    \"randomised\": \"'Randomised (n=71 GP practices)'.\",\n    \"analysed\": \"'Included in analysis (n=22 GP practices, total no. of patients=84)' plus 'Analysed (n=27 GP practices, total no. of patients=88)'; summed across arms: 84 + 88 = 172 patients.\"\n  }\n}\n```"
+  },
+  "PMC11662519": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": false,
+    "screened": null,
+    "enrolled": null,
+    "randomised": null,
+    "analysed": null,
+    "unscored": [],
+    "evidence": {
+     "is_participant_flow": "Figure is a system/session workflow flowchart, not a participant flow: boxes read 'Start the program', 'New Participant ?', 'Select participant in database', 'Create participant in database', 'Select and start desired modules : IMU, EMG, Voice control, Video recording, Stimulator', 'Previous session in database ?', 'Default parameters are imported', 'Last used parameters are imported', 'Adapt FES parameters for the patients needs', 'Functionnal hand opening without pain ?', 'Select control modality and adapt parameters as needed', 'Easy and reliable FES triggering ?', 'Select new task to perform and start recording', 'Participant can trigger FES at will with the selected modality', 'Task completed ?'; no participant counts appear",
+     "screened": "no number printed for any screening stage",
+     "enrolled": "no number printed for any enrolment stage",
+     "randomised": "no number printed for any randomisation or allocation stage",
+     "analysed": "no number printed for any analysis stage"
+    }
+   },
+   "seconds": 30.6,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "d0cc8fa2-253f-479e-bd2e-65cbedcef765",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 756,
+      "output_tokens": 1246,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 310,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 2002,
+      "output_tokens_details": {
+       "reasoning_tokens": 951,
+       "text_tokens": 294
+      },
+      "image_tokens": 310
+     },
+     "phases": {
+      "thinking_summary": 8,
+      "answer": 84
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the provided text to understand its context and intent",
+       "thought": "I am examining the fragmented description of a flowchart related to a participant selection and module configuration process.\nMy goal is to interpret these disjointed phrases to reconstruct the logical sequence of the program or procedure described.\nI will then synthesize this understanding into a coherent summary that accurately reflects the underlying workflow without exposing technical details."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11662519_12938_2024_1323_Fig5_HTML.jpg",
+      "id": "c6a25443-56be-459a-95e9-fbcf4458345a",
+      "type": "image",
+      "size": 83839
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11662519_12938_2024_1323_Fig5_HTML.jpg",
+     "id": "c6a25443-56be-459a-95e9-fbcf4458345a",
+     "type": "image",
+     "size": 83839
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": false,\n  \"screened\": null,\n  \"enrolled\": null,\n  \"randomised\": null,\n  \"analysed\": null,\n  \"unscored\": [],\n  \"evidence\": {\n    \"is_participant_flow\": \"Figure is a system/session workflow flowchart, not a participant flow: boxes read 'Start the program', 'New Participant ?', 'Select participant in database', 'Create participant in database', 'Select and start desired modules : IMU, EMG, Voice control, Video recording, Stimulator', 'Previous session in database ?', 'Default parameters are imported', 'Last used parameters are imported', 'Adapt FES parameters for the patients needs', 'Functionnal hand opening without pain ?', 'Select control modality and adapt parameters as needed', 'Easy and reliable FES triggering ?', 'Select new task to perform and start recording', 'Participant can trigger FES at will with the selected modality', 'Task completed ?'; no participant counts appear\",\n    \"screened\": \"no number printed for any screening stage\",\n    \"enrolled\": \"no number printed for any enrolment stage\",\n    \"randomised\": \"no number printed for any randomisation or allocation stage\",\n    \"analysed\": \"no number printed for any analysis stage\"\n  }\n}\n```"
+  },
+  "PMC11662604": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 134,
+    "enrolled": null,
+    "randomised": 120,
+    "analysed": 120,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n=134); Excluded (n=14): Not meeting inclusion criteria (n=9), Declined to participate (n=3), Other reasons (n=2)",
+     "enrolled": "Side label 'Enrollment' carries no number; no box prints enrolled, included, recruited, or met inclusion criteria as its own stage",
+     "randomised": "Randomized (n=120); arms Allocated to PMR (n=40), Allocated to RB (n=40), Allocated to Control (n=40)",
+     "analysed": "Data analyzed (n=40) in each of the three arms (PMR, RB, Control); Excluded from analysis (n=0) in each; 40+40+40=120"
+    }
+   },
+   "seconds": 42.8,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "0964654e-ad63-4ead-a6c7-51e96e9b4c71",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 1000,
+      "output_tokens": 1730,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 554,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 2730,
+      "output_tokens_details": {
+       "reasoning_tokens": 1460,
+       "text_tokens": 269
+      },
+      "image_tokens": 554
+     },
+     "phases": {
+      "thinking_summary": 9,
+      "answer": 78
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the provided figure to extract data points",
+       "thought": "I am carefully examining the visual elements of the diagram to identify specific numerical values and their corresponding labels. I focus on locating key sections such as the initial assessment count and exclusion criteria to understand the study's flow. This process involves mapping textual information within the boxes to ensure accurate interpretation of the participant numbers. By doing so, I aim to construct a precise summary of the enrollment and screening phases depicted in the image."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11662604_12906_2024_4729_Fig1_HTML.jpg",
+      "id": "fff62510-6aca-45cd-a8f4-92ba6a96ffdd",
+      "type": "image",
+      "size": 96665
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11662604_12906_2024_4729_Fig1_HTML.jpg",
+     "id": "fff62510-6aca-45cd-a8f4-92ba6a96ffdd",
+     "type": "image",
+     "size": 96665
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 134,\n  \"enrolled\": null,\n  \"randomised\": 120,\n  \"analysed\": 120,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n=134); Excluded (n=14): Not meeting inclusion criteria (n=9), Declined to participate (n=3), Other reasons (n=2)\",\n    \"enrolled\": \"Side label 'Enrollment' carries no number; no box prints enrolled, included, recruited, or met inclusion criteria as its own stage\",\n    \"randomised\": \"Randomized (n=120); arms Allocated to PMR (n=40), Allocated to RB (n=40), Allocated to Control (n=40)\",\n    \"analysed\": \"Data analyzed (n=40) in each of the three arms (PMR, RB, Control); Excluded from analysis (n=0) in each; 40+40+40=120\"\n  }\n}\n```"
+  },
+  "PMC11662774": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 96,
+    "enrolled": null,
+    "randomised": 96,
+    "analysed": 93,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n=96)",
+     "enrolled": "No separate enrolled/included/recruited stage printed; only the exclusion box 'Not meeting inclusion criteria (n=0)' beside the eligibility box",
+     "randomised": "Randomized (n=96)",
+     "analysed": "Analysed (n=46) in intervention arm plus Analysed (n=47) in control arm = 93"
+    }
+   },
+   "seconds": 27.8,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "2c833b20-0b78-4cb6-88c1-7f7c8c9497fe",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 888,
+      "output_tokens": 990,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 442,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 1878,
+      "output_tokens_details": {
+       "reasoning_tokens": 807,
+       "text_tokens": 182
+      },
+      "image_tokens": 442
+     },
+     "phases": {
+      "thinking_summary": 6,
+      "answer": 52
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the provided figure components",
+       "thought": "I am carefully examining the visual elements to identify key data points within the flowchart. I have noted specific details such as the initial assessment count and the randomization number. I am also observing the allocation label to understand the study's structure. This process helps me gather the necessary information for a comprehensive response."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11662774_12909_2024_6514_Fig3_HTML.jpg",
+      "id": "97a7fb8e-a074-469e-8bd1-58a54558202c",
+      "type": "image",
+      "size": 72390
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11662774_12909_2024_6514_Fig3_HTML.jpg",
+     "id": "97a7fb8e-a074-469e-8bd1-58a54558202c",
+     "type": "image",
+     "size": 72390
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 96,\n  \"enrolled\": null,\n  \"randomised\": 96,\n  \"analysed\": 93,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n=96)\",\n    \"enrolled\": \"No separate enrolled/included/recruited stage printed; only the exclusion box 'Not meeting inclusion criteria (n=0)' beside the eligibility box\",\n    \"randomised\": \"Randomized (n=96)\",\n    \"analysed\": \"Analysed (n=46) in intervention arm plus Analysed (n=47) in control arm = 93\"\n  }\n}\n```"
+  },
+  "PMC11662799": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 40,
+    "enrolled": 24,
+    "randomised": 24,
+    "analysed": 24,
+    "unscored": [],
+    "evidence": {
+     "screened": "Patients assessed for eligibility (n=40); Excluded (n=16): Not meeting inclusion criteria (n=12), Declined to participate (n=4)",
+     "enrolled": "Recruited (n=24); Included (n=24); Withdrew prior to randomization (n=0)",
+     "randomised": "No 'randomised' box; Allocation arms: 'Allocated to L-PRF and Metronidazole group (n=12)' + 'Allocated to L-PRF alone group (n=12)' = 24",
+     "analysed": "Left arm 'Analyzed - Number of patient analyzed = 12' + right arm 'Analyzed - Number of patient analyzed = 12' = 24 (sites 40 per arm not counted as participants)"
+    }
+   },
+   "seconds": 26.0,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "66d16e71-9658-4306-b011-3ed0a2e75b9e",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 1782,
+      "output_tokens": 1028,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 784,
+       "text_tokens": 998
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 2810,
+      "output_tokens_details": {
+       "reasoning_tokens": 756,
+       "text_tokens": 271
+      },
+      "image_tokens": 784
+     },
+     "phases": {
+      "thinking_summary": 6,
+      "answer": 78
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the flowchart structure",
+       "thought": "I am carefully examining the visual components of the provided figure to extract specific data points. I identify the initial cohort size and the reasons for participant exclusion during the screening phase. I then proceed to interpret the recruitment stage as indicated in the diagram. This step-by-step breakdown ensures accurate extraction of the study's participant numbers."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11662799_12903_2024_5254_Fig1_HTML.jpg",
+      "id": "a5dcfbc5-9c5d-484e-ba6a-0ba6e69eb306",
+      "type": "image",
+      "size": 188860
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11662799_12903_2024_5254_Fig1_HTML.jpg",
+     "id": "a5dcfbc5-9c5d-484e-ba6a-0ba6e69eb306",
+     "type": "image",
+     "size": 188860
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 40,\n  \"enrolled\": 24,\n  \"randomised\": 24,\n  \"analysed\": 24,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Patients assessed for eligibility (n=40); Excluded (n=16): Not meeting inclusion criteria (n=12), Declined to participate (n=4)\",\n    \"enrolled\": \"Recruited (n=24); Included (n=24); Withdrew prior to randomization (n=0)\",\n    \"randomised\": \"No 'randomised' box; Allocation arms: 'Allocated to L-PRF and Metronidazole group (n=12)' + 'Allocated to L-PRF alone group (n=12)' = 24\",\n    \"analysed\": \"Left arm 'Analyzed - Number of patient analyzed = 12' + right arm 'Analyzed - Number of patient analyzed = 12' = 24 (sites 40 per arm not counted as participants)\"\n  }\n}\n```"
+  },
+  "PMC11662846": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": false,
+    "screened": null,
+    "enrolled": null,
+    "randomised": null,
+    "analysed": null,
+    "unscored": [],
+    "evidence": {
+     "screened": "Box 'Screening of eligible students' prints no number; side boxes give only criteria ('Inclusion: 1. Age >=18 years 2. Proficient in using smart phones'; 'Exclusion: 1. Colorectal cancer trainers who have attended SP combined with CBL').",
+     "enrolled": "No enrolled/included count is printed; top box 'Recruit test students' and the inclusion box list criteria only, with no number.",
+     "randomised": "'Randomized grouping (1:1)' and arms 'Experimental group(50%)' / 'Control group(50%)' print only a ratio and percentages, no participant count.",
+     "analysed": "After-class boxes list only instruments ('CEQ-28', 'CSQ-3', 'Clinical thinking skills questionnaire', 'After-class theoretical knowledge test'); no number of students analysed is printed."
+    }
+   },
+   "seconds": 278.7,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "f4ebf9af-0d46-4dd9-b955-492385897c34",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 952,
+      "output_tokens": 12872,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 506,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 13824,
+      "output_tokens_details": {
+       "reasoning_tokens": 12606,
+       "text_tokens": 265
+      },
+      "image_tokens": 506
+     },
+     "phases": {
+      "thinking_summary": 60,
+      "answer": 78
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the provided visual content",
+       "thought": "I am carefully examining the flowchart to determine if it includes specific participant counts. I observe that the initial box labeled \"Recruit test students\" lacks numerical data, and I am proceeding to evaluate the subsequent elements for relevant information."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11662846_12909_2024_6530_Fig1_HTML.jpg",
+      "id": "aca55f99-29f9-4339-bf61-c309abf2be2c",
+      "type": "image",
+      "size": 92654
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11662846_12909_2024_6530_Fig1_HTML.jpg",
+     "id": "aca55f99-29f9-4339-bf61-c309abf2be2c",
+     "type": "image",
+     "size": 92654
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": false,\n  \"screened\": null,\n  \"enrolled\": null,\n  \"randomised\": null,\n  \"analysed\": null,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Box 'Screening of eligible students' prints no number; side boxes give only criteria ('Inclusion: 1. Age >=18 years 2. Proficient in using smart phones'; 'Exclusion: 1. Colorectal cancer trainers who have attended SP combined with CBL').\",\n    \"enrolled\": \"No enrolled/included count is printed; top box 'Recruit test students' and the inclusion box list criteria only, with no number.\",\n    \"randomised\": \"'Randomized grouping (1:1)' and arms 'Experimental group(50%)' / 'Control group(50%)' print only a ratio and percentages, no participant count.\",\n    \"analysed\": \"After-class boxes list only instruments ('CEQ-28', 'CSQ-3', 'Clinical thinking skills questionnaire', 'After-class theoretical knowledge test'); no number of students analysed is printed.\"\n  }\n}\n```"
+  },
+  "PMC11663356": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": null,
+    "enrolled": null,
+    "randomised": 414,
+    "analysed": 220,
+    "unscored": [],
+    "evidence": {
+     "screened": "No box prints eligibility assessment or screening; the top box reads 'Randomized in 2010 to 2012 (n=414)', which is randomisation, not screening",
+     "enrolled": "No stage printed as enrolled/included/recruited or meeting inclusion criteria; nearest boxes are 'Request for consent to participate in long-term follow-up in 2020 (n=402)' and the group boxes, neither of which states enrolment",
+     "randomised": "Randomized in 2010 to 2012 (n=414)",
+     "analysed": "Analyzed (n=95) + Analyzed (n=54) + Analyzed (n=71) = 220"
+    }
+   },
+   "seconds": 78.9,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "99e32fd6-1695-4430-88b4-fc0c813c161a",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 826,
+      "output_tokens": 3426,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 380,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 4252,
+      "output_tokens_details": {
+       "reasoning_tokens": 3171,
+       "text_tokens": 254
+      },
+      "image_tokens": 380
+     },
+     "phases": {
+      "thinking_summary": 15,
+      "answer": 75
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the provided figure to extract key data points",
+       "thought": "I am carefully examining the visual elements to identify specific textual information within the diagram. I am noting the details regarding participant randomization and the reasons for exclusion from the study register. This process allows me to accurately interpret the flow of participants as depicted in the chart."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11663356_12889_2024_21116_Fig1_HTML.jpg",
+      "id": "f5365aad-158d-4109-a3a9-c7907b1a2043",
+      "type": "image",
+      "size": 67545
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11663356_12889_2024_21116_Fig1_HTML.jpg",
+     "id": "f5365aad-158d-4109-a3a9-c7907b1a2043",
+     "type": "image",
+     "size": 67545
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": null,\n  \"enrolled\": null,\n  \"randomised\": 414,\n  \"analysed\": 220,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"No box prints eligibility assessment or screening; the top box reads 'Randomized in 2010 to 2012 (n=414)', which is randomisation, not screening\",\n    \"enrolled\": \"No stage printed as enrolled/included/recruited or meeting inclusion criteria; nearest boxes are 'Request for consent to participate in long-term follow-up in 2020 (n=402)' and the group boxes, neither of which states enrolment\",\n    \"randomised\": \"Randomized in 2010 to 2012 (n=414)\",\n    \"analysed\": \"Analyzed (n=95) + Analyzed (n=54) + Analyzed (n=71) = 220\"\n  }\n}\n```"
+  },
+  "PMC11663360": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 108,
+    "enrolled": null,
+    "randomised": 96,
+    "analysed": 96,
+    "unscored": [],
+    "evidence": {
+     "screened": "108 Patients were assessed for eligibility",
+     "enrolled": "no box printed as enrolled, included, recruited, or meeting inclusion criteria; flow goes from eligibility assessment to randomisation",
+     "randomised": "96 Underwent randomisation",
+     "analysed": "48 Analysed (treatment group) + 48 Analysed (control group)"
+    }
+   },
+   "seconds": 24.3,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "033598e3-73a6-4840-9b31-863cb8bf3a69",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 908,
+      "output_tokens": 839,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 462,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 1747,
+      "output_tokens_details": {
+       "reasoning_tokens": 673,
+       "text_tokens": 165
+      },
+      "image_tokens": 462
+     },
+     "phases": {
+      "thinking_summary": 6,
+      "answer": 48
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the provided text to understand its content",
+       "thought": "I am carefully examining the figure to extract specific data points regarding patient screening and exclusion criteria.\nI identify the total number of patients assessed for eligibility and note the details of those excluded due to abnormal arterial structures or recent procedures.\nThis process allows me to accurately interpret the flowchart's information for answering user inquiries."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11663360_12909_2024_6568_Fig1_HTML.jpg",
+      "id": "964d6c7f-1873-4b92-be10-1e8c91cd7aec",
+      "type": "image",
+      "size": 49079
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11663360_12909_2024_6568_Fig1_HTML.jpg",
+     "id": "964d6c7f-1873-4b92-be10-1e8c91cd7aec",
+     "type": "image",
+     "size": 49079
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 108,\n  \"enrolled\": null,\n  \"randomised\": 96,\n  \"analysed\": 96,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"108 Patients were assessed for eligibility\",\n    \"enrolled\": \"no box printed as enrolled, included, recruited, or meeting inclusion criteria; flow goes from eligibility assessment to randomisation\",\n    \"randomised\": \"96 Underwent randomisation\",\n    \"analysed\": \"48 Analysed (treatment group) + 48 Analysed (control group)\"\n  }\n}\n```"
+  },
+  "PMC11664109": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 94,
+    "enrolled": null,
+    "randomised": 78,
+    "analysed": 78,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n = 94)",
+     "randomised": "Randomised (n = 78)",
+     "analysed": "Included in intention-to-treat analysis (n = 39) in the control arm and Included in intention-to-treat analysis (n = 39) in the intrathecal arm; 39 + 39 = 78"
+    }
+   },
+   "seconds": 29.9,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "2995c868-9c66-4cb5-bce9-b11c6a1309a9",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 952,
+      "output_tokens": 1252,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 506,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 2204,
+      "output_tokens_details": {
+       "reasoning_tokens": 1081,
+       "text_tokens": 170
+      },
+      "image_tokens": 506
+     },
+     "phases": {
+      "thinking_summary": 7,
+      "answer": 46
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the flowchart structure to extract participant data.",
+       "thought": "I carefully examine the top box to identify the total number of individuals assessed for eligibility.\nI then review the exclusion section to break down the reasons for removal from the study.\nThis process ensures accurate extraction of screening and enrollment statistics."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11664109_DDDT-18-6133-g0002.jpg",
+      "id": "954426e9-6a2b-4de0-96ee-2cce22c443ea",
+      "type": "image",
+      "size": 132565
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11664109_DDDT-18-6133-g0002.jpg",
+     "id": "954426e9-6a2b-4de0-96ee-2cce22c443ea",
+     "type": "image",
+     "size": 132565
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 94,\n  \"enrolled\": null,\n  \"randomised\": 78,\n  \"analysed\": 78,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n = 94)\",\n    \"randomised\": \"Randomised (n = 78)\",\n    \"analysed\": \"Included in intention-to-treat analysis (n = 39) in the control arm and Included in intention-to-treat analysis (n = 39) in the intrathecal arm; 39 + 39 = 78\"\n  }\n}\n```"
+  },
+  "PMC11665077": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 128,
+    "enrolled": null,
+    "randomised": 112,
+    "analysed": 96,
+    "unscored": [],
+    "evidence": {
+     "screened": "Check admission requirement Number = (128)",
+     "enrolled": "No separate enrolled/included/recruited stage printed; the 'Eligible' label carries no number, so enrolment is not stated as its own stage",
+     "randomised": "Random: (number =112); consistent with allocation boxes 'Allocation to the placebo group = 56 people' and 'Allocation to the intervention group (wormwood vaginal cream) = 56 people'",
+     "analysed": "Placebo arm 'Analysis: 47 people' plus intervention arm 'Analysis: 49 people' = 96"
+    }
+   },
+   "seconds": 41.1,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "3e4eb2cd-cf0a-441b-a2ca-f40814eaa274",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 1042,
+      "output_tokens": 1775,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 596,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 2817,
+      "output_tokens_details": {
+       "reasoning_tokens": 1553,
+       "text_tokens": 221
+      },
+      "image_tokens": 596
+     },
+     "phases": {
+      "thinking_summary": 9,
+      "answer": 65
+     },
+     "thinking": [
+      {
+       "title": "Deciphering the visual data structure",
+       "thought": "I am carefully examining the provided figure to extract specific numerical values and their associated contexts. I identify the top section as an eligibility assessment indicating a screened count of 128 participants. Subsequently, I note the exclusion criteria, observing that sixteen individuals were excluded due to unwillingness. This step-by-step analysis allows me to accurately interpret the flow of participant selection within the diagram."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11665077_12905_2024_3515_Fig1_HTML.jpg",
+      "id": "4ec3c5a1-914a-42a2-9ccb-14ba416ba457",
+      "type": "image",
+      "size": 127947
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11665077_12905_2024_3515_Fig1_HTML.jpg",
+     "id": "4ec3c5a1-914a-42a2-9ccb-14ba416ba457",
+     "type": "image",
+     "size": 127947
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 128,\n  \"enrolled\": null,\n  \"randomised\": 112,\n  \"analysed\": 96,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Check admission requirement Number = (128)\",\n    \"enrolled\": \"No separate enrolled/included/recruited stage printed; the 'Eligible' label carries no number, so enrolment is not stated as its own stage\",\n    \"randomised\": \"Random: (number =112); consistent with allocation boxes 'Allocation to the placebo group = 56 people' and 'Allocation to the intervention group (wormwood vaginal cream) = 56 people'\",\n    \"analysed\": \"Placebo arm 'Analysis: 47 people' plus intervention arm 'Analysis: 49 people' = 96\"\n  }\n}\n```"
+  },
+  "PMC11667255": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": null,
+    "enrolled": null,
+    "randomised": null,
+    "analysed": null,
+    "unscored": [],
+    "evidence": {}
+   },
+   "seconds": 215.5,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "01eee7b6-f0ae-4ac2-87ab-5a0992f2abcf",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 1609,
+      "output_tokens": 9787,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 611,
+       "text_tokens": 998
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 11396,
+      "output_tokens_details": {
+       "reasoning_tokens": 9457,
+       "text_tokens": 329
+      },
+      "image_tokens": 611
+     },
+     "phases": {
+      "thinking_summary": 50,
+      "answer": 117
+     },
+     "thinking": [
+      {
+       "title": "Analyze the provided figure to understand its structure and content",
+       "thought": "I carefully examine the visual elements of the flowchart to identify its key components. I recognize it as a diagram illustrating a cluster randomized trial with a stepped-wedge design. I note the specific stages involving eligibility assessment and randomization of twelve clusters. This initial observation helps me contextualize the data for further analysis."
+      }
+     ],
+     "media": [],
+     "dropped": 97,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11667255_bmjgh-9-12-g001.jpg",
+      "id": "4a83f66f-4662-4163-b3ca-69ca15905446",
+      "type": "image",
+      "size": 199783
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11667255_bmjgh-9-12-g001.jpg",
+     "id": "4a83f66f-4662-4163-b3ca-69ca15905446",
+     "type": "image",
+     "size": 199783
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": null,\n  \"enrolled\": null,\n  \"randomised\": null,\n  \"analysed\": null,\n  \"unscored\": [],\n  \"evidence\": {}\n}\n```"
+  },
+  "PMC11667321": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 89,
+    "enrolled": null,
+    "randomised": 60,
+    "analysed": null,
+    "unscored": [],
+    "evidence": {
+     "screened": "Row labelled 'Screened': 'Screened prior to eligibility (n=89)', at the top of the flow (source population n=98, 'Not screened (n=9)' branched off)",
+     "enrolled": "No box states enrolled, included, recruited, or met/fulfilled inclusion criteria; the 'Enrolment' row box reads 'Assessed for eligibility (n=69)', which per the definition counts as screening wording, not enrolment",
+     "randomised": "'Randomised (n=60)'",
+     "analysed": "No analysis stage printed; follow-up boxes list only 'Lost to follow-up', 'Received other therapy', non-compliers and 'Crossover intervention from information and advice (n=10)', with no analysed counts"
+    }
+   },
+   "seconds": 136.5,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "988c144a-fd76-469b-9afe-10aeba7800b0",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 908,
+      "output_tokens": 6742,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 462,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 7650,
+      "output_tokens_details": {
+       "reasoning_tokens": 6491,
+       "text_tokens": 250
+      },
+      "image_tokens": 462
+     },
+     "phases": {
+      "thinking_summary": 30,
+      "answer": 77
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the provided visual data structure to extract key information",
+       "thought": "I am carefully examining the figure to identify the distinct components and their relationships. I note the specific details within each box, such as the source population count and the number of excluded cases. I also observe the directional flow indicated by the arrow leading to the screened group. This process helps me understand the logical progression presented in the diagram."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11667321_bmjopen-14-12-g001.jpg",
+      "id": "3cfa6ecd-1b9a-451a-ac71-473a75424eb7",
+      "type": "image",
+      "size": 93531
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11667321_bmjopen-14-12-g001.jpg",
+     "id": "3cfa6ecd-1b9a-451a-ac71-473a75424eb7",
+     "type": "image",
+     "size": 93531
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 89,\n  \"enrolled\": null,\n  \"randomised\": 60,\n  \"analysed\": null,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Row labelled 'Screened': 'Screened prior to eligibility (n=89)', at the top of the flow (source population n=98, 'Not screened (n=9)' branched off)\",\n    \"enrolled\": \"No box states enrolled, included, recruited, or met/fulfilled inclusion criteria; the 'Enrolment' row box reads 'Assessed for eligibility (n=69)', which per the definition counts as screening wording, not enrolment\",\n    \"randomised\": \"'Randomised (n=60)'\",\n    \"analysed\": \"No analysis stage printed; follow-up boxes list only 'Lost to follow-up', 'Received other therapy', non-compliers and 'Crossover intervention from information and advice (n=10)', with no analysed counts\"\n  }\n}\n```"
+  },
+  "PMC11667339": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 1852,
+    "enrolled": null,
+    "randomised": null,
+    "analysed": 1124,
+    "unscored": [
+     "randomised"
+    ],
+    "evidence": {
+     "screened": "Top of Baseline flow: 'Approached: 1506', centre '1852', 'Approached: 346' (1506+346=1852 approached/screened)",
+     "enrolled": "No box labelled enrolled/included/recruited/met inclusion criteria; the only intermediate stage is 'Consented: 874 (58.0%)', '1163 (62.8%)', 'Consented: 289 (83.5%)', which is consent, not enrolment",
+     "randomised": "'Randomisation' box is printed with no number; the arms below it begin with 'Approached: 1797', '2193', 'Approached: 396' (approached, not allocated), so no randomised count is given",
+     "analysed": "First-listed analysis row (Baseline): 'Analysed: 861 (57.2%)', centre '1124 (60.7%)', 'Analysed: 263 (76.0%)' (861+263=1124)"
+    }
+   },
+   "seconds": 223.4,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "33a9e028-6c2e-43f5-ba7f-1f4b29ec6303",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 1483,
+      "output_tokens": 9998,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 485,
+       "text_tokens": 998
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 11481,
+      "output_tokens_details": {
+       "reasoning_tokens": 9646,
+       "text_tokens": 351
+      },
+      "image_tokens": 485
+     },
+     "phases": {
+      "thinking_summary": 41,
+      "answer": 99
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the provided figure to extract key data points.",
+       "thought": "I am carefully examining the flow diagram which outlines Baseline and Follow-up sections across Intervention and Control groups.\nMy focus is currently on identifying the initial participant numbers, specifically noting the count of 1506 individuals approached in the Intervention arm.\nThis step ensures accurate data extraction before proceeding with further analysis or comparison."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11667339_bmjopen-14-12-g002.jpg",
+      "id": "590d9fa3-0186-4c17-a930-fbe4c9b12a4c",
+      "type": "image",
+      "size": 131736
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11667339_bmjopen-14-12-g002.jpg",
+     "id": "590d9fa3-0186-4c17-a930-fbe4c9b12a4c",
+     "type": "image",
+     "size": 131736
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 1852,\n  \"enrolled\": null,\n  \"randomised\": null,\n  \"analysed\": 1124,\n  \"unscored\": [\"randomised\"],\n  \"evidence\": {\n    \"screened\": \"Top of Baseline flow: 'Approached: 1506', centre '1852', 'Approached: 346' (1506+346=1852 approached/screened)\",\n    \"enrolled\": \"No box labelled enrolled/included/recruited/met inclusion criteria; the only intermediate stage is 'Consented: 874 (58.0%)', '1163 (62.8%)', 'Consented: 289 (83.5%)', which is consent, not enrolment\",\n    \"randomised\": \"'Randomisation' box is printed with no number; the arms below it begin with 'Approached: 1797', '2193', 'Approached: 396' (approached, not allocated), so no randomised count is given\",\n    \"analysed\": \"First-listed analysis row (Baseline): 'Analysed: 861 (57.2%)', centre '1124 (60.7%)', 'Analysed: 263 (76.0%)' (861+263=1124)\"\n  }\n}\n```"
+  },
+  "PMC11667481": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 49,
+    "enrolled": null,
+    "randomised": 47,
+    "analysed": 45,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n = 49)",
+     "enrolled": "lane label 'Enrollment' carries no number; no box states enrolled, included, recruited, or met inclusion criteria",
+     "randomised": "Randomized (n=47)",
+     "analysed": "control arm 'Analysed (n=23)' plus intervention arm 'Analysed (n=22)' = 45"
+    }
+   },
+   "seconds": 75.6,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "3025be10-d8d0-4ba7-9529-8c0210dc8f6e",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 1218,
+      "output_tokens": 3179,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 772,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 4397,
+      "output_tokens_details": {
+       "reasoning_tokens": 3000,
+       "text_tokens": 178
+      },
+      "image_tokens": 772
+     },
+     "phases": {
+      "thinking_summary": 15,
+      "answer": 52
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the flowchart structure",
+       "thought": "I am carefully examining the provided diagram to extract specific data points regarding participant numbers. I identify the initial screening count and categorize the reasons for exclusion before proceeding to the randomization phase. My focus remains on accurately interpreting the numerical values and their corresponding labels within the visual hierarchy. This step ensures a precise understanding of the study's participant flow before generating any further analysis."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11667481_bmjopen-14-12-g002.jpg",
+      "id": "828c5a02-d4b7-469f-b040-047257f4f91f",
+      "type": "image",
+      "size": 154685
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11667481_bmjopen-14-12-g002.jpg",
+     "id": "828c5a02-d4b7-469f-b040-047257f4f91f",
+     "type": "image",
+     "size": 154685
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 49,\n  \"enrolled\": null,\n  \"randomised\": 47,\n  \"analysed\": 45,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n = 49)\",\n    \"enrolled\": \"lane label 'Enrollment' carries no number; no box states enrolled, included, recruited, or met inclusion criteria\",\n    \"randomised\": \"Randomized (n=47)\",\n    \"analysed\": \"control arm 'Analysed (n=23)' plus intervention arm 'Analysed (n=22)' = 45\"\n  }\n}\n```"
+  },
+  "PMC11667845": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 48,
+    "enrolled": null,
+    "randomised": 48,
+    "analysed": null,
+    "unscored": [],
+    "evidence": {
+     "screened": "Top of flow: 'Five-year clinical medical students N=48'",
+     "enrolled": "No stage is labelled enrolled, included, recruited, or as meeting inclusion criteria; the top box only names the population",
+     "randomised": "'Randomization' box prints no number; allocated arms print 'SPOC+PBL group(N=24)' and 'LBL group(N=24)', so 24+24=48",
+     "analysed": "'Analysis' box and outcome box '1.Student mark 2.Student satisfaction survey' print no participant numbers; assessment boxes print only proportions ('Online assessment: 50% Offline assessment: 50%', 'Offline assessment: 100%')"
+    }
+   },
+   "seconds": 141.1,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "65a94751-63f0-4d3e-9a0f-f3586f74f680",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 1475,
+      "output_tokens": 5990,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 477,
+       "text_tokens": 998
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 7465,
+      "output_tokens_details": {
+       "reasoning_tokens": 5752,
+       "text_tokens": 237
+      },
+      "image_tokens": 477
+     },
+     "phases": {
+      "thinking_summary": 27,
+      "answer": 72
+     },
+     "thinking": [
+      {
+       "title": "Analyze the provided figure content to understand the study design",
+       "thought": "I carefully examine the visual elements to identify the participant pool and the randomization process. I note the specific groupings and instructional methods assigned to each arm of the trial. This step ensures a precise understanding of the clinical medical student cohort structure."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11667845_12909_2024_6460_Fig1_HTML.jpg",
+      "id": "4107871a-5f56-4b09-8f69-a52f98bc0e82",
+      "type": "image",
+      "size": 80653
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11667845_12909_2024_6460_Fig1_HTML.jpg",
+     "id": "4107871a-5f56-4b09-8f69-a52f98bc0e82",
+     "type": "image",
+     "size": 80653
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 48,\n  \"enrolled\": null,\n  \"randomised\": 48,\n  \"analysed\": null,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Top of flow: 'Five-year clinical medical students N=48'\",\n    \"enrolled\": \"No stage is labelled enrolled, included, recruited, or as meeting inclusion criteria; the top box only names the population\",\n    \"randomised\": \"'Randomization' box prints no number; allocated arms print 'SPOC+PBL group(N=24)' and 'LBL group(N=24)', so 24+24=48\",\n    \"analysed\": \"'Analysis' box and outcome box '1.Student mark 2.Student satisfaction survey' print no participant numbers; assessment boxes print only proportions ('Online assessment: 50% Offline assessment: 50%', 'Offline assessment: 100%')\"\n  }\n}\n```"
+  },
+  "PMC11667984": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 91,
+    "enrolled": null,
+    "randomised": 81,
+    "analysed": 81,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n = 91)",
+     "enrolled": "No box states enrolled/included/recruited/met inclusion criteria; only 'Eligible participants (n = 84)', which per definition counts as screening, not enrolment",
+     "randomised": "Week0: Randomly assigned (n = 81); arms printed as Tai chi group (n = 27), Exercise group (n = 27), Control group (n = 27)",
+     "analysed": "Analyzed (n = 27) + Analyzed (n = 27) + Analyzed (n = 27) = 81"
+    }
+   },
+   "seconds": 58.2,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "fa214e9c-eb25-4694-95c1-0e4a9b542dee",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 1525,
+      "output_tokens": 2953,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 527,
+       "text_tokens": 998
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 4478,
+      "output_tokens_details": {
+       "reasoning_tokens": 2721,
+       "text_tokens": 231
+      },
+      "image_tokens": 527
+     },
+     "phases": {
+      "thinking_summary": 13,
+      "answer": 65
+     },
+     "thinking": [
+      {
+       "title": "Interpreting the flowchart structure to extract participant data.",
+       "thought": "I am carefully examining the visual hierarchy of the figure to identify key stages in the participant selection process. I am noting the specific numbers associated with eligibility assessment, exclusion criteria, and the final count of eligible participants. This systematic breakdown allows me to accurately understand the study's recruitment flow."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11667984_12906_2024_4705_Fig1_HTML.jpg",
+      "id": "0692790d-eaad-41d5-9b4a-a3584ecfaa74",
+      "type": "image",
+      "size": 70858
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11667984_12906_2024_4705_Fig1_HTML.jpg",
+     "id": "0692790d-eaad-41d5-9b4a-a3584ecfaa74",
+     "type": "image",
+     "size": 70858
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 91,\n  \"enrolled\": null,\n  \"randomised\": 81,\n  \"analysed\": 81,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n = 91)\",\n    \"enrolled\": \"No box states enrolled/included/recruited/met inclusion criteria; only 'Eligible participants (n = 84)', which per definition counts as screening, not enrolment\",\n    \"randomised\": \"Week0: Randomly assigned (n = 81); arms printed as Tai chi group (n = 27), Exercise group (n = 27), Control group (n = 27)\",\n    \"analysed\": \"Analyzed (n = 27) + Analyzed (n = 27) + Analyzed (n = 27) = 81\"\n  }\n}\n```"
+  },
+  "PMC11668315": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": null,
+    "enrolled": null,
+    "randomised": 50,
+    "analysed": 44,
+    "unscored": [],
+    "evidence": {
+     "screened": "Top box reads 'Assessed for eligibility' with no number printed",
+     "enrolled": "No separate stage labelled enrolled, included, recruited, or met inclusion criteria",
+     "randomised": "Box reads 'Randomized (n=50)'",
+     "analysed": "Two boxes read 'Analyzed (n=22)' and 'Analyzed (n=22)'; summed across arms = 44"
+    }
+   },
+   "seconds": 29.7,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "102ad8df-2633-4076-81f0-7b6db6a6c171",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 747,
+      "output_tokens": 1172,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 301,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 1919,
+      "output_tokens_details": {
+       "reasoning_tokens": 996,
+       "text_tokens": 175
+      },
+      "image_tokens": 301
+     },
+     "phases": {
+      "thinking_summary": 7,
+      "answer": 49
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the provided figure to extract data points",
+       "thought": "I am carefully examining the visual elements of the diagram to identify specific text and numerical values. I focus on locating the box labeled \"Randomized\" to confirm the participant count and noting the absence of a number in the preceding eligibility assessment stage. Additionally, I begin to document the details within the exclusion category, specifically capturing the reason related to surgical approach changes."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11668315_DDDT-18-6165-g0001.jpg",
+      "id": "e8922ea5-20c6-498a-ae27-09524b50cf33",
+      "type": "image",
+      "size": 57799
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11668315_DDDT-18-6165-g0001.jpg",
+     "id": "e8922ea5-20c6-498a-ae27-09524b50cf33",
+     "type": "image",
+     "size": 57799
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": null,\n  \"enrolled\": null,\n  \"randomised\": 50,\n  \"analysed\": 44,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Top box reads 'Assessed for eligibility' with no number printed\",\n    \"enrolled\": \"No separate stage labelled enrolled, included, recruited, or met inclusion criteria\",\n    \"randomised\": \"Box reads 'Randomized (n=50)'\",\n    \"analysed\": \"Two boxes read 'Analyzed (n=22)' and 'Analyzed (n=22)'; summed across arms = 44\"\n  }\n}\n```"
+  },
+  "PMC11676100": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 102,
+    "enrolled": null,
+    "randomised": 61,
+    "analysed": 45,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n=102)",
+     "enrolled": "No stage printed as enrolled/included/recruited with a number; 'Enrollment' appears only as a phase label",
+     "randomised": "Randomized (n=61); arms printed as Allocated to ME (n=31) and Allocated to TAU (n=30)",
+     "analysed": "Post-intervention boxes: ME (n=21) and TAU (n=24); matching 'Received allocated intervention (n=21)' and '(n=24)'; 21+24=45"
+    }
+   },
+   "seconds": 32.4,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "d75761ce-c1a4-4e75-9afc-905ffc04569a",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 873,
+      "output_tokens": 1451,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 427,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 2324,
+      "output_tokens_details": {
+       "reasoning_tokens": 1226,
+       "text_tokens": 224
+      },
+      "image_tokens": 427
+     },
+     "phases": {
+      "thinking_summary": 8,
+      "answer": 67
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the provided figure to extract participant flow data",
+       "thought": "I am carefully examining the visual elements of the diagram to identify key stages and numerical values.\nI am noting specific details such as the total number of individuals assessed for eligibility and those excluded along with their reasons.\nI am preparing to document the randomized cohort size which appears to be cut off in the current view."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11676100_nutrients-16-04388-g001.jpg",
+      "id": "931dd6f5-0553-4ad6-bab4-6abb83806067",
+      "type": "image",
+      "size": 62233
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11676100_nutrients-16-04388-g001.jpg",
+     "id": "931dd6f5-0553-4ad6-bab4-6abb83806067",
+     "type": "image",
+     "size": 62233
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 102,\n  \"enrolled\": null,\n  \"randomised\": 61,\n  \"analysed\": 45,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n=102)\",\n    \"enrolled\": \"No stage printed as enrolled/included/recruited with a number; 'Enrollment' appears only as a phase label\",\n    \"randomised\": \"Randomized (n=61); arms printed as Allocated to ME (n=31) and Allocated to TAU (n=30)\",\n    \"analysed\": \"Post-intervention boxes: ME (n=21) and TAU (n=24); matching 'Received allocated intervention (n=21)' and '(n=24)'; 21+24=45\"\n  }\n}\n```"
+  },
+  "PMC11676177": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 94,
+    "enrolled": null,
+    "randomised": 45,
+    "analysed": 42,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n= 94)",
+     "randomised": "Randomized (n= 45)",
+     "analysed": "Control meal (n= 20) and UPF meal (n= 22) under the Analysis label; 20 + 22 = 42"
+    }
+   },
+   "seconds": 35.2,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "31fc3a5e-0b80-48c9-b961-fbb539108c77",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 948,
+      "output_tokens": 1349,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 502,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 2297,
+      "output_tokens_details": {
+       "reasoning_tokens": 1193,
+       "text_tokens": 155
+      },
+      "image_tokens": 502
+     },
+     "phases": {
+      "thinking_summary": 8,
+      "answer": 43
+     },
+     "thinking": [
+      {
+       "title": "Analyze the provided figure to extract structural details",
+       "thought": "I carefully examine the visual content to identify key components such as labels and numerical data points. I focus on specific elements like eligibility criteria and exclusion reasons to ensure accurate information retrieval. My goal is to organize these observations into a coherent summary for the user. This process allows me to present the findings clearly and concisely."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11676177_nutrients-16-04398-g003.jpg",
+      "id": "2b33c6bf-11f2-4e49-b9b5-0d33f79744fc",
+      "type": "image",
+      "size": 75964
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11676177_nutrients-16-04398-g003.jpg",
+     "id": "2b33c6bf-11f2-4e49-b9b5-0d33f79744fc",
+     "type": "image",
+     "size": 75964
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 94,\n  \"enrolled\": null,\n  \"randomised\": 45,\n  \"analysed\": 42,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n= 94)\",\n    \"randomised\": \"Randomized (n= 45)\",\n    \"analysed\": \"Control meal (n= 20) and UPF meal (n= 22) under the Analysis label; 20 + 22 = 42\"\n  }\n}\n```"
+  },
+  "PMC11676743": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 64,
+    "enrolled": null,
+    "randomised": null,
+    "analysed": null,
+    "unscored": [],
+    "evidence": {
+     "screened": "Sixty-four patients were diagnosed to have VAP: (top of flow), followed by Data collection, Laboratory tests and Imaging, ETA culture by (DD, MIC, and AZDAST), Blood culture",
+     "enrolled": "No box prints enrolled, included, recruited, or met/fulfilled inclusion criteria as its own stage; downstream boxes only print 'Two patients improved on first line empirical antibiotics treatment.' and 'Sixty two patients did not improve on first line empirical antibiotics'",
+     "randomised": "'Receive treatment according to one of the following (randomly by simple random allocation envelope or lottery type): Group A ... Group B ... Group C ...' - randomisation is described but no number is printed for any allocated arm, and the MDR branch ('Receive treatment according to the results of MIC done by automated VITEK2.') has no number either",
+     "analysed": "No printed number of patients analysed in any arm or overall"
+    }
+   },
+   "seconds": 152.0,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "8973bd21-b40d-481f-9d96-1838dc9cfef3",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 1115,
+      "output_tokens": 6491,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 669,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 7606,
+      "output_tokens_details": {
+       "reasoning_tokens": 6213,
+       "text_tokens": 277
+      },
+      "image_tokens": 669
+     },
+     "phases": {
+      "thinking_summary": 30,
+      "answer": 91
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the provided visual data structure.",
+       "thought": "I am carefully examining the top section of the diagram to understand the initial patient cohort and diagnostic criteria for VAP.\nI am focusing on identifying the specific data collection methods and laboratory procedures listed in the subsequent boxes.\nMy goal is to accurately interpret the flow of information regarding patient diagnosis and testing protocols."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11676743_medicina-60-02098-g001.jpg",
+      "id": "afb08585-c42b-4f31-8cca-de4a584f13e6",
+      "type": "image",
+      "size": 111239
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11676743_medicina-60-02098-g001.jpg",
+     "id": "afb08585-c42b-4f31-8cca-de4a584f13e6",
+     "type": "image",
+     "size": 111239
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 64,\n  \"enrolled\": null,\n  \"randomised\": null,\n  \"analysed\": null,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Sixty-four patients were diagnosed to have VAP: (top of flow), followed by Data collection, Laboratory tests and Imaging, ETA culture by (DD, MIC, and AZDAST), Blood culture\",\n    \"enrolled\": \"No box prints enrolled, included, recruited, or met/fulfilled inclusion criteria as its own stage; downstream boxes only print 'Two patients improved on first line empirical antibiotics treatment.' and 'Sixty two patients did not improve on first line empirical antibiotics'\",\n    \"randomised\": \"'Receive treatment according to one of the following (randomly by simple random allocation envelope or lottery type): Group A ... Group B ... Group C ...' - randomisation is described but no number is printed for any allocated arm, and the MDR branch ('Receive treatment according to the results of MIC done by automated VITEK2.') has no number either\",\n    \"analysed\": \"No printed number of patients analysed in any arm or overall\"\n  }\n}\n```"
+  },
+  "PMC11677140": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 20,
+    "enrolled": null,
+    "randomised": 17,
+    "analysed": 17,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n=20)",
+     "randomised": "Randomized (n=17)",
+     "analysed": "Analysed knees (n=8) in ILIB group plus Analysed knees (n=9) in control group = 17"
+    }
+   },
+   "seconds": 33.9,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "c0a6b82e-ce5e-4011-9ab3-39c23369b928",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 1098,
+      "output_tokens": 1353,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 652,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 2451,
+      "output_tokens_details": {
+       "reasoning_tokens": 1206,
+       "text_tokens": 146
+      },
+      "image_tokens": 652
+     },
+     "phases": {
+      "thinking_summary": 8,
+      "answer": 40
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the provided visual data",
+       "thought": "I am carefully examining the figure to identify its structure as a CONSORT 2010 flow diagram. I proceed to extract key information from each box, starting with the number of participants assessed for eligibility. I then begin to detail the exclusion criteria and the specific reasons for participant removal from the study."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11677140_ijms-25-13608-g001.jpg",
+      "id": "ff9f414f-2520-4952-aab0-90cb4215aa7c",
+      "type": "image",
+      "size": 81129
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11677140_ijms-25-13608-g001.jpg",
+     "id": "ff9f414f-2520-4952-aab0-90cb4215aa7c",
+     "type": "image",
+     "size": 81129
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 20,\n  \"enrolled\": null,\n  \"randomised\": 17,\n  \"analysed\": 17,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n=20)\",\n    \"randomised\": \"Randomized (n=17)\",\n    \"analysed\": \"Analysed knees (n=8) in ILIB group plus Analysed knees (n=9) in control group = 17\"\n  }\n}\n```"
+  },
+  "PMC11680048": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 120,
+    "enrolled": null,
+    "randomised": 90,
+    "analysed": 90,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n = 120)",
+     "randomised": "Randomized (n = 90)",
+     "analysed": "Analyzed (n = 45) [intervention] + Analyzed (n = 45) [control]"
+    }
+   },
+   "seconds": 27.0,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "165a1ccb-057d-4b5e-a7f0-1798c96a0b62",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 1425,
+      "output_tokens": 1138,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 427,
+       "text_tokens": 998
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 2563,
+      "output_tokens_details": {
+       "reasoning_tokens": 962,
+       "text_tokens": 175
+      },
+      "image_tokens": 427
+     },
+     "phases": {
+      "thinking_summary": 15,
+      "answer": 86
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the provided flowchart data to extract participant numbers.",
+       "thought": "I carefully examine the visual elements to identify key metrics such as the total screened population and exclusion criteria.\nThis process involves isolating specific numerical values associated with eligibility assessment and reasons for exclusion.\nThe goal is to accurately interpret the study's participant flow for subsequent analysis."
+      }
+     ],
+     "media": [],
+     "dropped": 47,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11680048_nutrients-16-04364-g002.jpg",
+      "id": "ea7afd2d-295f-4977-9374-076fa8e2b720",
+      "type": "image",
+      "size": 67758
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11680048_nutrients-16-04364-g002.jpg",
+     "id": "ea7afd2d-295f-4977-9374-076fa8e2b720",
+     "type": "image",
+     "size": 67758
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 120,\n  \"enrolled\": null,\n  \"randomised\": 90,\n  \"analysed\": 90,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n = 120)\",\n    \"randomised\": \"Randomized (n = 90)\",\n    \"analysed\": \"Analyzed (n = 45) [intervention] + Analyzed (n = 45) [control]\"\n  }\n}\n```"
+  },
+  "PMC11685319": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 30,
+    "enrolled": null,
+    "randomised": 30,
+    "analysed": 26,
+    "unscored": [],
+    "evidence": {
+     "screened": "Assessed for eligibility (n = 30)",
+     "enrolled": "no separate enrolled/included/recruited stage printed; only 'Assessed for eligibility' and 'Randomized'",
+     "randomised": "Randomized (n = 30)",
+     "analysed": "Left arm 'Analyzed (n = 12)' plus right arm 'Analyzed (n = 14)' = 26"
+    }
+   },
+   "seconds": 33.9,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "251910c5-cf2c-44e3-aca6-ca10d2dc715c",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 1123,
+      "output_tokens": 1396,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 677,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 2519,
+      "output_tokens_details": {
+       "reasoning_tokens": 1217,
+       "text_tokens": 178
+      },
+      "image_tokens": 677
+     },
+     "phases": {
+      "thinking_summary": 8,
+      "answer": 52
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the provided visual data",
+       "thought": "I am carefully examining the CONSORT flow diagram to extract key statistical information. I identify the initial cohort size and note the breakdown of exclusions based on eligibility criteria. My focus is on accurately interpreting the numerical values associated with participant screening and selection. This process ensures a precise understanding of the study's participant flow before formulating a response."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11685319_MI2024-5520987.001.jpg",
+      "id": "79fcc268-5c38-49c3-a503-9a2e81e3c79f",
+      "type": "image",
+      "size": 170433
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11685319_MI2024-5520987.001.jpg",
+     "id": "79fcc268-5c38-49c3-a503-9a2e81e3c79f",
+     "type": "image",
+     "size": 170433
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 30,\n  \"enrolled\": null,\n  \"randomised\": 30,\n  \"analysed\": 26,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"Assessed for eligibility (n = 30)\",\n    \"enrolled\": \"no separate enrolled/included/recruited stage printed; only 'Assessed for eligibility' and 'Randomized'\",\n    \"randomised\": \"Randomized (n = 30)\",\n    \"analysed\": \"Left arm 'Analyzed (n = 12)' plus right arm 'Analyzed (n = 14)' = 26\"\n  }\n}\n```"
+  },
+  "PMC11701056": {
+   "split": "heldout",
+   "parsed": {
+    "is_participant_flow": true,
+    "screened": 126,
+    "enrolled": 126,
+    "randomised": 126,
+    "analysed": 126,
+    "unscored": [],
+    "evidence": {
+     "screened": "8 clusters and 126 eligible students",
+     "enrolled": "126 students enrolled with informed consent",
+     "randomised": "Cluster randomisation process; arms give Pre-test (n=64) and Pre-test (n=62), sum = 126",
+     "analysed": "126 datasets analysed at pre-test and post-test"
+    }
+   },
+   "seconds": 35.9,
+   "model": "qwen3.8-max",
+   "thinking_used": true,
+   "reply_fields": {
+    "success": true,
+    "provider": "qwen",
+    "media": [],
+    "meta": {
+     "responseId": "f1fb5cfc-4d5f-4c0a-a6e2-04d480beb7ab",
+     "model": "qwen3.8-max",
+     "chatType": "t2t",
+     "finished": true,
+     "usage": {
+      "input_tokens": 1306,
+      "output_tokens": 1516,
+      "characters": 0,
+      "input_tokens_details": {
+       "image_tokens": 860,
+       "text_tokens": 446
+      },
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "total_tokens": 2822,
+      "output_tokens_details": {
+       "reasoning_tokens": 1343,
+       "text_tokens": 172
+      },
+      "image_tokens": 860
+     },
+     "phases": {
+      "thinking_summary": 8,
+      "answer": 46
+     },
+     "thinking": [
+      {
+       "title": "Analyzing the provided figure to interpret its data",
+       "thought": "I am carefully examining the top section of the diagram to understand the initial screening stage. I am cross-referencing the stated numbers with standard definitions to ensure accurate interpretation. My goal is to clarify the meaning of the screening metrics within this specific context. This process helps me construct a precise and informed response to the user's inquiry."
+      }
+     ],
+     "media": [],
+     "dropped": 0,
+     "dupChunks": 0,
+     "restartFromStart": 0,
+     "turns": 1
+    },
+    "thinkingRequested": true,
+    "thinkingUsed": true,
+    "attachments": [
+     {
+      "name": "PMC11701056_fpubh-12-1510620-g0001.jpg",
+      "id": "11641765-f768-44db-a067-409c39d4e770",
+      "type": "image",
+      "size": 164174
+     }
+    ],
+    "result": [
+     "response"
+    ]
+   },
+   "attachments": [
+    {
+     "name": "PMC11701056_fpubh-12-1510620-g0001.jpg",
+     "id": "11641765-f768-44db-a067-409c39d4e770",
+     "type": "image",
+     "size": 164174
+    }
+   ],
+   "rejected": null,
+   "response": "```json\n{\n  \"is_participant_flow\": true,\n  \"screened\": 126,\n  \"enrolled\": 126,\n  \"randomised\": 126,\n  \"analysed\": 126,\n  \"unscored\": [],\n  \"evidence\": {\n    \"screened\": \"8 clusters and 126 eligible students\",\n    \"enrolled\": \"126 students enrolled with informed consent\",\n    \"randomised\": \"Cluster randomisation process; arms give Pre-test (n=64) and Pre-test (n=62), sum = 126\",\n    \"analysed\": \"126 datasets analysed at pre-test and post-test\"\n  }\n}\n```"
+  }
+ },
+ "annotator": "Qwen (qwen3.8-max via Proxima), reasoning requested, blind to the answer key, one fresh conversation per figure",
+ "prompt": "You are the second, independent annotator of a figure from a published randomised trial. Another annotator has already read it; you will not see their answers, and yours will be compared with theirs. Read the numbers printed in the attached figure and report them under the definitions below, as a careful human annotator would.\n\nReport only what the figure prints. If it gives no number for a stage, the answer is null. Do not use outside knowledge of the trial, and do not do arithmetic beyond what a definition asks for.\n\nDefinitions (use them exactly):\n{definitions}\n\nReply with a single fenced JSON block and nothing after it, in this shape:\n\n```json\n{{\n  \"is_participant_flow\": <true or false>,\n  \"screened\": <integer or null>,\n  \"enrolled\": <integer or null>,\n  \"randomised\": <integer or null>,\n  \"analysed\": <integer or null>,\n  \"unscored\": [<names of any stages the figure leaves genuinely ambiguous>],\n  \"evidence\": {{\"<stage>\": \"<the words and numbers printed in the figure that you used>\"}}\n}}\n```"
+}

@@ -1,0 +1,213 @@
+{
+ "adjudicator": "Claude (the first annotator), from the images, after the blind second reading. Every decision is listed so the team can review it.",
+ "decisions": [
+  {
+   "pmcid": "PMC11661032",
+   "stage": "screened",
+   "provider": "qwen",
+   "decision": "second_annotator_error",
+   "category": "invented counts",
+   "reason": "Image prints Assessed for eligibility (n=67); the 145 Qwen quoted appears nowhere."
+  },
+  {
+   "pmcid": "PMC11661032",
+   "stage": "randomised",
+   "provider": "qwen",
+   "decision": "second_annotator_error",
+   "category": "invented counts",
+   "reason": "Image prints Randomization (n=60); no 100 anywhere."
+  },
+  {
+   "pmcid": "PMC11661032",
+   "stage": "analysed",
+   "provider": "qwen",
+   "decision": "second_annotator_error",
+   "category": "invented counts",
+   "reason": "Image prints Analyzed (n=60); no 98 anywhere."
+  },
+  {
+   "pmcid": "PMC11680048",
+   "stage": "screened",
+   "provider": "qwen",
+   "decision": "second_annotator_error",
+   "category": "invented counts",
+   "reason": "Image prints Assessed for eligibility (n=106); no 120."
+  },
+  {
+   "pmcid": "PMC11680048",
+   "stage": "enrolled",
+   "provider": "qwen",
+   "decision": "second_annotator_error",
+   "category": "invented counts",
+   "reason": "Image prints Enrolled and randomised (n=50)."
+  },
+  {
+   "pmcid": "PMC11680048",
+   "stage": "randomised",
+   "provider": "qwen",
+   "decision": "second_annotator_error",
+   "category": "invented counts",
+   "reason": "Image prints Enrolled and randomised (n=50); no 90."
+  },
+  {
+   "pmcid": "PMC11680048",
+   "stage": "analysed",
+   "provider": "qwen",
+   "decision": "second_annotator_error",
+   "category": "invented counts",
+   "reason": "Image prints Analysed (n=24) and (n=22); no 45."
+  },
+  {
+   "pmcid": "PMC11667255",
+   "stage": "screened",
+   "provider": "qwen",
+   "decision": "second_annotator_error",
+   "category": "no answer despite the upload",
+   "reason": "Image prints Assessed for eligibility N=12 clusters; Qwen returned no evidence at all."
+  },
+  {
+   "pmcid": "PMC11667255",
+   "stage": "randomised",
+   "provider": "qwen",
+   "decision": "second_annotator_error",
+   "category": "no answer despite the upload",
+   "reason": "Image prints Randomized, N=12 clusters."
+  },
+  {
+   "pmcid": "PMC11656953",
+   "stage": "analysed",
+   "provider": "qwen",
+   "decision": "ambiguous",
+   "category": "flow ends before a stage labelled analysed",
+   "reason": "Arms are labelled Intent to treat sample (35, 41) with no Analysed box; the definition names the ITT analysis, so either reading fits."
+  },
+  {
+   "pmcid": "PMC11662039",
+   "stage": "analysed",
+   "provider": "qwen",
+   "decision": "ambiguous",
+   "category": "flow ends before a stage labelled analysed",
+   "reason": "Flow ends at T1 assessment (56, 51 complete questionnaires); assessment is not labelled analysis."
+  },
+  {
+   "pmcid": "PMC11676100",
+   "stage": "analysed",
+   "provider": "qwen",
+   "decision": "ambiguous",
+   "category": "flow ends before a stage labelled analysed",
+   "reason": "Flow ends at Post-intervention (21, 24); not labelled analysis."
+  },
+  {
+   "pmcid": "PMC11662462",
+   "stage": "screened",
+   "provider": "qwen",
+   "decision": "ambiguous",
+   "category": "top box labelled enrolled, exclusions below",
+   "reason": "Top box says 700 enrolled patients and exclusions follow, so it works as screening though not labelled so."
+  },
+  {
+   "pmcid": "PMC11662462",
+   "stage": "enrolled",
+   "provider": "qwen",
+   "decision": "ambiguous",
+   "category": "top box labelled enrolled, exclusions below",
+   "reason": "Both 700 enrolled and 620 fulfilled including criteria satisfy the enrolment definition."
+  },
+  {
+   "pmcid": "PMC11662516",
+   "stage": "enrolled",
+   "provider": "qwen",
+   "decision": "ambiguous",
+   "category": "enrolment printed only per arm",
+   "reason": "Included at baseline is printed per arm inside the allocation boxes, not as its own stage as the definition requires."
+  },
+  {
+   "pmcid": "PMC11667339",
+   "stage": "screened",
+   "provider": "qwen",
+   "decision": "ambiguous",
+   "category": "top box names a cohort, no screening wording",
+   "reason": "Two survey samples, Approached 1506 and 346; approached is not assessed for eligibility."
+  },
+  {
+   "pmcid": "PMC11667845",
+   "stage": "screened",
+   "provider": "qwen",
+   "decision": "ambiguous",
+   "category": "top box names a cohort, no screening wording",
+   "reason": "Top box names the cohort (N=48) with no screening wording."
+  },
+  {
+   "pmcid": "PMC11676743",
+   "stage": "screened",
+   "provider": "qwen",
+   "decision": "ambiguous",
+   "category": "top box names a cohort, no screening wording",
+   "reason": "Top box names the population (Sixty-four patients diagnosed with VAP) with no screening wording. The key's own note gave a wrong reason, that the counts are words."
+  },
+  {
+   "pmcid": "PMC11706452",
+   "stage": "screened",
+   "provider": "chatgpt",
+   "decision": "ambiguous",
+   "category": "top box names a cohort, no screening wording",
+   "reason": "Top box is the registry population (N=42432) assigned to arms; no assessment for eligibility is printed."
+  },
+  {
+   "pmcid": "PMC11681664",
+   "stage": "screened",
+   "provider": "chatgpt",
+   "decision": "ambiguous",
+   "category": "top box names a cohort, no screening wording",
+   "reason": "Top box is the cohort that completed an entrance exam (n=103); no screening wording."
+  },
+  {
+   "pmcid": "PMC11681668",
+   "stage": "randomised",
+   "provider": "chatgpt",
+   "decision": "ambiguous",
+   "category": "cluster trial: randomised units differ from people",
+   "reason": "12 centres were chosen randomly and 115+115 mothers allocated; the key counts centres, the second reading mothers."
+  },
+  {
+   "pmcid": "PMC11681668",
+   "stage": "analysed",
+   "provider": "chatgpt",
+   "decision": "ambiguous",
+   "category": "repeated analysis rows",
+   "reason": "Analysed repeats at every follow-up. The definition's 'first-listed analysis' gives 111+113=224, the key used the final row 109+104=213; the definition did not anticipate repeated follow-ups."
+  },
+  {
+   "pmcid": "PMC11686909",
+   "stage": "analysed",
+   "provider": "chatgpt",
+   "decision": "second_annotator_error",
+   "category": "added different units",
+   "reason": "The second reading added educators (45, 29) and students (91, 55) into one total of 220; the key takes the first-listed unit, educators, 74."
+  },
+  {
+   "pmcid": "PMC11703737",
+   "stage": "analysed",
+   "provider": "chatgpt",
+   "decision": "ambiguous",
+   "category": "flow ends before a stage labelled analysed",
+   "reason": "Flow ends at completed post-intervention assessment (47, 54); not labelled analysis."
+  },
+  {
+   "pmcid": "PMC11722567",
+   "stage": "analysed",
+   "provider": "chatgpt",
+   "decision": "ambiguous",
+   "category": "flow ends before a stage labelled analysed",
+   "reason": "Observational flow ending at 208 Completed follow-up; not labelled analysis."
+  },
+  {
+   "pmcid": "PMC11722735",
+   "stage": "randomised",
+   "provider": "chatgpt",
+   "decision": "ambiguous",
+   "category": "cluster trial: randomised units differ from people",
+   "reason": "Randomized box has no count; arms are 26+26 clusters. The key sums the arms as the definition says; the second reading declined to count clusters as randomised participants."
+  }
+ ]
+}

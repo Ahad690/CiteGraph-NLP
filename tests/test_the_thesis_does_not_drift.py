@@ -166,6 +166,31 @@ def test_flow_diagram_results_match_the_held_out_run():
         sum(row["vision_outcome"] == "missed" for row in misses), len(misses))
 
 
+def test_second_reading_matches_its_summary():
+    """Section 6.14.7 quotes the blind second reading. Its numbers come from
+    second_annotator_summary.json, which scripts/second_annotator.py --summarise
+    computes from the raw replies and adjudication.json."""
+    summary = json.loads((EVIDENCE / "flow_diagrams" / "second_annotator_summary.json").read_text(encoding="utf-8"))
+    pct = lambda a, b: f"{round(100 * a / b)}%"
+    rows = [(name.capitalize() if name == "qwen" else "ChatGPT", v["figures"], v["values"], v["agreed"])
+            for name, v in sorted(summary["by_provider"].items(), key=lambda kv: kv[0] != "qwen")]
+    rows.append(("Both", summary["read"], summary["values"], summary["agreed"]))
+    held, dev = summary["rescored"]["heldout"], summary["rescored"]["second_dev"]
+    fmt = lambda c: f"{c['vision']} of {c['n']}"
+    claims = [f"| {name} | {f} | {n} | {a} ({pct(a, n)}) |" for name, f, n, a in rows] + [
+        f"Each of the {summary['disagreements']} disagreements was settled",
+        f"from {fmt(held['original_key'])} to {fmt(held['ambiguous_unscored'])}",
+        f"right on {held['ambiguous_unscored']['text']} in both",
+        f"from {fmt(dev['original_key'])} to {fmt(dev['ambiguous_unscored'])}",
+    ]
+    stale = [c for c in claims if c not in _chapter("06c-flow-diagrams.md")]
+    assert not stale, f"Section 6.14.7 no longer matches second_annotator_summary.json: {stale}"
+    assert held["original_key"]["text"] == held["ambiguous_unscored"]["text"]
+    assert _quoted("06c-flow-diagrams.md", r"(\w+) were the second reader's errors") == (summary["second_annotator_errors"],)
+    assert _quoted("06c-flow-diagrams.md", r"The other (\w+) are cases") == (summary["ambiguous"],)
+    assert summary["key_values_contradicted_by_the_image"] == 0 or "none showed" not in _chapter("06c-flow-diagrams.md")
+
+
 # ---------------------------------------------------------------- code
 
 

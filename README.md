@@ -5,8 +5,8 @@
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)
 ![FastAPI](https://img.shields.io/badge/FastAPI-async-009688.svg)
 ![React](https://img.shields.io/badge/React-TypeScript-61dafb.svg)
-![Tests](https://img.shields.io/badge/tests-200%20passing-brightgreen.svg)
-![Thesis](https://img.shields.io/badge/thesis-120%20pages-8a2be2.svg)
+![Tests](https://img.shields.io/badge/tests-201%20passing-brightgreen.svg)
+![Thesis](https://img.shields.io/badge/thesis-121%20pages-8a2be2.svg)
 ![Status](https://img.shields.io/badge/status-deployed-success.svg)
 
 CiteGraph-NLP is an NLP + Knowledge Graph system for analyzing scientific papers, tracing citation lineages, extracting study population evidence, and ranking **probable foundational papers** using confidence-aware graph analytics.
@@ -46,7 +46,7 @@ makes the uncertainty of automated evidence extraction visible to the reader.
 | [PROJECT_REPORT.md](PROJECT_REPORT.md) | What the system does and why, in plain language |
 | [project_proposal.md](project_proposal.md) | The original FYP proposal |
 | [citation_lineage_prd.md](citation_lineage_prd.md) | Product requirements the build followed |
-| [thesis/](thesis/) | The full thesis: 120 pages, 8 chapters, 8 appendices |
+| [thesis/](thesis/) | The full thesis: 121 pages, 8 chapters, 8 appendices |
 | [thesis/figures/README.md](thesis/figures/README.md) | How each thesis figure is generated from the code |
 | [thesis/renders/README.md](thesis/renders/README.md) | Three PDF layouts of the thesis, compared |
 
@@ -213,7 +213,7 @@ citegraph-nlp/
 │       └── logging_config.py     # Logging setup
 │
 ├── frontend/                     # React dashboard
-├── tests/                        # 200 tests
+├── tests/                        # 201 tests
 │   ├── conftest.py
 │   ├── test_add_citegraph_route.py
 │   ├── test_api_comprehensive.py
