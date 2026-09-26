@@ -17,14 +17,29 @@ class GraphAnalytics:
     def __init__(self, graph: nx.DiGraph):
         self.graph = graph
 
-    def rank_foundational_papers(self, top_n: int = 10) -> List[Dict[str, Any]]:
-        """Rank papers by their 'foundational' score using citation influence and evidence strength."""
+    def rank_foundational_papers(self, top_n: int = 10, seed_id: str | None = None) -> List[Dict[str, Any]]:
+        """Rank papers by their 'foundational' score using citation influence and evidence strength.
+
+        `seed_id` is left out of the ranking: the paper a run starts from is
+        not one of its own foundations, and it usually has the highest
+        PageRank in the graph, so keeping it would also set the scale below.
+        """
         if not self.graph.nodes:
             return []
 
-        # PageRank provides citation influence
+        # PageRank provides citation influence. Its values sum to 1 over the
+        # graph, so in a 100-paper graph a typical paper scores about 0.01
+        # while the age and evidence terms run to 1. Used raw, the 0.5 weight
+        # gave citation structure about 1% of a top paper's score, and
+        # replacing the evidence-weighted edges with unweighted ones left every
+        # top ten unchanged (thesis Section 5.6.4). Dividing by the largest
+        # value among the ranked papers puts influence on the same 0-1 scale.
         pagerank = nx.pagerank(self.graph, weight='weight')
-        
+        pagerank = {node: value for node, value in pagerank.items() if node != seed_id}
+        if not pagerank:
+            return []
+        top_pagerank = max(pagerank.values()) or 1.0
+
         # Calculate a combined score
         # Foundational papers are:
         # 1. Heavily cited (PageRank)
@@ -36,7 +51,8 @@ class GraphAnalytics:
         current_year = datetime.now(timezone.utc).year
         
         results = []
-        for paper_id, influence_score in pagerank.items():
+        for paper_id, raw_pagerank in pagerank.items():
+            influence_score = raw_pagerank / top_pagerank
             node_data = self.graph.nodes[paper_id]
             
             # Year score: older is better for foundational
@@ -63,6 +79,7 @@ class GraphAnalytics:
                 "year": year,
                 "score": final_score,
                 "influence": influence_score,
+                "pagerank": raw_pagerank,
                 "n_eff": n_eff,
                 "explanation": f"Ranked foundational based on citation influence ({influence_score:.2f}), year ({year}), and {evidence_description}."
             })

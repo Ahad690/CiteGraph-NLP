@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-25T18:29:35.715124+00:00",
+ "generated_at": "2026-09-26T07:12:27.220589+00:00",
  "max_papers": 100,
  "runs": [
   {
@@ -13,35 +13,104 @@
     "distinct": 29
    },
    "pagerank_term_share_of_top10_score": {
+    "median": 0.38618308420533976,
+    "max": 0.6767470807834852
+   },
+   "pagerank_term_share_before_fix": {
     "median": 0.010428696516603485,
     "max": 0.07125044260424154
    },
-   "largest_pagerank_term": 0.07196776325336304,
+   "largest_pagerank_term_before_fix": 0.028275903256132884,
    "median_age_term": 0.09,
    "top10_overlap_with_current": {
-    "no_pagerank": 9,
-    "unweighted_pr": 10,
-    "pagerank_w": 4,
-    "pagerank_u": 4
+    "before_fix": 7,
+    "no_pagerank": 7,
+    "unweighted_pr": 8,
+    "pagerank_w": 7,
+    "pagerank_u": 6
    },
    "top10_identical_order": {
+    "before_fix": false,
     "no_pagerank": false,
     "unweighted_pr": false,
     "pagerank_w": false,
     "pagerank_u": false
    },
    "spearman_with_current": {
-    "no_pagerank": 0.9937,
-    "unweighted_pr": 0.9998,
-    "pagerank_w": 0.4336,
-    "pagerank_u": 0.3571
+    "before_fix": 0.939,
+    "no_pagerank": 0.9243,
+    "unweighted_pr": 0.9495,
+    "pagerank_w": 0.6219,
+    "pagerank_u": 0.5457
    },
    "pagerank_w_vs_u": {
-    "top10_overlap": 9,
-    "spearman": 0.9654
+    "top10_overlap": 8,
+    "spearman": 0.9643
    },
    "top10": {
     "current": [
+     {
+      "paper_id": "10.1016/s0016-5085(03)01215-0",
+      "title": "Enteric involvement of severe acute respiratory syndrome-associated coronavirus infection",
+      "year": 2003,
+      "n_eff": 138
+     },
+     {
+      "paper_id": "10.1056/nejmoa030685",
+      "title": "A Major Outbreak of Severe Acute Respiratory Syndrome in Hong Kong",
+      "year": 2003,
+      "n_eff": 32
+     },
+     {
+      "paper_id": "10.1056/nejmoa030781",
+      "title": "A Novel Coronavirus Associated with Severe Acute Respiratory Syndrome",
+      "year": 2003,
+      "n_eff": 12
+     },
+     {
+      "paper_id": "10.1016/s0140-6736(20)30154-9",
+      "title": "A familial cluster of pneumonia associated with the 2019 novel coronavirus indicating person-to-person transmission: a study of a family cluster",
+      "year": 2020,
+      "n_eff": 140
+     },
+     {
+      "paper_id": "10.1056/nejmoa030747",
+      "title": "Identification of a Novel Coronavirus in Patients with Severe Acute Respiratory Syndrome",
+      "year": 2003,
+      "n_eff": null
+     },
+     {
+      "paper_id": "10.1056/nejmoa2001316",
+      "title": "Early Transmission Dynamics in Wuhan, China, of Novel Coronavirus–Infected Pneumonia",
+      "year": 2020,
+      "n_eff": 425
+     },
+     {
+      "paper_id": "10.1016/s0140-6736(03)13967-0",
+      "title": "Newly discovered coronavirus as the primary cause of severe acute respiratory syndrome",
+      "year": 2003,
+      "n_eff": 436
+     },
+     {
+      "paper_id": "10.1016/s0140-6736(03)14630-2",
+      "title": "Epidemiology and cause of severe acute respiratory syndrome (SARS) in Guangdong, People's Republic of China, in February, 2003",
+      "year": 2003,
+      "n_eff": 55
+     },
+     {
+      "paper_id": "10.1056/nejmoa1305584",
+      "title": "Clinical Findings in 111 Cases of Influenza A (H7N9) Virus Infection",
+      "year": 2013,
+      "n_eff": 111
+     },
+     {
+      "paper_id": "10.1371/journal.pmed.0030343",
+      "title": "SARS: Systematic Review of Treatment Effects",
+      "year": 2006,
+      "n_eff": 100
+     }
+    ],
+    "before_fix": [
      {
       "paper_id": "10.1016/s0016-5085(03)01215-0",
       "title": "Enteric involvement of severe acute respiratory syndrome-associated coronavirus infection",
@@ -167,52 +236,10 @@
     ],
     "unweighted_pr": [
      {
-      "paper_id": "10.1016/s0140-6736(03)13967-0",
-      "title": "Newly discovered coronavirus as the primary cause of severe acute respiratory syndrome",
-      "year": 2003,
-      "n_eff": 436
-     },
-     {
       "paper_id": "10.1016/s0016-5085(03)01215-0",
       "title": "Enteric involvement of severe acute respiratory syndrome-associated coronavirus infection",
       "year": 2003,
       "n_eff": 138
-     },
-     {
-      "paper_id": "10.1136/thorax.2003.012658",
-      "title": "Role of lopinavir/ritonavir in the treatment of SARS: initial virological and clinical findings",
-      "year": 2004,
-      "n_eff": 111
-     },
-     {
-      "paper_id": "10.1016/s0140-6736(03)14630-2",
-      "title": "Epidemiology and cause of severe acute respiratory syndrome (SARS) in Guangdong, People's Republic of China, in February, 2003",
-      "year": 2003,
-      "n_eff": 55
-     },
-     {
-      "paper_id": "10.1056/nejmoa030685",
-      "title": "A Major Outbreak of Severe Acute Respiratory Syndrome in Hong Kong",
-      "year": 2003,
-      "n_eff": 32
-     },
-     {
-      "paper_id": "10.1371/journal.pmed.0030343",
-      "title": "SARS: Systematic Review of Treatment Effects",
-      "year": 2006,
-      "n_eff": 100
-     },
-     {
-      "paper_id": "10.1111/j.1365-2249.2004.02415.x",
-      "title": "Plasma inflammatory cytokines and chemokines in severe acute respiratory syndrome",
-      "year": 2004,
-      "n_eff": 20
-     },
-     {
-      "paper_id": "10.1056/nejmoa030781",
-      "title": "A Novel Coronavirus Associated with Severe Acute Respiratory Syndrome",
-      "year": 2003,
-      "n_eff": 12
      },
      {
       "paper_id": "10.1056/nejmoa030747",
@@ -221,19 +248,55 @@
       "n_eff": null
      },
      {
-      "paper_id": "10.1073/pnas.0409608102",
-      "title": "Cross-host evolution of severe acute respiratory syndrome coronavirus in palm civet and human",
-      "year": 2005,
+      "paper_id": "10.1056/nejmoa2001017",
+      "title": "A Novel Coronavirus from Patients with Pneumonia in China, 2019",
+      "year": 2020,
       "n_eff": null
+     },
+     {
+      "paper_id": "10.1056/nejmoa030685",
+      "title": "A Major Outbreak of Severe Acute Respiratory Syndrome in Hong Kong",
+      "year": 2003,
+      "n_eff": 32
+     },
+     {
+      "paper_id": "10.1056/nejmoa030781",
+      "title": "A Novel Coronavirus Associated with Severe Acute Respiratory Syndrome",
+      "year": 2003,
+      "n_eff": 12
+     },
+     {
+      "paper_id": "10.1056/nejmoa2001316",
+      "title": "Early Transmission Dynamics in Wuhan, China, of Novel Coronavirus–Infected Pneumonia",
+      "year": 2020,
+      "n_eff": 425
+     },
+     {
+      "paper_id": "10.1016/s0140-6736(20)30154-9",
+      "title": "A familial cluster of pneumonia associated with the 2019 novel coronavirus indicating person-to-person transmission: a study of a family cluster",
+      "year": 2020,
+      "n_eff": 140
+     },
+     {
+      "paper_id": "10.1002/14651858.cd010406.pub2",
+      "title": "Corticosteroids as adjunctive therapy in the treatment of influenza",
+      "year": 2016,
+      "n_eff": 3459
+     },
+     {
+      "paper_id": "10.1016/s0140-6736(03)13967-0",
+      "title": "Newly discovered coronavirus as the primary cause of severe acute respiratory syndrome",
+      "year": 2003,
+      "n_eff": 436
+     },
+     {
+      "paper_id": "10.1016/s0140-6736(03)14630-2",
+      "title": "Epidemiology and cause of severe acute respiratory syndrome (SARS) in Guangdong, People's Republic of China, in February, 2003",
+      "year": 2003,
+      "n_eff": 55
      }
     ],
     "pagerank_w": [
-     {
-      "paper_id": "10.1056/nejmoa2002032",
-      "title": "Clinical Characteristics of Coronavirus Disease 2019 in China",
-      "year": 2020,
-      "n_eff": 1099
-     },
      {
       "paper_id": "10.1016/s0016-5085(03)01215-0",
       "title": "Enteric involvement of severe acute respiratory syndrome-associated coronavirus infection",
@@ -287,15 +350,15 @@
       "title": "Identification of a Novel Coronavirus in Patients with Severe Acute Respiratory Syndrome",
       "year": 2003,
       "n_eff": null
+     },
+     {
+      "paper_id": "10.1016/s0140-6736(15)60454-8",
+      "title": "Middle East respiratory syndrome",
+      "year": 2015,
+      "n_eff": 1180
      }
     ],
     "pagerank_u": [
-     {
-      "paper_id": "10.1056/nejmoa2002032",
-      "title": "Clinical Characteristics of Coronavirus Disease 2019 in China",
-      "year": 2020,
-      "n_eff": 1099
-     },
      {
       "paper_id": "10.1056/nejmoa2001017",
       "title": "A Novel Coronavirus from Patients with Pneumonia in China, 2019",
@@ -349,6 +412,12 @@
       "title": "A Major Outbreak of Severe Acute Respiratory Syndrome in Hong Kong",
       "year": 2003,
       "n_eff": 32
+     },
+     {
+      "paper_id": "10.1002/14651858.cd010406.pub2",
+      "title": "Corticosteroids as adjunctive therapy in the treatment of influenza",
+      "year": 2016,
+      "n_eff": 3459
      }
     ]
    }
@@ -364,35 +433,104 @@
     "distinct": 2
    },
    "pagerank_term_share_of_top10_score": {
+    "median": 0.5795269667182545,
+    "max": 0.5795269667182545
+   },
+   "pagerank_term_share_before_fix": {
     "median": 0.014666484770048548,
     "max": 0.014666484770048548
    },
-   "largest_pagerank_term": 0.10173864074294507,
+   "largest_pagerank_term_before_fix": 0.005399795133578066,
    "median_age_term": 0.105,
    "top10_overlap_with_current": {
+    "before_fix": 10,
     "no_pagerank": 10,
     "unweighted_pr": 10,
     "pagerank_w": 3,
-    "pagerank_u": 3
+    "pagerank_u": 4
    },
    "top10_identical_order": {
+    "before_fix": true,
     "no_pagerank": true,
     "unweighted_pr": true,
     "pagerank_w": false,
     "pagerank_u": false
    },
    "spearman_with_current": {
-    "no_pagerank": 0.9924,
-    "unweighted_pr": 1.0,
-    "pagerank_w": 0.8549,
-    "pagerank_u": 0.8617
+    "before_fix": 0.9861,
+    "no_pagerank": 0.9861,
+    "unweighted_pr": 0.9987,
+    "pagerank_w": 0.8932,
+    "pagerank_u": 0.8922
    },
    "pagerank_w_vs_u": {
     "top10_overlap": 9,
-    "spearman": 0.9881
+    "spearman": 0.9878
    },
    "top10": {
     "current": [
+     {
+      "paper_id": "10.1006/jmbi.1993.1626",
+      "title": "Comparative Protein Modelling by Satisfaction of Spatial Restraints",
+      "year": 1993,
+      "n_eff": null
+     },
+     {
+      "paper_id": "10.1126/science.181.4096.223",
+      "title": "Principles that Govern the Folding of Protein Chains",
+      "year": 1973,
+      "n_eff": null
+     },
+     {
+      "paper_id": "10.1002/prot.21123",
+      "title": "Comparison of multiple Amber force fields and development of improved protein backbone parameters",
+      "year": 2006,
+      "n_eff": null
+     },
+     {
+      "paper_id": "10.1002/prot.20264",
+      "title": "Scoring function for automated assessment of protein structure template quality",
+      "year": 2004,
+      "n_eff": null
+     },
+     {
+      "paper_id": "10.1016/0022-2836(88)90564-5",
+      "title": "Predicting the secondary structure of globular proteins using neural network models",
+      "year": 1988,
+      "n_eff": null
+     },
+     {
+      "paper_id": "10.1093/nar/gkg571",
+      "title": "LGA: a method for finding 3D similarities in protein structures",
+      "year": 2003,
+      "n_eff": null
+     },
+     {
+      "paper_id": "10.1016/s0022-2836(05)80269-4",
+      "title": "Calculation of conformational ensembles from potentials of mena force",
+      "year": 1990,
+      "n_eff": null
+     },
+     {
+      "paper_id": "10.1002/prot.340230303",
+      "title": "A large‐scale experiment to assess protein structure prediction methods",
+      "year": 1995,
+      "n_eff": null
+     },
+     {
+      "paper_id": "10.1016/0022-2836(87)90352-4",
+      "title": "Correlation of co-ordinated amino acid substitutions with function in viruses related to tobacco mosaic virus",
+      "year": 1987,
+      "n_eff": null
+     },
+     {
+      "paper_id": "10.1093/protein/7.3.349",
+      "title": "Can three-dimensional contacts in protein structures be predicted by analysis of correlated mutations?",
+      "year": 1994,
+      "n_eff": null
+     }
+    ],
+    "before_fix": [
      {
       "paper_id": "10.1006/jmbi.1993.1626",
       "title": "Comparative Protein Modelling by Satisfaction of Spatial Restraints",
@@ -580,72 +718,10 @@
     ],
     "pagerank_w": [
      {
-      "paper_id": "10.1038/s41586-021-03819-2",
-      "title": "Highly accurate protein structure prediction with AlphaFold",
-      "year": 2021,
-      "n_eff": null
-     },
-     {
       "paper_id": "10.1093/bioinformatics/btz679",
       "title": "Analysis of several key factors influencing deep learning-based inter-residue contact prediction",
       "year": 2019,
       "n_eff": 6
-     },
-     {
-      "paper_id": "10.1109/cvpr.2016.90",
-      "title": "Deep Residual Learning for Image Recognition",
-      "year": 2016,
-      "n_eff": null
-     },
-     {
-      "paper_id": "10.18653/v1/n19-1423",
-      "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
-      "year": 2019,
-      "n_eff": null
-     },
-     {
-      "paper_id": "10.1006/jmbi.1993.1626",
-      "title": "Comparative Protein Modelling by Satisfaction of Spatial Restraints",
-      "year": 1993,
-      "n_eff": null
-     },
-     {
-      "paper_id": "10.1371/journal.pcbi.1002195",
-      "title": "Accelerated Profile HMM Searches",
-      "year": 2011,
-      "n_eff": null
-     },
-     {
-      "paper_id": "10.1126/science.181.4096.223",
-      "title": "Principles that Govern the Folding of Protein Chains",
-      "year": 1973,
-      "n_eff": null
-     },
-     {
-      "paper_id": "10.1002/prot.21123",
-      "title": "Comparison of multiple Amber force fields and development of improved protein backbone parameters",
-      "year": 2006,
-      "n_eff": null
-     },
-     {
-      "paper_id": "10.1038/nprot.2010.5",
-      "title": "I-TASSER: a unified platform for automated protein structure and function prediction",
-      "year": 2010,
-      "n_eff": null
-     },
-     {
-      "paper_id": "10.1038/nbt.3988",
-      "title": "MMseqs2 enables sensitive protein sequence searching for the analysis of massive data sets",
-      "year": 2017,
-      "n_eff": null
-     }
-    ],
-    "pagerank_u": [
-     {
-      "paper_id": "10.1038/s41586-021-03819-2",
-      "title": "Highly accurate protein structure prediction with AlphaFold",
-      "year": 2021,
-      "n_eff": null
      },
      {
       "paper_id": "10.1109/cvpr.2016.90",
@@ -701,6 +777,68 @@
       "year": 2017,
       "n_eff": null
      }
+    ],
+    "pagerank_u": [
+     {
+      "paper_id": "10.1109/cvpr.2016.90",
+      "title": "Deep Residual Learning for Image Recognition",
+      "year": 2016,
+      "n_eff": null
+     },
+     {
+      "paper_id": "10.18653/v1/n19-1423",
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+      "year": 2019,
+      "n_eff": null
+     },
+     {
+      "paper_id": "10.1006/jmbi.1993.1626",
+      "title": "Comparative Protein Modelling by Satisfaction of Spatial Restraints",
+      "year": 1993,
+      "n_eff": null
+     },
+     {
+      "paper_id": "10.1371/journal.pcbi.1002195",
+      "title": "Accelerated Profile HMM Searches",
+      "year": 2011,
+      "n_eff": null
+     },
+     {
+      "paper_id": "10.1126/science.181.4096.223",
+      "title": "Principles that Govern the Folding of Protein Chains",
+      "year": 1973,
+      "n_eff": null
+     },
+     {
+      "paper_id": "10.1002/prot.21123",
+      "title": "Comparison of multiple Amber force fields and development of improved protein backbone parameters",
+      "year": 2006,
+      "n_eff": null
+     },
+     {
+      "paper_id": "10.1038/nprot.2010.5",
+      "title": "I-TASSER: a unified platform for automated protein structure and function prediction",
+      "year": 2010,
+      "n_eff": null
+     },
+     {
+      "paper_id": "10.1038/nbt.3988",
+      "title": "MMseqs2 enables sensitive protein sequence searching for the analysis of massive data sets",
+      "year": 2017,
+      "n_eff": null
+     },
+     {
+      "paper_id": "10.1371/journal.pcbi.1005659",
+      "title": "OpenMM 7: Rapid development of high performance algorithms for molecular dynamics",
+      "year": 2017,
+      "n_eff": null
+     },
+     {
+      "paper_id": "10.1002/prot.20264",
+      "title": "Scoring function for automated assessment of protein structure template quality",
+      "year": 2004,
+      "n_eff": null
+     }
     ]
    }
   },
@@ -715,35 +853,104 @@
     "distinct": 42
    },
    "pagerank_term_share_of_top10_score": {
+    "median": 0.4386252134042098,
+    "max": 0.616398897669015
+   },
+   "pagerank_term_share_before_fix": {
     "median": 0.013050728097560808,
     "max": 0.08201963073543761
    },
-   "largest_pagerank_term": 0.07185454128534843,
+   "largest_pagerank_term_before_fix": 0.027801767884551087,
    "median_age_term": 0.15,
    "top10_overlap_with_current": {
-    "no_pagerank": 9,
+    "before_fix": 6,
+    "no_pagerank": 5,
     "unweighted_pr": 10,
-    "pagerank_w": 2,
-    "pagerank_u": 2
+    "pagerank_w": 6,
+    "pagerank_u": 6
    },
    "top10_identical_order": {
+    "before_fix": false,
     "no_pagerank": false,
     "unweighted_pr": false,
     "pagerank_w": false,
     "pagerank_u": false
    },
    "spearman_with_current": {
-    "no_pagerank": 0.9949,
-    "unweighted_pr": 0.9991,
-    "pagerank_w": 0.6879,
-    "pagerank_u": 0.5402
+    "before_fix": 0.9674,
+    "no_pagerank": 0.9578,
+    "unweighted_pr": 0.9728,
+    "pagerank_w": 0.7965,
+    "pagerank_u": 0.6468
    },
    "pagerank_w_vs_u": {
-    "top10_overlap": 7,
-    "spearman": 0.9215
+    "top10_overlap": 6,
+    "spearman": 0.9191
    },
    "top10": {
     "current": [
+     {
+      "paper_id": "10.1056/nejmoa1504720",
+      "title": "Empagliflozin, Cardiovascular Outcomes, and Mortality in Type 2 Diabetes",
+      "year": 2015,
+      "n_eff": 7020
+     },
+     {
+      "paper_id": "10.1056/nejmoa1611925",
+      "title": "Canagliflozin and Cardiovascular and Renal Events in Type 2 Diabetes",
+      "year": 2017,
+      "n_eff": 10142
+     },
+     {
+      "paper_id": "10.1056/nejmoa1409077",
+      "title": "Angiotensin–Neprilysin Inhibition versus Enalapril in Heart Failure",
+      "year": 2014,
+      "n_eff": 8442
+     },
+     {
+      "paper_id": "10.1056/nejmoa1515920",
+      "title": "Empagliflozin and Progression of Kidney Disease in Type 2 Diabetes",
+      "year": 2016,
+      "n_eff": 4124
+     },
+     {
+      "paper_id": "10.1016/s0735-1097(00)00531-3",
+      "title": "Development and evaluation of the Kansas City Cardiomyopathy Questionnaire: a new health status measure for heart failure",
+      "year": 2000,
+      "n_eff": null
+     },
+     {
+      "paper_id": "10.1056/nejmoa1812389",
+      "title": "Dapagliflozin and Cardiovascular Outcomes in Type 2 Diabetes",
+      "year": 2018,
+      "n_eff": 17160
+     },
+     {
+      "paper_id": "10.1371/journal.pmed.1001293",
+      "title": "Effects of Intensive Blood Pressure Lowering on Cardiovascular and Renal Outcomes: A Systematic Review and Meta-Analysis",
+      "year": 2012,
+      "n_eff": 37348
+     },
+     {
+      "paper_id": "10.1056/nejmoa1307684",
+      "title": "Saxagliptin and Cardiovascular Outcomes in Patients with Type 2 Diabetes Mellitus",
+      "year": 2013,
+      "n_eff": 16492
+     },
+     {
+      "paper_id": "10.1038/ki.2012.401",
+      "title": "Intensive glucose control improves kidney outcomes in patients with type 2 diabetes",
+      "year": 2013,
+      "n_eff": 11140
+     },
+     {
+      "paper_id": "10.1056/nejmoa0806470",
+      "title": "10-Year Follow-up of Intensive Glucose Control in Type 2 Diabetes",
+      "year": 2008,
+      "n_eff": 5102
+     }
+    ],
+    "before_fix": [
      {
       "paper_id": "10.1056/nejmoa0806470",
       "title": "10-Year Follow-up of Intensive Glucose Control in Type 2 Diabetes",
@@ -869,34 +1076,22 @@
     ],
     "unweighted_pr": [
      {
-      "paper_id": "10.1056/nejmoa0806470",
-      "title": "10-Year Follow-up of Intensive Glucose Control in Type 2 Diabetes",
-      "year": 2008,
-      "n_eff": 5102
-     },
-     {
-      "paper_id": "10.1371/journal.pmed.1001293",
-      "title": "Effects of Intensive Blood Pressure Lowering on Cardiovascular and Renal Outcomes: A Systematic Review and Meta-Analysis",
-      "year": 2012,
-      "n_eff": 37348
-     },
-     {
-      "paper_id": "10.1056/nejmoa1307684",
-      "title": "Saxagliptin and Cardiovascular Outcomes in Patients with Type 2 Diabetes Mellitus",
-      "year": 2013,
-      "n_eff": 16492
-     },
-     {
-      "paper_id": "10.1038/ki.2012.401",
-      "title": "Intensive glucose control improves kidney outcomes in patients with type 2 diabetes",
-      "year": 2013,
-      "n_eff": 11140
-     },
-     {
-      "paper_id": "10.1001/jama.2015.7008",
-      "title": "Association of Cardiometabolic Multimorbidity With Mortality",
+      "paper_id": "10.1056/nejmoa1504720",
+      "title": "Empagliflozin, Cardiovascular Outcomes, and Mortality in Type 2 Diabetes",
       "year": 2015,
-      "n_eff": 689300
+      "n_eff": 7020
+     },
+     {
+      "paper_id": "10.1016/s0735-1097(00)00531-3",
+      "title": "Development and evaluation of the Kansas City Cardiomyopathy Questionnaire: a new health status measure for heart failure",
+      "year": 2000,
+      "n_eff": null
+     },
+     {
+      "paper_id": "10.1056/nejmoa1515920",
+      "title": "Empagliflozin and Progression of Kidney Disease in Type 2 Diabetes",
+      "year": 2016,
+      "n_eff": 4124
      },
      {
       "paper_id": "10.1056/nejmoa1409077",
@@ -905,37 +1100,43 @@
       "n_eff": 8442
      },
      {
-      "paper_id": "10.1016/j.ahj.2013.05.007",
-      "title": "Rationale, design, and baseline characteristics of the Canagliflozin Cardiovascular Assessment Study (CANVAS)—A randomized placebo-controlled trial",
+      "paper_id": "10.1056/nejmoa1611925",
+      "title": "Canagliflozin and Cardiovascular and Renal Events in Type 2 Diabetes",
+      "year": 2017,
+      "n_eff": 10142
+     },
+     {
+      "paper_id": "10.1056/nejmoa1307684",
+      "title": "Saxagliptin and Cardiovascular Outcomes in Patients with Type 2 Diabetes Mellitus",
       "year": 2013,
-      "n_eff": 4330
+      "n_eff": 16492
      },
      {
-      "paper_id": "10.1056/nejmoa1501352",
-      "title": "Effect of Sitagliptin on Cardiovascular Outcomes in Type 2 Diabetes",
-      "year": 2015,
-      "n_eff": 14671
+      "paper_id": "10.1056/nejmoa1812389",
+      "title": "Dapagliflozin and Cardiovascular Outcomes in Type 2 Diabetes",
+      "year": 2018,
+      "n_eff": 17160
      },
      {
-      "paper_id": "10.1016/j.diabres.2011.10.029",
-      "title": "IDF Diabetes Atlas: Global estimates of the prevalence of diabetes for 2011 and 2030",
-      "year": 2011,
-      "n_eff": 565
+      "paper_id": "10.1371/journal.pmed.1001293",
+      "title": "Effects of Intensive Blood Pressure Lowering on Cardiovascular and Renal Outcomes: A Systematic Review and Meta-Analysis",
+      "year": 2012,
+      "n_eff": 37348
      },
      {
-      "paper_id": "10.1056/nejmoa1504720",
-      "title": "Empagliflozin, Cardiovascular Outcomes, and Mortality in Type 2 Diabetes",
-      "year": 2015,
-      "n_eff": 7020
+      "paper_id": "10.1056/nejmoa0806470",
+      "title": "10-Year Follow-up of Intensive Glucose Control in Type 2 Diabetes",
+      "year": 2008,
+      "n_eff": 5102
+     },
+     {
+      "paper_id": "10.1038/ki.2012.401",
+      "title": "Intensive glucose control improves kidney outcomes in patients with type 2 diabetes",
+      "year": 2013,
+      "n_eff": 11140
      }
     ],
     "pagerank_w": [
-     {
-      "paper_id": "10.1056/nejmoa1911303",
-      "title": "Dapagliflozin in Patients with Heart Failure and Reduced Ejection Fraction",
-      "year": 2019,
-      "n_eff": 4744
-     },
      {
       "paper_id": "10.1056/nejmoa1504720",
       "title": "Empagliflozin, Cardiovascular Outcomes, and Mortality in Type 2 Diabetes",
@@ -989,15 +1190,15 @@
       "title": "The Dapagliflozin And Prevention of Adverse-Outcomes in Heart Failure (DAPA-HF) Trial: Baseline Characteristics",
       "year": 2019,
       "n_eff": 4744
+     },
+     {
+      "paper_id": "10.1056/nejmoa1811744",
+      "title": "Canagliflozin and Renal Outcomes in Type 2 Diabetes and Nephropathy",
+      "year": 2019,
+      "n_eff": 4401
      }
     ],
     "pagerank_u": [
-     {
-      "paper_id": "10.1056/nejmoa1911303",
-      "title": "Dapagliflozin in Patients with Heart Failure and Reduced Ejection Fraction",
-      "year": 2019,
-      "n_eff": 4744
-     },
      {
       "paper_id": "10.1056/nejmoa1504720",
       "title": "Empagliflozin, Cardiovascular Outcomes, and Mortality in Type 2 Diabetes",
@@ -1051,6 +1252,12 @@
       "title": "Effects of empagliflozin on blood pressure and markers of arterial stiffness and vascular resistance in patients with type 2 diabetes",
       "year": 2015,
       "n_eff": 823
+     },
+     {
+      "paper_id": "10.1161/circulationaha.113.005081",
+      "title": "Renal Hemodynamic Effect of Sodium-Glucose Cotransporter 2 Inhibition in Patients With Type 1 Diabetes Mellitus",
+      "year": 2013,
+      "n_eff": 27
      }
     ]
    }

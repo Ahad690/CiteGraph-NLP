@@ -3,15 +3,18 @@
 RQ3 asks whether evidence weighting produces a defensible ranking, and no run
 had compared it with the unweighted alternative. This script runs the pipeline
 on the three evaluation seeds, keeps the graph each run builds, and ranks that
-same graph five ways:
+same graph six ways, every one leaving out the seed itself:
 
-    current          0.5 * weighted PageRank + 0.3 * age + 0.2 * evidence
+    current          0.5 * scaled weighted PageRank + 0.3 * age + 0.2 * evidence
+    before_fix       the same with raw PageRank, as the system ranked until
+                     2026-09-26 (thesis Section 5.6.4)
     no_pagerank      0.3 * age + 0.2 * evidence
     unweighted_pr    the current formula with every edge weight set to 1
     pagerank_w       weighted PageRank alone
     pagerank_u       unweighted PageRank alone
 
-It reports how much of each paper's score the PageRank term supplies and how
+"Scaled" divides by the largest PageRank among the ranked papers. The script
+reports how much of each top paper's score the PageRank term supplies and how
 far each variant's top ten moves from the current one.
 
     python scripts/compare_rankings.py            # -> thesis/evidence/ranking_comparison.json
@@ -49,9 +52,11 @@ class CapturingAnalytics(GraphAnalytics):
         super().__init__(graph)
 
 
-def components(graph: nx.DiGraph, weighted: bool) -> dict[str, dict[str, float]]:
+def components(graph: nx.DiGraph, weighted: bool, seed: str) -> dict[str, dict[str, float]]:
     """The three terms of rank_foundational_papers, computed the same way."""
     pagerank = nx.pagerank(graph, weight="weight" if weighted else None)
+    pagerank = {node: value for node, value in pagerank.items() if node != seed}
+    top = max(pagerank.values())
     year_now = datetime.now(timezone.utc).year
     terms = {}
     for node, influence in pagerank.items():
@@ -61,7 +66,7 @@ def components(graph: nx.DiGraph, weighted: bool) -> dict[str, dict[str, float]]
         n_eff = data.get("n_eff") or 0
         confidence = data.get("population_confidence") or 0.5
         evidence = math.log1p(n_eff) / math.log1p(100000) * confidence
-        terms[node] = {"pagerank": influence, "age": year_score, "evidence": evidence}
+        terms[node] = {"pagerank": influence, "scaled": influence / top, "age": year_score, "evidence": evidence}
     return terms
 
 
@@ -81,11 +86,13 @@ async def run_seed(seed: str) -> dict:
     result = await orchestrator.run(PaperQuery(query_type="doi", value=seed),
                                     backward_depth=2, forward_depth=1, max_papers=MAX_PAPERS)
     graph = captured[-1]
-    weighted, unweighted = components(graph, True), components(graph, False)
+    seed_id = result.seed_paper_id
+    weighted, unweighted = components(graph, True, seed_id), components(graph, False, seed_id)
     variants = {
-        "current": {n: .5 * t["pagerank"] + .3 * t["age"] + .2 * t["evidence"] for n, t in weighted.items()},
+        "current": {n: .5 * t["scaled"] + .3 * t["age"] + .2 * t["evidence"] for n, t in weighted.items()},
+        "before_fix": {n: .5 * t["pagerank"] + .3 * t["age"] + .2 * t["evidence"] for n, t in weighted.items()},
         "no_pagerank": {n: .3 * t["age"] + .2 * t["evidence"] for n, t in weighted.items()},
-        "unweighted_pr": {n: .5 * t["pagerank"] + .3 * t["age"] + .2 * t["evidence"] for n, t in unweighted.items()},
+        "unweighted_pr": {n: .5 * t["scaled"] + .3 * t["age"] + .2 * t["evidence"] for n, t in unweighted.items()},
         "pagerank_w": {n: t["pagerank"] for n, t in weighted.items()},
         "pagerank_u": {n: t["pagerank"] for n, t in unweighted.items()},
     }
@@ -97,7 +104,9 @@ async def run_seed(seed: str) -> dict:
     assert orders["current"][:TOP] == system_top, (orders["current"][:TOP], system_top)
 
     top = orders["current"][:TOP]
-    shares = [.5 * weighted[n]["pagerank"] / variants["current"][n] for n in top]
+    shares = [.5 * weighted[n]["scaled"] / variants["current"][n] for n in top]
+    old_top = orders["before_fix"][:TOP]
+    old_shares = [.5 * weighted[n]["pagerank"] / variants["before_fix"][n] for n in old_top]
     weights = [d.get("weight", 1.0) for _, _, d in graph.edges(data=True)]
     title = lambda n: graph.nodes[n].get("title")
     return {
@@ -106,7 +115,8 @@ async def run_seed(seed: str) -> dict:
         "edge_weight": {"min": min(weights), "median": statistics.median(weights), "max": max(weights),
                         "distinct": len({round(w, 6) for w in weights})},
         "pagerank_term_share_of_top10_score": {"median": statistics.median(shares), "max": max(shares)},
-        "largest_pagerank_term": max(.5 * t["pagerank"] for t in weighted.values()),
+        "pagerank_term_share_before_fix": {"median": statistics.median(old_shares), "max": max(old_shares)},
+        "largest_pagerank_term_before_fix": max(.5 * t["pagerank"] for t in weighted.values()),
         "median_age_term": statistics.median(.3 * t["age"] for t in weighted.values()),
         "top10_overlap_with_current": {name: len(set(order[:TOP]) & set(top))
                                        for name, order in orders.items() if name != "current"},
@@ -129,7 +139,7 @@ async def main() -> int:
         run = await run_seed(seed)
         runs.append(run)
         print(f"{seed}: {run['nodes']} nodes, {run['edges']} edges, "
-              f"PageRank term share of top-10 score median {run['pagerank_term_share_of_top10_score']['median']:.3f}")
+              f"PageRank share of a top-10 score: median {run['pagerank_term_share_of_top10_score']['median']:.3f} (was {run['pagerank_term_share_before_fix']['median']:.3f})")
         print(f"    top-10 overlap with current: {run['top10_overlap_with_current']}")
         print(f"    same order as current:       {run['top10_identical_order']}")
         print(f"    weighted vs unweighted PageRank alone: {run['pagerank_w_vs_u']}")

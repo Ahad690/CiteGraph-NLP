@@ -263,14 +263,18 @@ reflecting that its neighbourhood spans structural biology, machine learning and
 chemistry, which cite each other less densely than a tight clinical literature
 does.
 
-**On ranking quality (RQ3).** A qualitative observation: seeded with the 2021
-AlphaFold paper, the top-ranked foundational paper was Anfinsen's 1973
-*"Principles that Govern the Folding of Protein Chains"*, the work that founded
-the protein-folding problem. This is the behaviour the design intends. It is an
-anecdote, not a measurement. No relevance judgement study was conducted, no
-comparison against unweighted PageRank was run, and a single favourable example
-does not establish that evidence weighting improves ranking. Section 7.3
-records this as the principal unaddressed question.
+**On ranking quality (RQ3).** Seeded with the 2021 AlphaFold paper, the system
+ranks Anfinsen's 1973 *"Principles that Govern the Folding of Protein Chains"*,
+the work that founded the protein-folding problem, among its top two
+foundational papers. That is the behaviour the design intends, but it is weaker
+evidence than it looks. Anfinsen's paper ties on every term with the 1993 paper
+listed above it: most of that graph's references are cited only by the seed, so
+PageRank cannot separate them, and the age term stops growing at twenty years.
+The comparison against unweighted PageRank has now been run (Section 5.6.4). It
+first showed that the weighting did not reach the ranking at all, and after the
+fix it changes the top ten for one seed in three. No relevance judgement study
+was conducted, so whether those changes are improvements is unknown; Section
+7.3 records this as the principal unaddressed question.
 
 ## 6.6 Performance
 

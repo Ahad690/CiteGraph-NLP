@@ -1309,9 +1309,12 @@ describes how it was found and why it was invisible.
 ### 4.6.1 Foundational paper ranking
 
 ```
-score = 0.5 · PageRank + 0.3 · year_score + 0.2 · evidence_score
+score     = 0.5 · influence + 0.3 · year_score + 0.2 · evidence_score
+influence = PageRank / (largest PageRank among the ranked papers)
 ```
 
+`influence` runs from 0 to 1, as the other two terms do, and the seed is left
+out of its own ranking; Section 5.6.4 records why both were needed.
 `year_score` rises with age, saturating at twenty years; `evidence_score` is the
 normalised population score scaled by population confidence.
 
@@ -2038,6 +2041,42 @@ falls back only on a genuine `None`, so a real zero can no longer be disguised.
 Evidence still outranks absence, larger samples outrank smaller, and low
 confidence is penalised, but nothing collapses to zero.
 
+### 5.6.4 The weights reached the graph but not the ranking
+
+A second fault on the same path was found much later, when the comparison RQ3
+needs was finally run (`scripts/compare_rankings.py`). The foundational ranking
+of Section 4.6.1 added 0.5 · PageRank to 0.3 · year_score and 0.2 ·
+evidence_score. The age and evidence terms run from 0 to 1 for each paper, but
+PageRank values sum to 1 over the whole graph, so in a 100-paper graph a typical
+paper scores about 0.01. On the three evaluation seeds the PageRank term
+supplied about 1% of a top-ten paper's score, and replacing the
+evidence-weighted edges with unweighted ones left every top ten with the same
+papers (commit `c3dfdcd`). The weights of Section 4.5 were computed correctly
+and reached the graph, and the ranking the dashboard shows ignored them.
+
+Like the zero weights above, this raised no error and showed no symptom. The
+rankings looked plausible because age and study size are plausible signals on
+their own.
+
+The fix divides PageRank by its largest value among the ranked papers, so
+influence runs from 0 to 1 like the other terms. It also leaves the seed out of
+its own ranking: in all three graphs the seed had the highest PageRank, so it
+would otherwise have headed its own list of foundations and set the scale for
+everything below it.
+
+| Seed, 100 papers | PageRank share of a top-ten score | Top ten changed by the fix | Changed by unweighted edges |
+|------------------|---------------------------------:|---------------------------:|-----------------------------|
+| COVID-19 in China | 1% before, 39% after | 3 papers | 2 papers |
+| AlphaFold | 1% before, 58% after | none | none |
+| Dapagliflozin in heart failure | 1% before, 44% after | 4 papers | order only |
+
+The weighting now reaches the ranking, but its effect is modest: it changes
+which papers make the top ten for one seed in three. Three tests in
+`tests/test_ranking.py` hold the fix in place, and each fails on the old
+formula: a paper every other paper cites must outrank an older paper nobody
+cites, edges carrying more evidence must lift the paper they point to, and the
+seed must not appear in its own ranking.
+
 ## 5.7 Defect 5: server-side request forgery in URL input
 
 Accepting an article URL requires fetching it when no identifier can be parsed
@@ -2541,14 +2580,18 @@ reflecting that its neighbourhood spans structural biology, machine learning and
 chemistry, which cite each other less densely than a tight clinical literature
 does.
 
-**On ranking quality (RQ3).** A qualitative observation: seeded with the 2021
-AlphaFold paper, the top-ranked foundational paper was Anfinsen's 1973
-*"Principles that Govern the Folding of Protein Chains"*, the work that founded
-the protein-folding problem. This is the behaviour the design intends. It is an
-anecdote, not a measurement. No relevance judgement study was conducted, no
-comparison against unweighted PageRank was run, and a single favourable example
-does not establish that evidence weighting improves ranking. Section 7.3
-records this as the principal unaddressed question.
+**On ranking quality (RQ3).** Seeded with the 2021 AlphaFold paper, the system
+ranks Anfinsen's 1973 *"Principles that Govern the Folding of Protein Chains"*,
+the work that founded the protein-folding problem, among its top two
+foundational papers. That is the behaviour the design intends, but it is weaker
+evidence than it looks. Anfinsen's paper ties on every term with the 1993 paper
+listed above it: most of that graph's references are cited only by the seed, so
+PageRank cannot separate them, and the age term stops growing at twenty years.
+The comparison against unweighted PageRank has now been run (Section 5.6.4). It
+first showed that the weighting did not reach the ranking at all, and after the
+fix it changes the top ten for one seed in three. No relevance judgement study
+was conducted, so whether those changes are improvements is unknown; Section
+7.3 records this as the principal unaddressed question.
 
 ## 6.6 Performance
 
@@ -3287,13 +3330,16 @@ corpus would be more reproducible and is proposed in Section 8.2.
 
 ### 7.3.4 Conclusion validity
 
-**No comparative baseline.** The central question, does evidence-weighted
-ranking outperform unweighted PageRank?, was **not tested**. No A/B comparison
-was run and no human relevance judgements were collected. The AlphaFold-to-
-Anfinsen result in Section 6.5 is a single favourable anecdote. This thesis
-therefore demonstrates that evidence-weighted ranking *can be computed* and
-*produces plausible output*, not that it is better. That is the most
-significant unaddressed question in the work.
+**No judgement of ranking quality.** The central question, does
+evidence-weighted ranking outperform unweighted PageRank?, is only half tested.
+The structural comparison was run late, and it first showed that a scale fault
+kept the weighting from affecting the ranking at all (Section 5.6.4). After the
+fix, the weighting changes the top ten for one seed in three. No human
+relevance judgements were collected, so nobody has judged whether those changes
+are improvements, and the AlphaFold-to-Anfinsen result in Section 6.5 turned
+out to be a tie. This thesis therefore demonstrates that evidence-weighted
+ranking *can be computed* and now *changes the output*, not that it is better.
+That is the most significant unaddressed question in the work.
 
 ## 7.4 Divergence from the Project Proposal
 
@@ -3386,13 +3432,18 @@ provider. All were recoverable from a second provider in a single batched
 request. Data availability, not extraction logic, was the binding constraint on
 coverage, and the cheaper of the two to fix.
 
-**RQ3, Does evidence weighting produce a defensible ranking?** Unproven. The
-system produces plausible output, seeded with the 2021 AlphaFold paper it
-surfaced Anfinsen's 1973 paper founding the protein-folding problem, but no
-relevance judgement study was run and no comparison against unweighted PageRank
-was performed. This thesis shows the ranking *can be computed* and *looks
-sensible*, not that it is better than the unweighted baseline. This is the
-principal unaddressed question in the work.
+**RQ3, Does evidence weighting produce a defensible ranking?** Unproven, and
+for most of the project the weighting did not reach the ranking at all. When
+the comparison against unweighted PageRank was finally run, PageRank on its raw
+scale supplied about 1% of a top paper's score, so the evidence-weighted edges
+changed nothing the user saw (Section 5.6.4). With the scale fixed, the
+weighting changes the top ten for one seed in three. Seeded with the 2021
+AlphaFold paper, the system places Anfinsen's 1973 paper founding the
+protein-folding problem in its top two, though tied with the paper above it.
+This thesis shows the ranking *can be computed* and now *responds to the
+evidence*, not that it is better than the unweighted baseline; that needs the
+relevance judgement study that was not run, and it is the principal unaddressed
+question in the work.
 
 **RQ4. Can traversal be made fast enough for interactive use, and what
 dominates?** Yes. A 40-paper analysis completes in a mean of 19 s, and a
@@ -3436,11 +3487,13 @@ distinguishing feature actually trustworthy.
 
 ### 8.2.2 Compare against an unweighted baseline
 
-The central unanswered question (§7.3.4). A comparison of evidence-weighted
-against unweighted PageRank, with domain readers judging the relevance of
-ranked outputs blind to condition, would establish whether the weighting helps.
-Without it, the system's core premise is plausible but untested. This is the
-first experiment a continuation of this work should run.
+The central unanswered question (§7.3.4). The structural half of this
+comparison now exists: `scripts/compare_rankings.py` ranks the same graph with
+and without the evidence weighting, and after the fix of Section 5.6.4 the two
+differ for one seed in three. The missing half is the judgement: domain readers
+rating the relevance of both top tens, blind to which is which. Without it the
+system's core premise is plausible but untested, and this is the first
+experiment a continuation of this work should run.
 
 ### 8.2.3 Extend and re-annotate the gold standard
 
@@ -3751,7 +3804,7 @@ which Section 6.6 shows dominates runtime, is materially worse.
 pytest -q
 ```
 
-Expected: **201 passed**. The suite mocks all HTTP at transport level with
+Expected: **205 passed**. The suite mocks all HTTP at transport level with
 `respx`, so it requires no network access and no API keys.
 
 ## C.3 Evaluation (Chapter 6)
@@ -4174,7 +4227,7 @@ Listed for completeness; discussed in Section 7.4.
 
 ## F.1 Composition
 
-201 automated tests across thirteen files. All external HTTP is intercepted at
+205 automated tests across thirteen files. All external HTTP is intercepted at
 transport level by `respx` or replaced with test doubles, so the suite requires
 no network access and no API credentials, and completes in roughly 15 to 40
 seconds.
@@ -4184,17 +4237,17 @@ seconds.
 | `test_api_comprehensive.py` | 73 | Endpoints, validation, clamping, auth, CORS, exports, pipeline end-to-end with mocked providers |
 | `test_query_detection.py` | 34 | Identifier auto-detection and the title matching behind run ac66eb9e |
 | `test_flow_diagram.py` | 18 | Stage and layout rules of the flow-diagram reader (Section 6.14) |
-| `test_the_thesis_does_not_drift.py` | 19 | This thesis against its evidence, its figures, its PDFs and its baseline (Section C.5) |
+| `test_the_thesis_does_not_drift.py` | 20 | This thesis against its evidence, its figures, its PDFs and its baseline (Section C.5) |
 | `test_technical_evidence.py` | 12 | Research-field detection, arXiv links and dataset-size extraction |
 | `test_sqlite_store.py` | 8 | Persistence, lock retry policy, backoff jitter, error classification |
 | `test_add_citegraph_route.py` | 7 | Deployment route-insertion helper |
 | `test_population_patterns.py` | 6 | Extraction patterns and ignore-span behaviour |
 | `test_full_text_population.py` | 6 | The open-access full-text fallback of Section 5.2 |
-| `test_ranking.py` | 5 | Foundational scoring and path ranking |
+| `test_ranking.py` | 8 | Foundational scoring and path ranking |
 | `test_task_manager.py` | 5 | Background task lifecycle and shutdown semantics |
 | `test_url_resolver.py` | 5 | URL→identifier extraction, DOI view-segment trimming |
 | `test_input_normalizer.py` | 3 | Identifier canonicalisation |
-| **Total** | **201** | |
+| **Total** | **205** | |
 
 ## F.2 Regression tests added during evaluation
 

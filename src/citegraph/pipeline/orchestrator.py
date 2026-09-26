@@ -221,7 +221,7 @@ class PipelineOrchestrator:
         graph = self.graph_builder.build(list(traversal.papers.values()), weighted_edges, ranking_resolutions)
         analytics = GraphAnalytics(graph)
         
-        foundational_papers = analytics.rank_foundational_papers()
+        foundational_papers = analytics.rank_foundational_papers(seed_id=seed_paper.paper_id)
         ranked_paths = analytics.rank_paths(seed_paper.paper_id)
 
         # Surface what the traversal had to work around, so a sparse graph can

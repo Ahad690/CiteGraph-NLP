@@ -5,8 +5,8 @@
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)
 ![FastAPI](https://img.shields.io/badge/FastAPI-async-009688.svg)
 ![React](https://img.shields.io/badge/React-TypeScript-61dafb.svg)
-![Tests](https://img.shields.io/badge/tests-201%20passing-brightgreen.svg)
-![Thesis](https://img.shields.io/badge/thesis-121%20pages-8a2be2.svg)
+![Tests](https://img.shields.io/badge/tests-205%20passing-brightgreen.svg)
+![Thesis](https://img.shields.io/badge/thesis-123%20pages-8a2be2.svg)
 ![Status](https://img.shields.io/badge/status-deployed-success.svg)
 
 CiteGraph-NLP is an NLP + Knowledge Graph system for analyzing scientific papers, tracing citation lineages, extracting study population evidence, and ranking **probable foundational papers** using confidence-aware graph analytics.
@@ -46,7 +46,7 @@ makes the uncertainty of automated evidence extraction visible to the reader.
 | [PROJECT_REPORT.md](PROJECT_REPORT.md) | What the system does and why, in plain language |
 | [project_proposal.md](project_proposal.md) | The original FYP proposal |
 | [citation_lineage_prd.md](citation_lineage_prd.md) | Product requirements the build followed |
-| [thesis/](thesis/) | The full thesis: 121 pages, 8 chapters, 8 appendices |
+| [thesis/](thesis/) | The full thesis: 123 pages, 8 chapters, 8 appendices |
 | [thesis/figures/README.md](thesis/figures/README.md) | How each thesis figure is generated from the code |
 | [thesis/renders/README.md](thesis/renders/README.md) | Three PDF layouts of the thesis, compared |
 
@@ -213,7 +213,7 @@ citegraph-nlp/
 │       └── logging_config.py     # Logging setup
 │
 ├── frontend/                     # React dashboard
-├── tests/                        # 201 tests
+├── tests/                        # 205 tests
 │   ├── conftest.py
 │   ├── test_add_citegraph_route.py
 │   ├── test_api_comprehensive.py
@@ -410,7 +410,7 @@ Returns the run status while in progress, or the full `RunResult` when completed
 | `population_resolutions` | `array` | Resolved N_eff per paper |
 | `technical_evidence` | `array` | Computer-science dataset-example counts from abstracts or arXiv full text, separate from clinical N_eff |
 | `citation_edges` | `array` | Weighted citation edges |
-| `ranked_foundational_papers` | `array` | Papers ranked by combined PageRank + year + evidence score |
+| `ranked_foundational_papers` | `array` | Papers ranked by scaled PageRank + year + evidence score; each has `influence` (0 to 1) and raw `pagerank` |
 | `ranked_paths` | `array` | Citation paths from seed to foundational papers |
 | `warnings` | `array` | Any warnings generated during the run |
 | `created_at` | `datetime` | Run creation timestamp |
@@ -517,11 +517,14 @@ each edge as the unconfidenced score.
 Papers are ranked using a combined score:
 
 ```
-score = 0.5 * PageRank + 0.3 * year_score + 0.2 * evidence_score
+score = 0.5 * influence + 0.3 * year_score + 0.2 * evidence_score
 ```
 
 Where:
-- **PageRank** — Citation influence from NetworkX PageRank on weighted edges
+- **Influence** — NetworkX PageRank on the evidence-weighted edges, divided by the
+  largest PageRank among the ranked papers so it runs 0 to 1 like the other terms.
+  The seed is left out of its own ranking. Raw PageRank sums to 1 over the graph,
+  so before this scaling it supplied about 1% of a top paper's score (thesis §5.6.4).
 - **Year score** — Older papers get higher scores (max bonus at 20+ years old)
 - **Evidence score** — `log1p(N_eff) / log1p(100000) * population_confidence`
 

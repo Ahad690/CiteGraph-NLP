@@ -25,7 +25,7 @@ which Section 6.6 shows dominates runtime, is materially worse.
 pytest -q
 ```
 
-Expected: **201 passed**. The suite mocks all HTTP at transport level with
+Expected: **205 passed**. The suite mocks all HTTP at transport level with
 `respx`, so it requires no network access and no API keys.
 
 ## C.3 Evaluation (Chapter 6)

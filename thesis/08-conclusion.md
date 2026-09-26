@@ -29,13 +29,18 @@ provider. All were recoverable from a second provider in a single batched
 request. Data availability, not extraction logic, was the binding constraint on
 coverage, and the cheaper of the two to fix.
 
-**RQ3, Does evidence weighting produce a defensible ranking?** Unproven. The
-system produces plausible output, seeded with the 2021 AlphaFold paper it
-surfaced Anfinsen's 1973 paper founding the protein-folding problem, but no
-relevance judgement study was run and no comparison against unweighted PageRank
-was performed. This thesis shows the ranking *can be computed* and *looks
-sensible*, not that it is better than the unweighted baseline. This is the
-principal unaddressed question in the work.
+**RQ3, Does evidence weighting produce a defensible ranking?** Unproven, and
+for most of the project the weighting did not reach the ranking at all. When
+the comparison against unweighted PageRank was finally run, PageRank on its raw
+scale supplied about 1% of a top paper's score, so the evidence-weighted edges
+changed nothing the user saw (Section 5.6.4). With the scale fixed, the
+weighting changes the top ten for one seed in three. Seeded with the 2021
+AlphaFold paper, the system places Anfinsen's 1973 paper founding the
+protein-folding problem in its top two, though tied with the paper above it.
+This thesis shows the ranking *can be computed* and now *responds to the
+evidence*, not that it is better than the unweighted baseline; that needs the
+relevance judgement study that was not run, and it is the principal unaddressed
+question in the work.
 
 **RQ4. Can traversal be made fast enough for interactive use, and what
 dominates?** Yes. A 40-paper analysis completes in a mean of 19 s, and a
@@ -79,11 +84,13 @@ distinguishing feature actually trustworthy.
 
 ### 8.2.2 Compare against an unweighted baseline
 
-The central unanswered question (§7.3.4). A comparison of evidence-weighted
-against unweighted PageRank, with domain readers judging the relevance of
-ranked outputs blind to condition, would establish whether the weighting helps.
-Without it, the system's core premise is plausible but untested. This is the
-first experiment a continuation of this work should run.
+The central unanswered question (§7.3.4). The structural half of this
+comparison now exists: `scripts/compare_rankings.py` ranks the same graph with
+and without the evidence weighting, and after the fix of Section 5.6.4 the two
+differ for one seed in three. The missing half is the judgement: domain readers
+rating the relevance of both top tens, blind to which is which. Without it the
+system's core premise is plausible but untested, and this is the first
+experiment a continuation of this work should run.
 
 ### 8.2.3 Extend and re-annotate the gold standard
 

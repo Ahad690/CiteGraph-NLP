@@ -292,9 +292,12 @@ describes how it was found and why it was invisible.
 ### 4.6.1 Foundational paper ranking
 
 ```
-score = 0.5 · PageRank + 0.3 · year_score + 0.2 · evidence_score
+score     = 0.5 · influence + 0.3 · year_score + 0.2 · evidence_score
+influence = PageRank / (largest PageRank among the ranked papers)
 ```
 
+`influence` runs from 0 to 1, as the other two terms do, and the seed is left
+out of its own ranking; Section 5.6.4 records why both were needed.
 `year_score` rises with age, saturating at twenty years; `evidence_score` is the
 normalised population score scaled by population confidence.
 

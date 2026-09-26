@@ -276,6 +276,42 @@ falls back only on a genuine `None`, so a real zero can no longer be disguised.
 Evidence still outranks absence, larger samples outrank smaller, and low
 confidence is penalised, but nothing collapses to zero.
 
+### 5.6.4 The weights reached the graph but not the ranking
+
+A second fault on the same path was found much later, when the comparison RQ3
+needs was finally run (`scripts/compare_rankings.py`). The foundational ranking
+of Section 4.6.1 added 0.5 · PageRank to 0.3 · year_score and 0.2 ·
+evidence_score. The age and evidence terms run from 0 to 1 for each paper, but
+PageRank values sum to 1 over the whole graph, so in a 100-paper graph a typical
+paper scores about 0.01. On the three evaluation seeds the PageRank term
+supplied about 1% of a top-ten paper's score, and replacing the
+evidence-weighted edges with unweighted ones left every top ten with the same
+papers (commit `c3dfdcd`). The weights of Section 4.5 were computed correctly
+and reached the graph, and the ranking the dashboard shows ignored them.
+
+Like the zero weights above, this raised no error and showed no symptom. The
+rankings looked plausible because age and study size are plausible signals on
+their own.
+
+The fix divides PageRank by its largest value among the ranked papers, so
+influence runs from 0 to 1 like the other terms. It also leaves the seed out of
+its own ranking: in all three graphs the seed had the highest PageRank, so it
+would otherwise have headed its own list of foundations and set the scale for
+everything below it.
+
+| Seed, 100 papers | PageRank share of a top-ten score | Top ten changed by the fix | Changed by unweighted edges |
+|------------------|---------------------------------:|---------------------------:|-----------------------------|
+| COVID-19 in China | 1% before, 39% after | 3 papers | 2 papers |
+| AlphaFold | 1% before, 58% after | none | none |
+| Dapagliflozin in heart failure | 1% before, 44% after | 4 papers | order only |
+
+The weighting now reaches the ranking, but its effect is modest: it changes
+which papers make the top ten for one seed in three. Three tests in
+`tests/test_ranking.py` hold the fix in place, and each fails on the old
+formula: a paper every other paper cites must outrank an older paper nobody
+cites, edges carrying more evidence must lift the paper they point to, and the
+seed must not appear in its own ranking.
+
 ## 5.7 Defect 5: server-side request forgery in URL input
 
 Accepting an article URL requires fetching it when no identifier can be parsed

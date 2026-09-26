@@ -138,13 +138,16 @@ corpus would be more reproducible and is proposed in Section 8.2.
 
 ### 7.3.4 Conclusion validity
 
-**No comparative baseline.** The central question, does evidence-weighted
-ranking outperform unweighted PageRank?, was **not tested**. No A/B comparison
-was run and no human relevance judgements were collected. The AlphaFold-to-
-Anfinsen result in Section 6.5 is a single favourable anecdote. This thesis
-therefore demonstrates that evidence-weighted ranking *can be computed* and
-*produces plausible output*, not that it is better. That is the most
-significant unaddressed question in the work.
+**No judgement of ranking quality.** The central question, does
+evidence-weighted ranking outperform unweighted PageRank?, is only half tested.
+The structural comparison was run late, and it first showed that a scale fault
+kept the weighting from affecting the ranking at all (Section 5.6.4). After the
+fix, the weighting changes the top ten for one seed in three. No human
+relevance judgements were collected, so nobody has judged whether those changes
+are improvements, and the AlphaFold-to-Anfinsen result in Section 6.5 turned
+out to be a tie. This thesis therefore demonstrates that evidence-weighted
+ranking *can be computed* and now *changes the output*, not that it is better.
+That is the most significant unaddressed question in the work.
 
 ## 7.4 Divergence from the Project Proposal
 

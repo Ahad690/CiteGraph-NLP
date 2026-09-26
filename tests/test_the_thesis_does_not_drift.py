@@ -191,6 +191,31 @@ def test_second_reading_matches_its_summary():
     assert summary["key_values_contradicted_by_the_image"] == 0 or "none showed" not in _chapter("06c-flow-diagrams.md")
 
 
+def test_ranking_fix_matches_the_comparison():
+    """Section 5.6.4 quotes scripts/compare_rankings.py, which reruns the
+    pipeline on the three evaluation seeds. Any later change to the ranking
+    rewrites that JSON, and this keeps the table and its summary in step."""
+    runs = json.loads((EVIDENCE / "ranking_comparison.json").read_text(encoding="utf-8"))["runs"]
+    labels = {"10.1056/NEJMoa2002032": "COVID-19 in China", "10.1038/s41586-021-03819-2": "AlphaFold",
+              "10.1056/NEJMoa1911303": "Dapagliflozin in heart failure"}
+
+    def changed(run, variant):
+        lost = 10 - run["top10_overlap_with_current"][variant]
+        if lost:
+            return f"{lost} papers" if lost > 1 else "1 paper"
+        return "none" if run["top10_identical_order"][variant] else "order only"
+
+    rows = [f"| {labels[r['seed']]} | {round(100 * r['pagerank_term_share_before_fix']['median'])}% before, "
+            f"{round(100 * r['pagerank_term_share_of_top10_score']['median'])}% after | "
+            f"{changed(r, 'before_fix')} | {changed(r, 'unweighted_pr')} |" for r in runs]
+    stale = [row for row in rows if row not in _chapter("05-implementation.md")]
+    assert not stale, f"Section 5.6.4 no longer matches ranking_comparison.json: {stale}"
+    moved = sum(r["top10_overlap_with_current"]["unweighted_pr"] < 10 for r in runs)
+    for chapter in ("05-implementation.md", "06-evaluation-results.md", "07-discussion.md", "08-conclusion.md"):
+        if "one seed in three" in _chapter(chapter):
+            assert (moved, len(runs)) == (1, 3), f"{chapter} says one seed in three; the evidence says {moved} of {len(runs)}"
+
+
 # ---------------------------------------------------------------- code
 
 
@@ -391,6 +416,8 @@ RETIRED = [
     (r"does not read full text", "open-access full text is read as a fallback since e2a1759"),
     (r"no PDF parsing is implemented", "arXiv PDFs are parsed for dataset counts"),
     (r"executes nine stages", "the full-text stage made it ten"),
+    (r"no comparison against unweighted PageRank was", "run since c3dfdcd; Section 5.6.4"),
+    (r"top-ranked foundational paper was Anfinsen", "it ties for first with a 1993 paper"),
 ]
 
 

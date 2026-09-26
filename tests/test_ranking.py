@@ -64,6 +64,56 @@ def test_rank_foundational_papers_on_small_graph():
     assert scores == sorted(scores, reverse=True)
 
 
+def _star(citers: int = 50) -> nx.DiGraph:
+    """`cited` (2020) is cited by every other paper; `old` (2000) by none."""
+    g = nx.DiGraph()
+    g.add_node("cited", year=2020)
+    g.add_node("old", year=2000)
+    for i in range(citers):
+        g.add_node(f"p{i}", year=2021)
+        g.add_edge(f"p{i}", "cited", weight=1.0)
+    return g
+
+
+def test_citation_structure_can_outweigh_age():
+    """Raw PageRank sums to 1 over the graph, so with 0.5 * PageRank beside
+    0.3 * age the uncited 2000 paper beat a paper every other one cites, and
+    edge weighting could not move a top ten (thesis Section 5.6.4). Scaled to
+    the top value, citation structure carries the weight it was given."""
+    ranked = GraphAnalytics(_star()).rank_foundational_papers(top_n=2)
+    assert [r["paper_id"] for r in ranked] == ["cited", "old"]
+    assert ranked[0]["influence"] == pytest.approx(1.0)
+
+
+def test_edge_weights_move_the_ranking():
+    """Two papers alike in age and evidence, cited by the same papers: the one
+    whose citing edges carry more evidence weight must rank clearly higher.
+    The 200 unrelated papers give the graph a realistic size, where raw
+    PageRank values are small enough that the old formula barely told the two
+    apart."""
+    g = nx.DiGraph()
+    for node in ("heavy", "light"):
+        g.add_node(node, year=2010)
+    for i in range(200):
+        g.add_node(f"other{i}", year=2010)
+    for i in range(20):
+        g.add_node(f"c{i}", year=2022)
+        g.add_edge(f"c{i}", "heavy", weight=0.9)
+        g.add_edge(f"c{i}", "light", weight=0.1)
+    top = GraphAnalytics(g).rank_foundational_papers(top_n=2)
+    assert [r["paper_id"] for r in top] == ["heavy", "light"]
+    assert top[0]["score"] - top[1]["score"] > 0.1
+
+
+def test_seed_is_not_its_own_foundation():
+    """The seed usually has the highest PageRank in its own graph; left in, it
+    would head its own list of foundations and set the scale for the rest."""
+    g = _star()
+    ranked = GraphAnalytics(g).rank_foundational_papers(top_n=60, seed_id="cited")
+    assert "cited" not in {r["paper_id"] for r in ranked}
+    assert max(r["influence"] for r in ranked) == pytest.approx(1.0)
+
+
 def test_rank_foundational_papers_empty_graph_returns_empty():
     """An empty graph must not crash — used as the regression case for the
     early-return guard in rank_foundational_papers."""
