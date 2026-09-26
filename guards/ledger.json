@@ -1,0 +1,1123 @@
+{
+ "_source": "_mining/TERMINUX_GUARDS.md, Terminux guards pass, 95 families, pinned to Ahad690/Terminux@5ddccbcaddb85170d3b2e207845d6daa07d26eba, manifest SHA-256 618fe03a11e519e97a1d3339c84955d85a1fed677c5585bc82c44e9717e38574",
+ "_method": "Read from _mining/TERMINUX_GUARDS.md. Every family is accounted for. A family with no guard is recorded as refused with the reason, so the count is never mistaken for absence. tests/test_the_guard_ledger_matches_what_is_on_disk.py holds this file, guards/LEDGER.md and the guards on disk in agreement, both directions.",
+ "_counts": {
+  "ported": 35,
+  "adapted": 17,
+  "already_present": 10,
+  "refused": 33
+ },
+ "families": [
+  {
+   "id": "R1",
+   "name": "Unowned-obligation ratchet",
+   "kind": "ratchet",
+   "status": "refused",
+   "guards": [],
+   "reason": "No requirement ledger with per-requirement owners exists here. The thesis has chapters, not a requirements table with an owner column, so there is no unowned count to hold still."
+  },
+  {
+   "id": "R2",
+   "name": "Pin-not-above-reality companion",
+   "kind": "ratchet",
+   "status": "ported",
+   "guards": [
+    "CG4"
+   ],
+   "reason": "The thesis record was allowed to lag the thesis, so a newly written section was unprotected until some later removal forced a rebaseline. CG4 requires the record to equal the thesis in both directions."
+  },
+  {
+   "id": "R3",
+   "name": "Gather-then-conclude ratchet",
+   "kind": "ratchet",
+   "status": "ported",
+   "guards": [
+    "CG4",
+    "CG5"
+   ],
+   "reason": "Every comparison in the new guards asserts the size of the set it compared, so an empty extraction cannot agree with everything."
+  },
+  {
+   "id": "R4",
+   "name": "Every number says its path",
+   "kind": "ratchet",
+   "status": "already_present",
+   "guards": [],
+   "reason": "The drift guard already compares each quoted count against the evidence file or PDF that produced it: test_technical_evidence, test_ranking_comparison, the figure counts and references_verified.json."
+  },
+  {
+   "id": "R5",
+   "name": "Owner-facing rule translations",
+   "kind": "ratchet",
+   "status": "refused",
+   "guards": [],
+   "reason": "There is no rule registry and no owner to translate a rule for. The nearest surface, the documented API fields, is covered by CG2."
+  },
+  {
+   "id": "R6",
+   "name": "Infrastructure-gated test inventory",
+   "kind": "ratchet",
+   "status": "adapted",
+   "guards": [
+    "CG5"
+   ],
+   "reason": "The gated set here is three PDF checks that need PyMuPDF, which importorskip turned off silently. CG5 makes that absence a failure instead of a skip."
+  },
+  {
+   "id": "R7",
+   "name": "Specification baseline is not derived from its subject",
+   "kind": "ratchet",
+   "status": "already_present",
+   "guards": [
+    "CG13"
+   ],
+   "reason": "scripts/thesis_baseline.json is committed and the drift guard reads it from disk, with test_the_baseline_is_committed_rather_than_regenerated asserting that. Written 2026-09-25, before this port."
+  },
+  {
+   "id": "R8",
+   "name": "Re-baseline carries its reason",
+   "kind": "ratchet",
+   "status": "ported",
+   "guards": [
+    "CG4"
+   ],
+   "reason": "rebaseline_thesis.py already refused a reasonless rebaseline. CG4 extends it: the reason is appended to a history, a fall is named as a fall, and the original reason is carried forward rather than overwritten."
+  },
+  {
+   "id": "R9",
+   "name": "A message names what its branch tested",
+   "kind": "ratchet",
+   "status": "adapted",
+   "guards": [
+    "CG1"
+   ],
+   "reason": "check_test_report.py returns a named reason per failure shape (NO REPORT, NO TESTS, SKIPPED TESTS) rather than one message produced by one branch."
+  },
+  {
+   "id": "R10",
+   "name": "Generation tables accounted from migrations",
+   "kind": "ratchet",
+   "status": "refused",
+   "guards": [],
+   "reason": "There is no schema and no migrations. Storage is a SQLite cache of provider responses, rebuilt from the providers rather than migrated."
+  },
+  {
+   "id": "R11",
+   "name": "No hand-rendered file:line",
+   "kind": "ratchet",
+   "status": "refused",
+   "guards": [],
+   "reason": "No summariser interpolates line numbers. The scripts that report findings print whole file names, and the drift guard reports test names."
+  },
+  {
+   "id": "R12",
+   "name": "No control characters in source",
+   "kind": "ratchet",
+   "status": "ported",
+   "guards": [
+    "CG6"
+   ],
+   "reason": "Carried whole, including the literal-backspace red proof and the code-point construction that cannot be defeated by writing the wrong escape."
+  },
+  {
+   "id": "R13",
+   "name": "A constant is not defined twice in one file",
+   "kind": "ratchet",
+   "status": "ported",
+   "guards": [
+    "CG7"
+   ],
+   "reason": "Both shapes are carried: the same-scope twin, and the recorded incident of a fail-closed list redeclared as a dataclass field."
+  },
+  {
+   "id": "R14",
+   "name": "Tool registry both directions",
+   "kind": "ratchet",
+   "status": "ported",
+   "guards": [
+    "CG2",
+    "CG11"
+   ],
+   "reason": "The registry here is the documented response fields against the models the API returns, and the guard ledger against the guards on disk. Both directions, both with a non-empty floor."
+  },
+  {
+   "id": "R15",
+   "name": "A guard's condition may not be its subject's condition",
+   "kind": "ratchet",
+   "status": "ported",
+   "guards": [
+    "CG1",
+    "CG12"
+   ],
+   "reason": "The step that proves the suite ran has no `if:`, so the pytest step being conditional cannot take the proof with it. The report reader also lives outside tests/ so the suite carries no skip of its own."
+  },
+  {
+   "id": "R16",
+   "name": "A pin may not be the only owner of what it explains",
+   "kind": "ratchet",
+   "status": "adapted",
+   "guards": [
+    "CG4"
+   ],
+   "reason": "The record cannot be the authority on its own contents: CG4 recomputes it from the thesis, so hand-editing the record is visible."
+  },
+  {
+   "id": "R17",
+   "name": "Chokepoint wiring",
+   "kind": "ratchet",
+   "status": "ported",
+   "guards": [
+    "CG3",
+    "CG10"
+   ],
+   "reason": "The deployed build is identified by a stamp the running service returns, and every checker is required to have a caller."
+  },
+  {
+   "id": "R18",
+   "name": "Fail-closed definition exactly once",
+   "kind": "ratchet",
+   "status": "ported",
+   "guards": [
+    "CG7"
+   ],
+   "reason": "A blocking list declared twice and kept equal by hand is the twin case."
+  },
+  {
+   "id": "R19",
+   "name": "Could-not-look is not refusal",
+   "kind": "ratchet",
+   "status": "ported",
+   "guards": [
+    "CG5"
+   ],
+   "reason": "Carried whole: a missing PyMuPDF is reported as blindness, not as a clean read over four unreadable PDFs."
+  },
+  {
+   "id": "R20",
+   "name": "One gate cannot silence the others",
+   "kind": "ratchet",
+   "status": "refused",
+   "guards": [],
+   "reason": "There is no gate orchestrator with per-gate exception containment. pytest reports each test independently, so one exception cannot suppress the rest."
+  },
+  {
+   "id": "R21",
+   "name": "Has-this-ever-fired tri-state",
+   "kind": "ratchet",
+   "status": "adapted",
+   "guards": [
+    "CG5"
+   ],
+   "reason": "CG5's two states are looked and could-not-look. The third, ran-and-did-not-fire, is not carried: nothing in this repository keeps a durable firing record that could be confused with never having run."
+  },
+  {
+   "id": "R22",
+   "name": "A check that did not run is not a finding",
+   "kind": "ratchet",
+   "status": "ported",
+   "guards": [
+    "CG1",
+    "CG5"
+   ],
+   "reason": "An unreadable report is refused rather than reported clean, and a guard that cannot look says which state it is in."
+  },
+  {
+   "id": "R23",
+   "name": "Correct-app false-positive family",
+   "kind": "ratchet",
+   "status": "ported",
+   "guards": [
+    "CG1",
+    "CG5",
+    "CG6",
+    "CG7",
+    "CG11"
+   ],
+   "reason": "Every new guard carries a negative control: the correct form must pass, or the guard is asserting nothing."
+  },
+  {
+   "id": "R24",
+   "name": "Deferred behaviour asserted as absence",
+   "kind": "ratchet",
+   "status": "already_present",
+   "guards": [
+    "CG13"
+   ],
+   "reason": "The drift guard's `claims` list retires statements that stop being true and fails if one comes back."
+  },
+  {
+   "id": "R25",
+   "name": "Invented-credential detector with supplied-key and wiring controls",
+   "kind": "ratchet",
+   "status": "adapted",
+   "guards": [
+    "CG8"
+   ],
+   "reason": "The method transfers: one planted sample per detector, a supplied-value exclusion, and a clean-tree control. The specimens do not: this application issues no browser API keys."
+  },
+  {
+   "id": "R26",
+   "name": "Provider-key pattern widened to the user base",
+   "kind": "ratchet",
+   "status": "adapted",
+   "guards": [
+    "CG8"
+   ],
+   "reason": "The method transfers. The key shapes do not: there is no user base holding third-party credentials, only the operator's own .env."
+  },
+  {
+   "id": "R27",
+   "name": "Pre-push scanner has a red proof",
+   "kind": "ratchet",
+   "status": "ported",
+   "guards": [
+    "CG8"
+   ],
+   "reason": "Each detector is driven by a planted sample, the scanner refuses an empty file set rather than reporting it clean, and a token-shaped value it cannot read fails closed."
+  },
+  {
+   "id": "R28",
+   "name": "Secrets gate has a clean control and one planted violation per rule",
+   "kind": "ratchet",
+   "status": "ported",
+   "guards": [
+    "CG8"
+   ],
+   "reason": "The clean-tree control and the planted-violation table are carried whole."
+  },
+  {
+   "id": "R29",
+   "name": "Gate coverage distinguishes skipped files from skipped checks",
+   "kind": "ratchet",
+   "status": "adapted",
+   "guards": [
+    "CG8"
+   ],
+   "reason": "CG8 reports which files it read and which it could not decode, beside the verdict, rather than folding them into the result."
+  },
+  {
+   "id": "R30",
+   "name": "A gate can name every rule it can emit, in both directions",
+   "kind": "ratchet",
+   "status": "ported",
+   "guards": [
+    "CG8"
+   ],
+   "reason": "The declared rule set and the rules the code can emit are compared both ways."
+  },
+  {
+   "id": "C1",
+   "name": "Full-history checkout and no path filters",
+   "kind": "ci",
+   "status": "ported",
+   "guards": [
+    "CG12"
+   ],
+   "reason": "tests.yml now fetches full history and carries no path filter. The two deploy workflows keep theirs, by name and with a stated reason, and the exemption is asserted to still be needed."
+  },
+  {
+   "id": "C2",
+   "name": "One always-running job and safe concurrency",
+   "kind": "ci",
+   "status": "ported",
+   "guards": [
+    "CG12"
+   ],
+   "reason": "CG12 requires a job with no `if:` in tests.yml. A concurrency group was added so a dispatch cannot cancel the authoritative push run."
+  },
+  {
+   "id": "C3",
+   "name": "Full dependency installation and explicit type/build steps",
+   "kind": "ci",
+   "status": "already_present",
+   "guards": [],
+   "reason": "tests.yml installs requirements.txt and says why. No typechecker or bundler is configured for the backend, so there is no such step to add."
+  },
+  {
+   "id": "C4",
+   "name": "The test runner is allowed to finish",
+   "kind": "ci",
+   "status": "adapted",
+   "guards": [
+    "CG1"
+   ],
+   "reason": "There is no timeout to remove. A truncated run is caught from the other side: a report with fewer cases than the floor is refused."
+  },
+  {
+   "id": "C5",
+   "name": "A declared skip must be absent from a security-critical report",
+   "kind": "ci",
+   "status": "ported",
+   "guards": [
+    "CG1"
+   ],
+   "reason": "Any skipped testcase in the CI report is refused, and the report reader lives outside tests/ so the suite carries no skip of its own."
+  },
+  {
+   "id": "C6",
+   "name": "Static SQL rules must execute and fire on a plant",
+   "kind": "ci",
+   "status": "refused",
+   "guards": [],
+   "reason": "There is no static SQL rule set; the store issues prepared statements through SQLAlchemy and there is no schema to police."
+  },
+  {
+   "id": "C7",
+   "name": "Isolation gate and its negative controls",
+   "kind": "ci",
+   "status": "refused",
+   "guards": [],
+   "reason": "No tenant isolation exists to gate. The container is bound to loopback and the deploy asserts that binding, which is the isolation property this app has."
+  },
+  {
+   "id": "C8",
+   "name": "Per-run identity, never a pasted credential",
+   "kind": "ci",
+   "status": "already_present",
+   "guards": [],
+   "reason": "There is no CI identity provider. The deploy mints a per-run SSH key from a secret, refuses when the secret is absent, and deletes the key with `if: always()`. That is the property this family protects."
+  },
+  {
+   "id": "C9",
+   "name": "Identity service pre-created, started, and probed",
+   "kind": "ci",
+   "status": "already_present",
+   "guards": [],
+   "reason": "No identity service runs in CI. The container is started and probed by polling /health with an exit check, which is the same property for this deployment."
+  },
+  {
+   "id": "C10",
+   "name": "Migrations rebuild and replay; schema completeness is verified",
+   "kind": "ci",
+   "status": "refused",
+   "guards": [],
+   "reason": "No schema and no migrations. Storage is a derived SQLite cache of provider responses, rebuilt by re-running a paper query rather than replayed forward."
+  },
+  {
+   "id": "C11",
+   "name": "CI must not be production, in either spelling",
+   "kind": "ci",
+   "status": "adapted",
+   "guards": [
+    "CG9"
+   ],
+   "reason": "APP_ENV is pinned to production only in the deploy's .env. CG9 makes that value load-bearing: production refuses to start on a missing api_key or a wildcard CORS origin, which is what running the wrong environment would produce."
+  },
+  {
+   "id": "C12",
+   "name": "No QA worker may hold the suite's database",
+   "kind": "ci",
+   "status": "refused",
+   "guards": [],
+   "reason": "There is no QA worker and no shared database; the tests use respx and a temporary SQLite file."
+  },
+  {
+   "id": "C13",
+   "name": "Requirements ledger, both directions",
+   "kind": "ci",
+   "status": "ported",
+   "guards": [
+    "CG2"
+   ],
+   "reason": "Carried as the documented-field ledger: every field the models declare appears in the docs, and every field the docs promise exists in the models."
+  },
+  {
+   "id": "C14",
+   "name": "The coverage baseline is committed, and a drop must be deliberate",
+   "kind": "ci",
+   "status": "adapted",
+   "guards": [
+    "CG4"
+   ],
+   "reason": "There is no code-coverage baseline. The thesis record is committed, and a drop in it must now be named as a fall with its reason."
+  },
+  {
+   "id": "C15",
+   "name": "Deployment refuses a missing credential, then proves the domain serves the build",
+   "kind": "ci",
+   "status": "ported",
+   "guards": [
+    "CG3"
+   ],
+   "reason": "The deploy already refuses a missing SSH key. CG3 adds the second half: the domain must serve a build that is a known ancestor of the branch tip."
+  },
+  {
+   "id": "C16",
+   "name": "Running services must be current and stamped",
+   "kind": "ci",
+   "status": "ported",
+   "guards": [
+    "CG3"
+   ],
+   "reason": "GET /version returns the build stamp, and check_deployed_build.py refuses when it is unstamped, unknown, unreachable, or behind."
+  },
+  {
+   "id": "C17",
+   "name": "Backup is unconditional, non-empty, private, restore-target-checked",
+   "kind": "ci",
+   "status": "refused",
+   "guards": [],
+   "reason": "There is no backup workflow. The only persistent state is a SQLite cache of provider responses, which is rebuilt by re-running a paper query."
+  },
+  {
+   "id": "C18",
+   "name": "Unwired and dated guard instruments",
+   "kind": "ci",
+   "status": "ported",
+   "guards": [
+    "CG10"
+   ],
+   "reason": "Every checker script is required to have a caller in a workflow or a test."
+  },
+  {
+   "id": "B1",
+   "name": "Aggregate environment refusal",
+   "kind": "runtime",
+   "status": "ported",
+   "guards": [
+    "CG9"
+   ],
+   "reason": "Settings.problems() collects every fault and the app refuses once, rather than reporting them one at a time across restarts."
+  },
+  {
+   "id": "B2",
+   "name": "Same-server identity",
+   "kind": "runtime",
+   "status": "refused",
+   "guards": [],
+   "reason": "One host, one process, no cross-server identity to confuse with another."
+  },
+  {
+   "id": "B3",
+   "name": "No hidden model default; unrecognised endpoint refuses",
+   "kind": "runtime",
+   "status": "ported",
+   "guards": [
+    "CG9"
+   ],
+   "reason": "enable_grobid defaulted to True on a box that runs no GROBID service, so the deploy had to force it off. The default is now False and a GROBID URL that is pointed somewhere unreachable is a reported problem rather than a silent stall."
+  },
+  {
+   "id": "B4",
+   "name": "Endpoint-matched key names and redacted representation",
+   "kind": "runtime",
+   "status": "refused",
+   "guards": [],
+   "reason": "There are no per-endpoint API keys to name, and no credential is read from anywhere but .env, so there is nothing to redact at a call site."
+  },
+  {
+   "id": "B5",
+   "name": "Command-prefix and far-side directory coherence",
+   "kind": "runtime",
+   "status": "adapted",
+   "guards": [
+    "CG4"
+   ],
+   "reason": "The write is bound to the plan that was read: --apply must carry the token the dry run printed, recomputed rather than trusted."
+  },
+  {
+   "id": "B6",
+   "name": "Limit sentinels, cross-key invariants, and template refusal",
+   "kind": "runtime",
+   "status": "ported",
+   "guards": [
+    "CG9"
+   ],
+   "reason": "Cross-setting invariants are checked as a set: neo4j enabled requires a password, production requires an api_key and a non-wildcard CORS origin."
+  },
+  {
+   "id": "B7",
+   "name": "Refuse before binding; lifespan refuses rather than falls back",
+   "kind": "runtime",
+   "status": "ported",
+   "guards": [
+    "CG9",
+    "CG3"
+   ],
+   "reason": "A misconfigured production refuses to start rather than serving an open API on the public domain, and the served build is identifiable rather than anonymous."
+  },
+  {
+   "id": "B8",
+   "name": "Posture: degrade if absent, refuse if wrong; behavioural probe",
+   "kind": "runtime",
+   "status": "ported",
+   "guards": [
+    "CG5",
+    "CG9"
+   ],
+   "reason": "A check that cannot run is not a red wall (CG5 reports blindness); a known-wrong configuration refuses (CG9)."
+  },
+  {
+   "id": "B9",
+   "name": "Assert the argv actually built",
+   "kind": "runtime",
+   "status": "ported",
+   "guards": [
+    "CG4"
+   ],
+   "reason": "The apply mode recomputes the plan token and compares, rather than reading a stored flag."
+  },
+  {
+   "id": "B10",
+   "name": "Measure capacity before allocating it",
+   "kind": "runtime",
+   "status": "refused",
+   "guards": [],
+   "reason": "No capacity is allocated. default_max_total_papers bounds a traversal that is already in-process and already bounded per hop."
+  },
+  {
+   "id": "B11",
+   "name": "Mutation gate chokepoint",
+   "kind": "runtime",
+   "status": "refused",
+   "guards": [],
+   "reason": "There is no mutating tool surface and no approver, so there is nothing for a gate to stand in front of."
+  },
+  {
+   "id": "B12",
+   "name": "Snapshot before irreversible mutation",
+   "kind": "runtime",
+   "status": "adapted",
+   "guards": [
+    "CG4"
+   ],
+   "reason": "The dry run prints the additions and the removals, and names a fall as a fall, before anything is written."
+  },
+  {
+   "id": "B13",
+   "name": "Patch safety with terminal/retryable split",
+   "kind": "runtime",
+   "status": "refused",
+   "guards": [],
+   "reason": "No subsystem applies patches, so there is no format error to distinguish from a safety refusal."
+  },
+  {
+   "id": "B14",
+   "name": "Validate dependencies before fetching them",
+   "kind": "runtime",
+   "status": "refused",
+   "guards": [],
+   "reason": "There is no manifest to validate before fetching: pip resolves from requirements.txt, which is itself the committed list."
+  },
+  {
+   "id": "B15",
+   "name": "Free-endpoint refusal, provider pin, pause ceiling, effort floor",
+   "kind": "runtime",
+   "status": "adapted",
+   "guards": [
+    "CG9"
+   ],
+   "reason": "The analogue is the provider toggles and the OpenAlex contact address. An unset openalex_email is reported as a problem in production rather than silently using the anonymous pool."
+  },
+  {
+   "id": "B16",
+   "name": "Rate is dated, unpriced is refused",
+   "kind": "runtime",
+   "status": "refused",
+   "guards": [],
+   "reason": "There is no billing, no priced pair and no rate table to go stale, so there is nothing here for that family to protect."
+  },
+  {
+   "id": "B17",
+   "name": "Tenancy: allow-list tables, constrainable role, least privilege",
+   "kind": "runtime",
+   "status": "refused",
+   "guards": [],
+   "reason": "The API is single-tenant with an optional shared api_key; there is no role, no per-tenant schema, and no 404-before-403 surface to protect."
+  },
+  {
+   "id": "B18",
+   "name": "Erasure completeness and positive record for deletion",
+   "kind": "runtime",
+   "status": "refused",
+   "guards": [],
+   "reason": "There is no user data to erase. A run is a cached provider response plus a graph, both reproducible from the paper query."
+  },
+  {
+   "id": "B19",
+   "name": "Workspace containment and executor fail-closed",
+   "kind": "runtime",
+   "status": "refused",
+   "guards": [],
+   "reason": "There is no agent executor and no workspace concept in the product. Nothing here runs a model or a command on a caller behalf, so there is nothing to contain."
+  },
+  {
+   "id": "B20",
+   "name": "Fixed tool surface; unknown tool mutates",
+   "kind": "runtime",
+   "status": "refused",
+   "guards": [],
+   "reason": "There is no tool surface. The API surface is fixed and enumerated instead, and CG2 holds the documentation to it."
+  },
+  {
+   "id": "B21",
+   "name": "Prompt scrubbing, untrusted framing, cache-boundary refusal",
+   "kind": "runtime",
+   "status": "refused",
+   "guards": [],
+   "reason": "No model is called by the product. scripts/second_annotator.py calls one, but it is an offline evidence tool that publishes open-access figures and sends no user data."
+  },
+  {
+   "id": "B22",
+   "name": "Locks, exit codes, template history, bundle refusal",
+   "kind": "runtime",
+   "status": "already_present",
+   "guards": [],
+   "reason": "The SQLite store classifies lock errors from other errors, retries only the lock, and backs off with jitter. tests/test_sqlite_store.py drives it."
+  },
+  {
+   "id": "B23",
+   "name": "Apply only the migrations that were gated, to the named project",
+   "kind": "runtime",
+   "status": "refused",
+   "guards": [],
+   "reason": "There is no migration runner and no second project on the box to confuse it with. The deploy does write to a named REMOTE_DIR and refuses rather than defaulting when it is not set."
+  },
+  {
+   "id": "B24",
+   "name": "Publishable key and config-globals contract",
+   "kind": "runtime",
+   "status": "adapted",
+   "guards": [
+    "CG8"
+   ],
+   "reason": "There is no publishable key. The config-globals half is carried: CG8 asserts that .env.example declares every setting Settings reads, and carries no value that is not a placeholder."
+  },
+  {
+   "id": "B25",
+   "name": "Credential scope, authenticated cipher, real-key and log-redaction refusals",
+   "kind": "runtime",
+   "status": "refused",
+   "guards": [],
+   "reason": "The application holds no credential of its own; they arrive from .env through pydantic-settings and are never written to a store. The encrypted salvage archive that does hold credentials belongs to another project and is not in this repository."
+  },
+  {
+   "id": "B26",
+   "name": "OAuth state, PKCE, browser binding, single-use provider token",
+   "kind": "runtime",
+   "status": "refused",
+   "guards": [],
+   "reason": "There is no OAuth flow. The API authenticates with a static optional api_key header, which is a weaker scheme and is not claimed to be this."
+  },
+  {
+   "id": "B27",
+   "name": "Ask the database whether the app can do its own job, for both roles",
+   "kind": "runtime",
+   "status": "refused",
+   "guards": [],
+   "reason": "There is no second role and no database the application must prove it can reach."
+  },
+  {
+   "id": "B28",
+   "name": "Configuration contract: what the writer publishes and what the reader reads",
+   "kind": "runtime",
+   "status": "ported",
+   "guards": [
+    "CG2",
+    "CG8"
+   ],
+   "reason": "Carried as the documented-field ledger in both directions, and as the .env.example / Settings contract."
+  },
+  {
+   "id": "P1",
+   "name": "Push-line stamper refuses while unpushed",
+   "kind": "process",
+   "status": "ported",
+   "guards": [
+    "CG8"
+   ],
+   "reason": "A scan that cannot see the range it was asked about refuses rather than reporting the range clean."
+  },
+  {
+   "id": "P2",
+   "name": "Report persistence refuses while unpushed",
+   "kind": "process",
+   "status": "ported",
+   "guards": [
+    "CG8"
+   ],
+   "reason": "The same property on the report side: an unreadable input is a refusal, not an empty result."
+  },
+  {
+   "id": "P3",
+   "name": "Pre-push wrapper refuses on scan failure or empty range",
+   "kind": "process",
+   "status": "ported",
+   "guards": [
+    "CG8"
+   ],
+   "reason": "Carried whole: the scanner fails closed on a decode error rather than counting the file as clean, which is the property the wrapper exists to provide."
+  },
+  {
+   "id": "P4",
+   "name": "Report-number checker treats not-found as failure",
+   "kind": "process",
+   "status": "already_present",
+   "guards": [
+    "CG13"
+   ],
+   "reason": "A quoted number that cannot be found in the PDF or the evidence file fails the drift guard rather than being skipped."
+  },
+  {
+   "id": "P5",
+   "name": "PRD delta merge is all-or-nothing",
+   "kind": "process",
+   "status": "refused",
+   "guards": [],
+   "reason": "There is no PRD and no delta merge. build_thesis.py assembles the chapters, and the drift guard fails if the assembled document is not what the builder emits."
+  },
+  {
+   "id": "P6",
+   "name": "Purge requires the dry-run plan token",
+   "kind": "process",
+   "status": "ported",
+   "guards": [
+    "CG4"
+   ],
+   "reason": "rebaseline_thesis.py writes nothing without --apply carrying the token the dry run printed."
+  },
+  {
+   "id": "P7",
+   "name": "Rebaseline requires a reason",
+   "kind": "process",
+   "status": "ported",
+   "guards": [
+    "CG4"
+   ],
+   "reason": "And a reason of at least thirty characters, recorded in an append-only history."
+  },
+  {
+   "id": "P8",
+   "name": "Reachability from process entrypoints; tests are not roots",
+   "kind": "process",
+   "status": "refused",
+   "guards": [],
+   "reason": "No entrypoint-rooted reachability sweep is implemented. The API's entrypoints are its routes and tests/test_api_comprehensive.py exercises them, but that is not the same claim and this ledger does not pretend it is."
+  },
+  {
+   "id": "P9",
+   "name": "Tracked files are the authority",
+   "kind": "process",
+   "status": "already_present",
+   "guards": [
+    "CG13"
+   ],
+   "reason": "The drift guard asserts the thesis record is git-tracked, so the committed file rather than a regenerated one is what is compared."
+  },
+  {
+   "id": "P10",
+   "name": "Coverage ledger, two directions and two owner classes",
+   "kind": "process",
+   "status": "ported",
+   "guards": [
+    "CG2"
+   ],
+   "reason": "The documented-field ledger is compared in both directions, with a non-empty floor on each side."
+  },
+  {
+   "id": "P11",
+   "name": "Same-box discipline tools refuse the wrong target",
+   "kind": "process",
+   "status": "already_present",
+   "guards": [],
+   "reason": "deploy-backend.yml already refuses a Docker binding that is not 127.0.0.1:18030 and an nginx upstream that does not proxy to that port."
+  },
+  {
+   "id": "P12",
+   "name": "Positive record of deletable assets; sentinels on limits",
+   "kind": "process",
+   "status": "adapted",
+   "guards": [
+    "CG9"
+   ],
+   "reason": "The traversal limits are checked as sentinels: a non-positive depth or paper ceiling is a reported problem rather than a silent default."
+  },
+  {
+   "id": "G1",
+   "name": "Gate orchestration and fail-closed parsing",
+   "kind": "gate",
+   "status": "refused",
+   "guards": [],
+   "reason": "There is no gate_runner. Design review, security review and design audit are people's jobs here, not a runner's."
+  },
+  {
+   "id": "G2",
+   "name": "Security / tenant isolation",
+   "kind": "gate",
+   "status": "refused",
+   "guards": [],
+   "reason": "No tenant isolation exists to gate. The store is one SQLite file, and the isolation property this app does have -- the container bound to loopback -- is asserted by the deploy."
+  },
+  {
+   "id": "G3",
+   "name": "Secrets, XSS, and CSP",
+   "kind": "gate",
+   "status": "adapted",
+   "guards": [
+    "CG8"
+   ],
+   "reason": "Only the secrets third is carried. There is no server-rendered HTML to carry a CSP, and the frontend is a static bundle with no injection surface."
+  },
+  {
+   "id": "G4",
+   "name": "Code review",
+   "kind": "gate",
+   "status": "refused",
+   "guards": [],
+   "reason": "No review gate. The equivalent control is the test suite plus the drift guard, which is a different thing and is not claimed as this."
+  },
+  {
+   "id": "G5",
+   "name": "Design audit",
+   "kind": "gate",
+   "status": "refused",
+   "guards": [],
+   "reason": "No design-audit gate. The rendered PDFs and their page counts are checked, but that is a layout check, not an audit of the design."
+  },
+  {
+   "id": "G6",
+   "name": "Vision judgement layer",
+   "kind": "gate",
+   "status": "refused",
+   "guards": [],
+   "reason": "No vision judgement layer with blocking authority. The flow-diagram reader is measured and reported in the thesis and holds no blocking authority anywhere."
+  },
+  {
+   "id": "G7",
+   "name": "Exposure probe and advisory surface",
+   "kind": "gate",
+   "status": "adapted",
+   "guards": [
+    "CG5"
+   ],
+   "reason": "The transferable half is that a probe which could not authenticate must not read as an empty exposure list, which is CG5's blindness state applied to a network probe. There is no exposure surface here to probe."
+  }
+ ],
+ "guards": [
+  {
+   "id": "CG1",
+   "path": "tests/test_the_test_job_proves_it_ran.py",
+   "incident": "The Tests job ran `pytest -q` and stopped there, so nothing downstream could tell a run of 205 tests from a run of none. Terminus kit item 1, R15, 5.6.5.",
+   "families": [
+    "R15",
+    "R22",
+    "C4",
+    "C5",
+    "R9"
+   ],
+   "also": [
+    "scripts/check_test_report.py"
+   ]
+  },
+  {
+   "id": "CG2",
+   "path": "tests/test_the_documented_response_fields_are_the_fields_the_api_returns.py",
+   "incident": "README.md documented `score = 0.5 * PageRank + 0.3 * year_score + 0.2 * evidence_score` after 4c982f2 had replaced PageRank with the normalised `influence`. It was fixed by hand, in a session, not by a check. Terminux R14, C13, P10.",
+   "families": [
+    "R14",
+    "C13",
+    "P10",
+    "B28"
+   ],
+   "also": []
+  },
+  {
+   "id": "CG3",
+   "path": "scripts/check_deployed_build.py",
+   "incident": "deploy-backend.yml carried 46.225.8.77 as a fallback after that box was deleted on 2026-05-31, and nothing tied the running container to the commit that was pushed. Terminus kit item 12, C15, C16, R17.",
+   "families": [
+    "C15",
+    "C16",
+    "R17",
+    "B7"
+   ],
+   "also": [
+    "tests/test_the_deployed_build_reads_its_reply.py"
+   ]
+  },
+  {
+   "id": "CG4",
+   "path": "tests/test_the_baseline_is_not_stale_in_either_direction.py",
+   "incident": "The drift guard compares the committed thesis record one way only, so deleting an entry from it by hand disabled protection for that section permanently, with no rebaseline and nothing in git log. The lag case was live: sections 5.6.4 and 6.14.7 were unprotected from the day they were written. Terminus R2, R8, R16, C14, P6, P7, B5, B9, B12.",
+   "families": [
+    "R2",
+    "R8",
+    "R16",
+    "C14",
+    "P6",
+    "P7",
+    "B5",
+    "B9",
+    "B12",
+    "R3"
+   ],
+   "also": []
+  },
+  {
+   "id": "CG5",
+   "path": "tests/test_a_guard_that_cannot_look_does_not_report_clean.py",
+   "incident": "test_the_thesis_does_not_drift.py:344 is `fitz = pytest.importorskip(\"fitz\")`, so a missing or half-installed PyMuPDF turned three PDF checks into a skip. A skip is green. Terminus R19, R22, R3, R6, R21, B8.",
+   "families": [
+    "R19",
+    "R22",
+    "R3",
+    "R6",
+    "R21",
+    "B8"
+   ],
+   "also": []
+  },
+  {
+   "id": "CG6",
+   "path": "tests/test_no_source_file_carries_a_control_character.py",
+   "incident": "Terminus R12: two literal BACKSPACE bytes where `\\b` was intended made a checker report zero sites and pass green twice, because a pattern built from a byte nobody can see cannot fire.",
+   "families": [
+    "R12",
+    "R23"
+   ],
+   "also": []
+  },
+  {
+   "id": "CG7",
+   "path": "tests/test_a_constant_is_not_defined_twice_in_one_file.py",
+   "incident": "Terminus R13: a fail-closed list of blocking gates was redeclared as a dataclass field and the two were kept equal by hand, so a floor written against one of them stopped matching when the other was edited.",
+   "families": [
+    "R13",
+    "R18",
+    "R23"
+   ],
+   "also": []
+  },
+  {
+   "id": "CG8",
+   "path": "tests/test_no_secret_is_committed_to_this_tree.py",
+   "incident": "Terminus R27 found ten real access tokens on its first run, and then shipped a pattern that matched nothing because a heredoc wrote a literal backspace. A scanner nobody has seen fail is trusted when it reports clean. R25-R30, P1-P3, B24, B28, G3.",
+   "families": [
+    "R25",
+    "R26",
+    "R27",
+    "R28",
+    "R29",
+    "R30",
+    "P1",
+    "P2",
+    "P3",
+    "B24",
+    "B28",
+    "G3"
+   ],
+   "also": []
+  },
+  {
+   "id": "CG9",
+   "path": "tests/test_the_config_refuses_every_problem_at_once.py",
+   "incident": "enable_grobid defaulted to True on a box that runs no GROBID service, so deploy-backend.yml had to force it off on every deploy; enable_neo4j starts happily with no password; and an unset openalex_email silently uses the anonymous pool. Terminus B1, B3, B6, B7, B8, B15, P12, C11.",
+   "families": [
+    "B1",
+    "B3",
+    "B6",
+    "B7",
+    "B8",
+    "B15",
+    "P12",
+    "C11"
+   ],
+   "also": []
+  },
+  {
+   "id": "CG10",
+   "path": "tests/test_every_guard_checker_has_a_caller.py",
+   "incident": "Terminus 5.7, 'a correct check with no caller': the merge refusal, the CSP check, the erasure plan and the reaper all existed with no production consumer. Terminus C18, R17.",
+   "families": [
+    "C18",
+    "R17"
+   ],
+   "also": []
+  },
+  {
+   "id": "CG11",
+   "path": "tests/test_the_guard_ledger_matches_what_is_on_disk.py",
+   "incident": "The Terminux catalogue is explicit that a count must not be mistaken for absence. A ledger that lists a guard which does not exist, or omits one that does, is the same defect in the other direction. Terminus R14, kit item 11.",
+   "families": [
+    "R14",
+    "R23"
+   ],
+   "also": []
+  },
+  {
+   "id": "CG12",
+   "path": "tests/test_the_ci_workflows_have_no_path_filters_and_one_always_runs.py",
+   "incident": "Terminus C1: a `**/*.md` path filter hid a documentation fix until someone dispatched the run by hand, and two history-scanning tests failed on the first CI run because the clone was depth-1. C2: four push runs were cancelled by a dispatch, and once the job that had to always run was itself made conditional. R15.",
+   "families": [
+    "C1",
+    "C2",
+    "R15"
+   ],
+   "also": []
+  },
+  {
+   "id": "CG13",
+   "path": "tests/test_the_thesis_does_not_drift.py",
+   "incident": "Written 2026-09-25 after three kinds of drift were found by hand in one afternoon: the abstract and four chapters still claiming the system read abstracts only, the appendix listing stale counts, and the page counts in two READMEs trailing the committed PDFs. It is the guard this port was measured against, and CG4 and CG5 exist because of what it was still missing.",
+   "families": [
+    "R4",
+    "R7",
+    "R24",
+    "P4",
+    "P9"
+   ],
+   "also": []
+  }
+ ],
+ "ordinary": [
+  {
+   "path": "tests/test_add_citegraph_route.py",
+   "why": "asserts the nginx route helper writes a correct config"
+  },
+  {
+   "path": "tests/test_api_comprehensive.py",
+   "why": "exercises the API's behaviour with mocked providers"
+  },
+  {
+   "path": "tests/test_flow_diagram.py",
+   "why": "exercises the stage and layout rules the flow reader uses"
+  },
+  {
+   "path": "tests/test_full_text_population.py",
+   "why": "exercises the open-access full-text fallback"
+  },
+  {
+   "path": "tests/test_input_normalizer.py",
+   "why": "exercises identifier canonicalisation"
+  },
+  {
+   "path": "tests/test_population_patterns.py",
+   "why": "exercises the extraction patterns and their ignore spans"
+  },
+  {
+   "path": "tests/test_query_detection.py",
+   "why": "exercises query-type detection from the identifier's shape"
+  },
+  {
+   "path": "tests/test_ranking.py",
+   "why": "exercises the foundational scoring and path ranking"
+  },
+  {
+   "path": "tests/test_sqlite_store.py",
+   "why": "exercises persistence, lock retries and error classification"
+  },
+  {
+   "path": "tests/test_task_manager.py",
+   "why": "exercises background task lifecycle and shutdown"
+  },
+  {
+   "path": "tests/test_technical_evidence.py",
+   "why": "exercises field detection and dataset-size extraction"
+  },
+  {
+   "path": "tests/test_url_resolver.py",
+   "why": "exercises URL to identifier extraction"
+  }
+ ],
+ "_ledger_md_sha256": "2387f944c049b7b1b9c5e703fe9af12b2d536595a0223d8494f854dd84c52642"
+}

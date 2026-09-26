@@ -48,54 +48,67 @@ stating **one incident sentence** (or "not recorded" — no invented war stories
 then a red proof on the real regression, a negative control, and an
 input-size floor. Terminux §5.8 items 1–18 are the writing checklist.
 
-| # | Guard | Incident | Red proof |
-|---|---|---|---|
-| G1 | `test_the_test_job_proves_it_ran.py` | `tests.yml` emits no JUnit report, so green-with-nothing-ran is possible | delete the report path in a fixture; zero-testcase and skipped-case reports must be refused |
-| G2 | `test_the_documented_response_fields_are_the_fields_the_api_returns.py` | README quoted the pre-`4c982f2` formula | a field present in the models and absent from the docs, and the inverse, both go red |
-| G3 | `scripts/check_deployed_build.py` + `GET /version` | the deleted-box IP; nothing tied the running build to a commit | an unstamped, unknown, unreachable, and behind sha are each refused distinctly |
-| G4 | `test_the_baseline_pin_is_not_above_reality.py` | the drift ratchet is one-sided: a stale pin never fails | a pin above the measured count goes red |
-| G5 | `test_a_guard_that_cannot_look_does_not_report_clean.py` | `importorskip("fitz")` silently skips 3 PDF guards | simulate the missing dependency; the guard must fail, not skip |
-| G6 | `test_no_source_file_carries_a_control_character.py` | R12 — a literal BACKSPACE where `\b` was meant made a checker pass green twice | the literal backspace fixture, plus a named-tree floor |
-| G7 | `test_a_constant_is_not_defined_twice_in_one_file.py` | R13 — a fail-closed gate list redeclared as a dataclass field | a real double definition, and an allowance that is still needed |
-| G8 | `test_no_secret_is_committed_to_this_tree.py` | R25–R30 — a scanner nobody has seen fail | one planted sample per detector, a clean-tree control, fail-closed on unreadable token-shaped values. **Blocks.** |
-| G9 | `test_the_config_refuses_every_problem_at_once.py` | `enable_neo4j` starts with no password; the deploy already has to force `ENABLE_GROBID false` | production with no `api_key`, wildcard CORS, and neo4j-without-password each refuse; development does not |
-| G10 | `test_a_rebaseline_must_carry_the_plan_it_printed.py` | P6/P7 — `rebaseline_thesis.py` mutates a committed baseline with no dry run | `--apply` without the printed token refuses; a stale token refuses |
-| G11 | `test_the_ci_workflows_have_no_path_filters_and_one_always_runs.py` | C1–C3 — a `paths:` filter hid a fix until hand-dispatch | a workflow carrying `paths:` goes red |
-| G12 | `test_every_guard_checker_has_a_caller.py` | "a correct check with no caller", the Terminux repo's recurring one | a checker with no workflow or test reference goes red |
-| G13 | `test_the_guard_ledger_matches_the_guards_on_disk.py` | the count must not be mistaken for absence | a ledger row with no file, and a file with no row, both go red |
+Two of the planned guards changed shape while being written, and the ledger
+records the result rather than the plan: the rebaseline plan-token guard was
+folded into CG4, and the CI-workflow guard became CG12. `CG` is the id prefix
+because Terminux's own product-gate families are `G1`–`G7`, and a ledger using
+`G1` for two different things would be its own R14.
 
-## Product changes (two, both small)
+| id | Guard | Incident it answers | Red proof |
+|---|---|---|---|
+| CG1 | `test_the_test_job_proves_it_ran.py` + `scripts/check_test_report.py` | `tests.yml` emitted no JUnit report, so green-with-nothing-ran was possible | absent, malformed, empty, failing, erroring and skipping reports are each refused |
+| CG2 | `test_the_documented_response_fields_are_the_fields_the_api_returns.py` | docs drifted from the code after `4c982f2` | a field in the models and not the docs, the inverse, and an undocumented route |
+| CG3 | `scripts/check_deployed_build.py` + `GET /version` | the deleted-box IP; nothing tied the running build to a commit | unstamped, unknown, unreachable and behind are each refused distinctly |
+| CG4 | `test_the_baseline_is_not_stale_in_either_direction.py` | the drift ratchet was one-sided, and the record lagged the thesis by two live sections | a hand-deleted and a hand-invented record entry are each visible |
+| CG5 | `test_a_guard_that_cannot_look_does_not_report_clean.py` | `importorskip("fitz")` silently skips 3 PDF guards | hiding PyMuPDF flips the state to blind, both ways |
+| CG6 | `test_no_source_file_carries_a_control_character.py` | R12 — a literal BACKSPACE where `\b` was meant | the literal backspace fixture, plus a tree-size floor |
+| CG7 | `test_a_constant_is_not_defined_twice_in_one_file.py` | R13 — a fail-closed list redeclared as a dataclass field | a real twin, and the recorded incident's shape |
+| CG8 | `test_no_secret_is_committed_to_this_tree.py` | R27 — a scanner nobody has seen fail is trusted when it reports clean | one planted sample per detector, a clean-tree control, a real address found in `.env.example` |
+| CG9 | `test_the_config_refuses_every_problem_at_once.py` | `enable_grobid` defaulted on with no service; neo4j started with no password | production with no `api_key`, wildcard CORS and neo4j-with-placeholder all refuse; development does not |
+| CG10 | `test_every_guard_checker_has_a_caller.py` | "a correct check with no caller" — two checkers had none | a name with no reference is an orphan |
+| CG11 | `test_the_guard_ledger_matches_what_is_on_disk.py` | the count must not be mistaken for absence | an unclassified test file, a missing guard file, a stale rendered table |
+| CG12 | `test_the_ci_workflows_have_no_path_filters_and_one_always_runs.py` | C1–C3 — a `paths:` filter hid a fix until hand-dispatch | a workflow carrying `paths:` goes red; an exemption that stops filtering goes red |
+| CG13 | `test_the_thesis_does_not_drift.py` | the pre-existing guard, registered so the ledger covers it | already proven red — it caught a rounding error of mine and a stale file count during this work |
+
+## Product changes (three, all small)
 
 - **`GET /version`**, unauthenticated beside `/health`, returning
-  `{"git_sha", "built_at"}` from `GIT_SHA`/`BUILD_TIME` env. The deploy passes
-  `GIT_SHA=${{ github.sha }}` to `docker run`; no Dockerfile change.
+  `{"git_sha", "built_at", "version", "service"}` from `GIT_SHA`/`BUILD_TIME` env.
+  The deploy passes `GIT_SHA=${{ github.sha }}` to `docker run`; no Dockerfile
+  change.
 - **`Settings.problems()`** in `src/citegraph/config.py`: collect *every*
-  configuration fault, then refuse at startup in production. `enable_grobid`
-  default becomes `False` (the deploy already overrides it to `false`, which is
-  the honest default for a box with no GROBID service).
+  configuration fault with a severity, then refuse at startup in production.
+  `enable_grobid` becomes `False` (the deploy already overrode it, which is how
+  the wrong default was found).
+- **`.env.example` holds `your_email@example.com`, not the real address.** The
+  deploy's substitution for that placeholder had been dead code, because the
+  template already held the real value, so the address was committed rather than
+  injected.
 
 ## Workflow changes
 
-- `tests.yml`: `--junitxml`, upload the report, and a step that runs G1
-  unconditionally — never inside the pytest step's `if`.
-- `deploy-backend.yml`: pass `GIT_SHA`, then run `check_deployed_build.py` after
-  the HTTPS health check.
-- G11 forbids `paths:`/`paths-ignore:` on *guard-bearing* workflows. Deploy
-  workflows keep their filters deliberately, and that exception is recorded in
-  the guard rather than hidden in it.
+- `tests.yml`: `--junitxml`, an unconditional step running
+  `scripts/check_test_report.py`, an always-run artifact upload, and
+  `fetch-depth: 0`.
+- `deploy-backend.yml`: `fetch-depth: 0`, `GIT_SHA` and `BUILD_TIME` at
+  `docker run`, a `/version` fetch from inside the box, and a step that proves
+  the domain serves the build just deployed.
+- CG12 forbids `paths:`/`paths-ignore:` on *check* workflows. Deploy workflows
+  keep their filters deliberately, and each exemption is asserted still needed.
 
 ## The ledger
 
-`guards/ledger.json` — one row per Terminux family, all 95, each with
-`id`, `name`, `status` (`ported` | `adapted` | `already_present` | `refused`),
-`reason`, and the CiteGraph guard that carries it (`[]` when refused).
-`guards/LEDGER.md` is the human table. G13 keeps the two in step with the files
-on disk, both directions, non-empty.
+`guards/ledger.json` — one row per Terminux family, all 95, each with `id`,
+`name`, `kind`, `status` (`ported` 35, `adapted` 17, `already_present` 10,
+`refused` 33), `reason`, and the guards that carry it. `guards/LEDGER.md` is
+generated from the same table and its hash is recorded, so it cannot go stale
+unnoticed. `scripts/build_guard_ledger.py` is the single source; it asserts the
+id set is exactly R1–30, C1–18, B1–28, P1–12, G1–7 before writing anything.
 
 ## Verification
 
-`python -m pytest -q` green, including the existing drift guard. Each new guard
-additionally demonstrated red on its own regression before being committed — the
-transcript of that is the guard's own docstring claim, and G6/G7/G12 carry the
-fixture so the claim is executable. Thesis page and test counts are updated if
-they move, as `test_the_thesis_does_not_drift.py` requires.
+`python -m pytest -q` — 268 passed, 0 skipped. Each new guard demonstrated red on
+its own regression before being committed, and three of them found real defects
+in this repository while being written: the dead `OPENALEX_EMAIL` substitution,
+five documentation gaps, and the one-sided thesis record.
+

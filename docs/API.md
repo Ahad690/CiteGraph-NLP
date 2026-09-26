@@ -52,6 +52,77 @@ GET /health
 
 ---
 
+## `GET /version`
+
+Which build is answering. Unauthenticated, beside `/health`, because its purpose
+is to let something outside the box ask: the deploy workflow runs
+`scripts/check_deployed_build.py` after every release and refuses when the served
+`git_sha` is not the commit it deployed. Both fields are absent when the service
+is started by hand rather than by the deploy, and the reply says so rather than
+inventing a value.
+
+```http
+GET /version
+```
+
+```json
+{
+  "service": "citegraph-api",
+  "version": "0.1.0",
+  "git_sha": "4c982f2a...",
+  "built_at": "2026-09-26T18:04:11Z"
+}
+```
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `git_sha` | string | The commit this container was built from; `null` when started by hand |
+| `built_at` | string | ISO 8601 UTC build time; `null` when started by hand |
+| `version` | string | The API version declared in `main.py` |
+| `service` | string | Always `citegraph-api` |
+
+---
+
+## `POST /api/runs/{run_id}/technical-evidence`
+
+Re-run dataset-count extraction for one paper of a finished run, on demand. The
+counts are read from the abstract, falling back to open-access arXiv full text,
+and are what the drawer's "technical evidence" panel shows. Display only: the
+answer does not change any weight in the graph.
+
+```http
+POST /api/runs/{run_id}/technical-evidence
+```
+
+```json
+{ "paper_id": "10.12688/f1000research.146897.4" }
+```
+
+Returns the extraction for that paper, including a `status` of `not_applicable`
+for a paper that is not a computer-science one.
+
+---
+
+## `POST /api/runs/{run_id}/flow-diagram`
+
+Read a trial's participant-flow diagram on demand, for one paper of a finished
+run. The figure is fetched from Europe PMC, the numbers in its boxes are read,
+and the boxes are returned with their positions so the caller can draw them. Used
+by the drawer's flow-diagram panel.
+
+```http
+POST /api/runs/{run_id}/flow-diagram
+```
+
+```json
+{ "paper_id": "PMC11821620" }
+```
+
+The reading is display only. It does not affect the foundational ranking, and the
+thesis records the held-out measurement of its accuracy separately.
+
+---
+
 ## `POST /api/runs`
 
 Start an analysis. Returns immediately with an identifier; the pipeline runs
@@ -68,6 +139,7 @@ which is well past any reasonable HTTP timeout.
 | `backward_depth` | int | `2` | how far to follow references, clamped to 0–3 |
 | `forward_depth` | int | `1` | how far to follow citing works, clamped to 0–2 |
 | `max_total_papers` | int | `100` | hard ceiling on graph size, clamped to 1–200 |
+| `use_pdf_parsing` | bool | `true` | read a supplied `pdf_path` as well as the identifier; has no effect when no `pdf_path` is given |
 
 `auto` is the default and works out the type from the shape of the value, so
 a caller can post just a value. It is resolved to a concrete type when the

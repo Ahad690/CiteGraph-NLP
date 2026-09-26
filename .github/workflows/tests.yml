@@ -15,6 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The guards shell out to git (tracked-file checks, the ancestor check
+          # in scripts/check_deployed_build.py), and a depth-1 clone answers
+          # those questions wrongly. Terminus C1.
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -25,4 +30,22 @@ jobs:
         run: pip install --quiet -r requirements.txt
 
       - name: pytest
-        run: python -m pytest -q
+        run: python -m pytest -q --junitxml=reports/junit.xml
+
+      # A green run says nothing unless it is shown to have run something: the
+      # run that was green while the suite and the guard against it were both
+      # skipped by one missing credential. This step is deliberately not
+      # conditional, and the reader lives in scripts/ rather than in tests/, so
+      # the suite carries no skip that this step would then refuse.
+      - name: Prove the suite ran
+        run: python scripts/check_test_report.py
+        env:
+          CITEGRAPH_JUNIT_XML: reports/junit.xml
+
+      - name: Upload the test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit
+          path: reports/junit.xml
+          if-no-files-found: error

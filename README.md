@@ -5,8 +5,8 @@
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)
 ![FastAPI](https://img.shields.io/badge/FastAPI-async-009688.svg)
 ![React](https://img.shields.io/badge/React-TypeScript-61dafb.svg)
-![Tests](https://img.shields.io/badge/tests-205%20passing-brightgreen.svg)
-![Thesis](https://img.shields.io/badge/thesis-123%20pages-8a2be2.svg)
+![Tests](https://img.shields.io/badge/tests-268%20passing-brightgreen.svg)
+![Thesis](https://img.shields.io/badge/thesis-126%20pages-8a2be2.svg)
 ![Status](https://img.shields.io/badge/status-deployed-success.svg)
 
 CiteGraph-NLP is an NLP + Knowledge Graph system for analyzing scientific papers, tracing citation lineages, extracting study population evidence, and ranking **probable foundational papers** using confidence-aware graph analytics.
@@ -46,7 +46,7 @@ makes the uncertainty of automated evidence extraction visible to the reader.
 | [PROJECT_REPORT.md](PROJECT_REPORT.md) | What the system does and why, in plain language |
 | [project_proposal.md](project_proposal.md) | The original FYP proposal |
 | [citation_lineage_prd.md](citation_lineage_prd.md) | Product requirements the build followed |
-| [thesis/](thesis/) | The full thesis: 123 pages, 8 chapters, 8 appendices |
+| [thesis/](thesis/) | The full thesis: 126 pages, 8 chapters, 8 appendices |
 | [thesis/figures/README.md](thesis/figures/README.md) | How each thesis figure is generated from the code |
 | [thesis/renders/README.md](thesis/renders/README.md) | Three PDF layouts of the thesis, compared |
 
@@ -213,7 +213,7 @@ citegraph-nlp/
 │       └── logging_config.py     # Logging setup
 │
 ├── frontend/                     # React dashboard
-├── tests/                        # 205 tests
+├── tests/                        # 268 tests
 │   ├── conftest.py
 │   ├── test_add_citegraph_route.py
 │   ├── test_api_comprehensive.py
@@ -423,11 +423,14 @@ Returns the run status while in progress, or the full `RunResult` when completed
 | `pmid` | `string` | PubMed ID |
 | `pmcid` | `string` | PubMed Central ID |
 | `openalex_id` | `string` | OpenAlex ID (W...) |
+| `arxiv_id` | `string` | arXiv identifier, when the paper is on arXiv |
 | `title` | `string` | Paper title |
 | `authors` | `array` | Author names |
 | `year` | `int` | Publication year |
 | `journal` | `string` | Journal name |
 | `abstract` | `string` | Abstract text |
+| `research_domain` | `string` | `biomedical`, `computer_science`, `nonclinical` or `unknown`; drives which population patterns apply |
+| `research_field` | `string` | Narrower field label, where a catalogue supplies one |
 | `source_ids` | `object` | Provider-specific source IDs |
 | `metadata_confidence` | `float` | 0–1 confidence in metadata |
 | `provenance` | `object` | Per-provider retrieval metadata |
@@ -580,6 +583,29 @@ Test coverage includes:
 - JSON / CSV / Markdown export
 - Full pipeline end-to-end with mocked providers
 - Forward citation traversal
+
+### Guards
+
+`tests/` holds one guard per property, named as the property rather than the
+mechanism: `test_the_thesis_does_not_drift.py` keeps the thesis, its evidence and
+its PDFs in step with the code, and the rest answer specific ways a check can stop
+looking. `guards/LEDGER.md` records all 95 guard families catalogued from another
+project and what happened to each one here, including the ones that were refused
+with a reason. Two checks cannot run in `pytest` and are workflow steps instead:
+
+| Script | Runs | Refuses when |
+|---|---|---|
+| `scripts/check_test_report.py` | `Tests`, after pytest | the JUnit report is absent, empty, failing, or holds a skipped test |
+| `scripts/check_deployed_build.py` | `Deploy Backend`, after the release | the domain does not serve the build that was just deployed |
+
+Three more are manual, because they need the network or documents that are not in
+this repository, and are listed here so they are not mistaken for dead code:
+
+| Script | What it does |
+|---|---|
+| `scripts/verify_references.py` | asks Crossref whether each cited DOI has metadata |
+| `scripts/check_reference_links.py` | follows each DOI to the page a reader would land on, separating a bot wall from a dead link |
+| `scripts/check_text_overlap.py` | looks for verbatim reuse from the project's earlier documents in the thesis prose |
 
 ---
 

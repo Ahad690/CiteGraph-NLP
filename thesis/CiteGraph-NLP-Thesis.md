@@ -3807,7 +3807,7 @@ which Section 6.6 shows dominates runtime, is materially worse.
 pytest -q
 ```
 
-Expected: **205 passed**. The suite mocks all HTTP at transport level with
+Expected: **268 passed**. The suite mocks all HTTP at transport level with
 `respx`, so it requires no network access and no API keys.
 
 ## C.3 Evaluation (Chapter 6)
@@ -4230,27 +4230,45 @@ Listed for completeness; discussed in Section 7.4.
 
 ## F.1 Composition
 
-205 automated tests across thirteen files. All external HTTP is intercepted at
+268 automated tests across 25 files. All external HTTP is intercepted at
 transport level by `respx` or replaced with test doubles, so the suite requires
 no network access and no API credentials, and completes in roughly 15 to 40
 seconds.
+
+Thirteen of the 25 files are behaviour tests: they assert that the system does
+something. The other twelve are guards, and they assert something different —
+that a check still works. `guards/LEDGER.md` records all 95 guard families
+catalogued from another project, what happened to each one here, and why 33 were
+refused rather than ported.
 
 | File | Tests | Covers |
 |------|------:|--------|
 | `test_api_comprehensive.py` | 73 | Endpoints, validation, clamping, auth, CORS, exports, pipeline end-to-end with mocked providers |
 | `test_query_detection.py` | 34 | Identifier auto-detection and the title matching behind run ac66eb9e |
-| `test_flow_diagram.py` | 18 | Stage and layout rules of the flow-diagram reader (Section 6.14) |
 | `test_the_thesis_does_not_drift.py` | 20 | This thesis against its evidence, its figures, its PDFs and its baseline (Section C.5) |
+| `test_flow_diagram.py` | 18 | Stage and layout rules of the flow-diagram reader (Section 6.14) |
 | `test_technical_evidence.py` | 12 | Research-field detection, arXiv links and dataset-size extraction |
+| `test_the_config_refuses_every_problem_at_once.py` | 10 | Configuration faults gathered in one pass; production refuses an open API, a wildcard CORS origin, a Neo4j profile with a placeholder password |
+| `test_the_documented_response_fields_are_the_fields_the_api_returns.py` | 8 | The documented field tables against the Pydantic models, both directions, and every route against the documents that name it |
+| `test_no_secret_is_committed_to_this_tree.py` | 8 | Credential shapes, each driven by a planted sample; a real contact address in a template; the `.env.example`/`Settings` contract |
+| `test_the_guard_ledger_matches_what_is_on_disk.py` | 6 | All 95 catalogued families accounted for, every guard on disk classified, the generated table current |
 | `test_sqlite_store.py` | 8 | Persistence, lock retry policy, backoff jitter, error classification |
+| `test_the_ci_workflows_have_no_path_filters_and_one_always_runs.py` | 5 | No path filter on a workflow that runs checks, one always-running job, full-history checkout, and each deploy exemption still needed |
+| `test_the_test_job_proves_it_ran.py` | 5 | That the Tests job emits a JUnit report and asserts on it in a step no `if:` can disable |
+| `test_the_baseline_is_not_stale_in_either_direction.py` | 4 | The thesis record equal to the thesis in both directions; a fall keeps its reason; a dry run writes nothing |
+| `test_every_guard_checker_has_a_caller.py` | 4 | Every `check_*` and `verify_*` script reachable from a workflow, a test or the documentation |
+| `test_the_deployed_build_reads_its_reply.py` | 4 | That the domain serves the build just deployed, and can say so apart from a network failure |
+| `test_ranking.py` | 8 | Foundational scoring and path ranking |
 | `test_add_citegraph_route.py` | 7 | Deployment route-insertion helper |
 | `test_population_patterns.py` | 6 | Extraction patterns and ignore-span behaviour |
 | `test_full_text_population.py` | 6 | The open-access full-text fallback of Section 5.2 |
-| `test_ranking.py` | 8 | Foundational scoring and path ranking |
+| `test_a_constant_is_not_defined_twice_in_one_file.py` | 3 | A constant bound twice in one scope, and one redeclared as a dataclass field |
+| `test_a_guard_that_cannot_look_does_not_report_clean.py` | 3 | That the PDF checks in the drift guard are reading, rather than skipping on a missing PyMuPDF |
+| `test_no_source_file_carries_a_control_character.py` | 3 | Invisible control bytes, which turn a pattern into one that cannot fire |
 | `test_task_manager.py` | 5 | Background task lifecycle and shutdown semantics |
 | `test_url_resolver.py` | 5 | URL→identifier extraction, DOI view-segment trimming |
 | `test_input_normalizer.py` | 3 | Identifier canonicalisation |
-| **Total** | **205** | |
+| **Total** | **268** | |
 
 ## F.2 Regression tests added during evaluation
 

@@ -36,6 +36,10 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          # check_deployed_build.py asks whether the served build is an ancestor
+          # of this commit, which needs history rather than one commit.
+          fetch-depth: 0
 
       - name: Configure SSH
         env:
@@ -127,11 +131,15 @@ jobs:
           # Bind to the loopback address explicitly. "-p 18030:8000" would
           # publish on 0.0.0.0 and expose the API to the internet, bypassing
           # nginx and TLS on a box that is shared with four other projects.
+          # GIT_SHA is the stamp GET /version hands out, so
+          # scripts/check_deployed_build.py can tell which build is answering.
           docker run -d \
             --name "$CONTAINER_NAME" \
             --restart unless-stopped \
             -p "${BIND_ADDR}:${PORT}:8000" \
             --env-file "$ENV_FILE" \
+            -e "GIT_SHA=${GITHUB_SHA}" \
+            -e "BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
             -v "${DATA_DIR}:/app/data" \
             "$IMAGE_NAME"
 
@@ -177,7 +185,23 @@ jobs:
             --resolve "${PROXY_DOMAIN}:443:127.0.0.1" \
             "$PROXY_HEALTH_URL" >/dev/null
           echo "Live HTTPS /health check OK"
+
+          # /health only says something is listening. Ask which build it is, from
+          # inside the box, before the run is called a success.
+          curl -fsS --max-time 15 \
+            --resolve "${PROXY_DOMAIN}:443:127.0.0.1" \
+            "https://${PROXY_DOMAIN}/version"
+          echo
           EOF
+
+      - name: Prove the domain serves the build just deployed
+        run: |
+          set -euo pipefail
+          # A green /health says something is listening. This says it is this
+          # commit: the served GIT_SHA must equal the sha this run deployed.
+          # Unreachable, unstamped, unknown and behind are all refusals, and
+          # unreachable is reported as its own state rather than as a pass.
+          python scripts/check_deployed_build.py --expected "${GITHUB_SHA}"
 
       - name: Cleanup SSH Key
         if: always()
