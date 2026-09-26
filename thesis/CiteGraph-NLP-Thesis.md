@@ -3807,7 +3807,7 @@ which Section 6.6 shows dominates runtime, is materially worse.
 pytest -q
 ```
 
-Expected: **272 passed**. The suite mocks all HTTP at transport level with
+Expected: **273 passed**. The suite mocks all HTTP at transport level with
 `respx`, so it requires no network access and no API keys.
 
 ## C.3 Evaluation (Chapter 6)
@@ -4230,7 +4230,7 @@ Listed for completeness; discussed in Section 7.4.
 
 ## F.1 Composition
 
-272 automated tests across 25 files. All external HTTP is intercepted at
+273 automated tests across 25 files. All external HTTP is intercepted at
 transport level by `respx` or replaced with test doubles, so the suite requires
 no network access and no API credentials, and completes in roughly 15 to 40
 seconds.
@@ -4263,12 +4263,12 @@ refused rather than ported.
 | `test_population_patterns.py` | 6 | Extraction patterns and ignore-span behaviour |
 | `test_full_text_population.py` | 6 | The open-access full-text fallback of Section 5.2 |
 | `test_a_constant_is_not_defined_twice_in_one_file.py` | 3 | A constant bound twice in one scope, and one redeclared as a dataclass field |
-| `test_a_guard_that_cannot_look_does_not_report_clean.py` | 3 | That the PDF checks in the drift guard are reading, rather than skipping on a missing PyMuPDF |
+| `test_a_guard_that_cannot_look_does_not_report_clean.py` | 4 | That the PDF checks in the drift guard are reading, rather than skipping on a missing PyMuPDF; the simulation is checked against `importlib` so it does not depend on how pytest imports |
 | `test_no_source_file_carries_a_control_character.py` | 3 | Invisible control bytes, which turn a pattern into one that cannot fire |
 | `test_task_manager.py` | 5 | Background task lifecycle and shutdown semantics |
 | `test_url_resolver.py` | 5 | URL→identifier extraction, DOI view-segment trimming |
 | `test_input_normalizer.py` | 3 | Identifier canonicalisation |
-| **Total** | **272** | |
+| **Total** | **273** | |
 
 ## F.2 Regression tests added during evaluation
 

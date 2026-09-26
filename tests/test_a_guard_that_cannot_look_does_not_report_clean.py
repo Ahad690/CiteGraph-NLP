@@ -30,9 +30,11 @@ refused.py`), R22 (`test_a_check_that_did_not_run_is_not_a_finding.py`) and R3
 """
 from __future__ import annotations
 
-import builtins
 import importlib.util
+import sys
 from pathlib import Path
+
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 DRIFT = ROOT / "tests" / "test_the_thesis_does_not_drift.py"
@@ -46,9 +48,6 @@ TEXT_FLOOR = 20_000
 LOOKED = "looked"
 BLIND = "could_not_look"
 
-_real_import = builtins.__import__
-
-
 def _load_drift():
     """The drift guard as a module, so this file inspects the code that runs
     rather than a copy of it."""
@@ -60,10 +59,39 @@ def _load_drift():
 
 def _hidden_engine(*args, **kwargs):
     """An import hook that makes `import fitz` fail, which is what a broken or
-    partially installed PyMuPDF looks like to the drift guard."""
-    if args and args[0] == "fitz":
-        raise ImportError("No module named 'fitz'")
-    return _real_import(*args, **kwargs)
+    partially installed PyMuPDF looks like to the drift guard.
+
+    This blocks the module through `sys.meta_path` and evicts it from
+    `sys.modules`, rather than patching `builtins.__import__`. The first version
+    did the latter and passed on the machine it was written on, then failed in CI
+    with the engine hidden and the reader still reporting 126 pages: newer pytest
+    imports with `importlib.import_module`, which never calls `builtins.__import__`,
+    so the hook was never consulted and the red proof was really a measurement of
+    which import mechanism pytest uses. A meta-path finder is consulted by both, and
+    is how a genuinely absent module behaves.
+    """
+    class _Blocker:
+        def find_spec(self, fullname, path=None, target=None):
+            if fullname == "fitz" or fullname.startswith("fitz."):
+                raise ModuleNotFoundError(f"No module named {fullname!r}")
+            return None
+
+    blocker = _Blocker()
+    saved = {name: module for name, module in sys.modules.items()
+             if name == "fitz" or name.startswith(("fitz.", "pymupdf"))}
+    for name in saved:
+        del sys.modules[name]
+    sys.meta_path.insert(0, blocker)
+    return blocker, saved
+
+
+def _restore_engine(blocker, saved) -> None:
+    if blocker in sys.meta_path:
+        sys.meta_path.remove(blocker)
+    for name in list(sys.modules):
+        if name == "fitz" or name.startswith(("fitz.", "pymupdf")):
+            del sys.modules[name]
+    sys.modules.update(saved)
 
 
 def pdf_guard_state(module) -> tuple[str, str]:
@@ -108,11 +136,11 @@ def test_a_hidden_pdf_engine_is_reported_as_blind_not_clean():
     healthy, detail = pdf_guard_state(module)
     assert healthy == LOOKED, f"the control run is not healthy, so the flip proves nothing: {detail}"
 
-    builtins.__import__ = _hidden_engine
+    blocker, saved = _hidden_engine()
     try:
         blind, why = pdf_guard_state(module)
     finally:
-        builtins.__import__ = _real_import
+        _restore_engine(blocker, saved)
 
     assert blind == BLIND, (
         "with fitz unimportable the drift guard's reader did not report blindness, so a "
@@ -120,9 +148,23 @@ def test_a_hidden_pdf_engine_is_reported_as_blind_not_clean():
     )
     assert "fitz" in why, f"the blindness report does not name the missing engine: {why!r}"
 
-    builtins.__import__ = _real_import
     recovered, _ = pdf_guard_state(module)
     assert recovered == LOOKED, "the engine was still hidden after the import hook was restored"
+
+
+def test_the_hiding_actually_hides_the_module():
+    """The red proof for the hider. Without this, the test above would pass on a
+    machine where the block does nothing and the blindness came from somewhere
+    else -- which is exactly what happened in CI on 2026-09-26."""
+    blocker, saved = _hidden_engine()
+    try:
+        with pytest.raises(BaseException):
+            importlib.import_module("fitz")
+    finally:
+        _restore_engine(blocker, saved)
+
+    assert importlib.import_module("fitz") is not None, \
+        "the module is still unimportable after the block was removed"
 
 
 def test_every_committed_pdf_yields_text_a_check_can_search():

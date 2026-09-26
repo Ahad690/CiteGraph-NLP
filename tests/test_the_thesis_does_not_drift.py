@@ -341,7 +341,12 @@ PDFS = ["CiteGraph-NLP-Thesis.pdf", "renders/1-current-as-committed.pdf",
 
 @lru_cache(maxsize=None)
 def _pdf(name: str) -> tuple[int, str]:
-    fitz = pytest.importorskip("fitz")
+    # exc_type=ImportError states that only a missing module is a skip. Without it
+    # pytest warns, and says the warning becomes an error by default in 9.1: an
+    # engine that is installed but broken would then stop the whole suite instead of
+    # skipping three PDF checks. test_a_guard_that_cannot_look_does_not_report_clean.py
+    # is the guard on this line.
+    fitz = pytest.importorskip("fitz", exc_type=ImportError)
     with fitz.open(THESIS / name) as document:
         return document.page_count, re.sub(r"\s+", " ", " ".join(p.get_text() for p in document))
 
