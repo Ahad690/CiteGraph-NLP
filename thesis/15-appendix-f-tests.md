@@ -2,7 +2,7 @@
 
 ## F.1 Composition
 
-269 automated tests across 25 files. All external HTTP is intercepted at
+272 automated tests across 25 files. All external HTTP is intercepted at
 transport level by `respx` or replaced with test doubles, so the suite requires
 no network access and no API credentials, and completes in roughly 15 to 40
 seconds.
@@ -25,7 +25,7 @@ refused rather than ported.
 | `test_no_secret_is_committed_to_this_tree.py` | 8 | Credential shapes, each driven by a planted sample; a real contact address in a template; the `.env.example`/`Settings` contract |
 | `test_the_guard_ledger_matches_what_is_on_disk.py` | 6 | All 95 catalogued families accounted for, every guard on disk classified, the generated table current |
 | `test_sqlite_store.py` | 8 | Persistence, lock retry policy, backoff jitter, error classification |
-| `test_the_ci_workflows_have_no_path_filters_and_one_always_runs.py` | 5 | No path filter on a workflow that runs checks, one always-running job, full-history checkout, and each deploy exemption still needed |
+| `test_the_ci_workflows_have_no_path_filters_and_one_always_runs.py` | 8 | No path filter on a workflow that runs checks, one always-running job, full-history checkout, each deploy exemption still needed, and no variable the deploy sends to the box that it does not pass |
 | `test_the_test_job_proves_it_ran.py` | 5 | That the Tests job emits a JUnit report and asserts on it in a step no `if:` can disable |
 | `test_the_baseline_is_not_stale_in_either_direction.py` | 4 | The thesis record equal to the thesis in both directions; a fall keeps its reason; a dry run writes nothing |
 | `test_every_guard_checker_has_a_caller.py` | 4 | Every `check_*` and `verify_*` script reachable from a workflow, a test or the documentation |
@@ -40,7 +40,7 @@ refused rather than ported.
 | `test_task_manager.py` | 5 | Background task lifecycle and shutdown semantics |
 | `test_url_resolver.py` | 5 | URL→identifier extraction, DOI view-segment trimming |
 | `test_input_normalizer.py` | 3 | Identifier canonicalisation |
-| **Total** | **269** | |
+| **Total** | **272** | |
 
 ## F.2 Regression tests added during evaluation
 

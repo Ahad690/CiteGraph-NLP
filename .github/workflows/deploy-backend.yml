@@ -71,10 +71,22 @@ jobs:
           scp -i "$RUNNER_TEMP/hetzner_deploy_key" /tmp/citegraph-backend.tar.gz "$HETZNER_USER@$HETZNER_HOST:/tmp/citegraph-backend.tar.gz"
 
       - name: Deploy Backend
+        env:
+          # The commit and the moment, resolved here on the runner and passed to the
+          # box by name. They were read as ${GITHUB_SHA} inside the remote script
+          # on 2026-09-26, where that name does not exist: `set -u` killed the run
+          # at the `docker run` line, after the old container had been stopped and
+          # removed, and the API was down until it was started by hand. Both are
+          # passed explicitly in the ssh environment list, because the heredoc body
+          # runs on the box, and the timestamp is made here because there is no
+          # Actions context for it.
+          DEPLOY_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
+          DEPLOY_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo "Deploying ${DEPLOY_SHA} built at ${DEPLOY_TIME}"
           ssh -i "$RUNNER_TEMP/hetzner_deploy_key" "$HETZNER_USER@$HETZNER_HOST" \
-            "REMOTE_DIR='$REMOTE_DIR' DATA_DIR='$DATA_DIR' ENV_FILE='$ENV_FILE' CONTAINER_NAME='$CONTAINER_NAME' IMAGE_NAME='$IMAGE_NAME' BIND_ADDR='$BIND_ADDR' PORT='$PORT' PUBLIC_ORIGIN='$PUBLIC_ORIGIN' bash -s" <<'EOF'
+            "REMOTE_DIR='$REMOTE_DIR' DATA_DIR='$DATA_DIR' ENV_FILE='$ENV_FILE' CONTAINER_NAME='$CONTAINER_NAME' IMAGE_NAME='$IMAGE_NAME' BIND_ADDR='$BIND_ADDR' PORT='$PORT' PUBLIC_ORIGIN='$PUBLIC_ORIGIN' DEPLOY_SHA='$DEPLOY_SHA' DEPLOY_TIME='$DEPLOY_TIME' PREFLIGHT_PORT=18099 bash -s" <<'EOF'
           set -euo pipefail
           export DEBIAN_FRONTEND=noninteractive
 
@@ -125,6 +137,45 @@ jobs:
 
           cd "$REMOTE_DIR"
           docker build -t "$IMAGE_NAME" .
+
+          # Preflight before anything irreversible. The 555d0f3 run stopped and
+          # removed the live container, then died on an unbound variable before
+          # `docker run`, and the API was down until it was started by hand. So
+          # the new image is started first, on a spare loopback port, and has to
+          # answer /health there before the running container is touched. A failure
+          # from here on leaves the old container serving.
+          PREFLIGHT_NAME="${CONTAINER_NAME}-preflight"
+          docker rm -f "$PREFLIGHT_NAME" 2>/dev/null || true
+          docker run -d \
+            --name "$PREFLIGHT_NAME" \
+            -p "127.0.0.1:${PREFLIGHT_PORT}:8000" \
+            --env-file "$ENV_FILE" \
+            -e "GIT_SHA=${DEPLOY_SHA}" \
+            -e "BUILD_TIME=${DEPLOY_TIME}" \
+            -v "${DATA_DIR}:/app/data" \
+            "$IMAGE_NAME" >/dev/null
+
+          preflight_ok=0
+          for attempt in $(seq 1 30); do
+            if curl -fsS "http://127.0.0.1:${PREFLIGHT_PORT}/health" >/dev/null 2>&1; then
+              preflight_ok=1
+              break
+            fi
+            if [ "$(docker inspect -f '{{.State.Running}}' "$PREFLIGHT_NAME")" != "true" ]; then
+              break
+            fi
+            sleep 2
+          done
+          if [ "$preflight_ok" != "1" ]; then
+            echo "ERROR: the new image did not become healthy on port ${PREFLIGHT_PORT};" >&2
+            echo "the running ${CONTAINER_NAME} has not been touched and is still serving." >&2
+            docker logs "$PREFLIGHT_NAME" --tail 50 2>&1
+            docker rm -f "$PREFLIGHT_NAME" 2>/dev/null || true
+            exit 1
+          fi
+          echo "Preflight OK on port ${PREFLIGHT_PORT}; the new image answers /health"
+          docker rm -f "$PREFLIGHT_NAME" 2>/dev/null || true
+
           docker stop "$CONTAINER_NAME" 2>/dev/null || true
           docker rm "$CONTAINER_NAME" 2>/dev/null || true
 
@@ -138,8 +189,8 @@ jobs:
             --restart unless-stopped \
             -p "${BIND_ADDR}:${PORT}:8000" \
             --env-file "$ENV_FILE" \
-            -e "GIT_SHA=${GITHUB_SHA}" \
-            -e "BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            -e "GIT_SHA=${DEPLOY_SHA}" \
+            -e "BUILD_TIME=${DEPLOY_TIME}" \
             -v "${DATA_DIR}:/app/data" \
             "$IMAGE_NAME"
 

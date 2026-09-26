@@ -27,6 +27,7 @@ Ported from Terminus C1, C2 and R15, catalogued in `_mining/TERMINUX_GUARDS.md`
 """
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import yaml
@@ -205,4 +206,111 @@ def test_a_check_workout_reads_full_history():
         "deploy-frontend.yml now fetches full history; if it reads history, move it into "
         "NEEDS_HISTORY, and if it does not, drop the fetch to keep the clone shallow"
     )
+
+
+def remote_scripts() -> list[tuple[str, str, str]]:
+    """Every `ssh ... bash -s <<'EOF'` body in the workflows, with the environment
+    list that precedes it."""
+    found = []
+    for path in workflow_files():
+        lines = path.read_text(encoding="utf-8").splitlines()
+        for index, line in enumerate(lines):
+            if "bash -s" not in line or "<<" not in line:
+                continue
+            prefix, cursor = line, index
+            while cursor > 0 and "=" not in prefix.split("bash -s")[0]:
+                cursor -= 1
+                prefix = f"{lines[cursor]}\n{prefix}"
+            body = []
+            for follower in lines[index + 1:]:
+                if follower.strip() == "EOF":
+                    break
+                body.append(follower)
+            found.append((path.name, prefix, "\n".join(body)))
+    return found
+
+
+def unbound_variables(prefix: str, body: str) -> set[str]:
+    """Variables the body reads that the ssh line does not pass and the body does
+    not define. The shell's own names and `for` loop variables are excluded."""
+    BUILTIN = {"PATH", "HOME", "USER", "SHELL", "PWD", "IFS", "RANDOM", "SECONDS",
+               "LINENO", "BASH", "HOSTNAME", "OSTYPE", "TERM", "DEBIAN_FRONTEND",
+               "PYTHONPATH", "REPLY", "PS1"}
+    passed = set(re.findall(r"\b([A-Z_][A-Z0-9_]*)=", prefix))
+    # Any assignment, not only one at the start of a line: the deploy's
+    # `set_env_key()` declares `local key="$1" value="$2"` and the first version of
+    # this check reported both as unbound.
+    defined = set(re.findall(
+        r"(?:^|[\s;&|(])(?:export\s+|local\s+|declare\s+|readonly\s+)?"
+        r"([A-Za-z_][A-Za-z0-9_]*)\s*=", body))
+    loops = set(re.findall(r"for\s+([a-z_][a-z0-9_]*)\s+in", body))
+    used = set(re.findall(r"\$\{([A-Za-z_][A-Za-z0-9_]*)\}", body))
+    return used - passed - defined - loops - BUILTIN
+
+
+def test_the_remote_script_reader_sees_a_passing_script_and_catches_the_outage():
+    """The red proof. A reader that reports nothing for every script would pass the
+    sweep below while the deploy was still one unbound variable from an outage."""
+    good_prefix = "ssh host \"PORT='$PORT' REMOTE_DIR='$REMOTE_DIR' bash -s\" <<'EOF'"
+    good_body = 'set -euo pipefail\ncurl "http://127.0.0.1:${PORT}/health"\nmkdir -p "$REMOTE_DIR"\n'
+    assert unbound_variables(good_prefix, good_body) == set(), \
+        f"a correctly passed script was reported as unbound: {unbound_variables(good_prefix, good_body)}"
+
+    defined = 'set -u\nTOKEN="local"\necho "$TOKEN"\n'
+    assert unbound_variables("", defined) == set(), "a locally defined variable was reported"
+
+    looped = 'set -u\nfor attempt in $(seq 1 3); do echo "${attempt}"; done\n'
+    assert unbound_variables("", looped) == set(), "a loop variable was reported as unbound"
+
+    scoped = 'set -u\nset_key() {\n  local key="$1" value="$2"\n  sed -i "s|^${key}=.*|${key}=${value}|" "$3"\n}\n'
+    assert unbound_variables("", scoped) == set(), \
+        f"a function's own locals were reported as unbound: {unbound_variables('', scoped)}"
+
+    # The shape that took the API down on 2026-09-26.
+    outage = 'set -euo pipefail\ndocker run -e "GIT_SHA=${GITHUB_SHA}" "$IMAGE"\n'
+    assert unbound_variables("ssh host \"PORT='$PORT' bash -s\"", outage) == {"GITHUB_SHA"}, \
+        "the outage's own shape was not reported"
+
+
+def test_every_variable_the_remote_script_uses_is_passed_to_it():
+    """The 2026-09-26 outage, as a check.
+
+    The deploy sends a shell script to the box over ssh and runs it with
+    `set -euo pipefail`. A variable the script reads must appear in the environment
+    list on the ssh command line, because the heredoc body executes on the box and
+    the runner's own variables are not there. `${GITHUB_SHA}` was not in that list,
+    so `set -u` killed the script at the `docker run` line -- after the live
+    container had been stopped and removed. The API was down until it was started
+    by hand.
+    """
+    scripts = remote_scripts()
+    assert scripts, "no ssh heredoc was found; the locator has stopped working"
+
+    problems = {f"{name} ({len(body.splitlines())} line body)": unbound_variables(prefix, body)
+                for name, prefix, body in scripts}
+    problems = {where: names for where, names in problems.items() if names}
+    assert not problems, (
+        f"these remote scripts read variables the ssh command does not pass and the script "
+        f"does not define: {problems}. With `set -u` the script dies there, and when that "
+        f"is after the running container is removed, the service is down"
+    )
+
+
+def test_the_deploy_proves_the_new_image_before_removing_the_running_one():
+    """The other half of the same outage. Stopping the old container before the new
+    one is proven makes every later failure a downtime; a preflight on a spare port
+    makes it a failed deploy instead."""
+    workflow = (WORKFLOWS / "deploy-backend.yml").read_text(encoding="utf-8")
+    preflight = workflow.find("PREFLIGHT_NAME=")
+    remove_old = workflow.find('docker rm "$CONTAINER_NAME"')
+    start_new = workflow.find('--name "$CONTAINER_NAME"')
+
+    assert preflight != -1, "the deploy has no preflight, so a bad image is an outage"
+    assert start_new != -1, "the deploy no longer starts the container; the locator is stale"
+    assert preflight < remove_old < start_new, (
+        f"the preflight must come before the old container is removed and the new one "
+        f"started: preflight at {preflight}, remove at {remove_old}, start at {start_new}"
+    )
+    assert "still serving" in workflow, \
+        "the failure message does not say the running container was left alone"
 

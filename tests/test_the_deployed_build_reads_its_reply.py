@@ -109,14 +109,35 @@ def test_the_api_reports_which_build_it_is():
 
 
 def test_the_deploy_stamps_the_build_and_asks_the_question():
-    """Wiring at the consumer. A stamp that nothing sets, or a check nothing runs,
-    is a correct check with no caller -- the failure Terminux 5.7 lists."""
+    """Wiring at the consumer, and the whole chain of it.
+
+    A stamp that nothing sets, or a check nothing runs, is a correct check with no
+    caller -- the failure Terminux 5.7 lists. On 2026-09-26 the chain was broken in
+    the middle: the container was given `${GITHUB_SHA}`, which is a variable of the
+    runner, from inside a script running on the box. So the assertion follows the
+    value rather than trusting any one line: `docker run` stamps `DEPLOY_SHA`, the
+    ssh line passes it, and the step's env sets it from the pushed commit.
+    """
     workflow = (ROOT / ".github" / "workflows" / "deploy-backend.yml").read_text(encoding="utf-8")
-    assert "GIT_SHA" in workflow, "the deploy does not pass GIT_SHA to the container"
     assert "check_deployed_build.py" in workflow, \
         "the deploy never asks whether the build it just shipped is the one being served"
+
     stamped = [line.strip() for line in workflow.splitlines()
-               if line.strip().startswith("-e ") and "GIT_SHA" in line]
+               if line.strip().startswith("-e ") and "GIT_SHA=" in line]
     assert stamped, "GIT_SHA is not passed to `docker run` as an environment variable"
-    assert f"${{{{ github.sha }}}}" in stamped[0] or "GITHUB_SHA" in stamped[0], \
-        f"the stamp is not the commit that was pushed: {stamped[0]!r}"
+    for line in stamped:
+        assert "${DEPLOY_SHA}" in line, (
+            f"the stamp is not the value the deploy resolved: {line!r}. A name that exists "
+            f"only on the runner is unbound on the box, and `set -u` stops the script there"
+        )
+
+    assert "DEPLOY_SHA='$DEPLOY_SHA'" in workflow, \
+        "DEPLOY_SHA is not passed to the box in the ssh environment list"
+    assert "DEPLOY_SHA: ${{ github.sha }}" in workflow, \
+        "DEPLOY_SHA is not the commit that was pushed, so the stamp would not identify it"
+
+    fresh = [line.strip() for line in workflow.splitlines()
+             if line.strip().startswith("-e ") and "BUILD_TIME=" in line]
+    assert fresh, "the container is not stamped with a build time"
+    for line in fresh:
+        assert "${DEPLOY_TIME}" in line, f"the build time is not the resolved value: {line!r}"

@@ -5,7 +5,7 @@
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)
 ![FastAPI](https://img.shields.io/badge/FastAPI-async-009688.svg)
 ![React](https://img.shields.io/badge/React-TypeScript-61dafb.svg)
-![Tests](https://img.shields.io/badge/tests-269%20passing-brightgreen.svg)
+![Tests](https://img.shields.io/badge/tests-272%20passing-brightgreen.svg)
 ![Thesis](https://img.shields.io/badge/thesis-126%20pages-8a2be2.svg)
 ![Status](https://img.shields.io/badge/status-deployed-success.svg)
 
@@ -213,7 +213,7 @@ citegraph-nlp/
 │       └── logging_config.py     # Logging setup
 │
 ├── frontend/                     # React dashboard
-├── tests/                        # 269 tests
+├── tests/                        # 272 tests
 │   ├── conftest.py
 │   ├── test_add_citegraph_route.py
 │   ├── test_api_comprehensive.py
