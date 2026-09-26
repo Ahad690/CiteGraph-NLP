@@ -401,7 +401,7 @@
    "guards": [
     "CG9"
    ],
-   "reason": "APP_ENV is pinned to production only in the deploy's .env. CG9 makes that value load-bearing: production refuses to start on a missing api_key or a wildcard CORS origin, which is what running the wrong environment would produce."
+   "reason": "APP_ENV is pinned to production only in the deploy's .env. CG9 makes that value load-bearing: a wildcard CORS origin in production refuses to start, where a missing API_KEY is reported rather than refused, because this deployment is a browser-facing app with no key and CORS is its boundary."
   },
   {
    "id": "C12",
@@ -1119,5 +1119,5 @@
    "why": "exercises URL to identifier extraction"
   }
  ],
- "_ledger_md_sha256": "2387f944c049b7b1b9c5e703fe9af12b2d536595a0223d8494f854dd84c52642"
+ "_ledger_md_sha256": "ae6db1179c2a3f6ba3e592252749d2013ca89f70affacb5fde60460edbc3343b"
 }

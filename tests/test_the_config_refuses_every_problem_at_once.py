@@ -83,19 +83,60 @@ def test_a_correct_configuration_has_no_problems_at_all():
     assert good.problems() == [], f"a correct production configuration reported {good.problems()}"
 
 
-def test_production_with_no_api_key_refuses():
-    """The open-API case. `warn_if_unauthenticated()` logs a line about this; a log
-    line is not a refusal."""
-    problems = fatal_texts(app_env="production", api_key="",
-                           cors_origins="https://citegraph-nlp.pages.dev")
-    assert any("API_KEY is empty" in text for text in problems), \
-        f"production with no API_KEY did not refuse: {problems}"
+def test_the_deployed_configurations_start():
+    """The values the box actually runs, read from /opt/citegraph-nlp/.env on
+    2026-09-26. This is the check that matters most and the one that was missing.
+
+    `deploy-backend.yml` stops and removes the running container before starting
+    the new one, so a fatal configuration does not fail the deploy -- it takes the
+    API down and then fails. The first version of this guard made a missing
+    API_KEY fatal, and the deployed `.env` has `API_KEY=` empty on purpose: the
+    browser fetches the API directly, so a key in the bundle is a speed bump, not a
+    control. Pushing that would have removed the live service.
+
+    So these two sets are pinned as the configurations that must start, and the
+    fatal rules below are the ones that would catch a genuinely broken deploy.
+    """
+    production = dict(app_env="production", api_key="",
+                      cors_origins="https://citegraph-nlp.pages.dev",
+                      openalex_email="someone@example.org", enable_grobid=False,
+                      enable_neo4j=False, neo4j_password="",
+                      default_backward_depth=2, default_forward_depth=1,
+                      default_max_total_papers=100, weight_alpha=0.75, weight_beta=0.25)
+    assert fatal_texts(**production) == [], (
+        f"the deployed configuration would refuse to start: "
+        f"{fatal_texts(**production)}. The deploy removes the running container before "
+        f"starting the new one, so a fatal here is an outage"
+    )
+    assert any("API_KEY is empty" in text for text in report_texts(**production)), (
+        f"an open API in production was not reported: {report_texts(**production)}"
+    )
+
+    local = dict(app_env="development", api_key="", cors_origins="http://localhost:5173",
+                 enable_grobid=True, grobid_url="http://localhost:8070")
+    assert fatal_texts(**local) == [], \
+        f"a local development configuration would refuse to start: {fatal_texts(**local)}"
+
+
+def test_an_api_key_that_is_set_but_short_is_still_fatal():
+    """The distinction the previous test rests on. Empty is a posture; short is a
+    mistake, and a mistake in production is worth refusing."""
+    found = fatal_texts(app_env="production", api_key="short",
+                        cors_origins="https://citegraph-nlp.pages.dev")
+    assert any("at least 16" in text for text in found), \
+        f"a five-character API_KEY was accepted in production: {found}"
 
 
 def test_production_with_a_wildcard_cors_origin_refuses():
+    """The boundary that does the work in this deployment, so it is the one that
+    must hold absolutely."""
     found = fatal_texts(app_env="production", api_key="k" * 32, cors_origins="*")
     assert any("'*'" in text for text in found), \
         f"a wildcard CORS origin in production did not refuse: {found}"
+
+    empty = fatal_texts(app_env="production", api_key="", cors_origins="")
+    assert any("CORS_ORIGINS is empty" in text for text in empty), \
+        f"production with no allowed origin did not refuse: {empty}"
 
 
 def test_neo4j_enabled_without_a_password_refuses_and_a_placeholder_refuses_too():
@@ -150,14 +191,22 @@ def test_grobid_is_off_by_default():
 
 def test_every_problem_is_collected_before_anything_refuses():
     """Terminus B1: one restart per fault is how the second fault survives. A
-    configuration wrong in four ways must report four, not one."""
-    found = fatal_texts(app_env="production", api_key="", cors_origins="*",
-                        enable_neo4j=True, neo4j_password="", default_max_total_papers=0)
-    assert len(found) >= 4, f"four faults produced {len(found)}: {found}"
-    assert any("API_KEY" in t for t in found)
+    configuration wrong in five ways must report all five, not one, and the
+    refusal must list the fatal ones together rather than the first."""
+    overrides = dict(app_env="production", api_key="", cors_origins="*",
+                     enable_neo4j=True, neo4j_password="", default_max_total_papers=0,
+                     weight_alpha=1.5)
+    found = fatal_texts(**overrides)
+    assert len(found) == 4, f"four fatal faults produced {len(found)}: {found}"
     assert any("CORS_ORIGINS" in t for t in found)
     assert any("NEO4J_PASSWORD" in t for t in found)
     assert any("DEFAULT_MAX_TOTAL_PAPERS" in t for t in found)
+    assert any("WEIGHT_ALPHA" in t for t in found)
+
+    # The open API is in the same pass, as a report. A warning that is only printed
+    # when nothing fatal happened would go unseen exactly when it matters.
+    assert any("API_KEY is empty" in t for t in report_texts(**overrides)), \
+        "the open API was not reported in the same pass that refuses the rest"
 
 
 def test_the_limits_are_sentinels_rather_than_silent_defaults():
@@ -200,6 +249,6 @@ def test_the_app_refuses_on_a_fatal_fault_and_starts_on_a_report_only_one():
     good.refuse_if_misconfigured()  # must not raise
 
     with pytest.raises(SystemExit) as refusal:
-        settings(app_env="production", api_key="").refuse_if_misconfigured()
+        settings(app_env="production", api_key="k" * 32, cors_origins="*").refuse_if_misconfigured()
     assert "REFUSING TO START" in str(refusal.value)
-    assert "API_KEY" in str(refusal.value)
+    assert "CORS_ORIGINS" in str(refusal.value)

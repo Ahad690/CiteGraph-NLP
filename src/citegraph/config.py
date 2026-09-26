@@ -114,9 +114,22 @@ class Settings(BaseSettings):
                                     f"development, where the API is open."))
 
         if production and not (self.api_key or "").strip():
-            found.append(("fatal", "APP_ENV=production and API_KEY is empty, so every /api "
-                                   "route is open to the internet. Set API_KEY."))
+            # Reported, not fatal, and deliberately so. This deployment is a public
+            # single-page app: the browser fetches the API directly, so a key in the
+            # bundle would be a speed bump rather than a control, and sending one
+            # would need a change to the deployed frontend. The boundary here is
+            # CORS_ORIGINS, which is fatal when it is a wildcard.
+            #
+            # This should become fatal if the frontend ever grows a way to present a
+            # key, or if the API is ever exposed to anything but a browser origin.
+            # Until then, refusing to start would take a working deployment down over
+            # a posture the thesis documents in Section 7.5.
+            found.append(("report", "APP_ENV=production and API_KEY is empty, so every "
+                                    "/api route is open to any origin CORS allows. Set "
+                                    "API_KEY to require an X-API-Key header."))
         if production and self.api_key and len(self.api_key.strip()) < 16:
+            # Fatal, unlike the line above: a key that is set and too short is a
+            # misconfiguration, not a choice.
             found.append(("fatal", f"API_KEY is {len(self.api_key.strip())} characters. "
                                    f"Use at least 16."))
 

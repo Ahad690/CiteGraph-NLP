@@ -2,7 +2,7 @@
 
 ## F.1 Composition
 
-268 automated tests across 25 files. All external HTTP is intercepted at
+269 automated tests across 25 files. All external HTTP is intercepted at
 transport level by `respx` or replaced with test doubles, so the suite requires
 no network access and no API credentials, and completes in roughly 15 to 40
 seconds.
@@ -20,7 +20,7 @@ refused rather than ported.
 | `test_the_thesis_does_not_drift.py` | 20 | This thesis against its evidence, its figures, its PDFs and its baseline (Section C.5) |
 | `test_flow_diagram.py` | 18 | Stage and layout rules of the flow-diagram reader (Section 6.14) |
 | `test_technical_evidence.py` | 12 | Research-field detection, arXiv links and dataset-size extraction |
-| `test_the_config_refuses_every_problem_at_once.py` | 10 | Configuration faults gathered in one pass; production refuses an open API, a wildcard CORS origin, a Neo4j profile with a placeholder password |
+| `test_the_config_refuses_every_problem_at_once.py` | 11 | Configuration faults gathered in one pass; production refuses a wildcard CORS origin, an empty origin list, a Neo4j profile with a placeholder password, and a key that is set but too short. The deployed values must start, and the open API is reported |
 | `test_the_documented_response_fields_are_the_fields_the_api_returns.py` | 8 | The documented field tables against the Pydantic models, both directions, and every route against the documents that name it |
 | `test_no_secret_is_committed_to_this_tree.py` | 8 | Credential shapes, each driven by a planted sample; a real contact address in a template; the `.env.example`/`Settings` contract |
 | `test_the_guard_ledger_matches_what_is_on_disk.py` | 6 | All 95 catalogued families accounted for, every guard on disk classified, the generated table current |
@@ -40,7 +40,7 @@ refused rather than ported.
 | `test_task_manager.py` | 5 | Background task lifecycle and shutdown semantics |
 | `test_url_resolver.py` | 5 | URL→identifier extraction, DOI view-segment trimming |
 | `test_input_normalizer.py` | 3 | Identifier canonicalisation |
-| **Total** | **268** | |
+| **Total** | **269** | |
 
 ## F.2 Regression tests added during evaluation
 

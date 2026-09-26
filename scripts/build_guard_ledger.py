@@ -266,9 +266,7 @@ ROWS = [
     ("C10", "Migrations rebuild and replay; schema completeness is verified", "ci",
      "refused", [], "No schema and no migrations. Storage is a derived SQLite cache of provider responses, rebuilt by re-running a paper query rather than replayed forward."),
     ("C11", "CI must not be production, in either spelling", "ci", "adapted", ["CG9"],
-     "APP_ENV is pinned to production only in the deploy's .env. CG9 makes that value "
-     "load-bearing: production refuses to start on a missing api_key or a wildcard "
-     "CORS origin, which is what running the wrong environment would produce."),
+     "APP_ENV is pinned to production only in the deploy's .env. CG9 makes that value load-bearing: a wildcard CORS origin in production refuses to start, where a missing API_KEY is reported rather than refused, because this deployment is a browser-facing app with no key and CORS is its boundary."),
     ("C12", "No QA worker may hold the suite's database", "ci", "refused", [],
      "There is no QA worker and no shared database; the tests use respx and a "
      "temporary SQLite file."),
