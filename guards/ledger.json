@@ -1119,5 +1119,17 @@
    "why": "exercises URL to identifier extraction"
   }
  ],
- "_ledger_md_sha256": "ae6db1179c2a3f6ba3e592252749d2013ca89f70affacb5fde60460edbc3343b"
+ "_not_applicable": [
+  {
+   "source": "ECC pass 2 (_mining/ECC_MINING_2.md), 45 hooks catalogued",
+   "status": "refused",
+   "reason": "The hooks are dispatcher entries for an agent harness -- PreToolUse, PostToolUse, Stop, SessionStart. This repository has no harness for them to attach to: no .claude/, no AGENTS.md, no CLAUDE.md, and the operator's global settings.json registers no hooks. The application also has no language model: src/ contains no model SDK or endpoint, and the flow-diagram reader is RapidOCR (PP-OCR on ONNX) running locally on CPU. The single LLM in the repository is scripts/second_annotator.py, an offline evidence tool that is not built into the container."
+  },
+  {
+   "source": "ECC pass 2 Part B, ~40 recorded agent-operational failures",
+   "status": "adapted",
+   "reason": "Not a hook surface and not LLM-specific: heredocs mangling escapes, a result read through a pipe, $? checked after a pipe, a truncating edit, a guard test not run after changing the code it guards, a container assumed to re-read its environment. Four of these were hit while writing this port, and each is already covered by a guard rather than by a hook: test_the_thesis_does_not_drift.py catches the truncating edit through the test count, and the failure to run a changed guard is what CI is for. Recorded here so the catalogue is not re-mined."
+  }
+ ],
+ "_ledger_md_sha256": "ebcfe04f984007519b35409bb2231a504ec3fbf41036a235ad83a8602a05fc80"
 }
