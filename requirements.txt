@@ -22,6 +22,8 @@ lxml
 beautifulsoup4
 pytest
 pytest-asyncio
+# Emits coverage.xml (Cobertura), which the check-coverage tool reads.
+pytest-cov
 respx
 asgi-lifespan>=2,<3
 rich

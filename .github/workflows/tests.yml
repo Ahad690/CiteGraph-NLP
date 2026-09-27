@@ -29,8 +29,22 @@ jobs:
       - name: Install dependencies
         run: pip install --quiet -r requirements.txt
 
+      # --cov-fail-under is a ratchet, not a target: 76 is the measured floor on
+      # main (2082/2732 lines). It exists so coverage cannot silently regress,
+      # and it must be raised as coverage improves -- never lowered to make a
+      # red run green. The aspirational target is 80; see
+      # commands/test-coverage.md for the per-module table.
+      # --cov-branch is not optional: without it the Cobertura XML carries no
+      # condition-coverage data and branch coverage reads as "none".
       - name: pytest
-        run: python -m pytest -q --junitxml=reports/junit.xml
+        run: >-
+          python -m pytest -q
+          --junitxml=reports/junit.xml
+          --cov=src/citegraph
+          --cov-branch
+          --cov-report=xml:coverage.xml
+          --cov-report=term:skip-covered
+          --cov-fail-under=76
 
       # A green run says nothing unless it is shown to have run something: the
       # run that was green while the suite and the guard against it were both
@@ -42,10 +56,27 @@ jobs:
         env:
           CITEGRAPH_JUNIT_XML: reports/junit.xml
 
+      # A coverage gate that can pass without producing a report is the same
+      # failure mode as a glob that matches nothing and exits 0. This step
+      # refuses to let that happen: the file must exist and describe real
+      # statements, or the run is red regardless of pytest's exit code.
+      - name: Prove the coverage report is real
+        run: python scripts/check_coverage_report.py
+        env:
+          CITEGRAPH_COVERAGE_XML: coverage.xml
+
       - name: Upload the test report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: junit
           path: reports/junit.xml
+          if-no-files-found: error
+
+      - name: Upload the coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.xml
           if-no-files-found: error

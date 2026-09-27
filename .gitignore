@@ -161,6 +161,8 @@ logs/
 # Test / coverage output
 # -----------------------------
 coverage/
+coverage.xml
+reports/
 junit.xml
 test-results/
 playwright-report/
