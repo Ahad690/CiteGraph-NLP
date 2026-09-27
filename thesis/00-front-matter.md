@@ -5,7 +5,7 @@
 **A thesis submitted in partial fulfilment of the requirements for the degree of**  
 **Bachelor of Science in Artificial Intelligence**
 
-**Department of Computer Science**  
+**Department of Artificial Intelligence**  
 **National University of Technology**
 
 ---

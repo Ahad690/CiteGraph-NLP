@@ -163,6 +163,10 @@ logs/
 coverage/
 coverage.xml
 reports/
+
+# Contains supervisor, registration and phone numbers: a university submission
+# document, not project source. The remote is public.
+docs/proposal/
 junit.xml
 test-results/
 playwright-report/
