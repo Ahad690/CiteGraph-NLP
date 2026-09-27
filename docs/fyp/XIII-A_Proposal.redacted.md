@@ -197,29 +197,3 @@ coverage and are stated here as incomplete rather than presented as finished.
 | Project Supervisor | Dr. Amna Ikram | ______________ | __________ |
 | FYP Coordinator | Faria Sajjad | ______________ | __________ |
 
----
-
-## Outstanding Fields
-
-None. Every field on the printed form and the Google Sheet is now sourced:
-student names, registration numbers, section and phone numbers from the group;
-supervisor and coordinator from the department.
-
-Two conventions worth knowing:
-
-- **The supervisor is recorded as "Dr. Amna Ikram".** "Dr." is the designation,
-  so it is not repeated after the name.
-- **The department is written out in full** as "Department of Artificial
-  Intelligence" rather than the abbreviation "AI". If NUTECH officially records
-  it as "AI" on administrative documents, this is a one-word fix in both this
-  proposal and the thesis.
-
----
-
-## Submission Checklist
-
-- [x] Google Sheet details confirmed: names, registration numbers, supervisor, title, project type
-- [x] All form fields filled; no placeholders remain
-- [ ] `assets/nutech-logo.png` present
-- [ ] Markdown converted to Word and PDF via the handwrite-studio pipeline
-- [ ] Printed hardcopy submitted on 29 September 2026
