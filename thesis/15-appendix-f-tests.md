@@ -8,10 +8,9 @@ no network access and no API credentials, and completes in roughly 15 to 40
 seconds.
 
 Thirteen of the 25 files are behaviour tests: they assert that the system does
-something. The other twelve are guards, and they assert something different —
-that a check still works. `guards/LEDGER.md` records all 95 guard families
-catalogued from another project, what happened to each one here, and why 33 were
-refused rather than ported.
+something. The other twelve are guards, and they assert that a check still works.
+`guards/LEDGER.md` records all 95 guard families catalogued from another project,
+what happened to each one here, and why 33 were refused rather than ported.
 
 | File | Tests | Covers |
 |------|------:|--------|
