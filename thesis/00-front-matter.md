@@ -16,7 +16,7 @@
 |------|---------------------|
 | M. Ahad Imran | F23607034 |
 | Syed Zain-ul-Abidin | F23607031 |
-| Anas Zafar | F22607024 |
+| Anas Zafar | F22607025 |
 
 **Supervisor:** Dr. Amna Ikram
 

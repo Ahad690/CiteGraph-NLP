@@ -209,3 +209,8 @@ thesis/figures/_dot/
 # only the manifest (thesis/evidence/flow_diagrams/) is tracked.
 data/flow_diagrams/
 data/flow_diagrams_heldout/
+
+# Agent harness state: session transcripts, goal ledgers, lock files. Machine
+# local and per-session, and it grows without bound. It kept being swept in by
+# `git add -A`, so it is ignored here rather than left to be excluded by hand.
+.opencode/
