@@ -29,11 +29,14 @@ jobs:
       - name: Install dependencies
         run: pip install --quiet -r requirements.txt
 
-      # --cov-fail-under is a ratchet, not a target: 76 is the measured floor on
-      # main (2082/2732 lines). It exists so coverage cannot silently regress,
-      # and it must be raised as coverage improves -- never lowered to make a
-      # red run green. The aspirational target is 80; see
-      # commands/test-coverage.md for the per-module table.
+      # --cov-fail-under is a ratchet, not a target, and it must be derived from
+      # a run configured exactly like this one. Measured on CI at this commit:
+      # 2732 stmts / 650 missed / 970 branches / 143 partial = 72.64% combined.
+      # The floor is 72, not 76: 76% is the *statement-only* figure, and turning
+      # on --cov-branch below widened the denominator, so a floor taken from the
+      # run without branches does not describe the run with them. Its job is to
+      # make coverage impossible to regress silently; raise it as coverage
+      # improves, never lower it to turn a red run green.
       # --cov-branch is not optional: without it the Cobertura XML carries no
       # condition-coverage data and branch coverage reads as "none".
       - name: pytest
@@ -44,7 +47,7 @@ jobs:
           --cov-branch
           --cov-report=xml:coverage.xml
           --cov-report=term:skip-covered
-          --cov-fail-under=76
+          --cov-fail-under=72
 
       # A green run says nothing unless it is shown to have run something: the
       # run that was green while the suite and the guard against it were both
@@ -64,6 +67,9 @@ jobs:
         run: python scripts/check_coverage_report.py
         env:
           CITEGRAPH_COVERAGE_XML: coverage.xml
+      # Note the guard checks that the report is real; it deliberately does not
+      # decide pass/fail, because --cov-fail-under belongs to the run that
+      # produced the numbers and the two must not drift apart.
 
       - name: Upload the test report
         if: always()
