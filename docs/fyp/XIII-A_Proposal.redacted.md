@@ -35,13 +35,6 @@ The unredacted original is not in git. It lives at docs/proposal/XIII-A_Proposal
 | 2 | Syed Zain-ul-Abdin | F23607031 | AI-23 | [withheld] |
 | 3 | Anas Zafar | F22607025 | AI-23 | [withheld] |
 
-> Section is recorded as AI-23: the cohort is identified by programme and intake
-> year and is not subdivided into lettered sections. Names and registration
-> numbers are taken from the submitted thesis front matter, so the proposal and
-> the thesis cannot disagree.
-> The Google Sheet asks only for names, registration numbers, supervisor, title
-> and project type; section and contact are required by the printed form only.
-
 **Project Supervisor:** Dr. Amna Ikram
 **FYP Coordinator:** Faria Sajjad
 
