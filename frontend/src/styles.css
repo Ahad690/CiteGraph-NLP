@@ -273,6 +273,115 @@
    They are the AI-slop fingerprint Cobalt replaces -- glass, gradient fills,
    glow shadows -- and they are deleted when the dashboard migrates, not before.
    --------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------
+   Palette remap, scoped to Cobalt.
+
+   Tailwind v4 compiles `bg-slate-900` to `background-color: var(--color-slate-900)`.
+   Redefining those variables inside the scope re-points every existing utility
+   without editing a single component -- which is the only way to migrate twenty
+   dashboard files atomically instead of leaving nineteen of them on the old
+   palette and one on the new.
+
+   This is Hallmark's "lift the value into the token block" discipline applied at
+   the scale level. The class names stay; the values behind them become the design
+   system.
+
+   Two things fall out of the mapping rather than being special-cased:
+
+     * `from-indigo to-cyan` and `.gradient-brand` both resolve indigo and cyan
+       onto the SAME cobalt signal, so every gradient CTA collapses into a flat
+       solid fill. Cobalt bans gradient CTAs; this is how that ban is enforced
+       across the whole dashboard at once.
+     * `text-cyan`, `text-emerald`, `text-amber`, `text-rose` were used with no
+       numeric step, which Tailwind cannot resolve -- 169 references that were
+       rendering with no colour at all and inheriting instead. Defining the bare
+       step makes them resolve as intended. That is a visible change, and it is
+       the change the author was reaching for when they wrote them.
+   --------------------------------------------------------------------------- */
+.theme-cobalt {
+  /* Ground ramp: deep -> raised -> sunk -> rule -> ink, inverted for a light
+     canvas. Deliberately not a mirror of the old dark ramp -- the old one ran
+     950 as the page and 100 as the lightest text; this one runs paper outward
+     and ink inward. */
+  --color-slate-950: var(--paper);
+  --color-slate-900: var(--paper-raised);
+  --color-slate-800: var(--paper-sunk);
+  --color-slate-700: var(--rule-2);
+  --color-slate-500: var(--ink-4);
+  --color-slate-400: var(--ink-3);
+  --color-slate-300: var(--ink-2);
+  --color-slate-200: var(--ink-2);
+  --color-slate-100: var(--paper-sunk);
+
+  /* The one signal. Four steps that used to be a cyan ramp collapse onto it, so
+     an element can still pick "the accent" without the ramp reading as a
+     gradient. */
+  --color-cyan: var(--signal);
+  --color-cyan-200: var(--signal);
+  --color-cyan-300: var(--signal);
+  --color-cyan-400: var(--signal);
+
+  /* Indigo and purple were the second and third accents. They leave the
+     palette: on a one-signal system a second chromatic hue is a tell, and the
+     neutralisers and glows built on them are replaced below. */
+  --color-indigo: var(--signal);
+  --color-purple: var(--signal);
+
+  /* Status hues, desaturated to sit beside cobalt instead of shouting over it.
+     These carry real meaning in the citation graph -- node fill encodes resolved
+     population confidence -- so they are data, not decoration, and the legend
+     keeps naming them. */
+  --color-emerald: var(--ok);
+  --color-amber: var(--warn);
+  --color-rose: var(--danger);
+  --color-red: var(--danger);
+
+  /* The glass and glow utilities, re-pointed. In Cobalt, depth comes from a 1px
+     rule, not from an 18px backdrop blur, and there are no coloured glow
+     shadows. Both are replaced with hairline borders; the class names survive so
+     the components do not have to change today. */
+  --glass-blur: none;
+}
+
+.theme-cobalt .glass {
+  background-color: var(--paper-raised);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid var(--rule);
+}
+
+.theme-cobalt .glass-strong {
+  background-color: var(--paper-raised);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid var(--rule-2);
+}
+
+.theme-cobalt .gradient-brand,
+.theme-cobalt .gradient-brand-soft {
+  background-image: none;
+  background-color: var(--signal);
+}
+
+.theme-cobalt .text-gradient-brand {
+  background-image: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  color: var(--signal);
+}
+
+.theme-cobalt .glow-indigo,
+.theme-cobalt .glow-cyan {
+  box-shadow: none;
+}
+
+/* The dashboard's own body ground was three stacked radial glows. Cobalt has no
+   background texture at all -- the cool paper and its hairlines carry the
+   surface, and the one dark beat is the graphite band, not a background. */
+.theme-cobalt body {
+  background-image: none;
+}
+
 @layer utilities {
   .glass {
     background-color: var(--surface);

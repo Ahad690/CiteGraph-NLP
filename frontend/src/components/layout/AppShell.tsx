@@ -20,7 +20,12 @@ export function AppShell({ runId, title, subtitle, children }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex bg-background">
+    // `theme-cobalt` is the whole migration. The components below keep their
+    // class names; the palette those names resolve against is remapped inside
+    // the scope, so the dashboard changes values without twenty files changing
+    // code. `min-w-0` on the content column is load-bearing: it is what stops
+    // the graph canvas from forcing a horizontal scrollbar.
+    <div className="theme-cobalt min-h-screen flex bg-background text-foreground">
       {/* Mobile sidebar overlay */}
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
@@ -36,10 +41,15 @@ export function AppShell({ runId, title, subtitle, children }: Props) {
       <div className="flex-1 min-w-0 flex flex-col">
         <div className="lg:hidden flex items-center justify-between px-4 h-14 border-b border-border glass">
           <Link to="/" className="flex items-center gap-2 font-semibold text-sm">
-            <span className="h-7 w-7 rounded-lg gradient-brand grid place-items-center text-white text-xs">CG</span>
+            <span className="h-7 w-7 rounded-lg gradient-brand grid place-items-center text-white text-xs">
+              CG
+            </span>
             CiteGraph-NLP
           </Link>
-          <button onClick={() => setMobileOpen(true)} className="h-9 w-9 grid place-items-center rounded-lg border border-border">
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="h-9 w-9 grid place-items-center rounded-lg border border-border"
+          >
             <Menu className="h-4 w-4" />
           </button>
         </div>
@@ -60,7 +70,11 @@ export function AppShell({ runId, title, subtitle, children }: Props) {
         </main>
       </div>
 
-      <Toaster position="bottom-right" theme="dark" richColors closeButton />
+      {/* `light`, not the `dark` this was hardcoded to: the dashboard moved to a
+          cool near-white ground, and a dark toast on it is the one surface the
+          palette remap cannot reach, because sonner reads a prop rather than a
+          class. */}
+      <Toaster position="bottom-right" theme="light" richColors closeButton />
     </div>
   );
 }
