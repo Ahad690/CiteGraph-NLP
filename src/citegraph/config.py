@@ -1,3 +1,4 @@
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pathlib import Path
 from urllib.parse import urlparse
@@ -30,6 +31,55 @@ class Settings(BaseSettings):
     openalex_email: str | None = None
     semantic_scholar_api_key: str | None = None
     ncbi_api_key: str | None = None
+
+    # External model providers. Both are OFF by default and both are server-side
+    # only: no key is ever sent to the browser, and a missing key disables the
+    # capability rather than raising at first use, so a deployment without
+    # credentials behaves exactly as it did before the feature existed.
+    #
+    # Jev (TypeSafe) is a TYPED DECISION ENGINE, not a chat model. It answers
+    # choice, score and noul questions with probability distributions. It is not
+    # wrapped in a chat interface and has no messages endpoint, because it does
+    # not have one.
+    enable_jev: bool = False
+    # Read from TYPESAFE_API_KEY, the vendor's own name, rather than JEV_API_KEY.
+    # The field is called jev_api_key so the rest of the code reads consistently,
+    # but an operator setting the variable the provider documents as the right
+    # one is the case that must work. JEV_API_KEY stays accepted so an existing
+    # deployment does not silently lose its key.
+    jev_api_key: str | None = Field(
+        default=None, validation_alias="TYPESAFE_API_KEY"
+    )
+    jev_base_url: str = "https://api.typesafe.ai"
+    jev_model: str = "jev-latest"
+    # Pinned model id. Set to reproduce a run; jev-latest moves underneath a
+    # published number otherwise.
+    jev_model_pin: str | None = None
+    jev_timeout_s: float = 10.0
+    jev_max_retries: int = 3
+
+    # GLM (Z.ai) generates the narrative report from the citation graph.
+    enable_glm: bool = False
+    glm_api_key: str | None = None
+    glm_base_url: str = "https://open.bigmodel.cn/api/paas/v4"
+    glm_model: str = "glm-5.3-flash"
+    glm_timeout_s: float = 60.0
+    glm_max_retries: int = 2
+
+    # Daily ceiling on external provider spend, in USD. This is a DAY budget and
+    # not a per-run one, deliberately: a per-run ceiling stops a run part-way and
+    # returns a broken artifact, which is worse than a finished run with a
+    # slightly larger bill. The loop budget in the Terminux project measures the
+    # same thing -- one turn once cost 1.6M cumulative prompt tokens -- and bounds
+    # it by tokens for the same reason.
+    #
+    # When the day's ceiling is reached, providers stop being called and the
+    # deterministic path continues. A run must still finish.
+    provider_daily_budget_usd: float = 5.00
+
+    # Directory of the append-only cost record. A database purge must not be
+    # able to erase the evidence of what was spent.
+    provider_cost_record: str = "var/provider_cost.jsonl"
 
     # Provider toggles
     enable_openalex: bool = True
@@ -78,7 +128,12 @@ class Settings(BaseSettings):
     weight_beta: float = 0.25
     n_reference: int = 100000
 
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    # populate_by_name lets jev_api_key= be passed by field name as well as read
+    # from TYPESAFE_API_KEY. Without it, setting a validation_alias silently
+    # disables the field name, and every in-process assignment starts raising.
+    model_config = SettingsConfigDict(
+        env_file=".env", extra="ignore", populate_by_name=True
+    )
 
     @property
     def cors_origin_list(self) -> list[str]:

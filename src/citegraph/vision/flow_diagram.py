@@ -143,6 +143,13 @@ class FlowReading:
     ocr_lines: int = 0
     drawn_boxes: int = 0
     seconds: float = 0.0
+    #: The per-label counts the stage totals were derived from.
+    #:
+    #: Retained so a label's stage can be revised AFTER aggregation and the
+    #: totals re-derived, rather than leaving the reading with a revised label
+    #: and a count that no longer matches it. Additive: the aggregation below is
+    #: unchanged, and with no revision requested nothing reads this field.
+    counts: list["Count"] = field(default_factory=list)
 
     @property
     def is_flow(self) -> bool:
@@ -533,6 +540,7 @@ def read_flow_diagram(image: bytes | str) -> FlowReading:
     _assign_from_layout(regions, counts, float(gray.shape[1]))
 
     reading = _aggregate(counts)
+    reading.counts = counts
     reading.ocr_lines = len(lines)
     reading.drawn_boxes = len(boxes)
     reading.seconds = time.perf_counter() - start
