@@ -1072,7 +1072,7 @@ Europe PMC
 backfill of Section 4.4.3 a local change.
 
 ![**Figure 4.2** Object composition among the classes that participate in a
-relationship, from `pyreverse` with the 19 unrelated classes removed.
+relationship, from `pyreverse` with the 28 unrelated classes removed.
 `PipelineOrchestrator` composes ten collaborators, the stage modules and the
 two providers it calls directly; edge
 labels are the attribute names the orchestrator stores them
@@ -4673,7 +4673,7 @@ edges, and carries the discarded detail as edge thickness rather than losing
 it.
 
 **Filtering unrelated classes** (Figure 4.2). `pyreverse` draws every class it
-finds, including the 19 that take part in no association or inheritance
+finds, including the 28 that take part in no association or inheritance
 relationship. Those 19 occupy a full column of the canvas and contribute no
 structure, so they are dropped from the chapter figure. Plate H.2 below
 retains them.
@@ -4703,7 +4703,7 @@ loss.](figures/classes_full.svg){width=100%}
 
 \newpage
 
-![**Plate H.3** The complete call graph from `code2flow`: 144 functions and
+![**Plate H.3** The complete call graph from `code2flow`: 177 functions and
 every call between them, grouped by file and class. Figure 5.1 is the subgraph
 reachable from `PipelineOrchestrator.run()` within two
 levels.](figures/callgraph_full.svg){width=88%}
