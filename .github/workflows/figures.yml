@@ -77,13 +77,18 @@ jobs:
 
       - name: Commit only a real change
         run: |
-          if git diff --quiet -- figures/; then
+          # thesis/figures, not figures/. The generator writes to
+          # thesis/figures, and a pathspec that matches nothing makes
+          # `git diff --quiet` report clean -- so the job would announce
+          # "nothing to commit" having regenerated every figure, and the drift
+          # test would stay red with a green workflow beside it.
+          if git diff --quiet -- thesis/figures/; then
             echo "figures already match the code; nothing to commit"
             exit 0
           fi
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add figures/
+          git add thesis/figures/
           # One line, deliberately. A multi-line message inside a YAML block
           # scalar breaks the moment a continuation line loses its indentation,
           # and the failure is a workflow file GitHub refuses to load rather
@@ -97,5 +102,5 @@ jobs:
           {
             echo "### Figures"
             echo ""
-            git diff --stat HEAD~1 -- figures/ 2>/dev/null || echo "no change"
+            git diff --stat -- thesis/figures/ || echo "no change"
           } >> "$GITHUB_STEP_SUMMARY"
