@@ -71,6 +71,13 @@ jobs:
       # decide pass/fail, because --cov-fail-under belongs to the run that
       # produced the numbers and the two must not drift apart.
 
+      # A secrets check that only ever runs on one machine is a machine that
+      # goes unbacked up and a key that stays committed once written. The gate
+      # runs here so a leak is a red build rather than something a reader
+      # notices on GitHub.
+      - name: No credential is committed
+        run: python scripts/check_secrets_gate.py
+
       - name: Upload the test report
         if: always()
         uses: actions/upload-artifact@v4

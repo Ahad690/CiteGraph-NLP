@@ -271,7 +271,8 @@
    "kind": "ratchet",
    "status": "ported",
    "guards": [
-    "CG8"
+    "CG8",
+    "CG14"
    ],
    "reason": "Each detector is driven by a planted sample, the scanner refuses an empty file set rather than reporting it clean, and a token-shaped value it cannot read fails closed."
   },
@@ -281,9 +282,10 @@
    "kind": "ratchet",
    "status": "ported",
    "guards": [
-    "CG8"
+    "CG8",
+    "CG14"
    ],
-   "reason": "The clean-tree control and the planted-violation table are carried whole."
+   "reason": "The clean-tree control and the planted-violation table are carried whole. CG14 extends the same reasoning to the second credential surface: a scan that only runs on one machine is a machine that goes unbacked up, so the gate runs in the Tests job rather than in a developer's shell."
   },
   {
    "id": "R29",
@@ -679,7 +681,8 @@
    "kind": "runtime",
    "status": "adapted",
    "guards": [
-    "CG8"
+    "CG8",
+    "CG14"
    ],
    "reason": "There is no publishable key. The config-globals half is carried: CG8 asserts that .env.example declares every setting Settings reads, and carries no value that is not a placeholder."
   },
@@ -714,9 +717,10 @@
    "status": "ported",
    "guards": [
     "CG2",
-    "CG8"
+    "CG8",
+    "CG14"
    ],
-   "reason": "Carried as the documented-field ledger in both directions, and as the .env.example / Settings contract."
+   "reason": "Carried as the documented-field ledger in both directions, and as the .env.example / Settings contract. The contract now spans a field with a validation_alias, and the reader pairs the alias with the field that owns it rather than with whichever field happens to precede it."
   },
   {
    "id": "P1",
@@ -724,7 +728,8 @@
    "kind": "process",
    "status": "ported",
    "guards": [
-    "CG8"
+    "CG8",
+    "CG14"
    ],
    "reason": "A scan that cannot see the range it was asked about refuses rather than reporting the range clean."
   },
@@ -1067,6 +1072,19 @@
     "P9"
    ],
    "also": []
+  },
+  {
+   "id": "CG14",
+   "path": "scripts/check_secrets_gate.py",
+   "incident": "Written when the Jev and GLM providers put two vendor keys in play. The tree scanner already covered the repository, but a secrets check that only ever runs on one machine is a machine that goes unbacked up and a key that stays committed once written. This gate runs in the Tests job, so a leak is a red build rather than something a reader notices on GitHub. Stated as a backstop rather than a proof: it matches vendor key shapes, and a pattern that misses a novel format reports clean, which is why the shape list is narrow and the limits are written down. R27, R28, B24, B28, P1.",
+   "families": [
+    "R27",
+    "R28",
+    "B24",
+    "B28",
+    "P1"
+   ],
+   "also": []
   }
  ],
  "ordinary": [
@@ -1079,6 +1097,18 @@
    "why": "exercises the API's behaviour with mocked providers"
   },
   {
+   "path": "tests/test_config_env_alias.py",
+   "why": "asserts the environment variable an operator sets is the one the code reads, in both directions"
+  },
+  {
+   "path": "tests/test_disambiguation.py",
+   "why": "asserts a Jev answer is used only above the confidence bar, and that a close call is reported as ambiguous rather than as merely low"
+  },
+  {
+   "path": "tests/test_evaluation_metrics.py",
+   "why": "asserts the Wilson interval and the derived metrics compute what the thesis quotes"
+  },
+  {
    "path": "tests/test_flow_diagram.py",
    "why": "exercises the stage and layout rules the flow reader uses"
   },
@@ -1087,12 +1117,24 @@
    "why": "exercises the open-access full-text fallback"
   },
   {
+   "path": "tests/test_graph_exporters.py",
+   "why": "asserts the JSON and GraphML exporters emit the edges the graph actually has"
+  },
+  {
    "path": "tests/test_input_normalizer.py",
    "why": "exercises identifier canonicalisation"
   },
   {
+   "path": "tests/test_llm_providers.py",
+   "why": "asserts the Jev and GLM clients build the documented request, retry, and never put a key in a log or an exception"
+  },
+  {
    "path": "tests/test_population_patterns.py",
    "why": "exercises the extraction patterns and their ignore spans"
+  },
+  {
+   "path": "tests/test_provider_budget.py",
+   "why": "asserts the daily ceiling is read from disk, is per day in UTC, and stops the next run rather than truncating this one"
   },
   {
    "path": "tests/test_query_detection.py",
@@ -1101,6 +1143,14 @@
   {
    "path": "tests/test_ranking.py",
    "why": "exercises the foundational scoring and path ranking"
+  },
+  {
+   "path": "tests/test_run_poll_interval.py",
+   "why": "asserts RunStatus carries the server's retry interval and survives serialisation"
+  },
+  {
+   "path": "tests/test_second_opinion_pass.py",
+   "why": "asserts the second-opinion pass changes nothing when disabled, and re-derives the totals when it does revise a label"
   },
   {
    "path": "tests/test_sqlite_store.py",
@@ -1131,5 +1181,5 @@
    "reason": "Not a hook surface and not LLM-specific: heredocs mangling escapes, a result read through a pipe, $? checked after a pipe, a truncating edit, a guard test not run after changing the code it guards, a container assumed to re-read its environment. Four of these were hit while writing this port, and each is already covered by a guard rather than by a hook: test_the_thesis_does_not_drift.py catches the truncating edit through the test count, and the failure to run a changed guard is what CI is for. Recorded here so the catalogue is not re-mined."
   }
  ],
- "_ledger_md_sha256": "ebcfe04f984007519b35409bb2231a504ec3fbf41036a235ad83a8602a05fc80"
+ "_ledger_md_sha256": "9011b811e7a6915eb2f49c3d670714b1e69cfc3c5f50d0aa4ae04ac737c86be1"
 }

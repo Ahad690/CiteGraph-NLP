@@ -45,6 +45,7 @@ failure this whole exercise exists to remove.
 | CG11 | `tests/test_the_guard_ledger_matches_what_is_on_disk.py` | The Terminux catalogue is explicit that a count must not be mistaken for absence. A ledger that lists a guard which does not exist, or omits one that does, is the same defect in the other direction. Terminus R14, kit item 11. | R14, R23 |
 | CG12 | `tests/test_the_ci_workflows_have_no_path_filters_and_one_always_runs.py` | Terminus C1: a `**/*.md` path filter hid a documentation fix until someone dispatched the run by hand, and two history-scanning tests failed on the first CI run because the clone was depth-1. C2: four push runs were cancelled by a dispatch, and once the job that had to always run was itself made conditional. R15. | C1, C2, R15 |
 | CG13 | `tests/test_the_thesis_does_not_drift.py` | Written 2026-09-25 after three kinds of drift were found by hand in one afternoon: the abstract and four chapters still claiming the system read abstracts only, the appendix listing stale counts, and the page counts in two READMEs trailing the committed PDFs. It is the guard this port was measured against, and CG4 and CG5 exist because of what it was still missing. | R4, R7, R24, P4, P9 |
+| CG14 | `scripts/check_secrets_gate.py` | Written when the Jev and GLM providers put two vendor keys in play. The tree scanner already covered the repository, but a secrets check that only ever runs on one machine is a machine that goes unbacked up and a key that stays committed once written. This gate runs in the Tests job, so a leak is a red build rather than something a reader notices on GitHub. Stated as a backstop rather than a proof: it matches vendor key shapes, and a pattern that misses a novel format reports clean, which is why the shape list is narrow and the limits are written down. R27, R28, B24, B28, P1. | R27, R28, B24, B28, P1 |
 
 ## Not guards
 
@@ -57,12 +58,20 @@ of the two happens.
 |---|---|
 | `tests/test_add_citegraph_route.py` | asserts the nginx route helper writes a correct config |
 | `tests/test_api_comprehensive.py` | exercises the API's behaviour with mocked providers |
+| `tests/test_config_env_alias.py` | asserts the environment variable an operator sets is the one the code reads, in both directions |
+| `tests/test_disambiguation.py` | asserts a Jev answer is used only above the confidence bar, and that a close call is reported as ambiguous rather than as merely low |
+| `tests/test_evaluation_metrics.py` | asserts the Wilson interval and the derived metrics compute what the thesis quotes |
 | `tests/test_flow_diagram.py` | exercises the stage and layout rules the flow reader uses |
 | `tests/test_full_text_population.py` | exercises the open-access full-text fallback |
+| `tests/test_graph_exporters.py` | asserts the JSON and GraphML exporters emit the edges the graph actually has |
 | `tests/test_input_normalizer.py` | exercises identifier canonicalisation |
+| `tests/test_llm_providers.py` | asserts the Jev and GLM clients build the documented request, retry, and never put a key in a log or an exception |
 | `tests/test_population_patterns.py` | exercises the extraction patterns and their ignore spans |
+| `tests/test_provider_budget.py` | asserts the daily ceiling is read from disk, is per day in UTC, and stops the next run rather than truncating this one |
 | `tests/test_query_detection.py` | exercises query-type detection from the identifier's shape |
 | `tests/test_ranking.py` | exercises the foundational scoring and path ranking |
+| `tests/test_run_poll_interval.py` | asserts RunStatus carries the server's retry interval and survives serialisation |
+| `tests/test_second_opinion_pass.py` | asserts the second-opinion pass changes nothing when disabled, and re-derives the totals when it does revise a label |
 | `tests/test_sqlite_store.py` | exercises persistence, lock retries and error classification |
 | `tests/test_task_manager.py` | exercises background task lifecycle and shutdown |
 | `tests/test_technical_evidence.py` | exercises field detection and dataset-size extraction |
@@ -98,8 +107,8 @@ of the two happens.
 | R24 | Deferred behaviour asserted as absence | already_present | `CG13` | The drift guard's `claims` list retires statements that stop being true and fails if one comes back. |
 | R25 | Invented-credential detector with supplied-key and wiring controls | adapted | `CG8` | The method transfers: one planted sample per detector, a supplied-value exclusion, and a clean-tree control. The specimens do not: this application issues no browser API keys. |
 | R26 | Provider-key pattern widened to the user base | adapted | `CG8` | The method transfers. The key shapes do not: there is no user base holding third-party credentials, only the operator's own .env. |
-| R27 | Pre-push scanner has a red proof | ported | `CG8` | Each detector is driven by a planted sample, the scanner refuses an empty file set rather than reporting it clean, and a token-shaped value it cannot read fails closed. |
-| R28 | Secrets gate has a clean control and one planted violation per rule | ported | `CG8` | The clean-tree control and the planted-violation table are carried whole. |
+| R27 | Pre-push scanner has a red proof | ported | `CG8`, `CG14` | Each detector is driven by a planted sample, the scanner refuses an empty file set rather than reporting it clean, and a token-shaped value it cannot read fails closed. |
+| R28 | Secrets gate has a clean control and one planted violation per rule | ported | `CG8`, `CG14` | The clean-tree control and the planted-violation table are carried whole. CG14 extends the same reasoning to the second credential surface: a scan that only runs on one machine is a machine that goes unbacked up, so the gate runs in the Tests job rather than in a developer's shell. |
 | R29 | Gate coverage distinguishes skipped files from skipped checks | adapted | `CG8` | CG8 reports which files it read and which it could not decode, beside the verdict, rather than folding them into the result. |
 | R30 | A gate can name every rule it can emit, in both directions | ported | `CG8` | The declared rule set and the rules the code can emit are compared both ways. |
 
@@ -153,17 +162,17 @@ of the two happens.
 | B21 | Prompt scrubbing, untrusted framing, cache-boundary refusal | refused | — | No model is called by the product. scripts/second_annotator.py calls one, but it is an offline evidence tool that publishes open-access figures and sends no user data. |
 | B22 | Locks, exit codes, template history, bundle refusal | already_present | — | The SQLite store classifies lock errors from other errors, retries only the lock, and backs off with jitter. tests/test_sqlite_store.py drives it. |
 | B23 | Apply only the migrations that were gated, to the named project | refused | — | There is no migration runner and no second project on the box to confuse it with. The deploy does write to a named REMOTE_DIR and refuses rather than defaulting when it is not set. |
-| B24 | Publishable key and config-globals contract | adapted | `CG8` | There is no publishable key. The config-globals half is carried: CG8 asserts that .env.example declares every setting Settings reads, and carries no value that is not a placeholder. |
+| B24 | Publishable key and config-globals contract | adapted | `CG8`, `CG14` | There is no publishable key. The config-globals half is carried: CG8 asserts that .env.example declares every setting Settings reads, and carries no value that is not a placeholder. |
 | B25 | Credential scope, authenticated cipher, real-key and log-redaction refusals | refused | — | The application holds no credential of its own; they arrive from .env through pydantic-settings and are never written to a store. The encrypted salvage archive that does hold credentials belongs to another project and is not in this repository. |
 | B26 | OAuth state, PKCE, browser binding, single-use provider token | refused | — | There is no OAuth flow. The API authenticates with a static optional api_key header, which is a weaker scheme and is not claimed to be this. |
 | B27 | Ask the database whether the app can do its own job, for both roles | refused | — | There is no second role and no database the application must prove it can reach. |
-| B28 | Configuration contract: what the writer publishes and what the reader reads | ported | `CG2`, `CG8` | Carried as the documented-field ledger in both directions, and as the .env.example / Settings contract. |
+| B28 | Configuration contract: what the writer publishes and what the reader reads | ported | `CG2`, `CG8`, `CG14` | Carried as the documented-field ledger in both directions, and as the .env.example / Settings contract. The contract now spans a field with a validation_alias, and the reader pairs the alias with the field that owns it rather than with whichever field happens to precede it. |
 
 ## Process guards (12)
 
 | id | family | status | guard | why |
 |---|---|---|---|---|
-| P1 | Push-line stamper refuses while unpushed | ported | `CG8` | A scan that cannot see the range it was asked about refuses rather than reporting the range clean. |
+| P1 | Push-line stamper refuses while unpushed | ported | `CG8`, `CG14` | A scan that cannot see the range it was asked about refuses rather than reporting the range clean. |
 | P2 | Report persistence refuses while unpushed | ported | `CG8` | The same property on the report side: an unreadable input is a refusal, not an empty result. |
 | P3 | Pre-push wrapper refuses on scan failure or empty range | ported | `CG8` | Carried whole: the scanner fails closed on a decode error rather than counting the file as clean, which is the property the wrapper exists to provide. |
 | P4 | Report-number checker treats not-found as failure | already_present | `CG13` | A quoted number that cannot be found in the PDF or the evidence file fails the drift guard rather than being skipped. |

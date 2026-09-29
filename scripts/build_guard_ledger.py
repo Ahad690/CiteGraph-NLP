@@ -100,6 +100,16 @@ GUARDS = [
      "READMEs trailing the committed PDFs. It is the guard this port was measured "
      "against, and CG4 and CG5 exist because of what it was still missing.",
      ["R4", "R7", "R24", "P4", "P9"], []),
+    ("CG14", "scripts/check_secrets_gate.py",
+     "Written when the Jev and GLM providers put two vendor keys in play. The "
+     "tree scanner already covered the repository, but a secrets check that only "
+     "ever runs on one machine is a machine that goes unbacked up and a key that "
+     "stays committed once written. This gate runs in the Tests job, so a leak is "
+     "a red build rather than something a reader notices on GitHub. Stated as a "
+     "backstop rather than a proof: it matches vendor key shapes, and a pattern "
+     "that misses a novel format reports clean, which is why the shape list is "
+     "narrow and the limits are written down. R27, R28, B24, B28, P1.",
+     ["R27", "R28", "B24", "B28", "P1"], []),
 ]
 
 # Every remaining tests/test_*.py, classified rather than ignored. Hand-kept on
@@ -109,12 +119,43 @@ GUARDS = [
 ORDINARY = {
     "test_add_citegraph_route.py": "asserts the nginx route helper writes a correct config",
     "test_api_comprehensive.py": "exercises the API's behaviour with mocked providers",
+    "test_config_env_alias.py": (
+        "asserts the environment variable an operator sets is the one the code "
+        "reads, in both directions"
+    ),
+    "test_disambiguation.py": (
+        "asserts a Jev answer is used only above the confidence bar, and that a "
+        "close call is reported as ambiguous rather than as merely low"
+    ),
+    "test_evaluation_metrics.py": (
+        "asserts the Wilson interval and the derived metrics compute what the "
+        "thesis quotes"
+    ),
     "test_flow_diagram.py": "exercises the stage and layout rules the flow reader uses",
     "test_full_text_population.py": "exercises the open-access full-text fallback",
+    "test_graph_exporters.py": (
+        "asserts the JSON and GraphML exporters emit the edges the graph actually has"
+    ),
     "test_input_normalizer.py": "exercises identifier canonicalisation",
+    "test_llm_providers.py": (
+        "asserts the Jev and GLM clients build the documented request, retry, and "
+        "never put a key in a log or an exception"
+    ),
     "test_population_patterns.py": "exercises the extraction patterns and their ignore spans",
+    "test_provider_budget.py": (
+        "asserts the daily ceiling is read from disk, is per day in UTC, and stops "
+        "the next run rather than truncating this one"
+    ),
     "test_query_detection.py": "exercises query-type detection from the identifier's shape",
     "test_ranking.py": "exercises the foundational scoring and path ranking",
+    "test_run_poll_interval.py": (
+        "asserts RunStatus carries the server's retry interval and survives "
+        "serialisation"
+    ),
+    "test_second_opinion_pass.py": (
+        "asserts the second-opinion pass changes nothing when disabled, and "
+        "re-derives the totals when it does revise a label"
+    ),
     "test_sqlite_store.py": "exercises persistence, lock retries and error classification",
     "test_task_manager.py": "exercises background task lifecycle and shutdown",
     "test_technical_evidence.py": "exercises field detection and dataset-size extraction",
@@ -216,13 +257,13 @@ ROWS = [
      ["CG8"],
      "The method transfers. The key shapes do not: there is no user base holding "
      "third-party credentials, only the operator's own .env."),
-    ("R27", "Pre-push scanner has a red proof", "ratchet", "ported", ["CG8"],
+    ("R27", "Pre-push scanner has a red proof", "ratchet", "ported", ["CG8", "CG14"],
      "Each detector is driven by a planted sample, the scanner refuses an empty file "
      "set rather than reporting it clean, and a token-shaped value it cannot read "
      "fails closed."),
     ("R28", "Secrets gate has a clean control and one planted violation per rule",
-     "ratchet", "ported", ["CG8"],
-     "The clean-tree control and the planted-violation table are carried whole."),
+     "ratchet", "ported", ["CG8", "CG14"],
+     "The clean-tree control and the planted-violation table are carried whole. CG14 extends the same reasoning to the second credential surface: a scan that only runs on one machine is a machine that goes unbacked up, so the gate runs in the Tests job rather than in a developer's shell."),
     ("R29", "Gate coverage distinguishes skipped files from skipped checks", "ratchet",
      "adapted", ["CG8"],
      "CG8 reports which files it read and which it could not decode, beside the "
@@ -373,7 +414,8 @@ ROWS = [
      "There is no migration runner and no second project on the box to confuse it "
      "with. The deploy does write to a named REMOTE_DIR and refuses rather than "
      "defaulting when it is not set."),
-    ("B24", "Publishable key and config-globals contract", "runtime", "adapted", ["CG8"],
+    ("B24", "Publishable key and config-globals contract", "runtime", "adapted",
+     ["CG8", "CG14"],
      "There is no publishable key. The config-globals half is carried: CG8 asserts "
      "that .env.example declares every setting Settings reads, and carries no value "
      "that is not a placeholder."),
@@ -391,11 +433,12 @@ ROWS = [
      "runtime", "refused", [],
      "There is no second role and no database the application must prove it can reach."),
     ("B28", "Configuration contract: what the writer publishes and what the reader reads",
-     "runtime", "ported", ["CG2", "CG8"],
+     "runtime", "ported", ["CG2", "CG8", "CG14"],
      "Carried as the documented-field ledger in both directions, and as the "
-     ".env.example / Settings contract."),
+     ".env.example / Settings contract. The contract now spans a field with a validation_alias, and the reader pairs the alias with the field that owns it rather than with whichever field happens to precede it."),
 
-    ("P1", "Push-line stamper refuses while unpushed", "process", "ported", ["CG8"],
+    ("P1", "Push-line stamper refuses while unpushed", "process", "ported",
+     ["CG8", "CG14"],
      "A scan that cannot see the range it was asked about refuses rather than "
      "reporting the range clean."),
     ("P2", "Report persistence refuses while unpushed", "process", "ported", ["CG8"],

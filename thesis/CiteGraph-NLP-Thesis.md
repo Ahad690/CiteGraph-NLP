@@ -1056,7 +1056,7 @@ back by the dashboard and the export endpoints.
 ```
 
 ![**Figure 4.1** Inter-package dependencies, produced by running `pyreverse`
-over `src/citegraph` and collapsing its 52 module nodes to the 14 packages
+over `src/citegraph` and collapsing its 59 module nodes to the 15 packages
 they belong to. Each arrow stands for one or more imports and is drawn
 thicker the more imports it carries. The heaviest arrows run downward into
 `models`, which holds the Pydantic types every other package
@@ -3807,7 +3807,7 @@ which Section 6.6 shows dominates runtime, is materially worse.
 pytest -q
 ```
 
-Expected: **273 passed**. The suite mocks all HTTP at transport level with
+Expected: **427 passed**. The suite mocks all HTTP at transport level with
 `respx`, so it requires no network access and no API keys.
 
 ## C.3 Evaluation (Chapter 6)
@@ -4230,44 +4230,52 @@ Listed for completeness; discussed in Section 7.4.
 
 ## F.1 Composition
 
-273 automated tests across 25 files. All external HTTP is intercepted at
+427 automated tests across 33 files. All external HTTP is intercepted at
 transport level by `respx` or replaced with test doubles, so the suite requires
 no network access and no API credentials, and completes in roughly 15 to 40
 seconds.
 
-Thirteen of the 25 files are behaviour tests: they assert that the system does
+Twenty-one of the 33 files are behaviour tests: they assert that the system does
 something. The other twelve are guards, and they assert that a check still works.
 `guards/LEDGER.md` records all 95 guard families catalogued from another project,
 what happened to each one here, and why 33 were refused rather than ported.
 
 | File | Tests | Covers |
 |------|------:|--------|
-| `test_api_comprehensive.py` | 73 | Endpoints, validation, clamping, auth, CORS, exports, pipeline end-to-end with mocked providers |
-| `test_query_detection.py` | 34 | Identifier auto-detection and the title matching behind run ac66eb9e |
-| `test_the_thesis_does_not_drift.py` | 20 | This thesis against its evidence, its figures, its PDFs and its baseline (Section C.5) |
+| `test_api_comprehensive.py` | 73 | Endpoints, validation, clamping, auth, CORS, exports, pipeline |
+| `test_llm_providers.py` | 52 | The Jev and GLM request shapes, retries, and key redaction |
+| `test_evaluation_metrics.py` | 34 | The Wilson interval and the metrics the thesis quotes |
+| `test_query_detection.py` | 34 | Identifier auto-detection and the title matching behind run acceptance |
+| `test_the_thesis_does_not_drift.py` | 20 | This thesis against its evidence, its figures, its PDFs |
 | `test_flow_diagram.py` | 18 | Stage and layout rules of the flow-diagram reader (Section 6.14) |
+| `test_graph_exporters.py` | 18 | The JSON and GraphML exporters emit the real edges |
+| `test_disambiguation.py` | 16 | A Jev answer is used only above the confidence bar |
+| `test_provider_budget.py` | 14 | The daily ceiling, its UTC day, and its append-only record |
 | `test_technical_evidence.py` | 12 | Research-field detection, arXiv links and dataset-size extraction |
-| `test_the_config_refuses_every_problem_at_once.py` | 11 | Configuration faults gathered in one pass; production refuses a wildcard CORS origin, an empty origin list, a Neo4j profile with a placeholder password, and a key that is set but too short. The deployed values must start, and the open API is reported |
-| `test_the_documented_response_fields_are_the_fields_the_api_returns.py` | 8 | The documented field tables against the Pydantic models, both directions, and every route against the documents that name it |
-| `test_no_secret_is_committed_to_this_tree.py` | 8 | Credential shapes, each driven by a planted sample; a real contact address in a template; the `.env.example`/`Settings` contract |
-| `test_the_guard_ledger_matches_what_is_on_disk.py` | 6 | All 95 catalogued families accounted for, every guard on disk classified, the generated table current |
-| `test_sqlite_store.py` | 8 | Persistence, lock retry policy, backoff jitter, error classification |
-| `test_the_ci_workflows_have_no_path_filters_and_one_always_runs.py` | 8 | No path filter on a workflow that runs checks, one always-running job, full-history checkout, each deploy exemption still needed, and no variable the deploy sends to the box that it does not pass |
-| `test_the_test_job_proves_it_ran.py` | 5 | That the Tests job emits a JUnit report and asserts on it in a step no `if:` can disable |
-| `test_the_baseline_is_not_stale_in_either_direction.py` | 4 | The thesis record equal to the thesis in both directions; a fall keeps its reason; a dry run writes nothing |
-| `test_every_guard_checker_has_a_caller.py` | 4 | Every `check_*` and `verify_*` script reachable from a workflow, a test or the documentation |
-| `test_the_deployed_build_reads_its_reply.py` | 4 | That the domain serves the build just deployed, and can say so apart from a network failure |
+| `test_the_config_refuses_every_problem_at_once.py` | 11 | Configuration faults gathered in one pass |
+| `test_no_secret_is_committed_to_this_tree.py` | 8 | Credential shapes, each driven by a planted sample |
 | `test_ranking.py` | 8 | Foundational scoring and path ranking |
+| `test_sqlite_store.py` | 8 | Persistence, lock retry policy, backoff jitter, error classification |
+| `test_the_ci_workflows_have_no_path_filters_and_one_always_runs.py` | 8 | No path filter on a workflow, and one that always runs |
+| `test_the_documented_response_fields_are_the_fields_the_api_returns.py` | 8 | The documented fields |
 | `test_add_citegraph_route.py` | 7 | Deployment route-insertion helper |
-| `test_population_patterns.py` | 6 | Extraction patterns and ignore-span behaviour |
+| `test_config_env_alias.py` | 7 | The environment variable an operator sets is the one the code reads |
+| `test_run_poll_interval.py` | 7 | That RunStatus carries the server's retry interval |
 | `test_full_text_population.py` | 6 | The open-access full-text fallback of Section 5.2 |
-| `test_a_constant_is_not_defined_twice_in_one_file.py` | 3 | A constant bound twice in one scope, and one redeclared as a dataclass field |
-| `test_a_guard_that_cannot_look_does_not_report_clean.py` | 4 | That the PDF checks in the drift guard are reading, rather than skipping on a missing PyMuPDF; the simulation is checked against `importlib` so it does not depend on how pytest imports |
-| `test_no_source_file_carries_a_control_character.py` | 3 | Invisible control bytes, which turn a pattern into one that cannot fire |
+| `test_population_patterns.py` | 6 | Extraction patterns and ignore-span behaviour |
+| `test_second_opinion_pass.py` | 6 | That the second-opinion pass changes nothing when disabled |
+| `test_the_guard_ledger_matches_what_is_on_disk.py` | 6 | All 95 catalogued families accounted for |
 | `test_task_manager.py` | 5 | Background task lifecycle and shutdown semantics |
-| `test_url_resolver.py` | 5 | URL→identifier extraction, DOI view-segment trimming |
+| `test_the_test_job_proves_it_ran.py` | 5 | That the Tests job emits a JUnit report and asserts on it |
+| `test_url_resolver.py` | 5 | URL identifier extraction, DOI view-segment trimming |
+| `test_a_guard_that_cannot_look_does_not_report_clean.py` | 4 | That the PDF checks in the drift guard can read |
+| `test_every_guard_checker_has_a_caller.py` | 4 | Every `check_*` and `verify_*` script reachable from CI or a test |
+| `test_the_baseline_is_not_stale_in_either_direction.py` | 4 | The thesis record equal to the thesis |
+| `test_the_deployed_build_reads_its_reply.py` | 4 | That the domain serves the build just deployed |
+| `test_a_constant_is_not_defined_twice_in_one_file.py` | 3 | A constant bound twice in one scope |
 | `test_input_normalizer.py` | 3 | Identifier canonicalisation |
-| **Total** | **273** | |
+| `test_no_source_file_carries_a_control_character.py` | 3 | Invisible control bytes |
+| **Total** | **427** | |
 
 ## F.2 Regression tests added during evaluation
 
@@ -4658,9 +4666,9 @@ font size and its total width, and enlarging the font enlarges the boxes by
 the same proportion. Narrowing the graph is therefore the only lever
 available.
 
-**Collapsing modules to packages** (Figure 4.1). The raw output has 52 module
-nodes and 94 import edges, and at page width its labels render at roughly
-three points. Collapsing each module to its package leaves 14 nodes and 40
+**Collapsing modules to packages** (Figure 4.1). The raw output has 59 module
+nodes and 110 import edges, and at page width its labels render at roughly
+three points. Collapsing each module to its package leaves 15 nodes and 44
 edges, and carries the discarded detail as edge thickness rather than losing
 it.
 

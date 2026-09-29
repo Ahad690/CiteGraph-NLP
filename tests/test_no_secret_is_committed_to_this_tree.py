@@ -125,12 +125,35 @@ def real_contacts_in_template(text: str) -> list[str]:
 
 
 def settings_fields() -> set[str]:
-    """The setting names `Settings` declares, lowercased. pydantic-settings matches
+    """The setting names `Settings` reads, lowercased. pydantic-settings matches
     environment variables case-insensitively, so the template's uppercase keys and
     the class's lowercase attributes are the same names; comparing them as written
-    would report every key as unread."""
-    return {name.lower() for name in
-            re.findall(r"^    (\w+):\s", CONFIG.read_text(encoding="utf-8"), re.M)}
+    would report every key as unread.
+
+    A field carrying a `validation_alias` is published under that name, so the
+    alias REPLACES the field name rather than joining it.
+
+    This is the second half of the alias, and it was a real defect. `TYPESAFE_API_KEY`
+    is the name the vendor documents and the one an operator will set, so it is what
+    the template must publish. Leaving `jev_api_key` in the expected set made the
+    guard demand a template line for a name no operator is meant to type -- and the
+    two available "fixes" were both wrong: deleting a correct template line, or
+    suppressing the finding. Replacing the field name is what the code actually does.
+    """
+    text = CONFIG.read_text(encoding="utf-8")
+    fields = {name.lower() for name in
+              re.findall(r"^    (\w+):\s", text, re.M)}
+    # Pair each alias with the field that owns it. The body is barred from
+    # crossing into the next field, because a plain `.*?` pairs whichever field
+    # happens to precede the alias -- which silently renamed an unrelated setting
+    # and reported it as undocumented. That is the same class of false finding as
+    # the one this whole guard was corrected for, so the bound is the point.
+    pairs = re.findall(
+        r"^    (\w+):(?:(?!^    \w+:).)*?validation_alias=\"(\w+)\"",
+        text, re.M | re.S,
+    )
+    fields -= {field.lower() for field, _ in pairs}
+    return fields | {alias.lower() for _, alias in pairs}
 
 
 def example_keys() -> set[str]:

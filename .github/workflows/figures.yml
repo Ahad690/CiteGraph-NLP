@@ -1,0 +1,96 @@
+# Regenerate the thesis figures.
+#
+# WHY THIS IS A WORKFLOW AND NOT A LOCAL STEP
+#
+# The figures are dot-rendered SVGs, so regenerating them needs the Graphviz
+# binary plus pyreverse and code2flow. None of those are on a developer machine
+# by default and none are in requirements.txt, because they are build-time-only
+# tools that nothing imports. Adding them to requirements.txt would put a
+# Graphviz system dependency into a pip install, which fails on a clean
+# machine for a reason that has nothing to do with the project.
+#
+# So the toolchain lives here, where it is pinned and reproducible, and the
+# SVGs are committed output. The drift guard in the Tests job checks the
+# committed figures against the current code, so a stale figure is a red build
+# and this job is what makes it green again.
+#
+# THE LOOP GUARD IS THE POINT
+#
+# Without it this workflow would commit its own output, that commit would
+# trigger the workflow, and the repository would generate commits forever. The
+# job commits only when regeneration actually changed something, and skips
+# otherwise, so the second run of an unchanged tree is a no-op.
+name: Figures
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/citegraph/**"
+      - "scripts/generate_diagrams.py"
+      - "requirements.txt"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: figures-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Install the diagram toolchain
+        # Graphviz is a system package; pyreverse ships with pylint and
+        # code2flow reads the AST. All three are build-time only.
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y graphviz
+          python -m pip install --upgrade pip
+          python -m pip install pylint code2flow
+
+      - name: Install the project
+        run: python -m pip install -r requirements.txt
+
+      - name: Prove the toolchain is present
+        # A silent `dot: command not found` would make regeneration a no-op and
+        # the job would report success having changed nothing. The guard against
+        # a checker that cannot fail is the checker refusing to pass quietly.
+        run: |
+          dot -V
+          pyreverse --help > /dev/null
+          code2flow --help > /dev/null
+          echo "diagram toolchain is present"
+
+      - name: Regenerate
+        run: python scripts/generate_diagrams.py
+
+      - name: Commit only a real change
+        run: |
+          if git diff --quiet -- figures/; then
+            echo "figures already match the code; nothing to commit"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add figures/
+          git commit -m "Regenerate thesis figures for the current import graph
+
+Automated from scripts/generate_diagrams.py. The drift guard in the Tests job
+compares these figures against the code, so this is the output that keeps them
+honest rather than a re-derivation of the numbers the prose already states."
+          git push
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Figures"
+            echo ""
+            git diff --stat HEAD~1 -- figures/ 2>/dev/null || echo "no change"
+          } >> "$GITHUB_STEP_SUMMARY"
