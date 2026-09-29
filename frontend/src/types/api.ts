@@ -12,7 +12,12 @@ export type SemanticType =
   | "SAMPLE_SIZE_GENERIC"
   | "UNKNOWN_NUMERIC";
 
-export type PopulationStatus = "resolved" | "ambiguous" | "missing" | "low_confidence" | "not_applicable";
+export type PopulationStatus =
+  | "resolved"
+  | "ambiguous"
+  | "missing"
+  | "low_confidence"
+  | "not_applicable";
 
 export type ConfidenceLevel = "high" | "medium" | "low";
 
@@ -128,6 +133,12 @@ export interface RunStatusPayload {
   status: RunStatus;
   error?: string | null;
   created_at: string;
+  /**
+   * How long the client should wait before polling again. Optional because a
+   * backend predating the field omits it, and the client falls back to its own
+   * default rather than treating its absence as a reason to stop polling.
+   */
+  retry_after_ms?: number;
 }
 
 /** Raw payload returned by the backend for a run. The completed shape

@@ -49,6 +49,15 @@ class RunStatus(BaseModel):
     status: Literal["started", "running", "completed", "failed"]
     error: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
+    #: How long the client should wait before polling again.
+    #:
+    #: AnswerThis returns `retry_after_ms` alongside its job state and the client
+    #: obeys it. CiteGraph previously hardcoded a 2-second interval in
+    #: `useRun.ts`, so the client could not know whether the server was busy.
+    #: A server that knows its own load should say so; the client keeps its
+    #: current value as the default when the field is absent, so this is purely
+    #: additive and an older client is unaffected.
+    retry_after_ms: int = 2000
 
 @router.on_event("startup")
 async def startup_event():
@@ -132,8 +141,27 @@ async def get_run(run_id: str):
         run_id=data["run_id"],
         status=data["status"],
         error=data["error"],
-        created_at=datetime.fromisoformat(data["created_at"]) if isinstance(data["created_at"], str) else data["created_at"]
+        created_at=datetime.fromisoformat(data["created_at"]) if isinstance(data["created_at"], str) else data["created_at"],
+        retry_after_ms=_retry_after_ms(data["status"]),
     )
+
+
+def _retry_after_ms(status: str) -> int:
+    """How long a client should wait before asking again.
+
+    A run that is still resolving is slow, and a run that has already finished is
+    polled once more at most. Backoff rather than a flat interval: the current
+    2-second default becomes the starting point and grows while the run is young,
+    so a slow run is not hammered, then settles rather than spinning.
+
+    A terminal status returns a short interval because the client is about to stop
+    regardless -- it exists so a client that asks once more is not made to wait.
+    """
+    if status in ("completed", "failed"):
+        return 1000
+    if status == "started":
+        return 4000
+    return 2000
 
 @router.get("/runs/{run_id}/graph")
 async def get_graph(run_id: str):
