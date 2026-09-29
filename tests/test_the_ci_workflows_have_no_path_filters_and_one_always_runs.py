@@ -44,16 +44,20 @@ GUARDED = {"tests.yml"}
 EXEMPT = {
     "deploy-backend.yml": "rebuilds a container; a thesis edit does not change the image",
     "deploy-frontend.yml": "rebuilds a bundle; a thesis edit does not change the assets",
+    "figures.yml": "regenerates the figures from the import graph, so a thesis edit "
+                   "cannot make them stale; the filter names exactly what it reads",
 }
 
 #: Workflows whose steps read git history, and so need `fetch-depth: 0`.
 NEEDS_HISTORY = {
     "tests.yml": "runs guards that shell out to git, including the tracked-file check",
     "deploy-backend.yml": "runs scripts/check_deployed_build.py, which asks whether the "
-                          "served build is an ancestor of the branch tip",
+    "served build is an ancestor of the branch tip",
+    "figures.yml": "diffs figures/ to decide whether to commit, and pushes the result, "
+    "so a depth-1 clone would both lose the comparison and refuse the push",
 }
 
-#: Calibrated against this tree: three workflows, three jobs.
+#: Calibrated against this tree: four workflows, four jobs.
 WORKFLOW_FLOOR = 3
 JOB_FLOOR = 3
 

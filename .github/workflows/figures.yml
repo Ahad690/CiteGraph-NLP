@@ -44,6 +44,11 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v4
+        # Full history. This job diffs figures/ against the branch tip and pushes
+        # the result, so a depth-1 clone would lose the comparison it is deciding on
+        # and refuse the push. The reason is recorded in the guard that requires it.
+        with:
+          fetch-depth: 0
 
       - name: Install the diagram toolchain
         # Graphviz is a system package; pyreverse ships with pylint and
@@ -79,11 +84,11 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add figures/
-          git commit -m "Regenerate thesis figures for the current import graph
-
-Automated from scripts/generate_diagrams.py. The drift guard in the Tests job
-compares these figures against the code, so this is the output that keeps them
-honest rather than a re-derivation of the numbers the prose already states."
+          # One line, deliberately. A multi-line message inside a YAML block
+          # scalar breaks the moment a continuation line loses its indentation,
+          # and the failure is a workflow file GitHub refuses to load rather
+          # than a bad commit message -- so the detail lives in the run log.
+          git commit -m "Regenerate thesis figures for the current import graph"
           git push
 
       - name: Summary
