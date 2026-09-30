@@ -146,8 +146,16 @@ ORDINARY = {
         "asserts the daily ceiling is read from disk, is per day in UTC, and stops "
         "the next run rather than truncating this one"
     ),
+    "test_provider_cache.py": (
+        "asserts the content-hash cache key is stable across processes and that a "
+        "hit neither calls the provider nor charges the budget"
+    ),
     "test_query_detection.py": "exercises query-type detection from the identifier's shape",
     "test_ranking.py": "exercises the foundational scoring and path ranking",
+    "test_report_route.py": (
+        "asserts the report route falls back instead of erroring when the provider "
+        "is unconfigured, and never returns a key in an exception"
+    ),
     "test_run_poll_interval.py": (
         "asserts RunStatus carries the server's retry interval and survives "
         "serialisation"

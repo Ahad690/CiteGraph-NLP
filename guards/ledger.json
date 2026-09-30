@@ -1137,12 +1137,20 @@
    "why": "asserts the daily ceiling is read from disk, is per day in UTC, and stops the next run rather than truncating this one"
   },
   {
+   "path": "tests/test_provider_cache.py",
+   "why": "asserts the content-hash cache key is stable across processes and that a hit neither calls the provider nor charges the budget"
+  },
+  {
    "path": "tests/test_query_detection.py",
    "why": "exercises query-type detection from the identifier's shape"
   },
   {
    "path": "tests/test_ranking.py",
    "why": "exercises the foundational scoring and path ranking"
+  },
+  {
+   "path": "tests/test_report_route.py",
+   "why": "asserts the report route falls back instead of erroring when the provider is unconfigured, and never returns a key in an exception"
   },
   {
    "path": "tests/test_run_poll_interval.py",
@@ -1181,5 +1189,5 @@
    "reason": "Not a hook surface and not LLM-specific: heredocs mangling escapes, a result read through a pipe, $? checked after a pipe, a truncating edit, a guard test not run after changing the code it guards, a container assumed to re-read its environment. Four of these were hit while writing this port, and each is already covered by a guard rather than by a hook: test_the_thesis_does_not_drift.py catches the truncating edit through the test count, and the failure to run a changed guard is what CI is for. Recorded here so the catalogue is not re-mined."
   }
  ],
- "_ledger_md_sha256": "9011b811e7a6915eb2f49c3d670714b1e69cfc3c5f50d0aa4ae04ac737c86be1"
+ "_ledger_md_sha256": "e67076fb3ec2ee1c5c76be6210b88be4aeae23326adedf20876a0a5d0b07e937"
 }

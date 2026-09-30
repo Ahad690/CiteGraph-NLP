@@ -45,9 +45,9 @@ font size and its total width, and enlarging the font enlarges the boxes by
 the same proportion. Narrowing the graph is therefore the only lever
 available.
 
-**Collapsing modules to packages** (Figure 4.1). The raw output has 59 module
-nodes and 110 import edges, and at page width its labels render at roughly
-three points. Collapsing each module to its package leaves 15 nodes and 44
+**Collapsing modules to packages** (Figure 4.1). The raw output has 60 module
+nodes and 117 import edges, and at page width its labels render at roughly
+three points. Collapsing each module to its package leaves 15 nodes and 45
 edges, and carries the discarded detail as edge thickness rather than losing
 it.
 

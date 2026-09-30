@@ -39,7 +39,7 @@ back by the dashboard and the export endpoints.
 ```
 
 ![**Figure 4.1** Inter-package dependencies, produced by running `pyreverse`
-over `src/citegraph` and collapsing its 59 module nodes to the 15 packages
+over `src/citegraph` and collapsing its 60 module nodes to the 15 packages
 they belong to. Each arrow stands for one or more imports and is drawn
 thicker the more imports it carries. The heaviest arrows run downward into
 `models`, which holds the Pydantic types every other package

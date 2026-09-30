@@ -81,6 +81,16 @@ class Settings(BaseSettings):
     # able to erase the evidence of what was spent.
     provider_cost_record: str = "var/provider_cost.jsonl"
 
+    # A provider answer is a pure function of the request body and the model id,
+    # so the cache is keyed by their content hash. It sits beside the cost record
+    # rather than inside it because a cache can be deleted freely and a ledger
+    # cannot.
+    #
+    # A TTL of 0 means keep forever. A non-zero TTL is worth setting where an
+    # answer that old is a worse question to ask again than to serve.
+    provider_cache_path: str = "var/provider_cache.jsonl"
+    provider_cache_ttl_s: float = 0.0
+
     # Provider toggles
     enable_openalex: bool = True
     enable_crossref: bool = True

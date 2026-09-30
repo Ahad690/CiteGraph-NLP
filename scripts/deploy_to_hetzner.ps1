@@ -1,3 +1,49 @@
+# ============================================================================
+#  WARNING -- THIS SCRIPT REPLACES THE KEYS ON THE SERVER. BACK THEM UP FIRST.
+# ============================================================================
+#
+#  When -PushEnv / -EnvOnly is used, this script copies your LOCAL .env over the server's
+#  /opt/citegraph-nlp/.env. It is a whole-file overwrite, not a merge. Anything that exists
+#  only on the box is destroyed.
+#
+#  WHAT THIS ACTUALLY LOSES
+#
+#    * A credential you added on the server by hand and never put in your
+#      local .env.
+#    * A credential the deploy workflow injects into the container that your
+#      local .env does not carry.
+#    * Any server-only setting: CORS_ORIGINS, GIT_SHA, a bind address, a data
+#      path, a per-host override.
+#
+#  The failure is quiet. The script succeeds, the service comes back up, and the
+#  missing key only shows up later as a 401 in someone else's logs.
+#
+#  BACK UP THE SERVER ENV FIRST  (one command, do it before you run anything)
+#
+#    ssh root@167.233.240.132 `cp -p /opt/citegraph-nlp/.env /opt/citegraph-nlp/.env.bak-$(date +%Y%m%d-%H%M%S)
+#
+#  Then compare, so you know what is about to change rather than finding out
+#  afterwards. This prints key NAMES and value LENGTHS only, never values:
+#
+#    ssh root@167.233.240.132 "grep -oE '^[A-Z_]+' /opt/citegraph-nlp/.env | sort > /tmp/before.txt"
+#    # ... run this script ...
+#    ssh root@167.233.240.132 "grep -oE '^[A-Z_]+' /opt/citegraph-nlp/.env | sort > /tmp/after.txt"
+#    ssh root@167.233.240.132 "comm -23 /tmp/before.txt /tmp/after.txt"   # must be empty
+#
+#  IF YOU ONLY WANT TO CHANGE ONE KEY, DO NOT USE THIS SCRIPT
+#
+#  Merge the single key instead. It cannot touch anything else on the box:
+#
+#    KEY_NAME=value ssh root@167.233.240.132 `env
+#      python3 -c "import io,os;p='/opt/citegraph-nlp/.env';k='KEY_NAME';v=os.environ['KEY_NAME'];`#      `ls=io.open(p,encoding='utf-8').read().splitlines();`#      `print('\n'.join(k+'='+v if l.startswith(k+'=') else l for l in ls))" > /tmp/m && mv /tmp/m /opt/citegraph-nlp/.env
+#
+#  Pipe the value over stdin rather than in the command line, or it lands in the
+#  box's shell history. Note that a PowerShell pipe sends CRLF, so strip the
+#  trailing CR or the stored value will be a character too long and fail auth.
+#
+#  To restore:  mv /opt/citegraph-nlp/.env.bak-<timestamp> /opt/citegraph-nlp/.env
+# ============================================================================
+
 <#
 .SYNOPSIS
   Deploy CiteGraph-NLP backend to Hetzner via Docker. Safe alongside existing containers.

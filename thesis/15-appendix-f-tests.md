@@ -21,9 +21,11 @@ what happened to each one here, and why 33 were refused rather than ported.
 | `test_the_thesis_does_not_drift.py` | 20 | This thesis against its evidence, its figures, its PDFs |
 | `test_flow_diagram.py` | 18 | Stage and layout rules of the flow-diagram reader (Section 6.14) |
 | `test_graph_exporters.py` | 18 | The JSON and GraphML exporters emit the real edges |
+| `test_provider_cache.py` | 17 | The content-hash cache key, and that a hit spends nothing |
 | `test_disambiguation.py` | 16 | A Jev answer is used only above the confidence bar |
 | `test_provider_budget.py` | 14 | The daily ceiling, its UTC day, and its append-only record |
 | `test_technical_evidence.py` | 12 | Research-field detection, arXiv links and dataset-size extraction |
+| `test_report_route.py` | 11 | The report route's fallback when no provider is configured |
 | `test_the_config_refuses_every_problem_at_once.py` | 11 | Configuration faults gathered in one pass |
 | `test_no_secret_is_committed_to_this_tree.py` | 8 | Credential shapes, each driven by a planted sample |
 | `test_ranking.py` | 8 | Foundational scoring and path ranking |
@@ -47,7 +49,7 @@ what happened to each one here, and why 33 were refused rather than ported.
 | `test_a_constant_is_not_defined_twice_in_one_file.py` | 3 | A constant bound twice in one scope |
 | `test_input_normalizer.py` | 3 | Identifier canonicalisation |
 | `test_no_source_file_carries_a_control_character.py` | 3 | Invisible control bytes |
-| **Total** | **427** | |
+| **Total** | **455** | |
 
 ## F.2 Regression tests added during evaluation
 

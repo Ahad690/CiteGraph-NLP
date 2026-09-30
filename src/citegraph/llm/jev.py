@@ -29,6 +29,7 @@ from typing import Any
 
 from citegraph.config import settings
 from citegraph.llm.base import HttpProvider, ProviderUnavailable, Usage
+from citegraph.llm.cache import cached_post
 
 logger = logging.getLogger(__name__)
 
@@ -171,7 +172,9 @@ class JevClient(HttpProvider):
             raise ProviderUnavailable("jev: disabled or not configured")
 
         body = self.build_request(state, questions, model)
-        payload, _response = await self.post_json(ENDPOINT, body)
+        payload, from_cache = await cached_post(
+            self, ENDPOINT, body, model=self.model_id()
+        )
 
         answers = payload.get("answers") or {}
         if not isinstance(answers, dict):
@@ -180,8 +183,13 @@ class JevClient(HttpProvider):
         usage_block = payload.get("usage") or {}
         usage = Usage(
             provider=self.name,
-            input_tokens=int(usage_block.get("input_tokens") or 0),
-            output_tokens=int(usage_block.get("output_tokens") or 0),
+            # Zero on a cache hit. The payload still carries the ORIGINAL
+            # usage, and reporting it again would charge the daily ceiling for
+            # tokens that were never re-bought. The budget is a record of real
+            # spend, so a hit that inflated it would make the ceiling measure
+            # something other than spend.
+            input_tokens=0 if from_cache else int(usage_block.get("input_tokens") or 0),
+            output_tokens=0 if from_cache else int(usage_block.get("output_tokens") or 0),
             # Jev reports plain token counts with no cache breakdown, so the
             # conservative all-miss default applies.
             cache_breakdown_known=False,

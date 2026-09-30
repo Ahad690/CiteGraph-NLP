@@ -1,20 +1,23 @@
-from fastapi import APIRouter, HTTPException, BackgroundTasks, Response
-from pydantic import BaseModel, Field
-from typing import Dict, Literal, Optional
-from datetime import datetime, timezone
-import uuid
-import logging
-import json
 import asyncio
 import csv
 import io
+import json
+import logging
+import uuid
+from datetime import datetime, timezone
+from typing import Literal
 
 import networkx as nx
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Response
+from pydantic import BaseModel, Field
 
+from citegraph.graph.builder import GraphBuilder
+from citegraph.llm import get_glm
+from citegraph.llm.base import ProviderUnavailable
+from citegraph.llm.budget import budget_exhausted
 from citegraph.models.paper import PaperQuery
 from citegraph.models.run import RunResult
 from citegraph.pipeline.orchestrator import PipelineOrchestrator
-from citegraph.graph.builder import GraphBuilder
 from citegraph.providers.base import close_shared_client
 from citegraph.utils.tasks import task_manager
 
@@ -36,6 +39,7 @@ def _md(value) -> str:
 
 # Persistent storage
 from citegraph.storage.sqlite import SQLiteStore
+
 store = SQLiteStore()
 
 class RunRequest(PaperQuery):
@@ -47,7 +51,7 @@ class RunRequest(PaperQuery):
 class RunStatus(BaseModel):
     run_id: str
     status: Literal["started", "running", "completed", "failed"]
-    error: Optional[str] = None
+    error: str | None = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     #: How long the client should wait before polling again.
     #:
@@ -69,7 +73,7 @@ async def shutdown_event():
     await store.close()
     await close_shared_client()
 
-@router.post("/runs", response_model=Dict[str, str])
+@router.post("/runs", response_model=dict[str, str])
 async def start_run(request: RunRequest, background_tasks: BackgroundTasks):
     # Enforce limits
     request.backward_depth = min(max(request.backward_depth, 0), 3)
@@ -294,6 +298,21 @@ async def read_paper_flow_diagram(run_id: str, paper_id: str):
         from citegraph.vision.flow_diagram import read_flow_diagram
         async with _diagram_gate:
             reading = await asyncio.to_thread(read_flow_diagram, figure.image)
+
+        # Second opinion, only where the regexes were unsure. This lives here
+        # rather than inside read_flow_diagram because that function is sync and
+        # its output feeds counts the thesis pins; making it async would ripple
+        # through every caller for a feature that is off by default.
+        #
+        # It is a no-op unless Jev is enabled AND keyed, so a deployment without
+        # credentials returns exactly what it returned before this existed. The
+        # revisions are reported in the response rather than swallowed, because a
+        # stage total that a model moved is a number a reader is entitled to see
+        # was second-guessed.
+        revisions = None
+        from citegraph.vision.second_opinion_pass import apply_second_opinions
+        revisions = await apply_second_opinions(reading)
+
         record.update({
             "found": reading.is_flow,
             "caption": figure.caption,
@@ -302,6 +321,17 @@ async def read_paper_flow_diagram(run_id: str, paper_id: str):
             "evidence": reading.evidence,
             "seconds": round(reading.seconds, 1),
         })
+        if revisions is not None and revisions.labels_asked:
+            record["second_opinion"] = {
+                "asked": revisions.labels_asked,
+                "revised": revisions.labels_revised,
+                "declined": revisions.labels_declined,
+                "model": revisions.model_served,
+                "changes": {
+                    label: {"before": sorted(before), "after": sorted(after)}
+                    for label, (before, after) in revisions.changes.items()
+                },
+            }
 
     async with _result_lock(run_id):
         latest = await _load_result(run_id)
@@ -336,6 +366,105 @@ async def _load_result(run_id: str) -> RunResult:
     return RunResult.model_validate_json(data["result_json"])
 
 
+class ReportRequest(BaseModel):
+    """What to write the report about."""
+
+    question: str = Field(
+        default=(
+            "Summarise what this citation graph shows about foundational work, "
+            "and say what the graph does not support."
+        ),
+        min_length=1,
+        max_length=2000,
+    )
+    #: Cap on papers handed to the model. Bounded because the prompt is
+    #: assembled from them and an unbounded list is a bill, not a question.
+    max_papers: int = Field(default=40, ge=1, le=200)
+
+
+@router.post("/runs/{run_id}/report")
+async def generate_report(run_id: str, request: ReportRequest):
+    """Write a narrative report from the run's citation graph.
+
+    Falls back rather than failing when GLM is unavailable. An unconfigured
+    provider is the normal state of this deployment, so returning 503 would mean
+    the common case is an error page; the response says plainly that the report
+    is deterministic-only and why.
+    """
+    result = await _load_result(run_id)
+    client = get_glm()
+
+    if not client.enabled:
+        return {
+            "run_id": run_id,
+            "report": None,
+            "source": "none",
+            "reason": "GLM is disabled or not configured; the report is not generated",
+        }
+    if budget_exhausted():
+        return {
+            "run_id": run_id,
+            "report": None,
+            "source": "none",
+            "reason": "the daily provider budget is reached; the run is unaffected",
+        }
+
+    # The graph is the only source. Each paper is reduced to fields the model can
+    # legitimately be told, so the prompt cannot carry a full record with fields
+    # the narrative has no business citing.
+    ranked = result.ranked_foundational_papers[: request.max_papers]
+    papers = [
+        {
+            "rank": entry.get("rank"),
+            "paper_id": entry.get("paper_id"),
+            "title": entry.get("title"),
+            "year": entry.get("year"),
+            "cited_by_count": entry.get("cited_by_count"),
+            "score": entry.get("score"),
+        }
+        for entry in ranked
+    ]
+    edges = [
+        {"source": e.source_paper_id, "target": e.target_paper_id}
+        for e in result.citation_edges
+    ]
+
+    if not papers:
+        return {
+            "run_id": run_id,
+            "report": None,
+            "source": "none",
+            "reason": "the run has no ranked papers, so there is nothing to report on",
+        }
+
+    try:
+        text, usage = await client.generate_report(
+            request.question, papers, edges=edges, run_id=run_id
+        )
+    except ProviderUnavailable as exc:
+        # ProviderUnavailable is raised with a message that is already safe: the
+        # client scrubs the key before it reaches a string. The bare class name
+        # is included so a log can tell a disabled provider from an empty
+        # response without echoing whatever the transport said.
+        logger.warning("report generation fell back: %s", exc.__class__.__name__)
+        return {
+            "run_id": run_id,
+            "report": None,
+            "source": "none",
+            "reason": "the provider could not be reached; the run is unaffected",
+        }
+
+    return {
+        "run_id": run_id,
+        "report": text,
+        "source": "glm",
+        "model": usage.model_served,
+        "papers_considered": len(papers),
+        "edges_considered": len(edges),
+        "usage": usage.as_row(),
+    }
+
+
 @router.get("/runs/{run_id}/export/json")
 async def export_json(run_id: str):
     data = await store.get_run(run_id)
@@ -352,8 +481,8 @@ async def export_csv(run_id: str):
 
     resolutions = {r.paper_id: r for r in result.population_resolutions}
     technical = {item.paper_id: item for item in result.technical_evidence}
-    in_degree: Dict[str, int] = {}
-    out_degree: Dict[str, int] = {}
+    in_degree: dict[str, int] = {}
+    out_degree: dict[str, int] = {}
     for edge in result.citation_edges:
         out_degree[edge.source_paper_id] = out_degree.get(edge.source_paper_id, 0) + 1
         in_degree[edge.target_paper_id] = in_degree.get(edge.target_paper_id, 0) + 1

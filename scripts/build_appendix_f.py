@@ -51,6 +51,8 @@ DESCRIPTIONS = {
     "test_graph_exporters.py": "The JSON and GraphML exporters emit the real edges",
     "test_llm_providers.py": "The Jev and GLM request shapes, retries, and key redaction",
     "test_provider_budget.py": "The daily ceiling, its UTC day, and its append-only record",
+    "test_provider_cache.py": "The content-hash cache key, and that a hit spends nothing",
+    "test_report_route.py": "The report route's fallback when no provider is configured",
     "test_run_poll_interval.py": "That RunStatus carries the server's retry interval",
     "test_second_opinion_pass.py": "That the second-opinion pass changes nothing when disabled",
 }

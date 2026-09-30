@@ -68,8 +68,10 @@ of the two happens.
 | `tests/test_llm_providers.py` | asserts the Jev and GLM clients build the documented request, retry, and never put a key in a log or an exception |
 | `tests/test_population_patterns.py` | exercises the extraction patterns and their ignore spans |
 | `tests/test_provider_budget.py` | asserts the daily ceiling is read from disk, is per day in UTC, and stops the next run rather than truncating this one |
+| `tests/test_provider_cache.py` | asserts the content-hash cache key is stable across processes and that a hit neither calls the provider nor charges the budget |
 | `tests/test_query_detection.py` | exercises query-type detection from the identifier's shape |
 | `tests/test_ranking.py` | exercises the foundational scoring and path ranking |
+| `tests/test_report_route.py` | asserts the report route falls back instead of erroring when the provider is unconfigured, and never returns a key in an exception |
 | `tests/test_run_poll_interval.py` | asserts RunStatus carries the server's retry interval and survives serialisation |
 | `tests/test_second_opinion_pass.py` | asserts the second-opinion pass changes nothing when disabled, and re-derives the totals when it does revise a label |
 | `tests/test_sqlite_store.py` | exercises persistence, lock retries and error classification |

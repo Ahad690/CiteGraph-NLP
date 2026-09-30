@@ -26,6 +26,7 @@ from typing import Any
 from citegraph.config import settings
 from citegraph.llm.base import HttpProvider, ProviderUnavailable, Usage
 from citegraph.llm.budget import budget_exhausted, record
+from citegraph.llm.cache import cached_post
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +60,21 @@ class GLMClient(HttpProvider):
     def enabled(self) -> bool:
         return bool(settings.enable_glm and self.configured)
 
-    def build_prompt(self, question: str, papers: Sequence[dict[str, Any]]) -> str:
+    def model_id(self) -> str:
+        """The model the request will name.
+
+        Read from settings rather than duplicated as a literal, so the cache key
+        and the request body cannot disagree about which model was asked.
+        """
+        return settings.glm_model
+
+    def build_prompt(
+        self,
+        question: str,
+        papers: Sequence[dict[str, Any]],
+        edges: Sequence[dict[str, str]] = (),
+        run_id: str | None = None,
+    ) -> str:
         """The user message: the question, then the evidence, then the ask.
 
         The evidence is a flat list of what the providers actually returned. No
@@ -89,14 +104,40 @@ class GLMClient(HttpProvider):
                     f"- Link confidence to the seed paper: {paper['confidence']:.2f}"
                 )
             lines.append(" ".join(parts))
-        lines.append("")
-        lines.append("Write the overview using only these papers.")
+
+        # The edges are the subject. A narrative about a citation graph that
+        # cannot see the links is a narrative about a bag of papers, and the
+        # report would then describe a structure the evidence did not contain.
+        if edges:
+            lines.extend(["", f"CITATION EDGES ({len(edges)}), source cites target:"])
+            for edge in edges[:500]:
+                lines.append(f"- {edge.get('source')} -> {edge.get('target')}")
+            if len(edges) > 500:
+                lines.append(f"- (and {len(edges) - 500} further edges not shown)")
+
+        lines.extend([
+            "",
+            "Write the overview using only these papers.",
+            "If the evidence does not support a claim, say that it does not",
+            "rather than making the claim.",
+        ])
+        if run_id:
+            lines.append(f"(run {run_id})")
         return "\n".join(lines)
 
     async def generate_report(
-        self, question: str, papers: Sequence[dict[str, Any]]
+        self,
+        question: str,
+        papers: Sequence[dict[str, Any]],
+        edges: Sequence[dict[str, str]] | None = None,
+        run_id: str | None = None,
     ) -> tuple[str, Usage]:
         """Return the report text and the usage for the call.
+
+        `edges` is part of the evidence, not decoration: the narrative is about
+        a citation graph, so the links between the papers are the thing being
+        described. They go into the cache key via the request body, so two runs
+        with the same papers but different links do not share an answer.
 
         The day's budget is checked BEFORE the call, not after. Checking after
         means the call that breaches the ceiling has already been paid for.
@@ -114,12 +155,19 @@ class GLMClient(HttpProvider):
             "model": settings.glm_model,
             "messages": [
                 {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": self.build_prompt(question, papers)},
+                {
+                    "role": "user",
+                    "content": self.build_prompt(
+                        question, papers, edges or (), run_id
+                    ),
+                },
             ],
             "temperature": 0.2,
         }
 
-        payload, _response = await self.post_json(ENDPOINT, body)
+        payload, from_cache = await cached_post(
+            self, ENDPOINT, body, model=self.model_id()
+        )
 
         text = _extract_text(payload)
         if not text:
@@ -129,15 +177,18 @@ class GLMClient(HttpProvider):
         cost = usage_block.get("cost")
         usage = Usage(
             provider=self.name,
-            input_tokens=int(usage_block.get("prompt_tokens") or 0),
-            output_tokens=int(usage_block.get("completion_tokens") or 0),
+            # Zero on a cache hit, same reasoning as Jev: the payload carries the
+            # original usage, and re-reporting it would charge the daily ceiling
+            # for a report that was not regenerated.
+            input_tokens=0 if from_cache else int(usage_block.get("prompt_tokens") or 0),
+            output_tokens=0 if from_cache else int(usage_block.get("completion_tokens") or 0),
             # GLM exposes neither prompt_cache_hit_tokens nor
             # prompt_tokens_details.cached_tokens. Reading either name against it
             # would report 0% cache hit on every call while being billed for
             # roughly 97% of the input as cached. The breakdown is therefore
             # recorded as unknown, and the cost is estimated conservatively.
             cache_breakdown_known=False,
-            cost_usd=float(cost) if isinstance(cost, (int, float)) else None,
+            cost_usd=0.0 if from_cache else (float(cost) if isinstance(cost, (int, float)) else None),
             model_served=payload.get("model"),
         )
 
