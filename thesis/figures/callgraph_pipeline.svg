@@ -10,137 +10,137 @@
 <title>G</title>
 <polygon fill="white" stroke="transparent" points="-4,4 -4,-1765 1091,-1765 1091,4 -4,4"/>
 <g id="clust2" class="cluster">
-<title>cluster_9ffdbf79</title>
+<title>cluster_7bf95251</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="351,-1381 351,-1603 892,-1603 892,-1381 351,-1381"/>
 <text text-anchor="middle" x="621.5" y="-1587.8" font-family="Times,serif" font-size="14.00">File: analytics</text>
 </g>
 <g id="clust3" class="cluster">
-<title>cluster_7ee036e0</title>
+<title>cluster_72b9bc25</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="359,-1389 359,-1572 884,-1572 884,-1389 359,-1389"/>
 <text text-anchor="middle" x="621.5" y="-1556.8" font-family="Times,serif" font-size="14.00">Class: GraphAnalytics</text>
 </g>
 <g id="clust4" class="cluster">
-<title>cluster_e43c0158</title>
+<title>cluster_6f4f83e8</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="705,-648 705,-723 900,-723 900,-648 705,-648"/>
 <text text-anchor="middle" x="802.5" y="-707.8" font-family="Times,serif" font-size="14.00">File: base</text>
 </g>
 <g id="clust5" class="cluster">
-<title>cluster_fc2c7f1a</title>
+<title>cluster_90e3228c</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="397.5,-1639 397.5,-1753 574.5,-1753 574.5,-1639 397.5,-1639"/>
 <text text-anchor="middle" x="486" y="-1737.8" font-family="Times,serif" font-size="14.00">File: builder</text>
 </g>
 <g id="clust6" class="cluster">
-<title>cluster_809eb552</title>
+<title>cluster_00d1a77b</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="405.5,-1647 405.5,-1722 566.5,-1722 566.5,-1647 405.5,-1647"/>
 <text text-anchor="middle" x="486" y="-1706.8" font-family="Times,serif" font-size="14.00">Class: GraphBuilder</text>
 </g>
 <g id="clust7" class="cluster">
-<title>cluster_3d4c7e04</title>
+<title>cluster_8a81b10c</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="724.5,-1205 724.5,-1373 1079,-1373 1079,-1205 724.5,-1205"/>
 <text text-anchor="middle" x="901.75" y="-1357.8" font-family="Times,serif" font-size="14.00">File: cache</text>
 </g>
 <g id="clust8" class="cluster">
-<title>cluster_45e0a2f9</title>
+<title>cluster_8d42570f</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="732.5,-1213 732.5,-1342 1071,-1342 1071,-1213 732.5,-1213"/>
 <text text-anchor="middle" x="901.75" y="-1326.8" font-family="Times,serif" font-size="14.00">Class: ProviderCache</text>
 </g>
 <g id="clust9" class="cluster">
-<title>cluster_40b8e2b4</title>
+<title>cluster_c175e910</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="639,-975 639,-1197 966,-1197 966,-975 639,-975"/>
 <text text-anchor="middle" x="802.5" y="-1181.8" font-family="Times,serif" font-size="14.00">File: europe_pmc</text>
 </g>
 <g id="clust10" class="cluster">
-<title>cluster_66c13643</title>
+<title>cluster_ba5dcf97</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="647,-983 647,-1166 958,-1166 958,-983 647,-983"/>
 <text text-anchor="middle" x="802.5" y="-1150.8" font-family="Times,serif" font-size="14.00">Class: EuropePMCProvider</text>
 </g>
 <g id="clust11" class="cluster">
-<title>cluster_a985701a</title>
+<title>cluster_47135c26</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="702,-731 702,-845 903,-845 903,-731 702,-731"/>
 <text text-anchor="middle" x="802.5" y="-829.8" font-family="Times,serif" font-size="14.00">File: merger</text>
 </g>
 <g id="clust12" class="cluster">
-<title>cluster_113f8e8e</title>
+<title>cluster_0f05ad18</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="710,-739 710,-814 895,-814 895,-739 710,-739"/>
 <text text-anchor="middle" x="802.5" y="-798.8" font-family="Times,serif" font-size="14.00">Class: MetadataMerger</text>
 </g>
 <g id="clust13" class="cluster">
-<title>cluster_03b3d74c</title>
+<title>cluster_048b47bb</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="383.5,-907 383.5,-1021 588.5,-1021 588.5,-907 383.5,-907"/>
 <text text-anchor="middle" x="486" y="-1005.8" font-family="Times,serif" font-size="14.00">File: normalizer</text>
 </g>
 <g id="clust14" class="cluster">
-<title>cluster_469947a2</title>
+<title>cluster_31e50e12</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="391.5,-915 391.5,-990 580.5,-990 580.5,-915 391.5,-915"/>
 <text text-anchor="middle" x="486" y="-974.8" font-family="Times,serif" font-size="14.00">Class: InputNormalizer</text>
 </g>
 <g id="clust15" class="cluster">
-<title>cluster_c9da6bf8</title>
+<title>cluster_0e2fed31</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="698,-130 698,-244 908,-244 908,-130 698,-130"/>
 <text text-anchor="middle" x="803" y="-228.8" font-family="Times,serif" font-size="14.00">File: openalex</text>
 </g>
 <g id="clust16" class="cluster">
-<title>cluster_55cccceb</title>
+<title>cluster_55cb1dee</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="706,-138 706,-213 900,-213 900,-138 706,-138"/>
 <text text-anchor="middle" x="803" y="-197.8" font-family="Times,serif" font-size="14.00">Class: OpenAlexProvider</text>
 </g>
 <g id="clust17" class="cluster">
-<title>cluster_92869232</title>
+<title>cluster_d7ee1dce</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="103.5,-1029 103.5,-1197 612.5,-1197 612.5,-1029 103.5,-1029"/>
 <text text-anchor="middle" x="358" y="-1181.8" font-family="Times,serif" font-size="14.00">File: orchestrator</text>
 </g>
 <g id="clust18" class="cluster">
-<title>cluster_bb495bd9</title>
+<title>cluster_dba0f85c</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="111.5,-1037 111.5,-1166 604.5,-1166 604.5,-1037 111.5,-1037"/>
 <text text-anchor="middle" x="358" y="-1150.8" font-family="Times,serif" font-size="14.00">Class: PipelineOrchestrator</text>
 </g>
 <g id="clust19" class="cluster">
-<title>cluster_cb553033</title>
+<title>cluster_3f444ac1</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="691,-853 691,-967 915,-967 915,-853 691,-853"/>
 <text text-anchor="middle" x="803" y="-951.8" font-family="Times,serif" font-size="14.00">File: population_extractor</text>
 </g>
 <g id="clust20" class="cluster">
-<title>cluster_39c13539</title>
+<title>cluster_9bd414c2</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="699,-861 699,-936 907,-936 907,-861 699,-861"/>
 <text text-anchor="middle" x="803" y="-920.8" font-family="Times,serif" font-size="14.00">Class: PopulationExtractor</text>
 </g>
 <g id="clust21" class="cluster">
-<title>cluster_3b9310bb</title>
+<title>cluster_9f6cc90b</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="402,-482 402,-640 934,-640 934,-482 402,-482"/>
 <text text-anchor="middle" x="668" y="-624.8" font-family="Times,serif" font-size="14.00">File: resolver</text>
 </g>
 <g id="clust22" class="cluster">
-<title>cluster_6164a656</title>
+<title>cluster_fa9db2ee</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="410,-490 410,-565 926,-565 926,-490 410,-490"/>
 <text text-anchor="middle" x="668" y="-549.8" font-family="Times,serif" font-size="14.00">Class: MetadataResolver</text>
 </g>
 <g id="clust23" class="cluster">
-<title>cluster_d37a8b72</title>
+<title>cluster_466e418f</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="346.5,-130 346.5,-244 626.5,-244 626.5,-130 346.5,-130"/>
 <text text-anchor="middle" x="486.5" y="-228.8" font-family="Times,serif" font-size="14.00">File: technical_evidence</text>
 </g>
 <g id="clust24" class="cluster">
-<title>cluster_16d83fec</title>
+<title>cluster_15e596f8</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="354.5,-138 354.5,-213 618.5,-213 618.5,-138 354.5,-138"/>
 <text text-anchor="middle" x="486.5" y="-197.8" font-family="Times,serif" font-size="14.00">Class: TechnicalEvidenceExtractor</text>
 </g>
 <g id="clust25" class="cluster">
-<title>cluster_5228dd7b</title>
+<title>cluster_f5138377</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="408.5,-252 408.5,-474 909.5,-474 909.5,-252 408.5,-252"/>
 <text text-anchor="middle" x="659" y="-458.8" font-family="Times,serif" font-size="14.00">File: traversal</text>
 </g>
 <g id="clust26" class="cluster">
-<title>cluster_cd66104a</title>
+<title>cluster_eef2ea70</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="416.5,-260 416.5,-443 901.5,-443 901.5,-260 416.5,-260"/>
 <text text-anchor="middle" x="659" y="-427.8" font-family="Times,serif" font-size="14.00">Class: CitationTraversal</text>
 </g>
 <g id="clust27" class="cluster">
-<title>cluster_18f5fb25</title>
+<title>cluster_806f05c0</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="379.5,-8 379.5,-122 592.5,-122 592.5,-8 379.5,-8"/>
 <text text-anchor="middle" x="486" y="-106.8" font-family="Times,serif" font-size="14.00">File: weighting</text>
 </g>
 <g id="clust28" class="cluster">
-<title>cluster_2bc3397b</title>
+<title>cluster_4eed4fe4</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="387.5,-16 387.5,-91 584.5,-91 584.5,-16 387.5,-16"/>
 <text text-anchor="middle" x="486" y="-75.8" font-family="Times,serif" font-size="14.00">Class: WeightCalculator</text>
 </g>
@@ -169,432 +169,432 @@
 <polygon fill="none" stroke="black" points="2.5,-916 2.5,-1002 325.5,-1002 325.5,-916 2.5,-916"/>
 <polygon fill="none" stroke="black" points="0,-914.5 0,-1021.5 327,-1021.5 327,-914.5 0,-914.5"/>
 </g>
-<!-- node_14cc6735 -->
+<!-- node_a2480abc -->
 <g id="node2" class="node">
-<title>node_14cc6735</title>
+<title>node_a2480abc</title>
 <path fill="#6db33f" stroke="black" d="M526.5,-1541C526.5,-1541 445.5,-1541 445.5,-1541 439.5,-1541 433.5,-1535 433.5,-1529 433.5,-1529 433.5,-1517 433.5,-1517 433.5,-1511 439.5,-1505 445.5,-1505 445.5,-1505 526.5,-1505 526.5,-1505 532.5,-1505 538.5,-1511 538.5,-1517 538.5,-1517 538.5,-1529 538.5,-1529 538.5,-1535 532.5,-1541 526.5,-1541"/>
 <text text-anchor="middle" x="486" y="-1519.3" font-family="Times,serif" font-size="14.00">17: __init__()</text>
 </g>
-<!-- node_34c79390 -->
+<!-- node_0c5b99d4 -->
 <g id="node3" class="node">
-<title>node_34c79390</title>
+<title>node_0c5b99d4</title>
 <path fill="#6db33f" stroke="black" d="M857,-1487C857,-1487 748,-1487 748,-1487 742,-1487 736,-1481 736,-1475 736,-1475 736,-1463 736,-1463 736,-1457 742,-1451 748,-1451 748,-1451 857,-1451 857,-1451 863,-1451 869,-1457 869,-1463 869,-1463 869,-1475 869,-1475 869,-1481 863,-1487 857,-1487"/>
 <text text-anchor="middle" x="802.5" y="-1465.3" font-family="Times,serif" font-size="14.00">89: _iter_paths()</text>
 </g>
-<!-- node_636b4a68 -->
+<!-- node_7694eeab -->
 <g id="node4" class="node">
-<title>node_636b4a68</title>
+<title>node_7694eeab</title>
 <path fill="#cccccc" stroke="black" d="M864,-1433C864,-1433 741,-1433 741,-1433 735,-1433 729,-1427 729,-1421 729,-1421 729,-1409 729,-1409 729,-1403 735,-1397 741,-1397 741,-1397 864,-1397 864,-1397 870,-1397 876,-1403 876,-1409 876,-1409 876,-1421 876,-1421 876,-1427 870,-1433 864,-1433"/>
 <text text-anchor="middle" x="802.5" y="-1411.3" font-family="Times,serif" font-size="14.00">109: _score_path()</text>
 </g>
-<!-- node_d9cc535c -->
+<!-- node_f649ac98 -->
 <g id="node10" class="node">
-<title>node_d9cc535c</title>
+<title>node_f649ac98</title>
 <path fill="#cccccc" stroke="black" d="M1051,-1257C1051,-1257 998,-1257 998,-1257 992,-1257 986,-1251 986,-1245 986,-1245 986,-1233 986,-1233 986,-1227 992,-1221 998,-1221 998,-1221 1051,-1221 1051,-1221 1057,-1221 1063,-1227 1063,-1233 1063,-1233 1063,-1245 1063,-1245 1063,-1251 1057,-1257 1051,-1257"/>
 <text text-anchor="middle" x="1024.5" y="-1235.3" font-family="Times,serif" font-size="14.00">84: get()</text>
 </g>
-<!-- node_636b4a68&#45;&gt;node_d9cc535c -->
+<!-- node_7694eeab&#45;&gt;node_f649ac98 -->
 <g id="edge1" class="edge">
-<title>node_636b4a68&#45;&gt;node_d9cc535c</title>
-<path fill="none" stroke="#000000" stroke-width="2" d="M871,-1396.76C871,-1353.92 871,-1250.45 871,-1250.45 871,-1250.45 975.77,-1250.45 975.77,-1250.45"/>
-<polygon fill="#000000" stroke="#000000" stroke-width="2" points="975.77,-1253.95 985.77,-1250.45 975.77,-1246.95 975.77,-1253.95"/>
+<title>node_7694eeab&#45;&gt;node_f649ac98</title>
+<path fill="none" stroke="#009e73" stroke-width="2" d="M871,-1396.76C871,-1353.92 871,-1250.45 871,-1250.45 871,-1250.45 975.77,-1250.45 975.77,-1250.45"/>
+<polygon fill="#009e73" stroke="#009e73" stroke-width="2" points="975.77,-1253.95 985.77,-1250.45 975.77,-1246.95 975.77,-1253.95"/>
 </g>
-<!-- node_26aad44b -->
+<!-- node_519bab35 -->
 <g id="node5" class="node">
-<title>node_26aad44b</title>
+<title>node_519bab35</title>
 <path fill="#cccccc" stroke="black" d="M593,-1487C593,-1487 379,-1487 379,-1487 373,-1487 367,-1481 367,-1475 367,-1475 367,-1463 367,-1463 367,-1457 373,-1451 379,-1451 379,-1451 593,-1451 593,-1451 599,-1451 605,-1457 605,-1463 605,-1463 605,-1475 605,-1475 605,-1481 599,-1487 593,-1487"/>
 <text text-anchor="middle" x="486" y="-1465.3" font-family="Times,serif" font-size="14.00">20: rank_foundational_papers()</text>
 </g>
-<!-- node_26aad44b&#45;&gt;node_d9cc535c -->
+<!-- node_519bab35&#45;&gt;node_f649ac98 -->
 <g id="edge3" class="edge">
-<title>node_26aad44b&#45;&gt;node_d9cc535c</title>
-<path fill="none" stroke="#009e73" stroke-width="2" d="M585,-1450.85C585,-1397.87 585,-1247.18 585,-1247.18 585,-1247.18 975.88,-1247.18 975.88,-1247.18"/>
-<polygon fill="#009e73" stroke="#009e73" stroke-width="2" points="975.88,-1250.68 985.88,-1247.18 975.88,-1243.68 975.88,-1250.68"/>
+<title>node_519bab35&#45;&gt;node_f649ac98</title>
+<path fill="none" stroke="#0072b2" stroke-width="2" d="M585,-1450.85C585,-1397.87 585,-1247.18 585,-1247.18 585,-1247.18 975.88,-1247.18 975.88,-1247.18"/>
+<polygon fill="#0072b2" stroke="#0072b2" stroke-width="2" points="975.88,-1250.68 985.88,-1247.18 975.88,-1243.68 975.88,-1250.68"/>
 </g>
-<!-- node_788079a7 -->
+<!-- node_aec617e4 -->
 <g id="node6" class="node">
-<title>node_788079a7</title>
+<title>node_aec617e4</title>
 <path fill="#cccccc" stroke="black" d="M545,-1433C545,-1433 427,-1433 427,-1433 421,-1433 415,-1427 415,-1421 415,-1421 415,-1409 415,-1409 415,-1403 421,-1397 427,-1397 427,-1397 545,-1397 545,-1397 551,-1397 557,-1403 557,-1409 557,-1409 557,-1421 557,-1421 557,-1427 551,-1433 545,-1433"/>
 <text text-anchor="middle" x="486" y="-1411.3" font-family="Times,serif" font-size="14.00">126: rank_paths()</text>
 </g>
-<!-- node_788079a7&#45;&gt;node_34c79390 -->
+<!-- node_aec617e4&#45;&gt;node_0c5b99d4 -->
 <g id="edge7" class="edge">
-<title>node_788079a7&#45;&gt;node_34c79390</title>
-<path fill="none" stroke="#cc79a7" stroke-width="2" d="M557.18,-1421C610.76,-1421 675,-1421 675,-1421 675,-1421 675,-1469 675,-1469 675,-1469 725.76,-1469 725.76,-1469"/>
-<polygon fill="#cc79a7" stroke="#cc79a7" stroke-width="2" points="725.76,-1472.5 735.76,-1469 725.76,-1465.5 725.76,-1472.5"/>
+<title>node_aec617e4&#45;&gt;node_0c5b99d4</title>
+<path fill="none" stroke="#f0e442" stroke-width="2" d="M557.18,-1421C610.76,-1421 675,-1421 675,-1421 675,-1421 675,-1469 675,-1469 675,-1469 725.76,-1469 725.76,-1469"/>
+<polygon fill="#f0e442" stroke="#f0e442" stroke-width="2" points="725.76,-1472.5 735.76,-1469 725.76,-1465.5 725.76,-1472.5"/>
 </g>
-<!-- node_788079a7&#45;&gt;node_636b4a68 -->
+<!-- node_aec617e4&#45;&gt;node_7694eeab -->
 <g id="edge8" class="edge">
-<title>node_788079a7&#45;&gt;node_636b4a68</title>
-<path fill="none" stroke="#cc79a7" stroke-width="2" d="M557.03,-1409C557.03,-1409 718.96,-1409 718.96,-1409"/>
-<polygon fill="#cc79a7" stroke="#cc79a7" stroke-width="2" points="718.96,-1412.5 728.96,-1409 718.96,-1405.5 718.96,-1412.5"/>
+<title>node_aec617e4&#45;&gt;node_7694eeab</title>
+<path fill="none" stroke="#f0e442" stroke-width="2" d="M557.03,-1409C557.03,-1409 718.96,-1409 718.96,-1409"/>
+<polygon fill="#f0e442" stroke="#f0e442" stroke-width="2" points="718.96,-1412.5 728.96,-1409 718.96,-1405.5 718.96,-1412.5"/>
 </g>
-<!-- node_788079a7&#45;&gt;node_d9cc535c -->
+<!-- node_aec617e4&#45;&gt;node_f649ac98 -->
 <g id="edge9" class="edge">
-<title>node_788079a7&#45;&gt;node_d9cc535c</title>
-<path fill="none" stroke="#cc79a7" stroke-width="2" d="M486,-1396.69C486,-1352.55 486,-1243.91 486,-1243.91 486,-1243.91 975.77,-1243.91 975.77,-1243.91"/>
-<polygon fill="#cc79a7" stroke="#cc79a7" stroke-width="2" points="975.77,-1247.41 985.77,-1243.91 975.77,-1240.41 975.77,-1247.41"/>
+<title>node_aec617e4&#45;&gt;node_f649ac98</title>
+<path fill="none" stroke="#f0e442" stroke-width="2" d="M486,-1396.69C486,-1352.55 486,-1243.91 486,-1243.91 486,-1243.91 975.77,-1243.91 975.77,-1243.91"/>
+<polygon fill="#f0e442" stroke="#f0e442" stroke-width="2" points="975.77,-1247.41 985.77,-1243.91 975.77,-1240.41 975.77,-1247.41"/>
 </g>
-<!-- node_4ca8b440 -->
+<!-- node_ea36af0d -->
 <g id="node7" class="node">
-<title>node_4ca8b440</title>
+<title>node_ea36af0d</title>
 <path fill="#6db33f" stroke="black" d="M880,-692C880,-692 725,-692 725,-692 719,-692 713,-686 713,-680 713,-680 713,-668 713,-668 713,-662 719,-656 725,-656 725,-656 880,-656 880,-656 886,-656 892,-662 892,-668 892,-668 892,-680 892,-680 892,-686 886,-692 880,-692"/>
 <text text-anchor="middle" x="802.5" y="-670.3" font-family="Times,serif" font-size="14.00">21: get_shared_client()</text>
 </g>
-<!-- node_aee99cc2 -->
+<!-- node_b36bccab -->
 <g id="node8" class="node">
-<title>node_aee99cc2</title>
+<title>node_b36bccab</title>
 <path fill="#cccccc" stroke="black" d="M514.5,-1691C514.5,-1691 457.5,-1691 457.5,-1691 451.5,-1691 445.5,-1685 445.5,-1679 445.5,-1679 445.5,-1667 445.5,-1667 445.5,-1661 451.5,-1655 457.5,-1655 457.5,-1655 514.5,-1655 514.5,-1655 520.5,-1655 526.5,-1661 526.5,-1667 526.5,-1667 526.5,-1679 526.5,-1679 526.5,-1685 520.5,-1691 514.5,-1691"/>
 <text text-anchor="middle" x="486" y="-1669.3" font-family="Times,serif" font-size="14.00">8: build()</text>
 </g>
-<!-- node_aee99cc2&#45;&gt;node_d9cc535c -->
+<!-- node_b36bccab&#45;&gt;node_f649ac98 -->
 <g id="edge10" class="edge">
-<title>node_aee99cc2&#45;&gt;node_d9cc535c</title>
-<path fill="none" stroke="#56b4e9" stroke-width="2" d="M526.59,-1673C654.07,-1673 1038,-1673 1038,-1673 1038,-1673 1038,-1267.1 1038,-1267.1"/>
-<polygon fill="#56b4e9" stroke="#56b4e9" stroke-width="2" points="1041.5,-1267.1 1038,-1257.1 1034.5,-1267.1 1041.5,-1267.1"/>
+<title>node_b36bccab&#45;&gt;node_f649ac98</title>
+<path fill="none" stroke="#009e73" stroke-width="2" d="M526.59,-1673C654.07,-1673 1038,-1673 1038,-1673 1038,-1673 1038,-1267.1 1038,-1267.1"/>
+<polygon fill="#009e73" stroke="#009e73" stroke-width="2" points="1041.5,-1267.1 1038,-1257.1 1034.5,-1267.1 1041.5,-1267.1"/>
 </g>
-<!-- node_0e251a36 -->
+<!-- node_70f8e89f -->
 <g id="node9" class="node">
-<title>node_0e251a36</title>
+<title>node_70f8e89f</title>
 <path fill="#cccccc" stroke="black" d="M852.5,-1297C852.5,-1297 752.5,-1297 752.5,-1297 746.5,-1297 740.5,-1291 740.5,-1285 740.5,-1285 740.5,-1273 740.5,-1273 740.5,-1267 746.5,-1261 752.5,-1261 752.5,-1261 852.5,-1261 852.5,-1261 858.5,-1261 864.5,-1267 864.5,-1273 864.5,-1273 864.5,-1285 864.5,-1285 864.5,-1291 858.5,-1297 852.5,-1297"/>
 <text text-anchor="middle" x="802.5" y="-1275.3" font-family="Times,serif" font-size="14.00">116: _expired()</text>
 </g>
-<!-- node_0e251a36&#45;&gt;node_d9cc535c -->
+<!-- node_70f8e89f&#45;&gt;node_f649ac98 -->
 <g id="edge11" class="edge">
-<title>node_0e251a36&#45;&gt;node_d9cc535c</title>
-<path fill="none" stroke="#d55e00" stroke-width="2" d="M874.51,-1273C874.51,-1273 1012,-1273 1012,-1273 1012,-1273 1012,-1267.19 1012,-1267.19"/>
-<polygon fill="#d55e00" stroke="#d55e00" stroke-width="2" points="874.51,-1269.5 864.51,-1273 874.51,-1276.5 874.51,-1269.5"/>
-<polygon fill="#d55e00" stroke="#d55e00" stroke-width="2" points="1015.5,-1267.19 1012,-1257.19 1008.5,-1267.19 1015.5,-1267.19"/>
+<title>node_70f8e89f&#45;&gt;node_f649ac98</title>
+<path fill="none" stroke="#cc79a7" stroke-width="2" d="M874.51,-1273C874.51,-1273 1012,-1273 1012,-1273 1012,-1273 1012,-1267.19 1012,-1267.19"/>
+<polygon fill="#cc79a7" stroke="#cc79a7" stroke-width="2" points="874.51,-1269.5 864.51,-1273 874.51,-1276.5 874.51,-1269.5"/>
+<polygon fill="#cc79a7" stroke="#cc79a7" stroke-width="2" points="1015.5,-1267.19 1012,-1257.19 1008.5,-1267.19 1015.5,-1267.19"/>
 </g>
-<!-- node_d9cc535c&#45;&gt;node_d9cc535c -->
+<!-- node_f649ac98&#45;&gt;node_f649ac98 -->
 <g id="edge13" class="edge">
-<title>node_d9cc535c&#45;&gt;node_d9cc535c</title>
-<path fill="none" stroke="#f0e442" stroke-width="2" d="M985.88,-1253.73C975.95,-1253.73 968,-1253.73 968,-1253.73 968,-1253.73 968,-1285 968,-1285 968,-1285 1081,-1285 1081,-1285 1081,-1285 1081,-1239 1081,-1239 1081,-1239 1073.12,-1239 1073.12,-1239"/>
-<polygon fill="#f0e442" stroke="#f0e442" stroke-width="2" points="1073.12,-1235.5 1063.12,-1239 1073.12,-1242.5 1073.12,-1235.5"/>
+<title>node_f649ac98&#45;&gt;node_f649ac98</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M985.88,-1253.73C975.95,-1253.73 968,-1253.73 968,-1253.73 968,-1253.73 968,-1285 968,-1285 968,-1285 1081,-1285 1081,-1285 1081,-1285 1081,-1239 1081,-1239 1081,-1239 1073.12,-1239 1073.12,-1239"/>
+<polygon fill="#000000" stroke="#000000" stroke-width="2" points="1073.12,-1235.5 1063.12,-1239 1073.12,-1242.5 1073.12,-1235.5"/>
 </g>
-<!-- node_a7f5e618 -->
+<!-- node_f58a519f -->
 <g id="node11" class="node">
-<title>node_a7f5e618</title>
+<title>node_f58a519f</title>
 <path fill="#cccccc" stroke="black" d="M938,-1027C938,-1027 667,-1027 667,-1027 661,-1027 655,-1021 655,-1015 655,-1015 655,-1003 655,-1003 655,-997 661,-991 667,-991 667,-991 938,-991 938,-991 944,-991 950,-997 950,-1003 950,-1003 950,-1015 950,-1015 950,-1021 944,-1027 938,-1027"/>
 <text text-anchor="middle" x="802.5" y="-1005.3" font-family="Times,serif" font-size="14.00">244: find_open_access_pmcids_by_doi()</text>
 </g>
-<!-- node_a7f5e618&#45;&gt;node_d9cc535c -->
+<!-- node_f58a519f&#45;&gt;node_f649ac98 -->
 <g id="edge16" class="edge">
-<title>node_a7f5e618&#45;&gt;node_d9cc535c</title>
-<path fill="none" stroke="#000000" stroke-width="2" d="M931,-1027.35C931,-1079.41 931,-1224.27 931,-1224.27 931,-1224.27 975.93,-1224.27 975.93,-1224.27"/>
-<polygon fill="#000000" stroke="#000000" stroke-width="2" points="975.93,-1227.77 985.93,-1224.27 975.93,-1220.77 975.93,-1227.77"/>
+<title>node_f58a519f&#45;&gt;node_f649ac98</title>
+<path fill="none" stroke="#cc79a7" stroke-width="2" d="M931,-1027.35C931,-1079.41 931,-1224.27 931,-1224.27 931,-1224.27 975.93,-1224.27 975.93,-1224.27"/>
+<polygon fill="#cc79a7" stroke="#cc79a7" stroke-width="2" points="975.93,-1227.77 985.93,-1224.27 975.93,-1220.77 975.93,-1227.77"/>
 </g>
-<!-- node_cdd7f9fc -->
+<!-- node_09f4d041 -->
 <g id="node12" class="node">
-<title>node_cdd7f9fc</title>
+<title>node_09f4d041</title>
 <path fill="#cccccc" stroke="black" d="M896.5,-1135C896.5,-1135 708.5,-1135 708.5,-1135 702.5,-1135 696.5,-1129 696.5,-1123 696.5,-1123 696.5,-1111 696.5,-1111 696.5,-1105 702.5,-1099 708.5,-1099 708.5,-1099 896.5,-1099 896.5,-1099 902.5,-1099 908.5,-1105 908.5,-1111 908.5,-1111 908.5,-1123 908.5,-1123 908.5,-1129 902.5,-1135 896.5,-1135"/>
 <text text-anchor="middle" x="802.5" y="-1113.3" font-family="Times,serif" font-size="14.00">294: get_abstracts_by_doi()</text>
 </g>
-<!-- node_cdd7f9fc&#45;&gt;node_d9cc535c -->
+<!-- node_09f4d041&#45;&gt;node_f649ac98 -->
 <g id="edge20" class="edge">
-<title>node_cdd7f9fc&#45;&gt;node_d9cc535c</title>
-<path fill="none" stroke="#f0e442" stroke-width="2" d="M893,-1135.25C893,-1166.65 893,-1227.55 893,-1227.55 893,-1227.55 975.76,-1227.55 975.76,-1227.55"/>
-<polygon fill="#f0e442" stroke="#f0e442" stroke-width="2" points="975.76,-1231.05 985.76,-1227.55 975.76,-1224.05 975.76,-1231.05"/>
+<title>node_09f4d041&#45;&gt;node_f649ac98</title>
+<path fill="none" stroke="#e69f00" stroke-width="2" d="M893,-1135.25C893,-1166.65 893,-1227.55 893,-1227.55 893,-1227.55 975.76,-1227.55 975.76,-1227.55"/>
+<polygon fill="#e69f00" stroke="#e69f00" stroke-width="2" points="975.76,-1231.05 985.76,-1227.55 975.76,-1224.05 975.76,-1231.05"/>
 </g>
-<!-- node_7611f4cc -->
+<!-- node_1ea5904c -->
 <g id="node13" class="node">
-<title>node_7611f4cc</title>
+<title>node_1ea5904c</title>
 <path fill="#cccccc" stroke="black" d="M899,-1081C899,-1081 706,-1081 706,-1081 700,-1081 694,-1075 694,-1069 694,-1069 694,-1057 694,-1057 694,-1051 700,-1045 706,-1045 706,-1045 899,-1045 899,-1045 905,-1045 911,-1051 911,-1057 911,-1057 911,-1069 911,-1069 911,-1075 905,-1081 899,-1081"/>
 <text text-anchor="middle" x="802.5" y="-1059.3" font-family="Times,serif" font-size="14.00">277: get_full_text_sections()</text>
 </g>
-<!-- node_a716dcd8 -->
+<!-- node_2e8e52a0 -->
 <g id="node14" class="node">
-<title>node_a716dcd8</title>
+<title>node_2e8e52a0</title>
 <path fill="#cccccc" stroke="black" d="M836,-783C836,-783 769,-783 769,-783 763,-783 757,-777 757,-771 757,-771 757,-759 757,-759 757,-753 763,-747 769,-747 769,-747 836,-747 836,-747 842,-747 848,-753 848,-759 848,-759 848,-771 848,-771 848,-777 842,-783 836,-783"/>
 <text text-anchor="middle" x="802.5" y="-761.3" font-family="Times,serif" font-size="14.00">9: merge()</text>
 </g>
-<!-- node_a716dcd8&#45;&gt;node_d9cc535c -->
+<!-- node_2e8e52a0&#45;&gt;node_f649ac98 -->
 <g id="edge24" class="edge">
-<title>node_a716dcd8&#45;&gt;node_d9cc535c</title>
+<title>node_2e8e52a0&#45;&gt;node_f649ac98</title>
 <path fill="none" stroke="#000000" stroke-width="2" d="M848.17,-765C908.17,-765 1006,-765 1006,-765 1006,-765 1006,-1211 1006,-1211"/>
 <polygon fill="#000000" stroke="#000000" stroke-width="2" points="1002.5,-1211 1006,-1221 1009.5,-1211 1002.5,-1211"/>
 </g>
-<!-- node_570fc33c -->
+<!-- node_04e1fa1b -->
 <g id="node15" class="node">
-<title>node_570fc33c</title>
+<title>node_04e1fa1b</title>
 <path fill="#6db33f" stroke="black" d="M560.5,-959C560.5,-959 411.5,-959 411.5,-959 405.5,-959 399.5,-953 399.5,-947 399.5,-947 399.5,-935 399.5,-935 399.5,-929 405.5,-923 411.5,-923 411.5,-923 560.5,-923 560.5,-923 566.5,-923 572.5,-929 572.5,-935 572.5,-935 572.5,-947 572.5,-947 572.5,-953 566.5,-959 560.5,-959"/>
 <text text-anchor="middle" x="486" y="-937.3" font-family="Times,serif" font-size="14.00">13: normalize_query()</text>
 </g>
-<!-- node_5433228b -->
+<!-- node_84139cec -->
 <g id="node16" class="node">
-<title>node_5433228b</title>
+<title>node_84139cec</title>
 <path fill="#6db33f" stroke="black" d="M843,-182C843,-182 762,-182 762,-182 756,-182 750,-176 750,-170 750,-170 750,-158 750,-158 750,-152 756,-146 762,-146 762,-146 843,-146 843,-146 849,-146 855,-152 855,-158 855,-158 855,-170 855,-170 855,-176 849,-182 843,-182"/>
 <text text-anchor="middle" x="802.5" y="-160.3" font-family="Times,serif" font-size="14.00">35: __init__()</text>
 </g>
-<!-- node_cc3974c7 -->
+<!-- node_5c56f339 -->
 <g id="node17" class="node">
-<title>node_cc3974c7</title>
+<title>node_5c56f339</title>
 <path fill="#cccccc" stroke="black" d="M566.5,-1135C566.5,-1135 405.5,-1135 405.5,-1135 399.5,-1135 393.5,-1129 393.5,-1123 393.5,-1123 393.5,-1111 393.5,-1111 393.5,-1105 399.5,-1099 405.5,-1099 405.5,-1099 566.5,-1099 566.5,-1099 572.5,-1099 578.5,-1105 578.5,-1111 578.5,-1111 578.5,-1123 578.5,-1123 578.5,-1129 572.5,-1135 566.5,-1135"/>
 <text text-anchor="middle" x="486" y="-1113.3" font-family="Times,serif" font-size="14.00">43: _backfill_abstracts()</text>
 </g>
-<!-- node_cc3974c7&#45;&gt;node_d9cc535c -->
+<!-- node_5c56f339&#45;&gt;node_f649ac98 -->
 <g id="edge25" class="edge">
-<title>node_cc3974c7&#45;&gt;node_d9cc535c</title>
-<path fill="none" stroke="#cc79a7" stroke-width="2" d="M568,-1135.02C568,-1168.6 568,-1237.36 568,-1237.36 568,-1237.36 975.97,-1237.36 975.97,-1237.36"/>
-<polygon fill="#cc79a7" stroke="#cc79a7" stroke-width="2" points="975.97,-1240.86 985.97,-1237.36 975.97,-1233.86 975.97,-1240.86"/>
+<title>node_5c56f339&#45;&gt;node_f649ac98</title>
+<path fill="none" stroke="#e69f00" stroke-width="2" d="M568,-1135.02C568,-1168.6 568,-1237.36 568,-1237.36 568,-1237.36 975.97,-1237.36 975.97,-1237.36"/>
+<polygon fill="#e69f00" stroke="#e69f00" stroke-width="2" points="975.97,-1240.86 985.97,-1237.36 975.97,-1233.86 975.97,-1240.86"/>
 </g>
-<!-- node_cc3974c7&#45;&gt;node_cdd7f9fc -->
+<!-- node_5c56f339&#45;&gt;node_09f4d041 -->
 <g id="edge26" class="edge">
-<title>node_cc3974c7&#45;&gt;node_cdd7f9fc</title>
-<path fill="none" stroke="#cc79a7" stroke-width="2" d="M578.82,-1117C578.82,-1117 686.32,-1117 686.32,-1117"/>
-<polygon fill="#cc79a7" stroke="#cc79a7" stroke-width="2" points="686.32,-1120.5 696.32,-1117 686.32,-1113.5 686.32,-1120.5"/>
+<title>node_5c56f339&#45;&gt;node_09f4d041</title>
+<path fill="none" stroke="#e69f00" stroke-width="2" d="M578.82,-1117C578.82,-1117 686.32,-1117 686.32,-1117"/>
+<polygon fill="#e69f00" stroke="#e69f00" stroke-width="2" points="686.32,-1120.5 696.32,-1117 686.32,-1113.5 686.32,-1120.5"/>
 </g>
-<!-- node_96e7e688 -->
+<!-- node_8fb58288 -->
 <g id="node18" class="node">
-<title>node_96e7e688</title>
+<title>node_8fb58288</title>
 <path fill="#cccccc" stroke="black" d="M584.5,-1081C584.5,-1081 387.5,-1081 387.5,-1081 381.5,-1081 375.5,-1075 375.5,-1069 375.5,-1069 375.5,-1057 375.5,-1057 375.5,-1051 381.5,-1045 387.5,-1045 387.5,-1045 584.5,-1045 584.5,-1045 590.5,-1045 596.5,-1051 596.5,-1057 596.5,-1057 596.5,-1069 596.5,-1069 596.5,-1075 590.5,-1081 584.5,-1081"/>
 <text text-anchor="middle" x="486" y="-1059.3" font-family="Times,serif" font-size="14.00">78: _recover_from_full_text()</text>
 </g>
-<!-- node_96e7e688&#45;&gt;node_d9cc535c -->
+<!-- node_8fb58288&#45;&gt;node_f649ac98 -->
 <g id="edge27" class="edge">
-<title>node_96e7e688&#45;&gt;node_d9cc535c</title>
+<title>node_8fb58288&#45;&gt;node_f649ac98</title>
 <path fill="none" stroke="#000000" stroke-width="2" d="M591,-1081.31C591,-1125.45 591,-1234.09 591,-1234.09 591,-1234.09 975.65,-1234.09 975.65,-1234.09"/>
 <polygon fill="#000000" stroke="#000000" stroke-width="2" points="975.65,-1237.59 985.65,-1234.09 975.65,-1230.59 975.65,-1237.59"/>
 </g>
-<!-- node_96e7e688&#45;&gt;node_a7f5e618 -->
+<!-- node_8fb58288&#45;&gt;node_f58a519f -->
 <g id="edge29" class="edge">
-<title>node_96e7e688&#45;&gt;node_a7f5e618</title>
+<title>node_8fb58288&#45;&gt;node_f58a519f</title>
 <path fill="none" stroke="#000000" stroke-width="2" d="M590,-1044.73C590,-1028.14 590,-1006.25 590,-1006.25 590,-1006.25 644.91,-1006.25 644.91,-1006.25"/>
 <polygon fill="#000000" stroke="#000000" stroke-width="2" points="644.91,-1009.75 654.91,-1006.25 644.91,-1002.75 644.91,-1009.75"/>
 </g>
-<!-- node_96e7e688&#45;&gt;node_7611f4cc -->
+<!-- node_8fb58288&#45;&gt;node_1ea5904c -->
 <g id="edge30" class="edge">
-<title>node_96e7e688&#45;&gt;node_7611f4cc</title>
+<title>node_8fb58288&#45;&gt;node_1ea5904c</title>
 <path fill="none" stroke="#000000" stroke-width="2" d="M596.7,-1063C596.7,-1063 683.73,-1063 683.73,-1063"/>
 <polygon fill="#000000" stroke="#000000" stroke-width="2" points="683.73,-1066.5 693.73,-1063 683.73,-1059.5 683.73,-1066.5"/>
 </g>
-<!-- node_185f20d7 -->
+<!-- node_d07346c7 -->
 <g id="node20" class="node">
-<title>node_185f20d7</title>
+<title>node_d07346c7</title>
 <path fill="#6db33f" stroke="black" d="M885,-905C885,-905 720,-905 720,-905 714,-905 708,-899 708,-893 708,-893 708,-881 708,-881 708,-875 714,-869 720,-869 720,-869 885,-869 885,-869 891,-869 897,-875 897,-881 897,-881 897,-893 897,-893 897,-899 891,-905 885,-905"/>
 <text text-anchor="middle" x="802.5" y="-883.3" font-family="Times,serif" font-size="14.00">31: extract_candidates()</text>
 </g>
-<!-- node_96e7e688&#45;&gt;node_185f20d7 -->
+<!-- node_8fb58288&#45;&gt;node_d07346c7 -->
 <g id="edge31" class="edge">
-<title>node_96e7e688&#45;&gt;node_185f20d7</title>
+<title>node_8fb58288&#45;&gt;node_d07346c7</title>
 <path fill="none" stroke="#000000" stroke-width="2" d="M584,-1044.81C584,-1000.95 584,-893 584,-893 584,-893 697.93,-893 697.93,-893"/>
 <polygon fill="#000000" stroke="#000000" stroke-width="2" points="697.93,-896.5 707.93,-893 697.93,-889.5 697.93,-896.5"/>
 </g>
-<!-- node_26231e88 -->
+<!-- node_f9815c58 -->
 <g id="node19" class="node">
-<title>node_26231e88</title>
+<title>node_f9815c58</title>
 <path fill="#cccccc" stroke="black" d="M195.5,-1081C195.5,-1081 131.5,-1081 131.5,-1081 125.5,-1081 119.5,-1075 119.5,-1069 119.5,-1069 119.5,-1057 119.5,-1057 119.5,-1051 125.5,-1045 131.5,-1045 131.5,-1045 195.5,-1045 195.5,-1045 201.5,-1045 207.5,-1051 207.5,-1057 207.5,-1057 207.5,-1069 207.5,-1069 207.5,-1075 201.5,-1081 195.5,-1081"/>
 <text text-anchor="middle" x="163.5" y="-1059.3" font-family="Times,serif" font-size="14.00">148: run()</text>
 </g>
-<!-- node_26231e88&#45;&gt;node_14cc6735 -->
+<!-- node_f9815c58&#45;&gt;node_a2480abc -->
 <g id="edge32" class="edge">
-<title>node_26231e88&#45;&gt;node_14cc6735</title>
+<title>node_f9815c58&#45;&gt;node_a2480abc</title>
 <path fill="none" stroke="#000000" stroke-width="2" d="M149,-1081.03C149,-1166.08 149,-1523 149,-1523 149,-1523 423.34,-1523 423.34,-1523"/>
 <polygon fill="#000000" stroke="#000000" stroke-width="2" points="423.34,-1526.5 433.34,-1523 423.34,-1519.5 423.34,-1526.5"/>
 </g>
-<!-- node_26231e88&#45;&gt;node_26aad44b -->
+<!-- node_f9815c58&#45;&gt;node_519bab35 -->
 <g id="edge33" class="edge">
-<title>node_26231e88&#45;&gt;node_26aad44b</title>
+<title>node_f9815c58&#45;&gt;node_519bab35</title>
 <path fill="none" stroke="#000000" stroke-width="2" d="M207.72,-1077.73C268.92,-1077.73 372,-1077.73 372,-1077.73 372,-1077.73 372,-1440.91 372,-1440.91"/>
 <polygon fill="#000000" stroke="#000000" stroke-width="2" points="368.5,-1440.91 372,-1450.91 375.5,-1440.91 368.5,-1440.91"/>
 </g>
-<!-- node_26231e88&#45;&gt;node_788079a7 -->
+<!-- node_f9815c58&#45;&gt;node_aec617e4 -->
 <g id="edge34" class="edge">
-<title>node_26231e88&#45;&gt;node_788079a7</title>
+<title>node_f9815c58&#45;&gt;node_aec617e4</title>
 <path fill="none" stroke="#000000" stroke-width="2" d="M164,-1081.43C164,-1153.86 164,-1415 164,-1415 164,-1415 404.94,-1415 404.94,-1415"/>
 <polygon fill="#000000" stroke="#000000" stroke-width="2" points="404.94,-1418.5 414.94,-1415 404.94,-1411.5 404.94,-1418.5"/>
 </g>
-<!-- node_26231e88&#45;&gt;node_aee99cc2 -->
+<!-- node_f9815c58&#45;&gt;node_b36bccab -->
 <g id="edge35" class="edge">
-<title>node_26231e88&#45;&gt;node_aee99cc2</title>
+<title>node_f9815c58&#45;&gt;node_b36bccab</title>
 <path fill="none" stroke="#000000" stroke-width="2" d="M135,-1081.26C135,-1182.75 135,-1673 135,-1673 135,-1673 435.39,-1673 435.39,-1673"/>
 <polygon fill="#000000" stroke="#000000" stroke-width="2" points="435.39,-1676.5 445.39,-1673 435.39,-1669.5 435.39,-1676.5"/>
 </g>
-<!-- node_26231e88&#45;&gt;node_d9cc535c -->
+<!-- node_f9815c58&#45;&gt;node_f649ac98 -->
 <g id="edge36" class="edge">
-<title>node_26231e88&#45;&gt;node_d9cc535c</title>
+<title>node_f9815c58&#45;&gt;node_f649ac98</title>
 <path fill="none" stroke="#000000" stroke-width="2" d="M179,-1081.01C179,-1126.17 179,-1240.64 179,-1240.64 179,-1240.64 975.97,-1240.64 975.97,-1240.64"/>
 <polygon fill="#000000" stroke="#000000" stroke-width="2" points="975.97,-1244.14 985.97,-1240.64 975.97,-1237.14 975.97,-1244.14"/>
 </g>
-<!-- node_26231e88&#45;&gt;node_570fc33c -->
+<!-- node_f9815c58&#45;&gt;node_04e1fa1b -->
 <g id="edge37" class="edge">
-<title>node_26231e88&#45;&gt;node_570fc33c</title>
+<title>node_f9815c58&#45;&gt;node_04e1fa1b</title>
 <path fill="none" stroke="#000000" stroke-width="2" d="M207.78,-1071.18C266.55,-1071.18 363,-1071.18 363,-1071.18 363,-1071.18 363,-941 363,-941 363,-941 389.24,-941 389.24,-941"/>
 <polygon fill="#000000" stroke="#000000" stroke-width="2" points="389.24,-944.5 399.24,-941 389.24,-937.5 389.24,-944.5"/>
 </g>
-<!-- node_26231e88&#45;&gt;node_cc3974c7 -->
+<!-- node_f9815c58&#45;&gt;node_5c56f339 -->
 <g id="edge38" class="edge">
-<title>node_26231e88&#45;&gt;node_cc3974c7</title>
+<title>node_f9815c58&#45;&gt;node_5c56f339</title>
 <path fill="none" stroke="#000000" stroke-width="2" d="M193,-1081.28C193,-1096.95 193,-1117 193,-1117 193,-1117 383.29,-1117 383.29,-1117"/>
 <polygon fill="#000000" stroke="#000000" stroke-width="2" points="383.29,-1120.5 393.29,-1117 383.29,-1113.5 383.29,-1120.5"/>
 </g>
-<!-- node_26231e88&#45;&gt;node_96e7e688 -->
+<!-- node_f9815c58&#45;&gt;node_8fb58288 -->
 <g id="edge39" class="edge">
-<title>node_26231e88&#45;&gt;node_96e7e688</title>
+<title>node_f9815c58&#45;&gt;node_8fb58288</title>
 <path fill="none" stroke="#000000" stroke-width="2" d="M207.67,-1074.45C207.67,-1074.45 365.47,-1074.45 365.47,-1074.45"/>
 <polygon fill="#000000" stroke="#000000" stroke-width="2" points="365.47,-1077.95 375.47,-1074.45 365.47,-1070.95 365.47,-1077.95"/>
 </g>
-<!-- node_26231e88&#45;&gt;node_185f20d7 -->
+<!-- node_f9815c58&#45;&gt;node_d07346c7 -->
 <g id="edge40" class="edge">
-<title>node_26231e88&#45;&gt;node_185f20d7</title>
+<title>node_f9815c58&#45;&gt;node_d07346c7</title>
 <path fill="none" stroke="#000000" stroke-width="2" d="M207.86,-1067.91C265.54,-1067.91 359,-1067.91 359,-1067.91 359,-1067.91 359,-881 359,-881 359,-881 697.9,-881 697.9,-881"/>
 <polygon fill="#000000" stroke="#000000" stroke-width="2" points="697.9,-884.5 707.9,-881 697.9,-877.5 697.9,-884.5"/>
 </g>
-<!-- node_4446b251 -->
+<!-- node_ca9d3765 -->
 <g id="node22" class="node">
-<title>node_4446b251</title>
+<title>node_ca9d3765</title>
 <path fill="#cccccc" stroke="black" d="M542,-534C542,-534 430,-534 430,-534 424,-534 418,-528 418,-522 418,-522 418,-510 418,-510 418,-504 424,-498 430,-498 430,-498 542,-498 542,-498 548,-498 554,-504 554,-510 554,-510 554,-522 554,-522 554,-528 548,-534 542,-534"/>
 <text text-anchor="middle" x="486" y="-512.3" font-family="Times,serif" font-size="14.00">28: resolve_full()</text>
 </g>
-<!-- node_26231e88&#45;&gt;node_4446b251 -->
+<!-- node_f9815c58&#45;&gt;node_ca9d3765 -->
 <g id="edge41" class="edge">
-<title>node_26231e88&#45;&gt;node_4446b251</title>
+<title>node_f9815c58&#45;&gt;node_ca9d3765</title>
 <path fill="none" stroke="#000000" stroke-width="2" d="M207.7,-1061.36C262.85,-1061.36 350,-1061.36 350,-1061.36 350,-1061.36 350,-516 350,-516 350,-516 407.6,-516 407.6,-516"/>
 <polygon fill="#000000" stroke="#000000" stroke-width="2" points="407.6,-519.5 417.6,-516 407.6,-512.5 407.6,-519.5"/>
 </g>
-<!-- node_d08ad3f9 -->
+<!-- node_d0535b43 -->
 <g id="node23" class="node">
-<title>node_d08ad3f9</title>
+<title>node_d0535b43</title>
 <path fill="#cccccc" stroke="black" d="M546.5,-609C546.5,-609 425.5,-609 425.5,-609 419.5,-609 413.5,-603 413.5,-597 413.5,-597 413.5,-585 413.5,-585 413.5,-579 419.5,-573 425.5,-573 425.5,-573 546.5,-573 546.5,-573 552.5,-573 558.5,-579 558.5,-585 558.5,-585 558.5,-597 558.5,-597 558.5,-603 552.5,-609 546.5,-609"/>
 <text text-anchor="middle" x="486" y="-587.3" font-family="Times,serif" font-size="14.00">117: doi_is_dead()</text>
 </g>
-<!-- node_26231e88&#45;&gt;node_d08ad3f9 -->
+<!-- node_f9815c58&#45;&gt;node_d0535b43 -->
 <g id="edge42" class="edge">
-<title>node_26231e88&#45;&gt;node_d08ad3f9</title>
+<title>node_f9815c58&#45;&gt;node_d0535b43</title>
 <path fill="none" stroke="#000000" stroke-width="2" d="M207.68,-1064.64C263.96,-1064.64 354,-1064.64 354,-1064.64 354,-1064.64 354,-591 354,-591 354,-591 403.44,-591 403.44,-591"/>
 <polygon fill="#000000" stroke="#000000" stroke-width="2" points="403.44,-594.5 413.44,-591 403.44,-587.5 403.44,-594.5"/>
 </g>
-<!-- node_da2950b7 -->
+<!-- node_1edcd8bf -->
 <g id="node24" class="node">
-<title>node_da2950b7</title>
+<title>node_1edcd8bf</title>
 <path fill="#cccccc" stroke="black" d="M526.5,-182C526.5,-182 445.5,-182 445.5,-182 439.5,-182 433.5,-176 433.5,-170 433.5,-170 433.5,-158 433.5,-158 433.5,-152 439.5,-146 445.5,-146 445.5,-146 526.5,-146 526.5,-146 532.5,-146 538.5,-152 538.5,-158 538.5,-158 538.5,-170 538.5,-170 538.5,-176 532.5,-182 526.5,-182"/>
 <text text-anchor="middle" x="486" y="-160.3" font-family="Times,serif" font-size="14.00">21: extract()</text>
 </g>
-<!-- node_26231e88&#45;&gt;node_da2950b7 -->
+<!-- node_f9815c58&#45;&gt;node_1edcd8bf -->
 <g id="edge43" class="edge">
-<title>node_26231e88&#45;&gt;node_da2950b7</title>
+<title>node_f9815c58&#45;&gt;node_1edcd8bf</title>
 <path fill="none" stroke="#000000" stroke-width="2" d="M207.92,-1051.55C259.03,-1051.55 336,-1051.55 336,-1051.55 336,-1051.55 336,-164 336,-164 336,-164 423.12,-164 423.12,-164"/>
 <polygon fill="#000000" stroke="#000000" stroke-width="2" points="423.12,-167.5 433.12,-164 423.12,-160.5 423.12,-167.5"/>
 </g>
-<!-- node_ca1a1921 -->
+<!-- node_19b2237d -->
 <g id="node25" class="node">
-<title>node_ca1a1921</title>
+<title>node_19b2237d</title>
 <path fill="#cccccc" stroke="black" d="M526.5,-331C526.5,-331 445.5,-331 445.5,-331 439.5,-331 433.5,-325 433.5,-319 433.5,-319 433.5,-307 433.5,-307 433.5,-301 439.5,-295 445.5,-295 445.5,-295 526.5,-295 526.5,-295 532.5,-295 538.5,-301 538.5,-307 538.5,-307 538.5,-319 538.5,-319 538.5,-325 532.5,-331 526.5,-331"/>
 <text text-anchor="middle" x="486" y="-309.3" font-family="Times,serif" font-size="14.00">39: __init__()</text>
 </g>
-<!-- node_26231e88&#45;&gt;node_ca1a1921 -->
+<!-- node_f9815c58&#45;&gt;node_19b2237d -->
 <g id="edge44" class="edge">
-<title>node_26231e88&#45;&gt;node_ca1a1921</title>
+<title>node_f9815c58&#45;&gt;node_19b2237d</title>
 <path fill="none" stroke="#000000" stroke-width="2" d="M207.83,-1054.82C260.41,-1054.82 341,-1054.82 341,-1054.82 341,-1054.82 341,-313 341,-313 341,-313 423.24,-313 423.24,-313"/>
 <polygon fill="#000000" stroke="#000000" stroke-width="2" points="423.24,-316.5 433.24,-313 423.24,-309.5 423.24,-316.5"/>
 </g>
-<!-- node_8e8546ba -->
+<!-- node_bdadbae4 -->
 <g id="node29" class="node">
-<title>node_8e8546ba</title>
+<title>node_bdadbae4</title>
 <path fill="#cccccc" stroke="black" d="M535.5,-385C535.5,-385 436.5,-385 436.5,-385 430.5,-385 424.5,-379 424.5,-373 424.5,-373 424.5,-361 424.5,-361 424.5,-355 430.5,-349 436.5,-349 436.5,-349 535.5,-349 535.5,-349 541.5,-349 547.5,-355 547.5,-361 547.5,-361 547.5,-373 547.5,-373 547.5,-379 541.5,-385 535.5,-385"/>
 <text text-anchor="middle" x="486" y="-363.3" font-family="Times,serif" font-size="14.00">119: traverse()</text>
 </g>
-<!-- node_26231e88&#45;&gt;node_8e8546ba -->
+<!-- node_f9815c58&#45;&gt;node_bdadbae4 -->
 <g id="edge45" class="edge">
-<title>node_26231e88&#45;&gt;node_8e8546ba</title>
+<title>node_f9815c58&#45;&gt;node_bdadbae4</title>
 <path fill="none" stroke="#000000" stroke-width="2" d="M207.9,-1058.09C261.63,-1058.09 345,-1058.09 345,-1058.09 345,-1058.09 345,-367 345,-367 345,-367 414.16,-367 414.16,-367"/>
 <polygon fill="#000000" stroke="#000000" stroke-width="2" points="414.16,-370.5 424.16,-367 414.16,-363.5 414.16,-370.5"/>
 </g>
-<!-- node_4dca4b3c -->
+<!-- node_9ddf0a58 -->
 <g id="node30" class="node">
-<title>node_4dca4b3c</title>
+<title>node_9ddf0a58</title>
 <path fill="#cccccc" stroke="black" d="M564.5,-60C564.5,-60 407.5,-60 407.5,-60 401.5,-60 395.5,-54 395.5,-48 395.5,-48 395.5,-36 395.5,-36 395.5,-30 401.5,-24 407.5,-24 407.5,-24 564.5,-24 564.5,-24 570.5,-24 576.5,-30 576.5,-36 576.5,-36 576.5,-48 576.5,-48 576.5,-54 570.5,-60 564.5,-60"/>
 <text text-anchor="middle" x="486" y="-38.3" font-family="Times,serif" font-size="14.00">16: calculate_weights()</text>
 </g>
-<!-- node_26231e88&#45;&gt;node_4dca4b3c -->
+<!-- node_f9815c58&#45;&gt;node_9ddf0a58 -->
 <g id="edge46" class="edge">
-<title>node_26231e88&#45;&gt;node_4dca4b3c</title>
+<title>node_f9815c58&#45;&gt;node_9ddf0a58</title>
 <path fill="none" stroke="#000000" stroke-width="2" d="M207.77,-1048.27C257.7,-1048.27 332,-1048.27 332,-1048.27 332,-1048.27 332,-42 332,-42 332,-42 385.08,-42 385.08,-42"/>
 <polygon fill="#000000" stroke="#000000" stroke-width="2" points="385.08,-45.5 395.08,-42 385.08,-38.5 385.08,-45.5"/>
 </g>
-<!-- node_2ba090ea -->
+<!-- node_ae51de10 -->
 <g id="node21" class="node">
-<title>node_2ba090ea</title>
+<title>node_ae51de10</title>
 <path fill="#6db33f" stroke="black" d="M906,-534C906,-534 699,-534 699,-534 693,-534 687,-528 687,-522 687,-522 687,-510 687,-510 687,-504 693,-498 699,-498 699,-498 906,-498 906,-498 912,-498 918,-504 918,-510 918,-510 918,-522 918,-522 918,-528 912,-534 906,-534"/>
 <text text-anchor="middle" x="802.5" y="-512.3" font-family="Times,serif" font-size="14.00">72: _warn_about_title_match()</text>
 </g>
-<!-- node_4446b251&#45;&gt;node_a716dcd8 -->
+<!-- node_ca9d3765&#45;&gt;node_2e8e52a0 -->
 <g id="edge47" class="edge">
-<title>node_4446b251&#45;&gt;node_a716dcd8</title>
-<path fill="none" stroke="#e69f00" stroke-width="2" d="M554.2,-522C561.31,-522 566,-522 566,-522 566,-522 566,-765 566,-765 566,-765 746.9,-765 746.9,-765"/>
-<polygon fill="#e69f00" stroke="#e69f00" stroke-width="2" points="746.9,-768.5 756.9,-765 746.9,-761.5 746.9,-768.5"/>
+<title>node_ca9d3765&#45;&gt;node_2e8e52a0</title>
+<path fill="none" stroke="#0072b2" stroke-width="2" d="M554.2,-522C561.31,-522 566,-522 566,-522 566,-522 566,-765 566,-765 566,-765 746.9,-765 746.9,-765"/>
+<polygon fill="#0072b2" stroke="#0072b2" stroke-width="2" points="746.9,-768.5 756.9,-765 746.9,-761.5 746.9,-768.5"/>
 </g>
-<!-- node_4446b251&#45;&gt;node_2ba090ea -->
+<!-- node_ca9d3765&#45;&gt;node_ae51de10 -->
 <g id="edge48" class="edge">
-<title>node_4446b251&#45;&gt;node_2ba090ea</title>
-<path fill="none" stroke="#e69f00" stroke-width="2" d="M554.29,-510C554.29,-510 676.71,-510 676.71,-510"/>
-<polygon fill="#e69f00" stroke="#e69f00" stroke-width="2" points="676.71,-513.5 686.71,-510 676.71,-506.5 676.71,-513.5"/>
+<title>node_ca9d3765&#45;&gt;node_ae51de10</title>
+<path fill="none" stroke="#0072b2" stroke-width="2" d="M554.29,-510C554.29,-510 676.71,-510 676.71,-510"/>
+<polygon fill="#0072b2" stroke="#0072b2" stroke-width="2" points="676.71,-513.5 686.71,-510 676.71,-506.5 676.71,-513.5"/>
 </g>
-<!-- node_d08ad3f9&#45;&gt;node_4ca8b440 -->
+<!-- node_d0535b43&#45;&gt;node_ea36af0d -->
 <g id="edge49" class="edge">
-<title>node_d08ad3f9&#45;&gt;node_4ca8b440</title>
-<path fill="none" stroke="#e69f00" stroke-width="2" d="M486,-609.01C486,-633.42 486,-674 486,-674 486,-674 702.65,-674 702.65,-674"/>
-<polygon fill="#e69f00" stroke="#e69f00" stroke-width="2" points="702.65,-677.5 712.65,-674 702.65,-670.5 702.65,-677.5"/>
+<title>node_d0535b43&#45;&gt;node_ea36af0d</title>
+<path fill="none" stroke="#009e73" stroke-width="2" d="M486,-609.01C486,-633.42 486,-674 486,-674 486,-674 702.65,-674 702.65,-674"/>
+<polygon fill="#009e73" stroke="#009e73" stroke-width="2" points="702.65,-677.5 712.65,-674 702.65,-670.5 702.65,-677.5"/>
 </g>
-<!-- node_d08ad3f9&#45;&gt;node_d9cc535c -->
+<!-- node_d0535b43&#45;&gt;node_f649ac98 -->
 <g id="edge50" class="edge">
-<title>node_d08ad3f9&#45;&gt;node_d9cc535c</title>
-<path fill="none" stroke="#e69f00" stroke-width="2" d="M558.69,-591C705.82,-591 1025,-591 1025,-591 1025,-591 1025,-1210.99 1025,-1210.99"/>
-<polygon fill="#e69f00" stroke="#e69f00" stroke-width="2" points="1021.5,-1210.99 1025,-1220.99 1028.5,-1210.99 1021.5,-1210.99"/>
+<title>node_d0535b43&#45;&gt;node_f649ac98</title>
+<path fill="none" stroke="#009e73" stroke-width="2" d="M558.69,-591C705.82,-591 1025,-591 1025,-591 1025,-591 1025,-1210.99 1025,-1210.99"/>
+<polygon fill="#009e73" stroke="#009e73" stroke-width="2" points="1021.5,-1210.99 1025,-1220.99 1028.5,-1210.99 1021.5,-1210.99"/>
 </g>
-<!-- node_da2950b7&#45;&gt;node_d9cc535c -->
+<!-- node_1edcd8bf&#45;&gt;node_f649ac98 -->
 <g id="edge51" class="edge">
-<title>node_da2950b7&#45;&gt;node_d9cc535c</title>
+<title>node_1edcd8bf&#45;&gt;node_f649ac98</title>
 <path fill="none" stroke="#cc79a7" stroke-width="2" d="M538.8,-158C579.9,-158 630,-158 630,-158 630,-158 630,-1230.82 630,-1230.82 630,-1230.82 975.96,-1230.82 975.96,-1230.82"/>
 <polygon fill="#cc79a7" stroke="#cc79a7" stroke-width="2" points="975.96,-1234.32 985.96,-1230.82 975.96,-1227.32 975.96,-1234.32"/>
 </g>
-<!-- node_ca1a1921&#45;&gt;node_5433228b -->
+<!-- node_19b2237d&#45;&gt;node_84139cec -->
 <g id="edge52" class="edge">
-<title>node_ca1a1921&#45;&gt;node_5433228b</title>
-<path fill="none" stroke="#e69f00" stroke-width="2" d="M538.53,-299.5C541.32,-299.5 543,-299.5 543,-299.5 543,-299.5 543,-170 543,-170 543,-170 739.99,-170 739.99,-170"/>
-<polygon fill="#e69f00" stroke="#e69f00" stroke-width="2" points="739.99,-173.5 749.99,-170 739.99,-166.5 739.99,-173.5"/>
+<title>node_19b2237d&#45;&gt;node_84139cec</title>
+<path fill="none" stroke="#0072b2" stroke-width="2" d="M538.53,-299.5C541.32,-299.5 543,-299.5 543,-299.5 543,-299.5 543,-170 543,-170 543,-170 739.99,-170 739.99,-170"/>
+<polygon fill="#0072b2" stroke="#0072b2" stroke-width="2" points="739.99,-173.5 749.99,-170 739.99,-166.5 739.99,-173.5"/>
 </g>
-<!-- node_a823d1f7 -->
+<!-- node_80bc8f88 -->
 <g id="node26" class="node">
-<title>node_a823d1f7</title>
+<title>node_80bc8f88</title>
 <path fill="#6db33f" stroke="black" d="M881.5,-304C881.5,-304 723.5,-304 723.5,-304 717.5,-304 711.5,-298 711.5,-292 711.5,-292 711.5,-280 711.5,-280 711.5,-274 717.5,-268 723.5,-268 723.5,-268 881.5,-268 881.5,-268 887.5,-268 893.5,-274 893.5,-280 893.5,-280 893.5,-292 893.5,-292 893.5,-298 887.5,-304 881.5,-304"/>
 <text text-anchor="middle" x="802.5" y="-282.3" font-family="Times,serif" font-size="14.00">168: _allocate_budget()</text>
 </g>
-<!-- node_5263b632 -->
+<!-- node_3dd3dc18 -->
 <g id="node27" class="node">
-<title>node_5263b632</title>
+<title>node_3dd3dc18</title>
 <path fill="#cccccc" stroke="black" d="M871.5,-358C871.5,-358 733.5,-358 733.5,-358 727.5,-358 721.5,-352 721.5,-346 721.5,-346 721.5,-334 721.5,-334 721.5,-328 727.5,-322 733.5,-322 733.5,-322 871.5,-322 871.5,-322 877.5,-322 883.5,-328 883.5,-334 883.5,-334 883.5,-346 883.5,-346 883.5,-352 877.5,-358 871.5,-358"/>
 <text text-anchor="middle" x="802.5" y="-336.3" font-family="Times,serif" font-size="14.00">179: _expand_level()</text>
 </g>
-<!-- node_80a53026 -->
+<!-- node_9982ea7f -->
 <g id="node28" class="node">
-<title>node_80a53026</title>
+<title>node_9982ea7f</title>
 <path fill="#cccccc" stroke="black" d="M849.5,-412C849.5,-412 755.5,-412 755.5,-412 749.5,-412 743.5,-406 743.5,-400 743.5,-400 743.5,-388 743.5,-388 743.5,-382 749.5,-376 755.5,-376 755.5,-376 849.5,-376 849.5,-376 855.5,-376 861.5,-382 861.5,-388 861.5,-388 861.5,-400 861.5,-400 861.5,-406 855.5,-412 849.5,-412"/>
 <text text-anchor="middle" x="802.5" y="-390.3" font-family="Times,serif" font-size="14.00">95: _register()</text>
 </g>
-<!-- node_8e8546ba&#45;&gt;node_a823d1f7 -->
+<!-- node_bdadbae4&#45;&gt;node_80bc8f88 -->
 <g id="edge53" class="edge">
-<title>node_8e8546ba&#45;&gt;node_a823d1f7</title>
-<path fill="none" stroke="#56b4e9" stroke-width="2" d="M547.6,-352C616.03,-352 717,-352 717,-352 717,-352 717,-314.03 717,-314.03"/>
-<polygon fill="#56b4e9" stroke="#56b4e9" stroke-width="2" points="720.5,-314.03 717,-304.03 713.5,-314.03 720.5,-314.03"/>
+<title>node_bdadbae4&#45;&gt;node_80bc8f88</title>
+<path fill="none" stroke="#f0e442" stroke-width="2" d="M547.6,-352C616.03,-352 717,-352 717,-352 717,-352 717,-314.03 717,-314.03"/>
+<polygon fill="#f0e442" stroke="#f0e442" stroke-width="2" points="720.5,-314.03 717,-304.03 713.5,-314.03 720.5,-314.03"/>
 </g>
-<!-- node_8e8546ba&#45;&gt;node_5263b632 -->
+<!-- node_bdadbae4&#45;&gt;node_3dd3dc18 -->
 <g id="edge54" class="edge">
-<title>node_8e8546ba&#45;&gt;node_5263b632</title>
-<path fill="none" stroke="#56b4e9" stroke-width="2" d="M547.78,-355C547.78,-355 711.39,-355 711.39,-355"/>
-<polygon fill="#56b4e9" stroke="#56b4e9" stroke-width="2" points="711.39,-358.5 721.39,-355 711.39,-351.5 711.39,-358.5"/>
+<title>node_bdadbae4&#45;&gt;node_3dd3dc18</title>
+<path fill="none" stroke="#f0e442" stroke-width="2" d="M547.78,-355C547.78,-355 711.39,-355 711.39,-355"/>
+<polygon fill="#f0e442" stroke="#f0e442" stroke-width="2" points="711.39,-358.5 721.39,-355 711.39,-351.5 711.39,-358.5"/>
 </g>
-<!-- node_8e8546ba&#45;&gt;node_80a53026 -->
+<!-- node_bdadbae4&#45;&gt;node_9982ea7f -->
 <g id="edge55" class="edge">
-<title>node_8e8546ba&#45;&gt;node_80a53026</title>
-<path fill="none" stroke="#56b4e9" stroke-width="2" d="M547.78,-380.5C547.78,-380.5 733.29,-380.5 733.29,-380.5"/>
-<polygon fill="#56b4e9" stroke="#56b4e9" stroke-width="2" points="733.29,-384 743.29,-380.5 733.29,-377 733.29,-384"/>
+<title>node_bdadbae4&#45;&gt;node_9982ea7f</title>
+<path fill="none" stroke="#f0e442" stroke-width="2" d="M547.78,-380.5C547.78,-380.5 733.29,-380.5 733.29,-380.5"/>
+<polygon fill="#f0e442" stroke="#f0e442" stroke-width="2" points="733.29,-384 743.29,-380.5 733.29,-377 733.29,-384"/>
 </g>
-<!-- node_4dca4b3c&#45;&gt;node_d9cc535c -->
+<!-- node_9ddf0a58&#45;&gt;node_f649ac98 -->
 <g id="edge56" class="edge">
-<title>node_4dca4b3c&#45;&gt;node_d9cc535c</title>
-<path fill="none" stroke="#f0e442" stroke-width="2" d="M576.58,-42C734.6,-42 1044,-42 1044,-42 1044,-42 1044,-1210.68 1044,-1210.68"/>
-<polygon fill="#f0e442" stroke="#f0e442" stroke-width="2" points="1040.5,-1210.68 1044,-1220.68 1047.5,-1210.68 1040.5,-1210.68"/>
+<title>node_9ddf0a58&#45;&gt;node_f649ac98</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M576.58,-42C734.6,-42 1044,-42 1044,-42 1044,-42 1044,-1210.68 1044,-1210.68"/>
+<polygon fill="#000000" stroke="#000000" stroke-width="2" points="1040.5,-1210.68 1044,-1220.68 1047.5,-1210.68 1040.5,-1210.68"/>
 </g>
 </g>
 </svg>
