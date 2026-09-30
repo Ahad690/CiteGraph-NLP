@@ -47,17 +47,19 @@ class TestTheReportRouteFallsBack:
         would satisfy every other test here, since they all call the function
         directly.
 
-        getattr, not attribute access: app.routes can hold entries that are not
-        APIRoute at all, and this test passed in isolation while failing in the
-        full suite. Reading .path directly made the result depend on what other
-        tests had already mounted.
+        Asserted against the ROUTER, not `app`. The app's route list is shared,
+        mutable global state that other test modules mount against, so
+        asserting on it made this test's result depend on collection order --
+        it passed in isolation and failed in CI. The router is the object this
+        route is actually registered on, so it is the only place where the
+        answer does not depend on anyone else. Whether the app mounts the
+        router under /api is already covered by the documentation guard, which
+        reads the decorators.
         """
-        from citegraph.api.main import app
+        from citegraph.api.routes import router
 
-        paths = {getattr(route, "path", None) for route in app.routes}
-        # Under the router's /api prefix, so the assertion is written against
-        # the mounted path rather than the bare decorator string.
-        assert "/api/runs/{run_id}/report" in paths
+        paths = {getattr(route, "path", None) for route in router.routes}
+        assert "/runs/{run_id}/report" in paths
 
     @pytest.mark.asyncio
     async def test_disabled_reports_none_and_says_why(self, monkeypatch):
