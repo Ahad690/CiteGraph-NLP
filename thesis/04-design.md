@@ -55,7 +55,7 @@ Europe PMC
 backfill of Section 4.4.3 a local change.
 
 ![**Figure 4.2** Object composition among the classes that participate in a
-relationship, from `pyreverse` with the 30 unrelated classes removed.
+relationship, from `pyreverse` with the 31 unrelated classes removed.
 `PipelineOrchestrator` composes ten collaborators, the stage modules and the
 two providers it calls directly; edge
 labels are the attribute names the orchestrator stores them

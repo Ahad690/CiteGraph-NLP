@@ -52,7 +52,7 @@ edges, and carries the discarded detail as edge thickness rather than losing
 it.
 
 **Filtering unrelated classes** (Figure 4.2). `pyreverse` draws every class it
-finds, including the 30 that take part in no association or inheritance
+finds, including the 31 that take part in no association or inheritance
 relationship. Those 19 occupy a full column of the canvas and contribute no
 structure, so they are dropped from the chapter figure. Plate H.2 below
 retains them.

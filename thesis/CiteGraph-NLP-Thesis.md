@@ -1072,7 +1072,7 @@ Europe PMC
 backfill of Section 4.4.3 a local change.
 
 ![**Figure 4.2** Object composition among the classes that participate in a
-relationship, from `pyreverse` with the 30 unrelated classes removed.
+relationship, from `pyreverse` with the 31 unrelated classes removed.
 `PipelineOrchestrator` composes ten collaborators, the stage modules and the
 two providers it calls directly; edge
 labels are the attribute names the orchestrator stores them
@@ -4712,7 +4712,7 @@ edges, and carries the discarded detail as edge thickness rather than losing
 it.
 
 **Filtering unrelated classes** (Figure 4.2). `pyreverse` draws every class it
-finds, including the 30 that take part in no association or inheritance
+finds, including the 31 that take part in no association or inheritance
 relationship. Those 19 occupy a full column of the canvas and contribute no
 structure, so they are dropped from the chapter figure. Plate H.2 below
 retains them.
