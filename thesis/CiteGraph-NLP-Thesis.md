@@ -3694,6 +3694,42 @@ Both CSV exports are written with Python's `csv` module, so commas, quotes and
 newlines inside titles and journal names are escaped correctly, and carry a
 UTF-8 byte-order mark so spreadsheet software renders accented author names.
 
+## A.6 `POST /api/runs/{run_id}/report`
+
+Writes a narrative overview from a finished run's citation graph, and returns it
+in the response. Both the ranked papers and the citation edges between them are
+the evidence; the model is instructed to say a claim is unsupported rather than
+make it.
+
+The model is optional. On a deployment without a configured provider — which is
+the current one — the route returns `200` with `report: null`, `source: "none"`
+and a `reason`, rather than an error. A run is never blocked by the absence of
+a narrative.
+
+**Request** (every field optional)
+
+| Field | Type | Default | Notes |
+|-------|------|---------|-------|
+| `question` | string | a fixed summary question | 1–2000 characters |
+| `max_papers` | int | `40` | Clamped 1–200; bounds the prompt, and so the bill |
+
+**Response**
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `run_id` | string | the run asked about |
+| `report` | string \| null | `null` whenever no model ran |
+| `source` | string | `glm`, or `none` when nothing was written |
+| `reason` | string \| null | why nothing was written, when nothing was |
+| `model` | string \| null | the model that answered |
+| `papers_considered` | int | papers handed to the model |
+| `edges_considered` | int | citation edges handed to the model |
+| `usage` | object \| null | token counts and cost; `null` on a cache hit |
+
+A response whose `report` is identical to an earlier request for the same
+question, papers and edges is served from a content-addressed cache, and
+`usage.cost_usd` is then `0` because no new call was made.
+
 \newpage
 
 # Appendix B: Configuration Reference
@@ -3807,7 +3843,7 @@ which Section 6.6 shows dominates runtime, is materially worse.
 pytest -q
 ```
 
-Expected: **427 passed**. The suite mocks all HTTP at transport level with
+Expected: **579 passed**. The suite mocks all HTTP at transport level with
 `respx`, so it requires no network access and no API keys.
 
 ## C.3 Evaluation (Chapter 6)
@@ -4230,18 +4266,19 @@ Listed for completeness; discussed in Section 7.4.
 
 ## F.1 Composition
 
-427 automated tests across 33 files. All external HTTP is intercepted at
+579 automated tests across 36 files. All external HTTP is intercepted at
 transport level by `respx` or replaced with test doubles, so the suite requires
 no network access and no API credentials, and completes in roughly 15 to 40
 seconds.
 
-Twenty-one of the 33 files are behaviour tests: they assert that the system does
+Twenty-four of the 36 files are behaviour tests: they assert that the system does
 something. The other twelve are guards, and they assert that a check still works.
 `guards/LEDGER.md` records all 95 guard families catalogued from another project,
 what happened to each one here, and why 33 were refused rather than ported.
 
 | File | Tests | Covers |
 |------|------:|--------|
+| `test_nothing_needs_a_newer_python.py` | 122 | That nothing in src/ needs a Python newer than the image runs, after a 3.10 deploy failed on enum.StrEnum |
 | `test_api_comprehensive.py` | 73 | Endpoints, validation, clamping, auth, CORS, exports, pipeline |
 | `test_llm_providers.py` | 52 | The Jev and GLM request shapes, retries, and key redaction |
 | `test_evaluation_metrics.py` | 34 | The Wilson interval and the metrics the thesis quotes |
@@ -4257,6 +4294,7 @@ what happened to each one here, and why 33 were refused rather than ported.
 | `test_the_config_refuses_every_problem_at_once.py` | 11 | Configuration faults gathered in one pass |
 | `test_no_secret_is_committed_to_this_tree.py` | 8 | Credential shapes, each driven by a planted sample |
 | `test_ranking.py` | 8 | Foundational scoring and path ranking |
+| `test_second_opinion_pass.py` | 8 | That the second-opinion pass changes nothing when disabled |
 | `test_sqlite_store.py` | 8 | Persistence, lock retry policy, backoff jitter, error classification |
 | `test_the_ci_workflows_have_no_path_filters_and_one_always_runs.py` | 8 | No path filter on a workflow, and one that always runs |
 | `test_the_documented_response_fields_are_the_fields_the_api_returns.py` | 8 | The documented fields |
@@ -4265,7 +4303,6 @@ what happened to each one here, and why 33 were refused rather than ported.
 | `test_run_poll_interval.py` | 7 | That RunStatus carries the server's retry interval |
 | `test_full_text_population.py` | 6 | The open-access full-text fallback of Section 5.2 |
 | `test_population_patterns.py` | 6 | Extraction patterns and ignore-span behaviour |
-| `test_second_opinion_pass.py` | 6 | That the second-opinion pass changes nothing when disabled |
 | `test_the_guard_ledger_matches_what_is_on_disk.py` | 6 | All 95 catalogued families accounted for |
 | `test_task_manager.py` | 5 | Background task lifecycle and shutdown semantics |
 | `test_the_test_job_proves_it_ran.py` | 5 | That the Tests job emits a JUnit report and asserts on it |
@@ -4277,7 +4314,7 @@ what happened to each one here, and why 33 were refused rather than ported.
 | `test_a_constant_is_not_defined_twice_in_one_file.py` | 3 | A constant bound twice in one scope |
 | `test_input_normalizer.py` | 3 | Identifier canonicalisation |
 | `test_no_source_file_carries_a_control_character.py` | 3 | Invisible control bytes |
-| **Total** | **455** | |
+| **Total** | **579** | |
 
 ## F.2 Regression tests added during evaluation
 

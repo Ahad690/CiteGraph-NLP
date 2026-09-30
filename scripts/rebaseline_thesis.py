@@ -69,6 +69,13 @@ def apply_plan(plan_result: dict, reason: str, when: str) -> dict:
         with open(BASELINE, encoding="utf-8") as fh:
             previous = json.load(fh)
     history = list(previous.get("history", []))
+    # Oldest first. The final assertion in the drift guard requires the LAST
+    # entry to describe the record as it stands, and only the newest entry does,
+    # so the list reads forward in time from here.
+    #
+    # The guard's `fell` check seeds its running `previous` with the CURRENT
+    # counts, which is only correct for the newest entry; it now skips the
+    # oldest, which has no predecessor to have fallen from.
     history.append({
         "date": when,
         "reason": reason,

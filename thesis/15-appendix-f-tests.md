@@ -2,18 +2,19 @@
 
 ## F.1 Composition
 
-427 automated tests across 33 files. All external HTTP is intercepted at
+579 automated tests across 36 files. All external HTTP is intercepted at
 transport level by `respx` or replaced with test doubles, so the suite requires
 no network access and no API credentials, and completes in roughly 15 to 40
 seconds.
 
-Twenty-one of the 33 files are behaviour tests: they assert that the system does
+Twenty-four of the 36 files are behaviour tests: they assert that the system does
 something. The other twelve are guards, and they assert that a check still works.
 `guards/LEDGER.md` records all 95 guard families catalogued from another project,
 what happened to each one here, and why 33 were refused rather than ported.
 
 | File | Tests | Covers |
 |------|------:|--------|
+| `test_nothing_needs_a_newer_python.py` | 122 | That nothing in src/ needs a Python newer than the image runs, after a 3.10 deploy failed on enum.StrEnum |
 | `test_api_comprehensive.py` | 73 | Endpoints, validation, clamping, auth, CORS, exports, pipeline |
 | `test_llm_providers.py` | 52 | The Jev and GLM request shapes, retries, and key redaction |
 | `test_evaluation_metrics.py` | 34 | The Wilson interval and the metrics the thesis quotes |
@@ -29,6 +30,7 @@ what happened to each one here, and why 33 were refused rather than ported.
 | `test_the_config_refuses_every_problem_at_once.py` | 11 | Configuration faults gathered in one pass |
 | `test_no_secret_is_committed_to_this_tree.py` | 8 | Credential shapes, each driven by a planted sample |
 | `test_ranking.py` | 8 | Foundational scoring and path ranking |
+| `test_second_opinion_pass.py` | 8 | That the second-opinion pass changes nothing when disabled |
 | `test_sqlite_store.py` | 8 | Persistence, lock retry policy, backoff jitter, error classification |
 | `test_the_ci_workflows_have_no_path_filters_and_one_always_runs.py` | 8 | No path filter on a workflow, and one that always runs |
 | `test_the_documented_response_fields_are_the_fields_the_api_returns.py` | 8 | The documented fields |
@@ -37,7 +39,6 @@ what happened to each one here, and why 33 were refused rather than ported.
 | `test_run_poll_interval.py` | 7 | That RunStatus carries the server's retry interval |
 | `test_full_text_population.py` | 6 | The open-access full-text fallback of Section 5.2 |
 | `test_population_patterns.py` | 6 | Extraction patterns and ignore-span behaviour |
-| `test_second_opinion_pass.py` | 6 | That the second-opinion pass changes nothing when disabled |
 | `test_the_guard_ledger_matches_what_is_on_disk.py` | 6 | All 95 catalogued families accounted for |
 | `test_task_manager.py` | 5 | Background task lifecycle and shutdown semantics |
 | `test_the_test_job_proves_it_ran.py` | 5 | That the Tests job emits a JUnit report and asserts on it |
@@ -49,7 +50,7 @@ what happened to each one here, and why 33 were refused rather than ported.
 | `test_a_constant_is_not_defined_twice_in_one_file.py` | 3 | A constant bound twice in one scope |
 | `test_input_normalizer.py` | 3 | Identifier canonicalisation |
 | `test_no_source_file_carries_a_control_character.py` | 3 | Invisible control bytes |
-| **Total** | **455** | |
+| **Total** | **579** | |
 
 ## F.2 Regression tests added during evaluation
 

@@ -118,12 +118,22 @@ def test_every_fall_in_the_history_carries_its_own_reason():
     assert committed.get("_first_why"), "the record does not say why it was first taken"
     assert committed.get("_why"), "the record does not say why it was last written"
 
-    previous = {kind: len(committed[kind]) for kind in KINDS}
+    # History reads forward in time, oldest first, so the LAST entry is the one
+    # that describes the record as it stands. The first entry is the original
+    # record and has no predecessor, so it cannot have fallen from anything; it
+    # used to be compared against the CURRENT counts, which made every later
+    # re-baseline look like a fall in every kind it had ever raised. That stayed
+    # hidden while history held one entry, where oldest and newest are the same
+    # row, and appeared on the second.
+    previous: dict[str, int] | None = None
     for index, entry in enumerate(history):
         assert entry.get("reason"), f"history[{index}] has no reason"
         assert len(entry["reason"]) >= 30, f"history[{index}]'s reason is {len(entry['reason'])} characters"
         assert entry.get("date"), f"history[{index}] has no date, so a reviewer cannot place it"
         assert set(entry.get("counts", {})) == set(KINDS), f"history[{index}] does not count every kind"
+        if previous is None:
+            previous = entry["counts"]
+            continue
         fell = [kind for kind in KINDS if entry["counts"][kind] < previous[kind]]
         assert fell == entry.get("fell", fell), (
             f"history[{index}] records a fall in {fell} but its `fell` says {entry.get('fell')}"

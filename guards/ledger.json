@@ -251,7 +251,8 @@
    "kind": "ratchet",
    "status": "adapted",
    "guards": [
-    "CG8"
+    "CG8",
+    "CG15"
    ],
    "reason": "The method transfers: one planted sample per detector, a supplied-value exclusion, and a clean-tree control. The specimens do not: this application issues no browser API keys."
   },
@@ -351,7 +352,8 @@
    "kind": "ci",
    "status": "ported",
    "guards": [
-    "CG1"
+    "CG1",
+    "CG15"
    ],
    "reason": "Any skipped testcase in the CI report is refused, and the report reader lives outside tests/ so the suite carries no skip of its own."
   },
@@ -759,7 +761,8 @@
    "kind": "process",
    "status": "already_present",
    "guards": [
-    "CG13"
+    "CG13",
+    "CG15"
    ],
    "reason": "A quoted number that cannot be found in the PDF or the evidence file fails the drift guard rather than being skipped."
   },
@@ -1085,6 +1088,18 @@
     "P1"
    ],
    "also": []
+  },
+  {
+   "id": "CG15",
+   "path": "tests/test_nothing_needs_a_newer_python.py",
+   "incident": "Written after a deploy the preflight refused: jev.py used enum.StrEnum, which is 3.11+, and production runs 3.10. The module had been committed, its tests had passed, and the image was fine for exactly as long as nothing in the application imported it. So 'the tests pass' said nothing about the box. This pins the floor to the version the Dockerfile actually declares and refuses a name from a newer stdlib anywhere in src/. The floor is parsed out of the Dockerfile rather than hardcoded, because a floor nobody re-derives is a comment -- which is what the StrEnum was. R25, R27, C5, P4.",
+   "families": [
+    "R25",
+    "R27",
+    "C5",
+    "P4"
+   ],
+   "also": []
   }
  ],
  "ordinary": [
@@ -1189,5 +1204,5 @@
    "reason": "Not a hook surface and not LLM-specific: heredocs mangling escapes, a result read through a pipe, $? checked after a pipe, a truncating edit, a guard test not run after changing the code it guards, a container assumed to re-read its environment. Four of these were hit while writing this port, and each is already covered by a guard rather than by a hook: test_the_thesis_does_not_drift.py catches the truncating edit through the test count, and the failure to run a changed guard is what CI is for. Recorded here so the catalogue is not re-mined."
   }
  ],
- "_ledger_md_sha256": "e67076fb3ec2ee1c5c76be6210b88be4aeae23326adedf20876a0a5d0b07e937"
+ "_ledger_md_sha256": "56a138dd1fb495a8be0ffea31212996a2552a4ce479336949f0c640ef93f941b"
 }

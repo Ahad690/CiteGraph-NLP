@@ -27,6 +27,10 @@ DESCRIPTIONS = {
     "test_the_config_refuses_every_problem_at_once.py": "Configuration faults gathered in one pass",
     "test_the_documented_response_fields_are_the_fields_the_api_returns.py": "The documented fields",
     "test_no_secret_is_committed_to_this_tree.py": "Credential shapes, each driven by a planted sample",
+    "test_nothing_needs_a_newer_python.py": (
+        "That nothing in src/ needs a Python newer than the image runs, after a "
+        "3.10 deploy failed on enum.StrEnum"
+    ),
     "test_the_guard_ledger_matches_what_is_on_disk.py": "All 95 catalogued families accounted for",
     "test_sqlite_store.py": "Persistence, lock retry policy, backoff jitter, error classification",
     "test_the_ci_workflows_have_no_path_filters_and_one_always_runs.py": "No path filter on a workflow, and one that always runs",

@@ -316,3 +316,59 @@ ones. A 404 is not retried.
 - [Deployment](DEPLOYMENT.md) — running it on a server
 - [User guide](../USER_GUIDE.md) — using the dashboard rather than the API
 - Thesis Appendix A — the same reference with the design rationale attached
+
+---
+
+## `POST /api/runs/{run_id}/report`
+
+Write a narrative overview of a finished run from its citation graph. The
+evidence handed to the model is the ranked papers *and* the citation edges
+between them; a report about a graph that cannot see the links would be a report
+about a bag of papers. The model is instructed to say that the evidence does not
+support a claim rather than to make it.
+
+The model is optional. Without a configured provider — the current deployment —
+this returns `200` with `report: null`, `source: "none"` and a `reason`. A run is
+never blocked by the absence of a narrative, and a 503 would make the ordinary
+case look like an outage.
+
+```http
+POST /api/runs/{run_id}/report
+```
+
+### Request
+
+| Field | Type | Default | Notes |
+|-------|------|---------|-------|
+| `question` | string | a fixed summary question | 1–2000 characters |
+| `max_papers` | int | `40` | Clamped 1–200; bounds the prompt, and so the bill |
+
+### Response
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `run_id` | string | the run asked about |
+| `report` | string \| null | `null` whenever no model ran |
+| `source` | string | `glm`, or `none` when nothing was written |
+| `reason` | string \| null | why nothing was written, when nothing was |
+| `model` | string \| null | the model that answered |
+| `papers_considered` | int | papers handed to the model |
+| `edges_considered` | int | citation edges handed to the model |
+| `usage` | object \| null | token counts and cost; `null` cost on a cache hit |
+
+```json
+{ "run_id": "9f2c1b7e", "report": null, "source": "none",
+  "reason": "GLM is disabled or not configured; the report is not generated" }
+```
+
+An answer identical to an earlier request for the same question, papers and edges
+is served from a content-addressed cache without calling the provider, so
+`usage.cost_usd` is `0` — a hit spends nothing and is not charged to the daily
+provider ceiling.
+
+### Errors
+
+| Status | When |
+|--------|------|
+| `404` | the run does not exist or has not finished |
+| `401` | API key required and not supplied |

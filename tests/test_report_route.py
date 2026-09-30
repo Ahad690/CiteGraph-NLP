@@ -45,10 +45,16 @@ class TestTheReportRouteFallsBack:
     async def test_the_route_is_registered_and_dispatches(self):
         """Registered and callable. A route that 404s because it was never added
         would satisfy every other test here, since they all call the function
-        directly."""
+        directly.
+
+        getattr, not attribute access: app.routes can hold entries that are not
+        APIRoute at all, and this test passed in isolation while failing in the
+        full suite. Reading .path directly made the result depend on what other
+        tests had already mounted.
+        """
         from citegraph.api.main import app
 
-        paths = {route.path for route in app.routes}
+        paths = {getattr(route, "path", None) for route in app.routes}
         # Under the router's /api prefix, so the assertion is written against
         # the mounted path rather than the bare decorator string.
         assert "/api/runs/{run_id}/report" in paths

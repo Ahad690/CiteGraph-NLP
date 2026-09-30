@@ -110,6 +110,16 @@ GUARDS = [
      "that misses a novel format reports clean, which is why the shape list is "
      "narrow and the limits are written down. R27, R28, B24, B28, P1.",
      ["R27", "R28", "B24", "B28", "P1"], []),
+    ("CG15", "tests/test_nothing_needs_a_newer_python.py",
+     "Written after a deploy the preflight refused: jev.py used enum.StrEnum, which is "
+     "3.11+, and production runs 3.10. The module had been committed, its tests had "
+     "passed, and the image was fine for exactly as long as nothing in the application "
+     "imported it. So 'the tests pass' said nothing about the box. This pins the floor to "
+     "the version the Dockerfile actually declares and refuses a name from a newer "
+     "stdlib anywhere in src/. The floor is parsed out of the Dockerfile rather than "
+     "hardcoded, because a floor nobody re-derives is a comment -- which is what the "
+     "StrEnum was. R25, R27, C5, P4.",
+     ["R25", "R27", "C5", "P4"], []),
 ]
 
 # Every remaining tests/test_*.py, classified rather than ignored. Hand-kept on
@@ -257,7 +267,7 @@ ROWS = [
      "The drift guard's `claims` list retires statements that stop being true and "
      "fails if one comes back."),
     ("R25", "Invented-credential detector with supplied-key and wiring controls",
-     "ratchet", "adapted", ["CG8"],
+     "ratchet", "adapted", ["CG8", "CG15"],
      "The method transfers: one planted sample per detector, a supplied-value "
      "exclusion, and a clean-tree control. The specimens do not: this application "
      "issues no browser API keys."),
@@ -295,7 +305,7 @@ ROWS = [
      "There is no timeout to remove. A truncated run is caught from the other side: a "
      "report with fewer cases than the floor is refused."),
     ("C5", "A declared skip must be absent from a security-critical report", "ci",
-     "ported", ["CG1"],
+     "ported", ["CG1", "CG15"],
      "Any skipped testcase in the CI report is refused, and the report reader lives "
      "outside tests/ so the suite carries no skip of its own."),
     ("C6", "Static SQL rules must execute and fire on a plant", "ci", "refused", [],
@@ -455,7 +465,7 @@ ROWS = [
     ("P3", "Pre-push wrapper refuses on scan failure or empty range", "process",
      "ported", ["CG8"], "Carried whole: the scanner fails closed on a decode error rather than counting the file as clean, which is the property the wrapper exists to provide."),
     ("P4", "Report-number checker treats not-found as failure", "process",
-     "already_present", ["CG13"],
+     "already_present", ["CG13", "CG15"],
      "A quoted number that cannot be found in the PDF or the evidence file fails the "
      "drift guard rather than being skipped."),
     ("P5", "PRD delta merge is all-or-nothing", "process", "refused", [],

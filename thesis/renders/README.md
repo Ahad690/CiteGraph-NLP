@@ -14,8 +14,8 @@ PDF converted from the Word file.
 | File | Pages | Page numbers | Body type | Character |
 |------|-------|--------------|-----------|-----------|
 | `1-current-as-committed.pdf` | 126 | **no** | Times New Roman 12pt | Pandoc's default web styling, printed |
-| `2-academic-serif.pdf` | 137 | yes | Times New Roman 11.5pt | Conventional university thesis |
-| `3-modern-report.pdf` | 132 | yes | Cambria 11pt | Technical report |
+| `2-academic-serif.pdf` | 139 | yes | Times New Roman 11.5pt | Conventional university thesis |
+| `3-modern-report.pdf` | 133 | yes | Cambria 11pt | Technical report |
 
 **1 — current.** What is committed in `thesis/CiteGraph-NLP-Thesis.pdf`. It is
 Pandoc's browser stylesheet sent to a printer: ragged-right text, no page

@@ -1,24 +1,24 @@
+from fastapi import APIRouter, HTTPException, BackgroundTasks, Response
+from pydantic import BaseModel, Field
+from typing import Dict, Literal, Optional
+from datetime import datetime, timezone
+import uuid
+import logging
+import json
 import asyncio
 import csv
 import io
-import json
-import logging
-import uuid
-from datetime import datetime, timezone
-from typing import Literal
 
 import networkx as nx
-from fastapi import APIRouter, BackgroundTasks, HTTPException, Response
-from pydantic import BaseModel, Field
 
-from citegraph.graph.builder import GraphBuilder
-from citegraph.llm import get_glm
-from citegraph.llm.base import ProviderUnavailable
-from citegraph.llm.budget import budget_exhausted
 from citegraph.models.paper import PaperQuery
 from citegraph.models.run import RunResult
 from citegraph.pipeline.orchestrator import PipelineOrchestrator
+from citegraph.graph.builder import GraphBuilder
 from citegraph.providers.base import close_shared_client
+from citegraph.llm import get_glm
+from citegraph.llm.base import ProviderUnavailable
+from citegraph.llm.budget import budget_exhausted
 from citegraph.utils.tasks import task_manager
 
 router = APIRouter()
@@ -51,7 +51,7 @@ class RunRequest(PaperQuery):
 class RunStatus(BaseModel):
     run_id: str
     status: Literal["started", "running", "completed", "failed"]
-    error: str | None = None
+    error: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     #: How long the client should wait before polling again.
     #:
@@ -73,7 +73,7 @@ async def shutdown_event():
     await store.close()
     await close_shared_client()
 
-@router.post("/runs", response_model=dict[str, str])
+@router.post("/runs", response_model=Dict[str, str])
 async def start_run(request: RunRequest, background_tasks: BackgroundTasks):
     # Enforce limits
     request.backward_depth = min(max(request.backward_depth, 0), 3)
@@ -382,7 +382,29 @@ class ReportRequest(BaseModel):
     max_papers: int = Field(default=40, ge=1, le=200)
 
 
-@router.post("/runs/{run_id}/report")
+class ReportResponse(BaseModel):
+    """The shape of a report response, declared rather than left as a dict.
+
+    A plain dict is a hole in the API contract: the client cannot see what
+    comes back, and a rename becomes a silent break. Declaring it also means the
+    field set is checkable against the documentation instead of exempted from
+    it.
+    """
+
+    run_id: str
+    #: None whenever the model did not run, which is the normal case on a
+    #: deployment without credentials. `reason` says why.
+    report: str | None = None
+    #: "glm" when a model wrote it, "none" when it did not.
+    source: str
+    reason: str | None = None
+    model: str | None = None
+    papers_considered: int = 0
+    edges_considered: int = 0
+    usage: dict | None = None
+
+
+@router.post("/runs/{run_id}/report", response_model=ReportResponse)
 async def generate_report(run_id: str, request: ReportRequest):
     """Write a narrative report from the run's citation graph.
 

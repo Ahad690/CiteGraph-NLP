@@ -87,3 +87,39 @@ All exports return a file with the correct `Content-Type` and a `Content-Disposi
 Both CSV exports are written with Python's `csv` module, so commas, quotes and
 newlines inside titles and journal names are escaped correctly, and carry a
 UTF-8 byte-order mark so spreadsheet software renders accented author names.
+
+## A.6 `POST /api/runs/{run_id}/report`
+
+Writes a narrative overview from a finished run's citation graph, and returns it
+in the response. Both the ranked papers and the citation edges between them are
+the evidence; the model is instructed to say a claim is unsupported rather than
+make it.
+
+The model is optional. On a deployment without a configured provider — which is
+the current one — the route returns `200` with `report: null`, `source: "none"`
+and a `reason`, rather than an error. A run is never blocked by the absence of
+a narrative.
+
+**Request** (every field optional)
+
+| Field | Type | Default | Notes |
+|-------|------|---------|-------|
+| `question` | string | a fixed summary question | 1–2000 characters |
+| `max_papers` | int | `40` | Clamped 1–200; bounds the prompt, and so the bill |
+
+**Response**
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `run_id` | string | the run asked about |
+| `report` | string \| null | `null` whenever no model ran |
+| `source` | string | `glm`, or `none` when nothing was written |
+| `reason` | string \| null | why nothing was written, when nothing was |
+| `model` | string \| null | the model that answered |
+| `papers_considered` | int | papers handed to the model |
+| `edges_considered` | int | citation edges handed to the model |
+| `usage` | object \| null | token counts and cost; `null` on a cache hit |
+
+A response whose `report` is identical to an earlier request for the same
+question, papers and edges is served from a content-addressed cache, and
+`usage.cost_usd` is then `0` because no new call was made.

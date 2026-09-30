@@ -24,7 +24,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from enum import StrEnum
+from enum import Enum
 from typing import Any
 
 from citegraph.config import settings
@@ -36,8 +36,17 @@ logger = logging.getLogger(__name__)
 ENDPOINT = "/v1/systemone"
 
 
-class QuestionType(StrEnum):
-    """The three question types Jev has. There is no fourth."""
+class QuestionType(str, Enum):
+    """The three question types Jev has. There is no fourth.
+
+    `str, Enum` and NOT `enum.StrEnum`. StrEnum is Python 3.11+, and production
+    runs 3.10, so using it makes this module unimportable there. That stayed
+    hidden for a commit because nothing imported jev.py from the app -- the
+    module existed, and its tests passed, and the image would not start the
+    moment a route imported it. The mixin gives the same behaviour for what this
+    is used for: the members ARE strings, so f-strings and JSON serialisation
+    need no `.value` and no custom encoder.
+    """
 
     CHOICE = "choice"
     SCORE = "score"
